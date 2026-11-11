@@ -40,7 +40,7 @@ function render() {
   const done = D.catalog.filter((c) => c.st === 'done').length;
   const cards = learning.map((c) => card(c, 'in-progress')).slice(0, 2);
   document.getElementById('h-my').innerHTML = SectionHead('My Courses', 'myCourses', 'my-courses.html', EnrollSlotPanel({ used: learning.length, limit: 2 }));
-  document.getElementById('learning').innerHTML = cards.join('') + Array.from({ length: Math.max(0, 2 - learning.length) }, EmptySlotCard).join('');
+  document.getElementById('learning').innerHTML = cards.join('') + (learning.length < 2 ? EmptySlotCard(2 - learning.length) : '');
   // All Courses
   const st = full ? 'limit-reached' : 'default';
   const all = D.catalog.filter((c) => c.st === 'none').slice(0, 6);

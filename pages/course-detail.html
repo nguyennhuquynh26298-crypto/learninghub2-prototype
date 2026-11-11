@@ -33,7 +33,7 @@
 <script src="../assets/js/data.js"></script>
 <script src="../assets/js/enroll-limit.js"></script>
 <script>
-const { ICON, AppHeader, AppFooter, BackLink, LessonsAccordion, WebProgress, Badge, AccessNotice, SlotMeter, toast, ProgressBreakdown, CompletionRing, esc } = LH; const D = LHData; const C = D.course;
+const { ICON, AppHeader, AppFooter, BackLink, LessonsAccordion, WebProgress, Badge, AccessNotice, SlotMeter, toast, ProgressBreakdown, CompletionRing, CourseCta, esc } = LH; const D = LHData; const C = D.course;
 document.getElementById('header').innerHTML = AppHeader();
 document.getElementById('footer').innerHTML = AppFooter();
 /* Bản học viên: khoá đang xem lấy từ ?c= (hoặc khoá xem gần nhất), trạng thái suy ra từ dữ liệu */
@@ -120,18 +120,15 @@ function render() {
   renderResult(R, locked);
   const cta = document.getElementById('cta');
   // #4 §3.4 Lịch học (BR-AUD-12)
-  const sched = S === 'upcoming' ? `<div class="cd-sched">${ICON.clock}<span>Bắt đầu <b>15/11/2026</b></span></div>`
-    : S === 'overdue' ? `<div class="cd-sched">${ICON.clock}<span>Hạn <b>01/10 – 31/10/2026</b></span>${Badge('Quá hạn', 'danger')}</div>`
-    : `<div class="cd-sched">${ICON.clock}<span>Thời gian học <b>10/11 – 30/11/2026</b></span></div>`;
+  const sched = S === 'upcoming' ? { label: 'Bắt đầu', range: '15/11/2026' }
+    : S === 'overdue' ? { label: 'Thời gian học', range: '01/10 – 31/10/2026' }
+    : { label: 'Thời gian học', range: '10/11 – 30/11/2026' };
   if (locked) { cta.innerHTML = AccessNotice({ state: S, owner: C.owner, progress: 45 }); return; }
-  if (R) { cta.innerHTML = `${sched}<div class="row gap-8">${R.failed ? Badge('Không đạt', 'danger') : R.pct === 100 ? Badge('Hoàn thành', 'success', 'check') : Badge('Đang học', 'info')}</div>
-    <button data-pop style="all:unset;cursor:pointer;display:block">${WebProgress(R.pct)}<span class="t-xs muted" style="display:block;margin-top:6px">Video ${R.video[0]}/${R.video[1]} · Bài test ${R.test[0]}/${R.test[1]}</span></button>
-    <button class="aside-btn ${R.pct === 100 || R.failed ? 'aside-btn--outline' : ''}" onclick="location.href='${APPL ? 'assessment.html' : 'lesson-video.html'}'">${R.pct === 100 || R.failed ? 'Xem lại khoá học' : 'Continue Learning'}</button>`; return; }
-  if (S === 'upcoming') { cta.innerHTML = `${sched}${SlotMeter(slots(), 2)}<button class="aside-btn" disabled style="opacity:.5;cursor:not-allowed" title="Khoá học mở từ 15/11/2026.">Start Courses</button>`; return; }
-  cta.innerHTML = `${sched}${SlotMeter(slots(), 2)}
-    <button class="aside-btn" id="start" title="${S === 'limit' ? 'Bạn đang học đủ 2 khoá. Hoàn thành một khoá để đăng ký thêm.' : ''}">Start Courses</button>`;
+  const state = R ? (R.failed ? 'failed' : R.pct === 100 ? 'completed' : S === 'overdue' ? 'overdue' : 'learning') : S;
+  cta.innerHTML = CourseCta({ state, sched, slots: slots(), result: R, startDate: '15/11/2026' });
 }
 document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-continue]')) { location.href = APPL ? 'assessment.html' : 'test-start.html'; return; }
   if (!e.target.closest('#start')) return;
   if (S === 'limit') return LHEnroll.open({ target: CC ? CC.title : C.title, courses: D.myCourses });
   if (APPL) { const st = LH.App.get(); st.enrolled = [...(st.enrolled || []), CC.title]; LH.App.set(st); toast('Đã đăng ký khoá học'); setTimeout(() => location.href = 'course-detail.html?c=' + CI, 700); return; }

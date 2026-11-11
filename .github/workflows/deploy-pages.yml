@@ -1,0 +1,22 @@
+# Copy vào repo learninghub2-prototype (.github/workflows/) bởi tools/publish-prototype.sh.
+# Mỗi lần push main → deploy lên https://app-hara-learninghub.pages.dev
+# Project Cloudflare đã tạo sẵn (tài khoản chung SaleHub, project riêng). Secret: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+name: Deploy Cloudflare Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy . --project-name=app-hara-learninghub --branch=main --commit-dirty=true

@@ -466,9 +466,35 @@
     const dots = Array.from({ length: Math.max(limit, used) }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('');
     return `<span class="slot-chip ${full ? 'slot-chip--full' : ''}" title="${full ? 'Hoàn thành 1 khoá đang học để đăng ký khoá mới.' : 'Khoá Hoàn thành và Không đạt không tính suất.'}"><span class="slot-chip__dots">${dots}</span>Suất học <b>${used}/${limit}</b>${full ? ' · Đạt giới hạn' : ''}</span>`;
   }
-  /** Learner / Empty slot — ô nét đứt cùng cỡ thẻ khoá cho suất còn trống */
-  function EmptySlotCard() {
-    return `<a class="slot-empty" href="course-search.html"><span class="slot-empty__ic">${ICON.plus}</span><b>Còn 1 suất</b><span>Khám phá khoá học</span></a>`;
+  /** Learner / Empty slot — thẻ mini 64px (thông tin phụ), cuối hàng My Courses, căn đỉnh */
+  function EmptySlotCard(n = 1) {
+    return `<a class="slot-empty" href="course-search.html"><span class="slot-empty__ic">${ICON.plus}</span><b>Còn ${n} suất</b><span class="grow"></span><span class="slot-empty__go">Khám phá khoá học${ICON.chevronR}</span></a>`;
+  }
+
+  /**
+   * Course / CTA card — khung bên phải trang khoá. State: all | limit | upcoming | learning | overdue | completed | failed.
+   * sched: { label, range, overdue } · slots: số khoá đang học · result: { pct, video, test } (khi đã đăng ký)
+   */
+  function CourseCta({ state = 'all', sched, slots = 1, limit = 2, result, startDate = '' }) {
+    const tags = {
+      learning: Badge('Đang học', 'info'), overdue: Badge('Đang học', 'info'),
+      completed: Badge('Hoàn thành', 'success', 'check'), failed: Badge('Không đạt', 'danger'),
+    }[state] || '';
+    const right = state === 'overdue' ? Badge('Quá hạn', 'danger') : '';
+    const head = tags || right ? `<div class="cta-card__tags">${tags}${right ? `<span class="grow"></span>${right}` : ''}</div>` : '';
+    const meta = sched ? `<div class="cta-card__meta"><span class="ic">${ICON.clock}</span><span>${esc(sched.label)} <b>${esc(sched.range)}</b></span></div>` : '';
+    let body = '', btn = '';
+    if (result) {
+      const review = state === 'completed' || state === 'failed';
+      body = `<button class="cta-card__pg" data-pop>${WebProgress(result.pct, 'Tiến độ')}<span class="cta-card__sub">Video ${result.video[0]}/${result.video[1]} · Bài test ${result.test[0]}/${result.test[1]}</span></button>`;
+      btn = `<button class="aside-btn ${review ? 'aside-btn--outline' : ''}" data-continue>${review ? 'Xem lại khoá học' : 'Continue Learning'}</button>`;
+    } else {
+      body = `<div>${EnrollSlotPanel({ used: slots, limit })}</div>`;
+      btn = state === 'upcoming'
+        ? `<button class="aside-btn" disabled>Start Courses</button><span class="cta-card__sub" style="text-align:center">Mở từ ${esc(startDate)}</span>`
+        : `<button class="aside-btn" id="start">Start Courses</button>`;
+    }
+    return `<div class="cta-card" data-state="${state}">${head}${meta}${body}${btn}</div>`;
   }
   function SlotMeter(used, limit) {
     const full = used >= limit;
@@ -654,7 +680,7 @@
     if (s) { const box = s.parentElement; box.classList.toggle('is-open'); s.querySelector('svg').outerHTML = box.classList.contains('is-open') ? ICON.chevronU : ICON.chevronD; }
   });
 
-  window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
+  window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
     ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, SearchQuickChip, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
     QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary };
