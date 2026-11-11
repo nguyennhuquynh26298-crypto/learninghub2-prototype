@@ -36,15 +36,43 @@
 const { ICON, AppHeader, AppFooter, BackLink, LessonsAccordion, WebProgress, Badge, AccessNotice, SlotMeter, toast, ProgressBreakdown, CompletionRing, esc } = LH; const D = LHData; const C = D.course;
 document.getElementById('header').innerHTML = AppHeader();
 document.getElementById('footer').innerHTML = AppFooter();
-document.getElementById('c-cover').src = C.cover;
-document.getElementById('back').innerHTML = BackLink(C.title, { big: true, href: 'home.html' });
+/* Bản học viên: khoá đang xem lấy từ ?c= (hoặc khoá xem gần nhất), trạng thái suy ra từ dữ liệu */
+const APPL = LH.App.mode === 'learner';
+let CC = null, CI = null;
+if (APPL) {
+  CI = new URLSearchParams(location.search).get('c') ?? sessionStorage.getItem('lhCur') ?? D.catalog.findIndex((c) => c.title.startsWith('CCAR-F'));
+  sessionStorage.setItem('lhCur', CI); CC = D.catalog[+CI];
+  document.title = CC.title + ' · Learning Hub';
+}
+const isCcar = () => !CC || CC.title.startsWith('CCAR-F');
+function appS() {
+  const n = D.catalog.filter((c) => c.st === 'learning').length;
+  if (CC.restricted) return 'restricted';
+  if (CC.st === 'learning') return CC.sched && CC.sched.overdue ? 'overdue' : 'learning';
+  if (CC.st === 'done') return 'completed';
+  if (CC.st === 'fail') return 'failed';
+  if (CC.sched && CC.sched.start) return 'upcoming';
+  return n >= 2 ? 'limit' : 'all';
+}
+document.getElementById('c-cover').src = (CC && CC.cover) || C.cover;
+document.getElementById('back').innerHTML = BackLink(CC ? CC.title : C.title, { big: true, href: 'home.html' });
 document.getElementById('who').innerHTML = C.whoFor.map((p) => `<p>${esc(p)}</p>`).join('');
 document.getElementById('learn').innerHTML = C.learn.map((p) => `<li>${esc(p)}</li>`).join('');
 document.getElementById('c-desc').textContent = C.desc;
 const TOTAL = C.sessions.reduce((a, s) => a + s.lessons.length, 0);
 let S;
 /* #7 #8 — số liệu học viên theo kịch bản */
+/* Khoá vừa đăng ký trong bản học viên: tiến độ 0, bài test đầu lấy từ lượt thi thật (assessment.html) */
+function freshResult() {
+  const att = isCcar() ? JSON.parse(localStorage.getItem('lhExamAttempts') || '[]') : [];
+  const best = att.length ? Math.max(...att.map((x) => x.score)) : null, pass = best >= D.test.passMark, out = att.length >= 3 && !pass;
+  const lessons = Array(TOTAL).fill('none'); if (att.length) lessons[1] = pass ? 'done' : 'fail';
+  const tests = D.myResult.tests.map((t, i) => (i === 0 && att.length ? { ...t, best, tries: `${att.length}/3`, res: pass ? 'pass' : 'fail' } : { ...t, best: null, tries: '0/3', res: 'none' }));
+  return { pct: CC.progress || 0, video: [0, 1], test: [pass ? 1 : 0, 9], doc: [0, 6], lessons, tests, failed: out, failNote: out ? `${D.test.name} · hết 3 lượt · ${best} điểm` : '' };
+}
 function result() {
+  if (APPL && CC.fresh) return freshResult();
+  if (APPL && (S === 'learning' || S === 'overdue')) return { ...D.myResult, pct: CC.progress || D.myResult.pct };
   if (S === 'learning' || S === 'removed' || S === 'overdue') return D.myResult;
   if (S === 'completed') return { pct: 100, video: [1, 1], test: [9, 9], doc: [6, 6], done: '05/11/2026', lessons: Array(TOTAL).fill('done'),
     tests: D.myResult.tests.map((t, i) => ({ ...t, best: [85, 78, 90, 72, 81, 88][i], tries: ['2/3', '3/3', '1/3', '2/3', '1/3', '1/3'][i], res: 'pass' })) };
@@ -68,7 +96,7 @@ function renderResult(R, locked) {
   el.innerHTML = `<h2>Kết quả của tôi</h2>
     <div class="my-result">${CompletionRing(R.pct, 120)}
       <div class="stack gap-8"><span class="t-xs muted">Tỷ lệ hoàn thành</span>
-        <b class="t-xl">${R.failed ? 'Không đạt' : R.pct === 100 ? `Hoàn thành ngày ${R.done}` : 'Đang học'}</b>${R.failed ? '<span class="t-xs muted">Tool Design & MCP Integration · hết 3 lượt · 62 điểm</span>' : ''}
+        <b class="t-xl">${R.failed ? 'Không đạt' : R.pct === 100 ? `Hoàn thành ngày ${R.done}` : 'Đang học'}</b>${R.failed ? `<span class="t-xs muted">${esc(R.failNote || 'Tool Design & MCP Integration · hết 3 lượt · 62 điểm')}</span>` : ''}
         <span class="fw-600 t-sm">Video ${R.video[0]}/${R.video[1]} · Bài test ${R.test[0]}/${R.test[1]} · Tài liệu ${R.doc[0]}/${R.doc[1]}</span></div></div>
     <table class="table"><thead><tr><th>Bài test</th><th>Điểm cao nhất</th><th>Lượt đã làm</th><th>Kết quả</th><th></th></tr></thead><tbody>
       ${R.tests.map((t) => `<tr><td><b>${esc(t.name)}</b><div class="t-xs muted">${esc(t.session)}</div></td><td>${t.best == null ? '—' : `<b>${t.best}</b>/100`}</td><td>${t.tries}</td><td>${Badge(...RES[t.res])}</td>
@@ -83,10 +111,11 @@ document.addEventListener('click', (e) => {
   const R = result(); const r = b.getBoundingClientRect();
   document.body.insertAdjacentHTML('beforeend', `<div class="popover" style="top:${r.bottom + scrollY + 8}px;left:${r.left + scrollX}px;width:${r.width}px"><b class="t-sm">Tiến độ của bạn</b><div style="margin-top:12px">${ProgressBreakdown({ pct: R.pct, video: R.video, test: R.test, doc: R.doc, mode: 'full', practice: true })}</div></div>`);
 });
+const slots = () => (APPL ? D.catalog.filter((c) => c.st === 'learning').length : S === 'limit' ? 2 : 1);
 function render() {
   const locked = S === 'restricted' || S === 'removed';
   const R = result();
-  document.getElementById('hero-badges').innerHTML = (!['all', 'limit', 'upcoming', 'overdue'].includes(S) ? `<span class="cc-tag" style="position:static">${ICON.lock}Dành cho nhóm chỉ định</span>` : '') + (S === 'failed' ? `<span class="cc-tag cc-tag--fail" style="position:static">${ICON.x}Không đạt</span>` : '');
+  document.getElementById('hero-badges').innerHTML = ((APPL ? S === 'restricted' : !['all', 'limit', 'upcoming', 'overdue'].includes(S)) ? `<span class="cc-tag" style="position:static">${ICON.lock}Dành cho nhóm chỉ định</span>` : '') + (S === 'failed' ? `<span class="cc-tag cc-tag--fail" style="position:static">${ICON.x}Không đạt</span>` : '');
   document.getElementById('syllabus').innerHTML = LessonsAccordion(C.sessions, { open: [0], locked, status: R ? (i, k) => lessonStatus(R.lessons[i], k) : () => '' });
   renderResult(R, locked);
   const cta = document.getElementById('cta');
@@ -97,19 +126,20 @@ function render() {
   if (locked) { cta.innerHTML = AccessNotice({ state: S, owner: C.owner, progress: 45 }); return; }
   if (R) { cta.innerHTML = `${sched}<div class="row gap-8">${R.failed ? Badge('Không đạt', 'danger') : R.pct === 100 ? Badge('Hoàn thành', 'success', 'check') : Badge('Đang học', 'info')}</div>
     <button data-pop style="all:unset;cursor:pointer;display:block">${WebProgress(R.pct)}<span class="t-xs muted" style="display:block;margin-top:6px">Video ${R.video[0]}/${R.video[1]} · Bài test ${R.test[0]}/${R.test[1]}</span></button>
-    <button class="aside-btn ${R.pct === 100 || R.failed ? 'aside-btn--outline' : ''}" onclick="location.href='lesson-video.html'">${R.pct === 100 || R.failed ? 'Xem lại khoá học' : 'Continue Learning'}</button>`; return; }
-  if (S === 'upcoming') { cta.innerHTML = `${sched}${SlotMeter(1, 2)}<button class="aside-btn" disabled style="opacity:.5;cursor:not-allowed" title="Khoá học mở từ 15/11/2026.">Start Courses</button>`; return; }
-  cta.innerHTML = `${sched}${SlotMeter(S === 'limit' ? 2 : 1, 2)}
+    <button class="aside-btn ${R.pct === 100 || R.failed ? 'aside-btn--outline' : ''}" onclick="location.href='${APPL ? 'assessment.html' : 'lesson-video.html'}'">${R.pct === 100 || R.failed ? 'Xem lại khoá học' : 'Continue Learning'}</button>`; return; }
+  if (S === 'upcoming') { cta.innerHTML = `${sched}${SlotMeter(slots(), 2)}<button class="aside-btn" disabled style="opacity:.5;cursor:not-allowed" title="Khoá học mở từ 15/11/2026.">Start Courses</button>`; return; }
+  cta.innerHTML = `${sched}${SlotMeter(slots(), 2)}
     <button class="aside-btn" id="start" title="${S === 'limit' ? 'Bạn đang học đủ 2 khoá. Hoàn thành một khoá để đăng ký thêm.' : ''}">Start Courses</button>`;
 }
 document.addEventListener('click', (e) => {
   if (!e.target.closest('#start')) return;
-  if (S === 'limit') LHEnroll.open({ target: C.title, courses: D.myCourses, onEnroll: () => setTimeout(() => location.href = 'test-start.html', 900) });
-  else { toast('Đã đăng ký khoá học'); setTimeout(() => location.href = 'test-start.html', 700); }
+  if (S === 'limit') return LHEnroll.open({ target: CC ? CC.title : C.title, courses: D.myCourses });
+  if (APPL) { const st = LH.App.get(); st.enrolled = [...(st.enrolled || []), CC.title]; LH.App.set(st); toast('Đã đăng ký khoá học'); setTimeout(() => location.href = 'course-detail.html?c=' + CI, 700); return; }
+  toast('Đã đăng ký khoá học'); setTimeout(() => location.href = 'test-start.html', 700);
 });
 LH.DemoBar('#4 #7 #8 #9 — trang khoá', [
   { label: 'Trạng thái', key: 's', options: [['all', 'Có quyền, còn suất'], ['limit', 'Đạt giới hạn'], ['learning', 'Đang học 31%'], ['completed', 'Hoàn thành'], ['restricted', 'Ngoài đối tượng'], ['removed', 'Bị gỡ giữa khoá'], ['failed', 'Không đạt (trượt 3 lượt)'], ['upcoming', 'Chưa tới ngày bắt đầu'], ['overdue', 'Quá hạn, chưa xong']] },
-], (s) => { S = s.s; render(); });
+], (s) => { S = APPL ? appS() : s.s; render(); });
 </script>
 </body>
 </html>

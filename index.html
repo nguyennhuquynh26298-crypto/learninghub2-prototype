@@ -1,4 +1,38 @@
 <!doctype html>
-<html lang="vi"><head><meta charset="utf-8"><title>LearningHub 2</title>
-<meta http-equiv="refresh" content="0; url=pages/index.html"></head>
-<body><a href="pages/index.html">LearningHub 2 — Prototype</a></body></html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LearningHub 2 — Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif; background: #0f172a; color: #e2e8f0; display: grid; place-items: center; padding: 32px; }
+  .w { width: 100%; max-width: 880px; }
+  h1 { color: #fff; font-size: 32px; margin: 0 0 32px; display: flex; align-items: center; gap: 10px; }
+  h1 i { width: 12px; height: 12px; border-radius: 50%; background: #c1f129; }
+  .apps { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .app { display: block; padding: 28px; border-radius: 16px; background: #1e293b; border: 1px solid #334155; color: #fff; text-decoration: none; transition: .15s; }
+  .app:hover { border-color: #374bfa; background: #222f4a; transform: translateY(-2px); }
+  .app b { font-size: 22px; display: block; }
+  .app span { display: block; margin-top: 10px; color: #94a3b8; font-size: 14px; line-height: 1.6; }
+  .app em { display: inline-block; margin-top: 18px; font-style: normal; font-weight: 600; color: #c1f129; }
+  .more { display: flex; gap: 24px; margin-top: 28px; font-size: 14px; flex-wrap: wrap; }
+  .more a { color: #cbd5e1; text-decoration: none; font-weight: 500; }
+  .more a:hover { color: #fff; }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1><i></i>LearningHub 2 — Prototype</h1>
+  <div class="apps">
+    <a class="app" href="hoc-vien.html"><b>Bản Học viên</b><span>Trang chủ → trang khoá → đăng ký → bài test (Practice, thi 3 lượt) → kết quả → My Courses, tìm khoá</span><em>Mở →</em></a>
+    <a class="app" href="admin.html"><b>Bản Admin</b><span>Quản lý khoá → Đối tượng, lịch học, xuất dữ liệu → Practice. Đợt 2: Course Creator, duyệt khoá, phân quyền</span><em>Mở →</em></a>
+  </div>
+  <div class="more">
+    <a href="pages/release-story.html">Release Story ↗</a>
+    <a href="LEARNINGHUB2_FEATURE_LIST.xlsx" download>Excel danh sách tính năng ↓</a>
+    <a href="pages/index.html">Từng màn + trạng thái demo</a>
+  </div>
+</div>
+</body>
+</html>

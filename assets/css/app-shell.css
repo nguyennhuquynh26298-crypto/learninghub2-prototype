@@ -1,0 +1,28 @@
+/* Khung app 1 link (hoc-vien.html / admin.html) */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; font-family: Inter, system-ui, sans-serif; }
+body { display: flex; flex-direction: column; background: #0f172a; }
+.sh-top { height: 48px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 16px; color: #e2e8f0; font-size: 13px; }
+.sh-brand { font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.sh-brand i { width: 8px; height: 8px; border-radius: 50%; background: #c1f129; display: inline-block; }
+.sh-brand small { font-weight: 500; color: #94a3b8; }
+.sh-seg { display: flex; background: #1e293b; border-radius: 999px; padding: 3px; }
+.sh-seg a { color: #cbd5e1; text-decoration: none; padding: 5px 14px; border-radius: 999px; font-weight: 600; }
+.sh-seg a.on { background: #374bfa; color: #fff; }
+.sh-grow { flex: 1; }
+.sh-link { color: #cbd5e1; text-decoration: none; font-weight: 500; }
+.sh-link:hover { color: #fff; }
+.sh-btn { border: 1px solid #334155; background: transparent; color: #e2e8f0; border-radius: 8px; height: 30px; padding: 0 12px; font: inherit; font-weight: 600; cursor: pointer; }
+.sh-btn:hover { background: #1e293b; }
+.sh-body { flex: 1; display: flex; min-height: 0; }
+.sh-body iframe { flex: 1; border: 0; background: #fff; width: 100%; height: 100%; }
+.sh-nav { width: 240px; flex: none; background: #fff; border-right: 1px solid #e2e8f0; padding: 16px 12px; display: flex; flex-direction: column; gap: 20px; }
+.sh-role { display: flex; flex-direction: column; gap: 6px; }
+.sh-role span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #64748b; padding: 0 4px 2px; }
+.sh-role button { text-align: left; border: 1px solid #e2e8f0; background: #fff; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px; font-weight: 600; color: #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.sh-role button.on { border-color: #374bfa; background: #eef0ff; color: #2a28df; }
+.sh-menu { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+.sh-menu a { display: flex; justify-content: space-between; align-items: center; padding: 9px 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #334155; text-decoration: none; }
+.sh-menu a:hover { background: #f1f5f9; }
+.sh-menu a.on { background: #eef0ff; color: #2a28df; font-weight: 600; }
+.sh-role i, .sh-menu i { font-style: normal; font-size: 11px; font-weight: 600; color: #64748b; background: #f1f5f9; border-radius: 999px; padding: 1px 8px; }

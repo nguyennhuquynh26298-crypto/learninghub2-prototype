@@ -36,9 +36,10 @@ function render() {
     (list.length ? list.map((c) => {
       const i = rows.indexOf(c); const waiting = c.status === 'pending' || c.revision === 'pending';
       let act;
-      if (admin && waiting) act = `<a class="btn btn--primary btn--sm" href="course-approval.html?k=${c.revision ? 'rev' : 'new'}">Duyệt</a>`;
+      const manage = c.status === 'published' ? `<a class="btn btn--ghost btn--sm" href="admin-audience.html?t=${encodeURIComponent(c.title)}">Quản lý</a>` : '';
+      if (admin && waiting) act = manage + `<a class="btn btn--primary btn--sm" href="course-approval.html?k=${c.revision ? 'rev' : 'new'}">Duyệt</a>`;
       else if (!admin) act = `<a class="btn btn--ghost btn--sm" href="course-editor.html?st=${c.revision ? 'rev-' + c.revision : c.status}">Mở</a>`;
-      else act = '';
+      else act = manage;
       return `<tr><td><b>${esc(c.title)}</b>${c.kind ? `<div class="t-xs muted">${c.kind}</div>` : ''}</td>${admin ? `<td><span class="row gap-8">${Avatar(c.owner, 'sm')}${esc(c.owner)}</span></td>` : ''}
         <td>${CourseStatus(c.status, c.revision)}</td><td>${c.sent || '—'}</td><td>${c.updated}</td><td style="text-align:right">${act}</td></tr>`;
     }).join('') : `<tr><td colspan="6"><div class="empty" style="border:0">${ICON.book}<b>Không có khoá nào ở mục này</b></div></td></tr>`) + '</tbody>';

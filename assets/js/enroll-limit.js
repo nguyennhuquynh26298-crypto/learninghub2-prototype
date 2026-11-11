@@ -9,7 +9,7 @@
       <span class="enrolled-row__title">${esc(c.title)}</span>
       <div class="row gap-8">${Progress(c.progress).replace('class="progress"', 'class="progress" style="flex:1"')}<span class="t-xs fw-600">${c.progress}%</span></div>
       <span class="t-xs muted">Học gần nhất: ${esc(c.last)}</span></div>
-      ${Button({ label: 'Tiếp tục học', size: 'sm', attrs: 'onclick="location.href=\'test-start.html\'"' })}</div>`;
+      ${Button({ label: 'Tiếp tục học', size: 'sm', attrs: `onclick="location.href='${LH.App.mode ? LH.App.courseHref(c.title) : 'test-start.html'}'"` })}</div>`;
   }
   function open({ target, courses }) {
     const list = courses.filter((c) => !c.st || c.st === 'learning');

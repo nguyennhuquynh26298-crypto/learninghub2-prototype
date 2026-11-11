@@ -61,6 +61,27 @@
     allCourses: '<svg viewBox="0 0 24 24" fill="none"><path d="M6.4 5.2V3.6a.4.4 0 0 0-.4-.4H.4a.4.4 0 0 0-.4.4v1.6h6.4ZM0 6v13.2h6.4V6H0Zm4.8 5.2H1.6a.4.4 0 0 1-.4-.4V7.6c0-.22.18-.4.4-.4h3.2c.22 0 .4.18.4.4v3.2a.4.4 0 0 1-.4.4ZM0 21.6v2c0 .22.18.4.4.4H6a.4.4 0 0 0 .4-.4v-2H0Zm0-1.6h6.4v.8H0V20Zm7.2 0h5.2v.8H7.2V20Zm5.2-18.4V.4A.4.4 0 0 0 12 0H7.6a.4.4 0 0 0-.4.4v1.2h5.2ZM7.2 4.4h5.2v14.8H7.2V4.4Zm0 17.2v2c0 .22.18.4.4.4H12a.4.4 0 0 0 .4-.4v-2H7.2Zm0-19.2h5.2v1.2H7.2V2.4Z" fill="#374BFA"/><path d="m13.19 8.28.21.83 6.78-1.81-.21-.82-6.78 1.8Zm3.34 12.82 6.78-1.81-.43-1.64-6.78 1.8.43 1.65Zm6.15-4.23-2.3-8.8-6.77 1.81 2.3 8.8 6.77-1.81Zm-9.69-9.36 6.77-1.8-.57-2.2a.4.4 0 0 0-.49-.29l-6 1.6a.4.4 0 0 0-.28.49l.57 2.2Zm10.52 12.56-6.77 1.8.48 1.83a.4.4 0 0 0 .49.29l6-1.6a.4.4 0 0 0 .28-.49l-.48-1.83Z" fill="#C1F129"/></svg>',
   };
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  /* ---------- Chế độ app: hoc-vien.html / admin.html bọc các màn trong 1 iframe ----------
+     Trong app: ẩn thanh DEMO, trạng thái lấy từ thao tác thật (sessionStorage), link màn rời → màn trọn luồng. */
+  const APP = (() => { try { return (window.top !== window.self && sessionStorage.getItem('lhApp')) || null; } catch (e) { return null; } })();
+  const ROUTE = { 'test-start.html': 'assessment.html', 'practice.html': 'assessment.html#practice', 'exam.html': 'assessment.html#exam', 'test-result.html': 'assessment.html#result' };
+  function url(h) {
+    if (!APP || !h) return h;
+    const f = h.split(/[?#]/)[0];
+    if (APP === 'admin' && (f === 'home.html' || f === 'my-courses.html')) return 'admin-courses.html';
+    return ROUTE[f] || h;
+  }
+  const App = {
+    mode: APP,
+    get() { try { return JSON.parse(sessionStorage.getItem('lhL') || '{}'); } catch (e) { return {}; } },
+    set(v) { sessionStorage.setItem('lhL', JSON.stringify(v)); },
+    role() { return sessionStorage.getItem('lhRole') || 'admin'; },
+    courseHref(title) { const D = window.LHData; const i = D ? D.catalog.findIndex((c) => c.title === title) : -1; return i >= 0 ? `course-detail.html?c=${i}` : 'course-detail.html'; },
+  };
+  if (APP) document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]'); if (!a) return;
+    const h = a.getAttribute('href'), u = url(h); if (u !== h) a.setAttribute('href', u);
+  }, true);
   const initials = (name) => name.split(' ').filter(Boolean).slice(-2).map((w) => w[0]).join('').toUpperCase();
 
   /* ---------- Shared ---------- */
@@ -187,6 +208,7 @@
       completed: `<span class="cc-tag cc-tag--ok">${ICON.check}Hoàn thành</span>`,
     }[state] || '';
     // #4 §3.4 Lịch học (BR-AUD-12): chưa tới ngày bắt đầu → nút tắt; quá hạn chưa xong → nhãn đỏ
+    if (APP && href === 'course-detail.html') href = App.courseHref(title);
     const upcoming = sched && sched.start && state !== 'restricted';
     const schedTag = upcoming ? `<span class="cc-tag">${ICON.clock}Bắt đầu ${esc(sched.start)}</span>` : sched && sched.overdue && state === 'in-progress' ? `<span class="cc-tag cc-tag--fail">${ICON.clock}Quá hạn</span>` : '';
     const label = state === 'restricted' ? 'Xem giới thiệu' : (state === 'completed' || state === 'failed') ? 'Xem lại khoá học' : state === 'in-progress' ? 'Continue Learning' : 'Start Courses';
@@ -198,11 +220,11 @@
     return `<article class="course-card" data-state="${state}">
       <div class="course-card__cover">${cover ? `<img src="${cover}" alt="${esc(title)}">` : ''}${schedTag || badge}</div>
       <div class="course-card__body">
-        <h3 class="course-card__title">${q ? highlight(title, q) : esc(title)}</h3>
+        <h3 class="course-card__title">${APP ? `<a href="${href}" style="color:inherit;text-decoration:none">` : ''}${q ? highlight(title, q) : esc(title)}${APP ? '</a>' : ''}</h3>
         <div class="course-card__desc">${esc(desc)}</div>
         <div class="course-card__meta"><span>${ICON.lessons2}lessons: ${lessons}</span><span>${ICON.clock2}${esc(hours)}</span></div>
         <div class="course-card__progress">${WebProgress(progress)}${extra}</div>
-        <div class="course-card__foot"><a href="${href}" class="grow" ${attrs ? 'onclick="return false"' : ''}><button class="${btnCls}" ${upcoming ? `disabled title="Khoá học mở từ ${esc(sched.start)}." style="opacity:.5;cursor:not-allowed"` : attrs}>${label}</button></a>${menu ? `<div class="course-card__menu"><button class="cc-more" data-menu aria-label="Thêm">${ICON.more}</button></div>` : ''}</div>
+        <div class="course-card__foot"><a href="${href}" class="grow" ${attrs && !APP ? 'onclick="return false"' : ''}><button class="${btnCls}" ${upcoming ? `disabled title="Khoá học mở từ ${esc(sched.start)}." style="opacity:.5;cursor:not-allowed"` : attrs}>${label}</button></a>${menu ? `<div class="course-card__menu"><button class="cc-more" data-menu aria-label="Thêm">${ICON.more}</button></div>` : ''}</div>
       </div></article>`;
   }
 
@@ -287,7 +309,7 @@
         const i = li++; const m = marks[i] || 'none'; const cur = i === current;
         const ic = m === 'done' ? `<span class="cc-ic cc-ic--done">${ICON.circleCheck}</span>` : m.startsWith('part') ? `<span class="ls ls--part" style="--p:${m.split(':')[1]}" title="Đã xem ${m.split(':')[1]}% · cần 90%"></span>` : m === 'fail' ? `<span class="ls ls--part" style="--p:50" title="Đã làm, chưa đạt"></span>` : `<span class="cc-ic">${ICON.circle}</span>`;
         const sub = meta[i] || (k === 'quiz' ? `${ICON.fileQ}<span>32 Questions</span>` : k === 'video' ? `${ICON.tvPlay}<span>10 min</span>` : '');
-        return `<a class="cc-lesson ${cur ? 'is-current' : ''}" href="${k === 'video' ? 'lesson-video.html' : k === 'quiz' ? 'test-start.html' : '#'}">${ic}<div class="grow"><span class="cc-lesson__t">${j + 1}. ${esc(n)}</span>${cur || meta[i] ? `<div class="cc-lesson__m">${sub}</div>` : ''}</div></a>`;
+        return `<a class="cc-lesson ${cur ? 'is-current' : ''}" href="${k === 'video' ? 'lesson-video.html' : k === 'quiz' ? url('test-start.html') : '#'}">${ic}<div class="grow"><span class="cc-lesson__t">${j + 1}. ${esc(n)}</span>${cur || meta[i] ? `<div class="cc-lesson__m">${sub}</div>` : ''}</div></a>`;
       }).join('');
       const doneN = marks.slice(start, li).filter((m) => m === 'done').length;
       const isOpen = open ? open.includes(si) : (current >= start && current < li);
@@ -517,7 +539,10 @@
   function DemoBar(title, groups, onChange) {
     const bar = document.createElement('div'); bar.className = 'demo-bar';
     const q = new URLSearchParams(location.search); // mở thẳng 1 trạng thái: ?key=value
-    const state = Object.fromEntries(groups.map((g) => [g.key, q.get(g.key) ?? g.value ?? g.options[0][0]]));
+    const role = App.role();
+    const def = APP === 'admin' ? { r: role, role: role === 'admin' ? 'Admin' : 'Creator' } : {};
+    const state = Object.fromEntries(groups.map((g) => [g.key, q.get(g.key) ?? def[g.key] ?? g.value ?? g.options[0][0]]));
+    if (APP) { const set = (k, v) => { state[k] = v; onChange({ ...state }); }; onChange({ ...state }); return { state, set }; }
     const render = () => {
       bar.innerHTML = `<b>DEMO</b><span>${esc(title)}</span>` + groups.map((g) => `<div class="demo-group"><span>${esc(g.label)}</span>${g.options.map(([v, t]) => `<button data-k="${g.key}" data-v="${v}" aria-pressed="${state[g.key] === v}">${esc(t)}</button>`).join('')}</div>`).join('') + `<span class="demo-sep"></span><a href="index.html">← Danh sách màn</a>`;
     };
@@ -637,7 +662,7 @@
     if (s) { const box = s.parentElement; box.classList.toggle('is-open'); s.querySelector('svg').outerHTML = box.classList.contains('is-open') ? ICON.chevronU : ICON.chevronD; }
   });
 
-  window.LH = { ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
+  window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
     ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, SearchQuickChip, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
     QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary };

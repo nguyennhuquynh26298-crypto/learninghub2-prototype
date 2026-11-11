@@ -35,7 +35,7 @@ let full;
 function render() {
   // My Courses: tối đa 2 thẻ + khung Suất học bên phải (khoá còn lại xem ở View More)
   // BR-LRN-01: chỉ khoá Đang học tính suất (tối đa 2); Hoàn thành, Không đạt không tính
-  const learning = D.catalog.filter((c) => c.st === 'learning').slice(0, full ? 2 : 1);
+  const learning = D.catalog.filter((c) => c.st === 'learning').slice(0, LH.App.mode ? 2 : full ? 2 : 1);
   const failed = D.catalog.filter((c) => c.st === 'fail').length;
   const done = D.catalog.filter((c) => c.st === 'done').length;
   const cards = learning.map((c) => card(c, 'in-progress')).slice(0, 2);
@@ -48,10 +48,10 @@ function render() {
   document.getElementById('featured').innerHTML = all.map((c) => card(c, c.restricted ? 'restricted' : st)).join('');
 }
 document.addEventListener('click', (e) => {
-  const b = e.target.closest('[data-start]'); if (b) { const t = b.closest('.course-card').querySelector('.course-card__title').textContent;
-    if (full) LHEnroll.open({ target: t, courses: D.myCourses }); else location.href = 'course-detail.html'; return; }
+  const b = e.target.closest('[data-start]'); if (b) { e.preventDefault(); const t = b.closest('.course-card').querySelector('.course-card__title').textContent;
+    if (full) LHEnroll.open({ target: t, courses: D.myCourses }); else location.href = LH.App.mode ? LH.App.courseHref(t) : 'course-detail.html'; return; }
 });
-LH.DemoBar('#4 · #9 — Trang chủ', [{ label: 'Suất', key: 'f', options: [['0', 'Còn suất 1/2'], ['1', 'Đạt giới hạn 2/2']] }], (s) => { full = s.f === '1'; render(); });
+LH.DemoBar('#4 · #9 — Trang chủ', [{ label: 'Suất', key: 'f', options: [['0', 'Còn suất 1/2'], ['1', 'Đạt giới hạn 2/2']] }], (s) => { full = LH.App.mode ? D.catalog.filter((c) => c.st === 'learning').length >= 2 : s.f === '1'; render(); });
 </script>
 </body>
 </html>

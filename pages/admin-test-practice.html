@@ -30,7 +30,7 @@
 <body>
 <div id="header"></div>
 <div class="admin-bar"><div class="container stack gap-12" style="padding-top:16px">
-  <nav class="breadcrumb"><a href="admin-audience.html">Quản lý khoá học</a><span class="chev"></span><a href="admin-audience.html">Claude Certified Architect – Foundations</a><span class="chev"></span><span>Session 1</span></nav>
+  <nav class="breadcrumb"><a href="admin-courses.html">Quản lý khoá học</a><span class="chev"></span><a href="admin-audience.html" id="bc-course">Claude Certified Architect – Foundations</a><span class="chev"></span><span>Session 1</span></nav>
   <div class="row gap-12"><h1 class="page-title grow">Test Domain 1 — Agentic Architecture</h1><span class="badge badge--neutral">Bài kiểm tra</span></div>
   <div class="tabs" style="border:0"><button class="tab">Thông tin</button><button class="tab">Đề thi (32)</button><button class="tab is-active">Practice <span id="tab-count"></span></button><button class="tab">Cài đặt chấm</button></div>
 </div></div>
@@ -56,6 +56,7 @@
 <script src="../assets/js/components.js"></script>
 <script src="../assets/js/data.js"></script>
 <script>
+(() => { const t = sessionStorage.getItem('lhAdminCourse'); if (t) document.getElementById('bc-course').textContent = t; })();
 /* Tab Practice (yêu cầu #1). Trình soạn câu hỏi + Nhập từ file. Luật: docs/specs/lh2/01-practice-mode.md (BR-ASM-02, 03, 07, 08) */
 const { ICON, AppHeader, Alert, Modal, toast, esc } = LH; const D = LHData;
 document.getElementById('header').innerHTML = AppHeader({ role: 'Admin', user: 'Lê Thị Mai' });

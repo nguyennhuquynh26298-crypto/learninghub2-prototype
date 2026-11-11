@@ -19,9 +19,9 @@
 <body>
 <div id="header"></div>
 <div class="admin-bar"><div class="container stack gap-12">
-  <nav class="breadcrumb"><a href="#">Quản lý khoá học</a><span class="chev"></span><span>Claude Certified Architect – Foundations</span></nav>
-  <div class="row gap-12"><h1 class="page-title grow">Claude Certified Architect – Foundations</h1><span class="badge badge--success">Published</span><span id="export-slot"></span></div>
-  <div class="tabs" style="border:0"><button class="tab">Thông tin</button><button class="tab">Nội dung</button><button class="tab is-active">Đối tượng</button><button class="tab">Học viên</button></div>
+  <nav class="breadcrumb"><a href="admin-courses.html">Quản lý khoá học</a><span class="chev"></span><span data-ctitle>Claude Certified Architect – Foundations</span></nav>
+  <div class="row gap-12"><h1 class="page-title grow" data-ctitle>Claude Certified Architect – Foundations</h1><span class="badge badge--success">Published</span><span id="export-slot"></span></div>
+  <div class="tabs" style="border:0"><button class="tab">Thông tin</button><a class="tab" href="admin-test-practice.html?st=ok" style="text-decoration:none">Nội dung</a><button class="tab is-active">Đối tượng</button><button class="tab">Học viên</button></div>
 </div></div>
 
 <main class="container screen"><div class="wrap stack gap-24">
@@ -49,6 +49,8 @@
 <script src="../assets/js/data.js"></script>
 <script src="../assets/js/export-modal.js"></script>
 <script>
+/* Tên khoá theo dòng đã bấm ở Quản lý khoá học */
+(() => { const t = new URLSearchParams(location.search).get('t') || sessionStorage.getItem('lhAdminCourse'); if (!t) return; sessionStorage.setItem('lhAdminCourse', t); document.querySelectorAll('[data-ctitle]').forEach((el) => { el.textContent = t; }); })();
 const { ICON, AppHeader, Alert, Badge, Avatar, Modal, Button, toast, esc } = LH; const D = LHData;
 let role = 'Admin';
 const base = { scope: 'limited', depts: 'QA|QC Automation', pos: 'Automation Tester' };
@@ -59,7 +61,7 @@ document.querySelectorAll('.chev').forEach((c) => c.innerHTML = ICON.chevronR);
 
 const tagInput = (key, list, ph) => `<div class="tag-input" data-key="${key}">${list.map((v) => `<span class="tag">${esc(v)}<button data-rm="${key}" data-v="${esc(v)}" aria-label="Bỏ ${esc(v)}">${ICON.x}</button></span>`).join('')}<input placeholder="${ph}"></div>`;
 function render() {
-  document.getElementById('header').innerHTML = AppHeader({ role, user: role === 'Admin' ? 'Lê Thị Mai' : 'Nguyễn Thu Hà' });
+  document.getElementById('header').innerHTML = AppHeader({ role: role === 'Admin' ? 'Admin' : 'Course Creator', user: role === 'Admin' ? 'Lê Thị Mai' : 'Phạm Thanh Long' });
   document.getElementById('export-slot').innerHTML = Button({ label: 'Xuất dữ liệu', variant: 'outline', icon: 'download', attrs: 'id="open-export"' });
   document.querySelectorAll('#scope .choice-card').forEach((c) => { c.classList.toggle('is-selected', c.dataset.v === st.scope); c.querySelector('input').checked = c.dataset.v === st.scope; });
   const limited = st.scope === 'limited';

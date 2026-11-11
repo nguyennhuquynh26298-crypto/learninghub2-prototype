@@ -169,3 +169,24 @@ window.LHData = {
 
 /* Tag tiếng Việt cho khoá Testing để tìm "kiem thu" có kết quả (BR-LRN-11: khớp tên hoặc tag, bỏ dấu). */
 window.LHData.catalog.forEach((c) => { if (c.tags.includes('Testing') && !c.tags.includes('Kiểm thử')) c.tags.push('Kiểm thử'); });
+
+/* Bản học viên (hoc-vien.html): khởi đầu 1 khoá đang học (QA Module 2, quá hạn) → còn 1 suất.
+ * CCAR-F chưa đăng ký để tự bấm Start, làm bài test, rồi chạm giới hạn ở khoá thứ 3. */
+(function () {
+  const A = window.LH && LH.App; if (!A || A.mode !== 'learner') return;
+  const D = window.LHData, s = A.get();
+  const ccar = D.catalog.find((c) => c.title.startsWith('CCAR-F'));
+  Object.assign(ccar, { st: 'none', progress: 0, video: undefined, test: undefined, lastDays: undefined, my: undefined });
+  (s.enrolled || []).forEach((t) => {
+    const c = D.catalog.find((x) => x.title === t);
+    if (c) Object.assign(c, { st: 'learning', fresh: true, progress: 0, my: 0, lastDays: 0, video: c === ccar ? [0, 1] : [0, 1], test: c === ccar ? [0, 9] : [0, 2] });
+  });
+  /* Bài test CCAR-F đã nộp (assessment.html) → cập nhật tiến độ */
+  const att = JSON.parse(localStorage.getItem('lhExamAttempts') || '[]');
+  if (ccar.st === 'learning' && att.length) {
+    const best = Math.max(...att.map((x) => x.score));
+    if (best >= D.test.passMark) Object.assign(ccar, { test: [1, 9], progress: 6 });
+    else if (att.length >= 3) Object.assign(ccar, { st: 'fail', failScore: best }); // BR-LRN-32: trượt sau 3 lượt → Không đạt, nhả suất
+  }
+  D.myCourses = D.catalog.filter((c) => c.st === 'learning').map((c) => ({ title: c.title, cover: c.cover, progress: c.progress || 0, last: c.lastDays ? `${c.lastDays} ngày trước` : 'Hôm nay' }));
+})();
