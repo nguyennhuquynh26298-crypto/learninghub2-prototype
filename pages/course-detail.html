@@ -120,9 +120,9 @@ function render() {
   renderResult(R, locked);
   const cta = document.getElementById('cta');
   // #4 §3.4 Lịch học (BR-AUD-12)
-  const sched = S === 'upcoming' ? `<div class="row gap-8 t-sm">${ICON.clock}<span>Bắt đầu <b>15/11/2026</b></span></div>`
-    : S === 'overdue' ? `<div class="row gap-8 t-sm">${ICON.clock}<span>Thời gian học: <b>01/10 – 31/10/2026</b></span>${Badge('Quá hạn', 'danger')}</div>`
-    : `<div class="row gap-8 t-sm">${ICON.clock}<span>Thời gian học: <b>10/11 – 30/11/2026</b></span></div>`;
+  const sched = S === 'upcoming' ? `<div class="cd-sched">${ICON.clock}<span>Bắt đầu <b>15/11/2026</b></span></div>`
+    : S === 'overdue' ? `<div class="cd-sched">${ICON.clock}<span>Hạn <b>01/10 – 31/10/2026</b></span>${Badge('Quá hạn', 'danger')}</div>`
+    : `<div class="cd-sched">${ICON.clock}<span>Thời gian học <b>10/11 – 30/11/2026</b></span></div>`;
   if (locked) { cta.innerHTML = AccessNotice({ state: S, owner: C.owner, progress: 45 }); return; }
   if (R) { cta.innerHTML = `${sched}<div class="row gap-8">${R.failed ? Badge('Không đạt', 'danger') : R.pct === 100 ? Badge('Hoàn thành', 'success', 'check') : Badge('Đang học', 'info')}</div>
     <button data-pop style="all:unset;cursor:pointer;display:block">${WebProgress(R.pct)}<span class="t-xs muted" style="display:block;margin-top:6px">Video ${R.video[0]}/${R.video[1]} · Bài test ${R.test[0]}/${R.test[1]}</span></button>

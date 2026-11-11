@@ -460,23 +460,15 @@
    * Learner / Enroll slot panel — khung "Suất học" cạnh My Courses (Home). State: Available | Full.
    * BR-LRN-01: chỉ khoá Đang học tính giới hạn (tối đa 2) · Hoàn thành, Không đạt (BR-LRN-32) không tính.
    */
-  function EnrollSlotPanel({ used = 0, limit = 2, failed = 0, done = 0 }) {
-    const full = used >= limit, left = Math.max(limit - used, 0);
-    const bar = Array.from({ length: Math.max(limit, used) }, (_, i) => `<i class="${i < used ? 'on' : ''}"></i>`).join('');
-    const stat = (icon, label, n, note) => `<li>${ICON[icon]}<span>${label}${note ? `<small>${note}</small>` : ''}</span><b>${n}</b></li>`;
-    return `<aside class="slot-panel ${full ? 'slot-panel--full' : ''}" aria-label="Suất học">
-      <div class="slot-panel__head"><div><span class="slot-panel__eyebrow">Suất học</span>
-        <span class="slot-panel__tag">${full ? `${ICON.alert}Đạt giới hạn` : `${ICON.check}Còn ${left} suất`}</span></div>
-        <div class="slot-panel__count"><b>${used}</b>/${limit}</div></div>
-      <div class="slot-panel__bar" role="img" aria-label="Đã dùng ${used} trên ${limit} suất">${bar}</div>
-      <ul class="slot-panel__stats">
-        ${stat('book', 'Đang học', used)}
-        ${failed ? stat('alert', 'Không đạt', failed, 'Không tính') : ''}
-        ${stat('award', 'Đã hoàn thành', done, 'Không tính')}
-      </ul>
-      <p class="slot-panel__hint">${ICON.info}<span>${full ? 'Hoàn thành 1 khoá đang học để đăng ký khoá mới.' : `Bạn có thể đăng ký thêm ${left} khoá.`}</span></p>
-      <div class="slot-panel__actions">${full ? '' : '<a class="wbtn" href="course-search.html">Khám phá khoá học</a>'}<a class="wbtn wbtn--outline" href="my-courses.html">Quản lý khoá đang học</a></div>
-    </aside>`;
+  function EnrollSlotPanel({ used = 0, limit = 2 }) {
+    // Thông tin phụ: chip nhỏ cạnh tiêu đề My Courses (thay khung lớn). Chi tiết Không đạt / Hoàn thành xem ở My Courses.
+    const full = used >= limit;
+    const dots = Array.from({ length: Math.max(limit, used) }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('');
+    return `<span class="slot-chip ${full ? 'slot-chip--full' : ''}" title="${full ? 'Hoàn thành 1 khoá đang học để đăng ký khoá mới.' : 'Khoá Hoàn thành và Không đạt không tính suất.'}"><span class="slot-chip__dots">${dots}</span>Suất học <b>${used}/${limit}</b>${full ? ' · Đạt giới hạn' : ''}</span>`;
+  }
+  /** Learner / Empty slot — ô nét đứt cùng cỡ thẻ khoá cho suất còn trống */
+  function EmptySlotCard() {
+    return `<a class="slot-empty" href="course-search.html"><span class="slot-empty__ic">${ICON.plus}</span><b>Còn 1 suất</b><span>Khám phá khoá học</span></a>`;
   }
   function SlotMeter(used, limit) {
     const full = used >= limit;
@@ -662,7 +654,7 @@
     if (s) { const box = s.parentElement; box.classList.toggle('is-open'); s.querySelector('svg').outerHTML = box.classList.contains('is-open') ? ICON.chevronU : ICON.chevronD; }
   });
 
-  window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
+  window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
     ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, SearchQuickChip, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
     QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary };

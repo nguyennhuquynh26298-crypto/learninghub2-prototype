@@ -356,32 +356,25 @@
 /* Learner / Enroll slot panel — Home, cạnh 2 thẻ My Courses (10/11) */
 .my-row { display: flex; gap: 32px; align-items: stretch; margin-bottom: 64px; }
 .my-row .course-card { flex: none; }
-.slot-panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 24px 28px; background: #fff; border-radius: var(--card-radius); box-shadow: var(--shadow-course); border-left: 3px solid var(--primary-900); }
-.slot-panel--full { border-left-color: var(--amber-600); }
-.slot-panel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.slot-panel__head > div:first-child { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
-.slot-panel__eyebrow { font-size: 18px; font-weight: 700; color: var(--neutral-900); }
-.slot-panel__tag { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--primary-100); color: var(--primary-900); }
-.slot-panel__tag svg { width: 14px; height: 14px; }
-.slot-panel--full .slot-panel__tag { background: var(--amber-100); color: var(--amber-800); }
-.slot-panel__count { font-size: 20px; font-weight: 600; color: var(--neutral-400); line-height: 1; white-space: nowrap; }
-.slot-panel__count b { font-size: 44px; font-weight: 700; color: var(--neutral-900); }
-.slot-panel__bar { display: flex; gap: 8px; }
-.slot-panel__bar i { flex: 1; height: 10px; border-radius: 999px; background: #fff; border: 1.5px solid var(--neutral-200); }
-.slot-panel__bar i.on { background: var(--primary-900); border-color: var(--primary-900); }
-.slot-panel--full .slot-panel__bar i.on { background: var(--amber-600); border-color: var(--amber-600); }
-.slot-panel__stats { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.slot-panel__stats li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--neutral-100); }
-.slot-panel__stats li:first-child { border-top: 0; padding-top: 0; }
-.slot-panel__stats svg { width: 20px; height: 20px; color: var(--neutral-500); flex: none; }
-.slot-panel__stats span { flex: 1; display: flex; flex-direction: column; font-size: 14px; color: var(--neutral-800); }
-.slot-panel__stats small { font-size: 12px; color: var(--neutral-500); }
-.slot-panel__stats b { font-size: 16px; font-weight: 700; color: var(--neutral-900); }
-.slot-panel__hint { display: flex; gap: 8px; margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--neutral-50, #f8fafc); font-size: 13px; color: var(--neutral-700); }
-.slot-panel--full .slot-panel__hint { background: var(--amber-50); color: var(--amber-800); }
-.slot-panel__hint svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
-.slot-panel__actions { margin-top: auto; display: flex; gap: 12px; }
-.slot-panel__actions .wbtn { flex: 1; justify-content: center; text-decoration: none; }
+.slot-chip { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--primary-50, #eef0ff); color: var(--neutral-700); font-size: 13px; font-weight: 500; cursor: default; }
+.slot-chip b { color: var(--neutral-900); font-weight: 700; }
+.slot-chip__dots { display: flex; gap: 3px; }
+.slot-chip__dots i { width: 8px; height: 8px; border-radius: 50%; background: #fff; border: 1.5px solid var(--neutral-300); }
+.slot-chip__dots i.on { background: var(--primary-900); border-color: var(--primary-900); }
+.slot-chip--full { background: var(--amber-100); color: var(--amber-800); }
+.slot-chip--full .slot-chip__dots i.on { background: var(--amber-600); border-color: var(--amber-600); }
+.sec-head .slot-chip { margin-left: auto; }
+.slot-empty { width: var(--card-w); min-width: var(--card-w); flex: 0 0 var(--card-w); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: 1.5px dashed var(--neutral-300); border-radius: var(--card-radius); color: var(--neutral-500); font-size: 14px; text-decoration: none; transition: .15s; }
+.slot-empty b { color: var(--neutral-800); font-size: 15px; }
+.slot-empty span:last-child { color: var(--primary-900); font-weight: 500; }
+.slot-empty__ic { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-50, #eef0ff); color: var(--primary-900); margin-bottom: 4px; }
+.slot-empty__ic svg { width: 20px; height: 20px; }
+.slot-empty:hover { border-color: var(--primary-900); background: var(--primary-50, #eef0ff); }
+/* Lịch học trên trang khoá: 1 dòng nhỏ */
+.cd-sched { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--neutral-600); }
+.cd-sched svg { width: 16px; height: 16px; flex: none; color: var(--neutral-500); }
+.cd-sched b { color: var(--neutral-900); font-weight: 600; }
+.cd-sched .badge { margin-left: auto; }
 .enrolled-row { display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-default); border-radius: var(--radius); }
 .enrolled-row__thumb { width: 64px; height: 44px; border-radius: 8px; background: linear-gradient(135deg, var(--primary-900), var(--primary-500)); flex: none; }
 .enrolled-row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }

@@ -26,7 +26,7 @@
 <script src="../assets/js/enroll-limit.js"></script>
 <script src="../assets/js/search.js"></script>
 <script>
-const { AppHeader, CategoryNav, AppFooter, SectionHead, CourseCard, EnrollSlotPanel } = LH; const D = LHData;
+const { AppHeader, CategoryNav, AppFooter, SectionHead, CourseCard, EnrollSlotPanel, EmptySlotCard } = LH; const D = LHData;
 document.getElementById('header').innerHTML = AppHeader();
 document.getElementById('cats').innerHTML = CategoryNav();
 document.getElementById('footer').innerHTML = AppFooter();
@@ -39,8 +39,8 @@ function render() {
   const failed = D.catalog.filter((c) => c.st === 'fail').length;
   const done = D.catalog.filter((c) => c.st === 'done').length;
   const cards = learning.map((c) => card(c, 'in-progress')).slice(0, 2);
-  document.getElementById('h-my').innerHTML = SectionHead('My Courses', 'myCourses', 'my-courses.html');
-  document.getElementById('learning').innerHTML = cards.join('') + EnrollSlotPanel({ used: learning.length, limit: 2, failed, done });
+  document.getElementById('h-my').innerHTML = SectionHead('My Courses', 'myCourses', 'my-courses.html', EnrollSlotPanel({ used: learning.length, limit: 2 }));
+  document.getElementById('learning').innerHTML = cards.join('') + Array.from({ length: Math.max(0, 2 - learning.length) }, EmptySlotCard).join('');
   // All Courses
   const st = full ? 'limit-reached' : 'default';
   const all = D.catalog.filter((c) => c.st === 'none').slice(0, 6);
