@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LearningHub 2 — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  .idx { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
+  .idx h2 { margin: 32px 0 12px; font-size: 16px; }
+  .idx a.item { display: flex; gap: 16px; align-items: center; padding: 14px 16px; border: 1px solid var(--border-default); border-radius: var(--radius); margin-bottom: 8px; color: var(--text-strong); text-decoration: none; }
+  .idx a.item:hover { border-color: var(--primary-900); background: var(--primary-50); }
+  .idx a.item code { font-size: 12px; color: var(--text-subtle); margin-left: auto; }
+  .top { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+  .top a.item { margin: 0; }
+</style>
+</head>
+<body>
+<div class="idx">
+  <a class="logo" href="#">Learning<b>Hub</b><i></i></a>
+  <h1 class="page-title" style="margin-top:16px">LearningHub 2 — Prototype</h1>
+
+  <div class="top">
+    <a class="item" href="release-story.html"><b>Release Story</b><span class="badge badge--info">Tổng quan</span></a>
+    <a class="item" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download><b>Excel danh sách tính năng</b><span class="badge badge--neutral">.xlsx</span></a>
+  </div>
+
+  <h2>Đợt 1 · #1 Practice · #2 Bài thi 3 lượt</h2>
+  <a class="item" href="assessment.html"><b>Bài test — trọn luồng</b> chọn chế độ → Practice / Exam → kết quả → làm lại<span class="badge badge--info">Learner</span><code>01 · 02</code></a>
+  <a class="item" href="admin-test-practice.html?st=ok">Soạn bài test — tab Practice, thêm / sửa câu, nhập từ file<span class="badge badge--violet">Admin L&amp;D</span><code>01 §3.1–3.3</code></a>
+
+  <h2>Đợt 1 · #4 Đối tượng + Lịch học · #5 Xuất dữ liệu</h2>
+  <a class="item" href="admin-audience.html">Tab Đối tượng — phạm vi, quy tắc, loại trừ, lịch học, email mời học, Xuất dữ liệu<span class="badge badge--violet">Admin L&amp;D</span><code>04 · 05</code></a>
+  <a class="item" href="course-detail.html?s=restricted">Trang khoá — ngoài đối tượng / bị gỡ / chưa tới ngày bắt đầu / quá hạn<span class="badge badge--info">Learner</span><code>04 §3.2–3.4</code></a>
+  <a class="item" href="home.html">Trang chủ — card Giới hạn, Bắt đầu, Quá hạn, Không đạt<span class="badge badge--info">Learner</span><code>04 §3.3 · 09</code></a>
+
+  <h2>Đợt 1 · #9 Tối đa 2 khoá đang học</h2>
+  <a class="item" href="course-detail.html?s=limit">Trang khoá — đạt giới hạn, popup giới hạn<span class="badge badge--info">Learner</span><code>09 §3.1</code></a>
+  <a class="item" href="my-courses.html">Khoá học của tôi — chỉ báo suất, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>09 §3.2 · 06</code></a>
+
+  <h2>Đợt 2 · #3 Course Creator + duyệt khoá</h2>
+  <a class="item" href="admin-settings.html">Phân quyền — Course Creator<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.1</code></a>
+  <a class="item" href="admin-courses.html?r=admin&amp;t=pending">Quản lý khoá học — Chờ duyệt / Nháp / Cần chỉnh sửa / Đang chạy<span class="badge badge--violet">Admin · Creator</span><code>03 §3.2</code></a>
+  <a class="item" href="course-editor.html">Soạn khoá — trạng thái duyệt, lỗi gửi duyệt<span class="badge badge--violet">Creator</span><code>03 §3.3</code></a>
+  <a class="item" href="course-approval.html?k=rev">Màn duyệt khoá — khoá mới / bản sửa<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.4–3.5</code></a>
+
+  <h2>Đợt 2 · #6 Tìm kiếm · #7 Kết quả · #8 Tiến độ</h2>
+  <a class="item" href="course-search.html?q=kiem+thu">Tìm khoá học — gõ không dấu, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>06</code></a>
+  <a class="item" href="course-detail.html?s=learning">Trang khoá — Kết quả của tôi<span class="badge badge--info">Learner</span><code>07 · 08</code></a>
+  <a class="item" href="lesson-video.html">Trang học video — xem thực ≥ 90%<span class="badge badge--info">Learner</span><code>08</code></a>
+</div>
+</body>
+</html>

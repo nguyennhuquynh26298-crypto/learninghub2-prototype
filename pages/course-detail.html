@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAR-F Claude Certified Architect – Foundations · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  /* LH2 #7 — khối Kết quả của tôi (thêm mới, không có trên web cũ) */
+  .my-result { display: flex; gap: 24px; align-items: center; padding: 20px; border-radius: 20px; border: 1px solid var(--neutral-200); background: var(--bg-aside); margin-bottom: 16px; }
+  .cd-tags { position: absolute; left: 20px; top: 20px; display: flex; gap: 8px; }
+</style>
+</head>
+<body class="bg-white">
+<!-- Chép bố cục /course/<id>: header → container py-13 → ảnh bìa 1280×414 bo 20 → lưới 6 cột (nội dung 4 · aside 2 sticky) → footer -->
+<div id="header"></div>
+<main class="container page__in">
+  <div class="cd-hero"><img id="c-cover" alt=""><div class="cd-tags" id="hero-badges"></div></div>
+  <div class="cd-grid">
+    <div class="cd-main">
+      <div id="back"></div>
+      <section class="cd-sec" id="my-result-wrap"></section>
+      <section class="cd-sec"><h2>Who this course is for?</h2><div class="cd-rich" id="who"></div></section>
+      <section class="cd-sec"><h2>What will you learn?</h2><div class="cd-rich"><ul id="learn"></ul></div></section>
+      <section class="cd-sec"><h2>Lessons</h2><div id="syllabus"></div></section>
+      <section class="cd-sec"><h2>Course Description</h2><div class="cd-rich cd-desc" id="c-desc"></div></section>
+    </div>
+    <aside class="cd-aside"><div class="aside-card" id="cta"></div></aside>
+  </div>
+</main>
+<div id="footer"></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/enroll-limit.js"></script>
+<script>
+const { ICON, AppHeader, AppFooter, BackLink, LessonsAccordion, WebProgress, Badge, AccessNotice, SlotMeter, toast, ProgressBreakdown, CompletionRing, esc } = LH; const D = LHData; const C = D.course;
+document.getElementById('header').innerHTML = AppHeader();
+document.getElementById('footer').innerHTML = AppFooter();
+document.getElementById('c-cover').src = C.cover;
+document.getElementById('back').innerHTML = BackLink(C.title, { big: true, href: 'home.html' });
+document.getElementById('who').innerHTML = C.whoFor.map((p) => `<p>${esc(p)}</p>`).join('');
+document.getElementById('learn').innerHTML = C.learn.map((p) => `<li>${esc(p)}</li>`).join('');
+document.getElementById('c-desc').textContent = C.desc;
+const TOTAL = C.sessions.reduce((a, s) => a + s.lessons.length, 0);
+let S;
+/* #7 #8 — số liệu học viên theo kịch bản */
+function result() {
+  if (S === 'learning' || S === 'removed' || S === 'overdue') return D.myResult;
+  if (S === 'completed') return { pct: 100, video: [1, 1], test: [9, 9], doc: [6, 6], done: '05/11/2026', lessons: Array(TOTAL).fill('done'),
+    tests: D.myResult.tests.map((t, i) => ({ ...t, best: [85, 78, 90, 72, 81, 88][i], tries: ['2/3', '3/3', '1/3', '2/3', '1/3', '1/3'][i], res: 'pass' })) };
+  /* BR-LRN-32 — trượt 1 bài thi sau 3 lượt → khoá Không đạt, không chiếm suất */
+  if (S === 'failed') return { ...D.myResult, failed: true, tests: D.myResult.tests.map((t, i) => (i === 1 ? { ...t, best: 62, tries: '3/3', res: 'fail' } : t)) };
+  return null;
+}
+/* Cột phải của mỗi bài trong accordion: web hiện "Completed / Not Completed"; LH2 thêm % video + chưa đạt */
+function lessonStatus(st, kind) {
+  if (!st) return '';
+  if (st === 'done') return `<span class="ls ls--done">${ICON.check}</span>Completed`;
+  if (st === 'fail') return `<span class="ls ls--part" style="--p:50"></span>Chưa đạt`;
+  if (st.startsWith('part')) { const p = st.split(':')[1]; return `<span class="ls ls--part" style="--p:${p}"></span>Đã xem ${p}% · cần 90%`; }
+  return 'Not Completed';
+}
+const RES = { pass: ['Đạt', 'success'], fail: ['Chưa đạt', 'danger'], none: ['Chưa làm', 'neutral'] };
+function renderResult(R, locked) {
+  const el = document.getElementById('my-result-wrap');
+  if (!R) { el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.style.display = '';
+  el.innerHTML = `<h2>Kết quả của tôi</h2>
+    <div class="my-result">${CompletionRing(R.pct, 120)}
+      <div class="stack gap-8"><span class="t-xs muted">Tỷ lệ hoàn thành</span>
+        <b class="t-xl">${R.failed ? 'Không đạt' : R.pct === 100 ? `Hoàn thành ngày ${R.done}` : 'Đang học'}</b>${R.failed ? '<span class="t-xs muted">Tool Design & MCP Integration · hết 3 lượt · 62 điểm</span>' : ''}
+        <span class="fw-600 t-sm">Video ${R.video[0]}/${R.video[1]} · Bài test ${R.test[0]}/${R.test[1]} · Tài liệu ${R.doc[0]}/${R.doc[1]}</span></div></div>
+    <table class="table"><thead><tr><th>Bài test</th><th>Điểm cao nhất</th><th>Lượt đã làm</th><th>Kết quả</th><th></th></tr></thead><tbody>
+      ${R.tests.map((t) => `<tr><td><b>${esc(t.name)}</b><div class="t-xs muted">${esc(t.session)}</div></td><td>${t.best == null ? '—' : `<b>${t.best}</b>/100`}</td><td>${t.tries}</td><td>${Badge(...RES[t.res])}</td>
+        <td style="text-align:right">${t.best != null && !locked ? `<a class="wbtn wbtn--outline" style="height:32px" href="test-result.html">Xem lại</a>` : ''}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+document.addEventListener('click', (e) => {
+  const pop = document.querySelector('.popover');
+  const b = e.target.closest('[data-pop]');
+  if (pop && !e.target.closest('.popover')) pop.remove();
+  if (!b || pop) return;
+  const R = result(); const r = b.getBoundingClientRect();
+  document.body.insertAdjacentHTML('beforeend', `<div class="popover" style="top:${r.bottom + scrollY + 8}px;left:${r.left + scrollX}px;width:${r.width}px"><b class="t-sm">Tiến độ của bạn</b><div style="margin-top:12px">${ProgressBreakdown({ pct: R.pct, video: R.video, test: R.test, doc: R.doc, mode: 'full', practice: true })}</div></div>`);
+});
+function render() {
+  const locked = S === 'restricted' || S === 'removed';
+  const R = result();
+  document.getElementById('hero-badges').innerHTML = (!['all', 'limit', 'upcoming', 'overdue'].includes(S) ? `<span class="cc-tag" style="position:static">${ICON.lock}Dành cho nhóm chỉ định</span>` : '') + (S === 'failed' ? `<span class="cc-tag cc-tag--fail" style="position:static">${ICON.x}Không đạt</span>` : '');
+  document.getElementById('syllabus').innerHTML = LessonsAccordion(C.sessions, { open: [0], locked, status: R ? (i, k) => lessonStatus(R.lessons[i], k) : () => '' });
+  renderResult(R, locked);
+  const cta = document.getElementById('cta');
+  // #4 §3.4 Lịch học (BR-AUD-12)
+  const sched = S === 'upcoming' ? `<div class="row gap-8 t-sm">${ICON.clock}<span>Bắt đầu <b>15/11/2026</b></span></div>`
+    : S === 'overdue' ? `<div class="row gap-8 t-sm">${ICON.clock}<span>Thời gian học: <b>01/10 – 31/10/2026</b></span>${Badge('Quá hạn', 'danger')}</div>`
+    : `<div class="row gap-8 t-sm">${ICON.clock}<span>Thời gian học: <b>10/11 – 30/11/2026</b></span></div>`;
+  if (locked) { cta.innerHTML = AccessNotice({ state: S, owner: C.owner, progress: 45 }); return; }
+  if (R) { cta.innerHTML = `${sched}<div class="row gap-8">${R.failed ? Badge('Không đạt', 'danger') : R.pct === 100 ? Badge('Hoàn thành', 'success', 'check') : Badge('Đang học', 'info')}</div>
+    <button data-pop style="all:unset;cursor:pointer;display:block">${WebProgress(R.pct)}<span class="t-xs muted" style="display:block;margin-top:6px">Video ${R.video[0]}/${R.video[1]} · Bài test ${R.test[0]}/${R.test[1]}</span></button>
+    <button class="aside-btn ${R.pct === 100 || R.failed ? 'aside-btn--outline' : ''}" onclick="location.href='lesson-video.html'">${R.pct === 100 || R.failed ? 'Xem lại khoá học' : 'Continue Learning'}</button>`; return; }
+  if (S === 'upcoming') { cta.innerHTML = `${sched}${SlotMeter(1, 2)}<button class="aside-btn" disabled style="opacity:.5;cursor:not-allowed" title="Khoá học mở từ 15/11/2026.">Start Courses</button>`; return; }
+  cta.innerHTML = `${sched}${SlotMeter(S === 'limit' ? 2 : 1, 2)}
+    <button class="aside-btn" id="start" title="${S === 'limit' ? 'Bạn đang học đủ 2 khoá. Hoàn thành một khoá để đăng ký thêm.' : ''}">Start Courses</button>`;
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#start')) return;
+  if (S === 'limit') LHEnroll.open({ target: C.title, courses: D.myCourses, onEnroll: () => setTimeout(() => location.href = 'test-start.html', 900) });
+  else { toast('Đã đăng ký khoá học'); setTimeout(() => location.href = 'test-start.html', 700); }
+});
+LH.DemoBar('#4 #7 #8 #9 — trang khoá', [
+  { label: 'Trạng thái', key: 's', options: [['all', 'Có quyền, còn suất'], ['limit', 'Đạt giới hạn'], ['learning', 'Đang học 31%'], ['completed', 'Hoàn thành'], ['restricted', 'Ngoài đối tượng'], ['removed', 'Bị gỡ giữa khoá'], ['failed', 'Không đạt (trượt 3 lượt)'], ['upcoming', 'Chưa tới ngày bắt đầu'], ['overdue', 'Quá hạn, chưa xong']] },
+], (s) => { S = s.s; render(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soạn khoá học · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  .ed-grid { display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: start; }
+  .cover-box { aspect-ratio: 16/9; border-radius: var(--radius); background: linear-gradient(135deg,#5163ff,#9396ff); display: grid; place-items: center; color: #fff; font-size: var(--fs-xs); }
+  .cover-box.is-empty { background: var(--bg-subtle); border: 1px dashed var(--border-control); color: var(--text-subtle); }
+  fieldset { border: 0; padding: 0; margin: 0; }
+  fieldset:disabled { opacity: .6; }
+</style>
+</head>
+<body>
+<div id="header"></div>
+<main class="container screen stack gap-24" style="max-width:960px">
+  <div class="row gap-16"><a class="icon-btn" href="admin-courses.html?r=creator" aria-label="Quay lại"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
+    <h1 class="page-title grow" id="title"></h1><span id="status"></span></div>
+  <div id="banner"></div>
+  <fieldset id="form" class="stack gap-24">
+    <section class="panel" id="sec-info"><div class="panel__head"><b class="t-sm">Thông tin khoá</b></div><div class="panel__body ed-grid">
+      <div class="stack gap-4"><div class="cover-box" id="cover">Ảnh bìa</div><span class="t-xs muted">Ảnh bìa *</span></div>
+      <div class="stack gap-16"><div class="field"><label class="field__label">Tên khoá<span class="req">*</span></label><input class="input" id="f-title"></div>
+        <div class="field"><label class="field__label">Mô tả<span class="req">*</span></label><textarea class="input" id="f-desc"></textarea></div></div>
+    </div></section>
+    <section class="panel" id="sec-content"><div class="panel__head"><b class="t-sm grow">Nội dung</b><button class="btn btn--ghost btn--sm" type="button">+ Session</button></div><div class="panel__body"><div class="syllabus" id="syllabus"></div></div></section>
+  </fieldset>
+  <section class="panel"><div class="panel__head"><b class="t-sm grow">Đối tượng học viên</b></div>
+    <div class="panel__body t-sm row gap-16"><span class="grow">Phòng QA + 3 cá nhân</span><a class="btn btn--outline btn--sm" href="admin-audience.html">Sửa đối tượng</a></div></section>
+</main>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/approval.js"></script>
+<script>
+const { ICON, AppHeader, ApprovalBanner, CourseStatus, esc, toast } = LH; const D = LHData;
+document.getElementById('header').innerHTML = AppHeader({ role: 'Course Creator', user: 'Phạm Thanh Long' });
+const CMT = { rejected: 'Session 2 thiếu bài thực hành MCP. Ngưỡng Pass của Test Domain 2 đang để 0%, cần đặt lại (gợi ý 70%).' };
+let st, missing;
+// st: draft | pending | rejected | published | rev-draft | rev-pending | rev-rejected
+function render() {
+  const rev = st.startsWith('rev-'), base = rev ? st.slice(4) : st;
+  const title = rev || st === 'published' ? 'Claude Certified Architect – Foundations' : 'Kiểm thử tự động với Playwright';
+  document.getElementById('title').textContent = title;
+  document.getElementById('status').innerHTML = rev ? CourseStatus('published', base) : CourseStatus(st);
+  const bannerState = { draft: 'draft', pending: 'pending', rejected: 'rejected', published: 'approved' }[base];
+  document.getElementById('banner').innerHTML = ApprovalBanner({ state: bannerState, revision: rev,
+    comment: base === 'rejected' ? CMT.rejected : '', at: base === 'pending' ? '10:24 · 09/11/2026' : '09:10 · 09/11/2026' })
+    .replace('Admin L&D yêu cầu chỉnh sửa', rev && base === 'rejected' ? 'Admin L&D yêu cầu chỉnh sửa bản sửa' : 'Admin L&D yêu cầu chỉnh sửa')
+    .replace('Đang chờ Admin L&D duyệt', rev && base === 'pending' ? 'Bản sửa đang chờ Admin L&D duyệt' : 'Đang chờ Admin L&D duyệt');
+  // Pending + Published (chưa mở bản sửa) → khoá form (BR-CRS-03, BR-CRS-06)
+  document.getElementById('form').disabled = base === 'pending' || st === 'published';
+  document.getElementById('f-title').value = missing ? '' : title;
+  document.getElementById('f-desc').value = missing ? '' : 'Nắm vững kiến trúc agent, tool design, MCP và context management.';
+  document.getElementById('cover').className = 'cover-box' + (missing ? ' is-empty' : '');
+  document.getElementById('syllabus').innerHTML = D.course.sessions.slice(0, 3).map((s, i) => `<div class="syllabus__session">${esc(s.name)}</div>` +
+    (missing && i === 2 ? '<div class="syllabus__lesson muted">Chưa có bài học</div>' : s.lessons.map(([k, n]) => `<div class="syllabus__lesson">${ICON[k]}<span>${esc(n)}</span></div>`).join(''))).join('');
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-submit]')) {
+    if (missing) return LHApproval.submitErrors([['Thiếu ảnh bìa', '#sec-info'], ['Thiếu tên khoá', '#sec-info'], ['Thiếu mô tả', '#sec-info'], ['Session 3 chưa có bài học', '#sec-content'], ['Test Domain 2: chưa đặt ngưỡng Pass', '#sec-content']]);
+    st = st.startsWith('rev-') ? 'rev-pending' : 'pending'; render(); toast('Đã gửi duyệt. Admin L&D đã nhận thông báo.');
+  }
+  if (e.target.closest('[data-edit]')) { st = 'rev-draft'; render(); toast('Đã mở bản sửa. Học viên vẫn học nội dung đang chạy.'); }
+});
+LH.DemoBar('#3 — Soạn khoá (Course Creator)', [
+  { label: 'Trạng thái', key: 'st', options: [['draft', 'Nháp'], ['pending', 'Chờ duyệt'], ['rejected', 'Cần chỉnh sửa'], ['published', 'Đang chạy'], ['rev-draft', 'Bản sửa nháp'], ['rev-pending', 'Bản sửa chờ duyệt'], ['rev-rejected', 'Bản sửa cần chỉnh sửa']] },
+  { label: 'Dữ liệu', key: 'm', options: [['ok', 'Đủ điều kiện'], ['missing', 'Thiếu (BR-CRS-11)']] },
+], (s) => { st = s.st; missing = s.m === 'missing'; render(); });
+</script>
+</body>
+</html>

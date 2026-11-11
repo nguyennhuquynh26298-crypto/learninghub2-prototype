@@ -1,0 +1,78 @@
+/* LearningHub tokens — đo từ DOM web thật learninghub.techvify.com (10/11/2026, Tailwind v4 + shadcn, viewport 1440).
+ * Primitive → Semantic → Component. Đổi giá trị ở đây, mọi màn đổi theo. */
+:root {
+  /* ---- Primitive (giá trị computed trên web) ---- */
+  --primary-50: #fafaff; --primary-100: #eef0fe; --primary-200: #dce2ff; --primary-300: #afb6ff;
+  --primary-400: #9396ff; --primary-500: #6a7aff; --primary-600: #5163ff; --primary-700: #4757ff;
+  --primary-800: #2b3ab5; --primary-900: #374bfa;
+  --neutral-0: #ffffff; --neutral-50: #fafafa; --neutral-100: #f1f5f9; --neutral-200: #e2e8f0; --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8; --neutral-500: #94a3b8; --neutral-600: #475569; --neutral-700: #334155; --neutral-800: #1e293b; --neutral-900: #0f172a;
+  /* gray-* (Tailwind mặc định) — dùng ở màn quiz / stage */
+  --gray-50: #f9fafb; --gray-200: #e5e7eb; --gray-300: #d1d5dc; --gray-500: #6a7282; --gray-600: #4a5565; --gray-700: #364153; --gray-800: #1e2939;
+  --lime-500: #c1f129;      /* chấm logo, icon 2 màu */
+  --online: #7ccf00;        /* bg-lime-500 Tailwind — chấm online avatar */
+  --yellow-400: #fdc700;    /* thanh Progress */
+  --green-50: #f0fdf4; --green-100: #dcfce7; --green-200: #bbf7d0; --green-500: #00c950; --green-600: #00a63e; --green-700: #008236;
+  --red-50: #fef2f2; --red-100: #fee2e2; --red-200: #fecaca; --red-500: #fb2c36; --red-600: #e7000b; --red-700: #c10007;
+  --amber-50: #fffbeb; --amber-100: #fef3c7; --amber-200: #fde68a; --amber-600: #d97706; --amber-800: #92400e;
+  --blue-100: #dbeafe; --blue-700: #1447e6;
+  --violet-100: #f3e8ff; --violet-700: #8200db;
+  --back-from: #2a28df; --back-to: #e5339e;  /* nút Back gradient */
+
+  /* ---- Semantic ---- */
+  --bg-page: var(--neutral-50);          /* #FAFAFA — Home, My courses, Search */
+  --bg-subtle: var(--neutral-50);
+  --bg-muted: var(--neutral-100);
+  --bg-surface: var(--neutral-0);
+  --bg-stage: #f7f7f7;                   /* vùng học / quiz */
+  --bg-session: #eceeff;                 /* accordion session trang khoá */
+  --bg-aside: #f7f8fc;                   /* thẻ CTA trang khoá */
+  --bg-track: #f4f4f5;                   /* rãnh Progress */
+  --bg-chip-user: #f3f3f3;
+  --bg-brand-soft: var(--primary-100);
+  --bg-overlay: rgba(15, 23, 42, .5);
+  --text-strong: var(--neutral-900);
+  --text-default: var(--neutral-700);
+  --text-subtle: var(--neutral-600);
+  --text-muted: var(--neutral-400);
+  --text-fg-muted: #737373;              /* shadcn muted-foreground — learn shell */
+  --text-label: #959595;                 /* "Progress" trên card */
+  --text-brand: var(--primary-900);
+  --text-inverse: #fff;
+  --border-default: var(--neutral-200);
+  --border-shell: #e5e5e5;               /* shadcn border — learn shell */
+  --border-control: var(--neutral-300);
+  --border-focus: var(--primary-600);
+  --action-primary: var(--primary-900);
+  --action-primary-hover: var(--primary-700);
+  --accent: var(--lime-500);
+  --progress: var(--yellow-400);
+
+  --success-bg: var(--green-50); --success-border: var(--green-200); --success-text: var(--green-700); --success-icon: var(--green-600);
+  --danger-bg: var(--red-50); --danger-border: var(--red-200); --danger-text: var(--red-700); --danger-icon: var(--red-600);
+  --warning-bg: var(--amber-50); --warning-border: var(--amber-200); --warning-text: var(--amber-800); --warning-icon: var(--amber-600);
+  --info-bg: var(--primary-100); --info-border: var(--primary-200); --info-text: var(--primary-800); --info-icon: var(--primary-900);
+  --neutral-bg: var(--neutral-100); --neutral-text: var(--neutral-700);
+
+  /* ---- Type (Inter) ---- */
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 18px; --fs-xl: 20px; --fs-2xl: 24px; --fs-3xl: 30px;
+
+  /* ---- Radius / shadow / size ---- */
+  --radius-sm: 6px; --radius-md: 8px; --radius: 10px; --radius-lg: 14px; --radius-xl: 16px; --radius-2xl: 20px; --radius-full: 999px;
+  --shadow-course: 0 0 20px 4px #eef0ff;
+  --shadow-stage: 0 .54px 1.49px #00000005, 0 1.5px 4.13px #00000008;
+  --shadow-desc: 0 0 8px 0 #e6e6e6;
+  --shadow-pop: 0 10px 38px -10px rgba(15, 23, 42, .25), 0 10px 20px -15px rgba(15, 23, 42, .2);
+  --header-h: 65px;        /* 64 + viền 1 */
+  --learn-header-h: 61px;
+  --drawer-w: 400px;
+  --control-sm: 32px; --control-md: 36px; --control-lg: 44px;
+  --container: 1280px;
+
+  /* ---- Component ---- */
+  --btn-radius: var(--radius);   /* rounded-lg 10 */
+  --card-radius: var(--radius-lg); /* rounded-xl 14 */
+  --card-w: 336px;
+  --modal-sm: 480px; --modal-md: 640px; --modal-lg: 760px;
+}

@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đường lên đỉnh LearningHub 2 — Release Story cùng Techter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --navy:#081a4a;--navy-2:#0d2a6e;--royal:#1645c4;--sky:#41c8ff;--gold:#f2bf3f;--gold-d:#b98314;--gold-l:#fff1c4;
+  --ink:#16203d;--soft:#5a6380;--line:#e3e6ef;--paper:#f8efd6;--paper-d:#ead9ab;--seal:#b3261e;--green:#1f9d55;--red:#d13a32;--brand:#374bfa;
+  --f:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;--serif:"Lora",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--f);font-size:16px;line-height:1.6;color:#fff;background:var(--navy);overflow-x:hidden}
+h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.bar{position:fixed;top:0;left:0;height:4px;width:0;z-index:60;background:linear-gradient(90deg,var(--sky),var(--gold))}
+.sky{background:radial-gradient(900px 500px at 50% -10%,rgba(65,200,255,.25),transparent 65%),linear-gradient(180deg,var(--navy),var(--navy-2) 60%,var(--navy))}
+.kick{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);background:var(--gold);border-radius:999px;padding:6px 14px}
+.sec-h{text-align:center;max-width:780px;margin:0 auto 40px}
+.sec-h h2{margin-top:14px;font-size:clamp(28px,4vw,44px);font-weight:900;line-height:1.15}
+.sec-h h2 em{font-style:normal;color:var(--gold)}
+.sec-h p{margin-top:12px;color:#cdd9ff}
+
+/* ===== HERO ===== */
+.hero{position:relative;min-height:92svh;display:grid;grid-template-columns:minmax(0,1fr);align-items:center;overflow:hidden;padding:60px 0 0}
+.hero .wrap{position:relative;z-index:2;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+.hero .top{grid-column:1/-1;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#9fb6ec}
+.hero h1{margin-top:18px;font-size:clamp(40px,6.4vw,84px);line-height:1.02;font-weight:900}
+.hero h1 span{display:block;color:var(--gold)}
+.hero .lead{margin-top:18px;max-width:560px;font-size:18px;color:#d6e0ff}
+.hero .facts{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.hero .facts b{display:inline-flex;align-items:baseline;gap:6px;border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:8px 12px;font-size:13px;font-weight:600;color:#cdd9ff}
+.hero .facts b i{font-style:normal;font-size:22px;font-weight:900;color:var(--gold)}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:28px;border:0;cursor:pointer;border-radius:999px;padding:14px 26px;font-weight:800;font-size:16px;color:var(--navy);background:var(--gold);box-shadow:0 8px 0 var(--gold-d);transition:transform .1s,box-shadow .1s;text-decoration:none}
+.cta:hover{transform:translateY(2px);box-shadow:0 6px 0 var(--gold-d)}
+.cta:active{transform:translateY(8px);box-shadow:0 0 0 var(--gold-d)}
+.hero-art{position:relative;height:min(64vh,520px)}
+.hero-art>svg{position:absolute;inset:0;width:100%;height:100%}
+.hero-art .tt{position:absolute;left:4%;bottom:2%;width:26%}
+.mtn{position:absolute;left:0;right:0;bottom:0;height:120px;z-index:1;background:linear-gradient(180deg,transparent,rgba(8,26,74,.9));pointer-events:none}
+
+/* ===== Techter + mũ ===== */
+.tt{position:relative;display:block;aspect-ratio:317/494;pointer-events:none}
+.tt img{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 10px rgba(0,0,0,.35))}
+.tt .gown{position:absolute;inset:0;width:100%;height:100%}
+.tt .cap{position:absolute;left:8%;top:-13%;width:62%;transform:rotate(-8deg);transform-origin:50% 80%}
+.tt .cap svg{width:100%;display:block;overflow:visible}
+
+/* ===== CHÂN THANG ===== */
+.base{padding:90px 0 60px}
+.probs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.prob{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:20px}
+.prob b{display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#ff9b92}
+.prob h3{margin-top:6px;font-size:19px}
+.prob p{margin-top:6px;color:#c3cff0;font-size:14.5px}
+.map{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.map-col{background:#fff;color:var(--ink);border-radius:18px;padding:18px 20px}
+.map-col h3{font-size:15px;font-weight:800;color:var(--royal)}
+.map-col h3 small{font-weight:600;color:var(--soft);margin-left:6px}
+.map-col ol{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
+.map-col a{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;text-decoration:none;padding:8px;border-radius:10px}
+.map-col a:hover{background:#f2f4ff}
+.map-col a i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--navy);color:var(--gold)}
+.map-col a b{font-size:14.5px}
+.map-col a small{display:block;font-size:12.5px;color:var(--soft);font-weight:500}
+.map-col a span{font-size:12px;font-weight:700;color:var(--brand)}
+</style>
+<style>
+/* ===== CẦU THANG (màn rộng: cảnh dính, bậc đi lên trái-dưới → phải-trên) ===== */
+.climb{position:relative}
+.climb.desk{height:calc(100vh + 11 * var(--u))}
+.climb{--u:46vh}
+.mk{position:absolute;left:0;width:1px;height:1px}
+.scene{position:sticky;top:0;height:100vh;min-height:620px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(360px,.9fr);gap:28px;align-items:center;max-width:1280px;margin:0 auto;padding:30px 24px}
+.stage{position:relative;height:min(76vh,660px);min-height:480px}
+.stage-lb{position:absolute;left:0;top:0;font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#9fb6ec}
+.stage-lb b{display:block;margin-top:2px;font-size:24px;letter-spacing:0;color:var(--gold);text-transform:none}
+.floor{position:absolute;left:0;right:0;bottom:0;height:10px;border-radius:5px;background:linear-gradient(90deg,rgba(242,191,63,.15),rgba(242,191,63,.5),rgba(242,191,63,.15))}
+.blk{--h:0;position:absolute;bottom:10px;width:var(--w);height:calc(var(--rise) * var(--h) + 34px);padding:0;border:0;cursor:pointer;color:var(--navy);
+  background:linear-gradient(180deg,#24418f,#142a66);border-radius:6px 6px 0 0;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2);transition:filter .2s}
+.blk::before{content:"";position:absolute;left:-3px;right:-3px;top:-10px;height:14px;border-radius:5px;background:linear-gradient(180deg,#6d82b8,#3a5398);box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.blk .n{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:15px;background:#3a5398;color:#cdd9ff;transition:all .3s}
+.blk .t{position:absolute;left:50%;bottom:calc(100% + 14px);transform:translateX(-50%);width:max-content;max-width:150px;text-align:center;font-size:11.5px;font-weight:700;line-height:1.25;color:#cdd9ff;opacity:0;transition:opacity .2s;pointer-events:none}
+.blk:hover{filter:brightness(1.15)}
+.blk:hover .t,.blk:focus-visible .t{opacity:1}
+.blk.done{background:linear-gradient(180deg,#c99428,#8a6214)}
+.blk.done::before{background:linear-gradient(180deg,#ffe39a,#e0a420)}
+.blk.done .n{background:var(--gold);color:var(--navy)}
+.blk.on::before{background:linear-gradient(180deg,#bdf0ff,var(--sky));box-shadow:0 0 18px rgba(65,200,255,.8)}
+.blk.on .n{background:var(--sky);color:var(--navy);box-shadow:0 0 0 5px rgba(65,200,255,.25)}
+.blk.on .t{opacity:0}
+.blk.land{background:linear-gradient(180deg,#1d63d8,#0f3a9c)}
+.blk.land::before{background:linear-gradient(180deg,#9fdcff,#41a8f0)}
+.blk.land .n{width:auto;padding:0 8px;border-radius:999px;font-size:10px;letter-spacing:.08em;white-space:nowrap}
+.blk.peak{background:linear-gradient(180deg,#f6d47a,#b98314);cursor:default}
+.blk.peak::before{background:linear-gradient(180deg,#fff3c4,#f2bf3f)}
+.blk.peak .n{background:none;font-size:22px;top:4px}
+.flag{position:absolute;width:3px;height:70px;background:#fff;border-radius:2px}
+.flag::after{content:"";position:absolute;left:3px;top:2px;border-left:34px solid var(--gold);border-top:11px solid transparent;border-bottom:11px solid transparent}
+.walker{position:absolute;left:0;bottom:0;width:var(--tw);z-index:4;pointer-events:none;transition:transform .65s cubic-bezier(.34,1.35,.64,1)}
+.walker.hop .tt{animation:hop .32s ease-out 2}
+@keyframes hop{50%{transform:translateY(-14px) rotate(-3deg)}}
+.bubble{position:absolute;left:78%;bottom:84%;width:170px;background:#fff;color:var(--ink);font-size:12.5px;font-weight:700;line-height:1.35;border-radius:12px;padding:7px 10px;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.bubble::before{content:"";position:absolute;left:12px;bottom:-6px;border:6px solid transparent;border-top-color:#fff;border-bottom:0}
+.bubble small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--gold-d);text-transform:uppercase}
+.hint{position:absolute;left:0;bottom:-26px;font-size:12.5px;color:#9fb6ec}
+
+/* Bảng thẻ bên phải (chỉ hiện thẻ của bậc hiện tại) */
+.panel{position:relative;height:min(76vh,660px);min-height:480px}
+.pc{position:absolute;inset:auto 0 0 0;opacity:0;visibility:hidden;transform:translateY(18px);transition:opacity .35s,transform .35s,visibility 0s .35s}
+.pc.show{opacity:1;visibility:visible;transform:none;transition:opacity .35s,transform .35s}
+.pnav{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;gap:8px}
+.pnav button{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#dbe6ff;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.pnav button:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.pnav button:disabled{opacity:.35;cursor:default}
+
+/* ===== THẺ BẬC (gọn) ===== */
+.card{background:#fff;color:var(--ink);border-radius:22px;padding:24px 26px;box-shadow:0 20px 44px rgba(0,0,0,.35);border-top:6px solid var(--gold)}
+.card[data-open]{cursor:pointer}
+.card .k{display:flex;align-items:center;gap:12px}
+.card .no{flex:none;width:56px;height:56px;border-radius:16px;background:var(--navy);color:var(--gold);display:grid;place-items:center;text-align:center;line-height:1;font-weight:900;font-size:24px}
+.card .no small{display:block;font-size:9px;letter-spacing:.14em;color:#9fb6ec;margin-bottom:2px}
+.card .meta{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d)}
+.card h3{margin-top:2px;font-size:clamp(20px,1.9vw,24px);font-weight:800;line-height:1.25}
+.card .what{margin-top:16px;font-size:16.5px;font-weight:600;line-height:1.5}
+.card .ab{margin-top:14px;display:grid;gap:8px}
+.card .ab p{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:baseline;font-size:14.5px;line-height:1.45}
+.card .ab b{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-align:center;border-radius:6px;padding:2px 0}
+.card .ab .o b{background:#fde8e6;color:var(--red)}.card .ab .o span{color:#5d6177}
+.card .ab .n b{background:#e3f6ea;color:var(--green)}
+.card .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.open-ed{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;border-radius:999px;padding:11px 20px;font-weight:800;font-size:14.5px;color:#4a3108;background:linear-gradient(180deg,#ffe08a,var(--gold));box-shadow:0 4px 0 var(--gold-d)}
+.open-ed:hover{filter:brightness(1.05)}
+.try-btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:14px;font-weight:700;border:2px solid var(--brand);color:var(--brand);border-radius:999px;padding:9px 18px}
+.try-btn:hover{background:var(--brand);color:#fff}
+.card.land{border-top-color:var(--sky);background:linear-gradient(135deg,#0f3a9c,#1d63d8);color:#fff}
+.card.land .no{background:var(--gold);color:var(--navy);font-size:26px}
+.card.land .meta{color:#bfe6ff}
+.card.land ul{margin:14px 0 0;padding-left:18px;color:#dbe6ff;font-size:15px}
+.card.land li{margin:4px 0}
+.card.intro .no{background:var(--gold);color:var(--navy)}
+
+/* Danh sách bậc (màn hẹp) */
+.mlist{display:none}
+.mbar{display:none}
+
+/* ===== ĐỈNH ===== */
+.summit{padding:80px 0 100px;position:relative}
+.top-art{position:relative;width:260px;height:250px;margin:0 auto}
+.top-art svg.laurel{position:absolute;inset:0;width:100%;height:100%}
+.top-art .tt{position:absolute;left:50%;bottom:14px;width:104px;transform:translateX(-50%)}
+.summit.in .top-art .cap{animation:toss 1.4s cubic-bezier(.3,.6,.4,1) .3s 1}
+@keyframes toss{30%{transform:translate(10px,-140px) rotate(200deg)}60%{transform:translate(4px,-120px) rotate(330deg)}100%{transform:rotate(-8deg)}}
+.cert{max-width:860px;margin:30px auto 0;background:#fff;color:var(--ink);border-radius:20px;padding:clamp(22px,4vw,40px);text-align:center;border:3px solid var(--gold)}
+.cert .k{font-size:12px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-d)}
+.cert h2{margin-top:8px;font-family:var(--serif);font-size:clamp(28px,4vw,42px);color:var(--navy)}
+.cert p{margin:10px auto 0;max-width:620px;color:var(--soft)}
+.nums{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.nums div{min-width:120px;border-radius:12px;background:#f3f6ff;padding:8px 12px}
+.nums b{display:block;font-size:28px;font-weight:900;color:var(--royal)}
+.nums small{font-size:12.5px;color:var(--soft)}
+.next{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:860px;margin:22px auto 0}
+.next div{border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:12px 14px}
+.next b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.next span{font-size:14.5px;font-weight:600}
+.fin{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:26px}
+.ghost{display:inline-flex;align-items:center;border-radius:999px;padding:12px 22px;border:2px solid var(--gold);color:var(--gold);text-decoration:none;font-weight:700}
+.ghost:hover{background:var(--gold);color:var(--navy)}
+.confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+</style>
+<style>
+/* ===== CHIẾU CHỈ ===== */
+.ov{position:fixed;inset:0;z-index:80;display:none;place-items:center;padding:3vh 2vw;background:rgba(4,12,36,.72);backdrop-filter:blur(3px)}
+.ov.open{display:grid}
+.edict{--shift:0px;position:relative;width:min(1040px,96vw);height:min(90vh,940px);display:grid;grid-template-columns:30px minmax(0,1fr) 30px}
+.rod{position:relative;z-index:2;border-radius:10px;background:linear-gradient(90deg,#6b4a0c,#c99428 20%,#ffe39a 45%,#d9a634 70%,#6b4a0c);box-shadow:0 10px 24px rgba(0,0,0,.45);transition:transform .55s cubic-bezier(.3,.8,.3,1)}
+.rod::before,.rod::after{content:"";position:absolute;left:-6px;right:-6px;height:34px;border-radius:8px;background:linear-gradient(90deg,#5a3d08,#d8a43a 30%,#fff0b8 50%,#c48f22 75%,#5a3d08);box-shadow:inset 0 -5px 0 rgba(0,0,0,.25),inset 0 5px 0 rgba(255,255,255,.3)}
+.rod::before{top:-26px}.rod::after{bottom:-26px}
+.rod i{position:absolute;left:3px;right:3px;top:30%;height:40%;border-radius:6px;background:repeating-linear-gradient(170deg,rgba(255,255,255,.18) 0 6px,transparent 6px 16px)}
+.rod.l{transform:translateX(var(--shift))}.rod.r{transform:translateX(calc(var(--shift) * -1))}
+.ov.shown .rod.l,.ov.shown .rod.r{transform:none}
+.paper{position:relative;margin:14px -4px;overflow:hidden;clip-path:inset(0 50% 0 50%);transition:clip-path .55s cubic-bezier(.3,.8,.3,1);color:#3a2a10;
+  background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.5),transparent 40%),radial-gradient(circle at 80% 70%,rgba(214,182,110,.25),transparent 45%),
+  repeating-linear-gradient(0deg,rgba(150,110,40,.035) 0 2px,transparent 2px 5px),linear-gradient(180deg,#fbf3dc,var(--paper) 50%,#f1e1b6);
+  box-shadow:inset 0 0 40px rgba(170,125,40,.25)}
+.ov.shown .paper{clip-path:inset(0 0 0 0)}
+.paper::before,.paper::after{content:"";position:absolute;left:0;right:0;height:14px;z-index:2;background:linear-gradient(180deg,#c99428,#f6d47a 30%,#b98314 60%,#f6d47a 80%,#c99428)}
+.paper::before{top:0}.paper::after{bottom:0}
+.p-in{position:absolute;inset:14px 0;overflow:auto;padding:26px clamp(18px,4vw,52px) 30px;opacity:0;transition:opacity .3s .45s;overscroll-behavior:contain}
+.ov.shown .p-in{opacity:1}
+.p-in::before{content:"";position:absolute;left:clamp(10px,2vw,24px);right:clamp(10px,2vw,24px);top:12px;bottom:12px;border:1.5px solid rgba(185,131,20,.45);outline:1px solid rgba(185,131,20,.25);outline-offset:4px;pointer-events:none;border-radius:4px}
+.ed-x{position:absolute;right:46px;top:24px;z-index:4;width:40px;height:40px;border-radius:50%;border:1.5px solid #b98314;background:#fff7e0;color:#6b4a0c;font-size:22px;line-height:1;cursor:pointer}
+.ed-x:hover{background:#ffe9a8}
+.ed-k{font-size:11.5px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--seal);text-align:center}
+.ed-t{margin-top:6px;text-align:center;font-family:var(--serif);font-weight:700;font-size:clamp(24px,3.2vw,36px);line-height:1.2;color:#3a2405;padding:0 40px}
+.ed-orn{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px auto 0;color:#b98314;max-width:380px}
+.ed-orn::before,.ed-orn::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#b98314,transparent)}
+.ed-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px}
+.ed-tags span{font-size:12px;font-weight:600;border:1px solid rgba(185,131,20,.5);border-radius:999px;padding:2px 10px;background:rgba(255,255,255,.45)}
+.ed-tags span.h{background:var(--seal);border-color:var(--seal);color:#fff}
+.ed-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:12px}
+.ed-nav a{font-size:12.5px;font-weight:700;text-decoration:none;color:#6b4a0c;padding:4px 10px;border-radius:8px}
+.ed-nav a:hover{background:rgba(185,131,20,.15)}
+.es{margin-top:26px;scroll-margin-top:10px}
+.es h4{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:19px;color:#3a2405}
+.es h4 i{font-style:normal;flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--f);font-size:13px;font-weight:900;color:#fff;background:var(--seal);box-shadow:0 0 0 3px rgba(179,38,30,.18)}
+.es h4 small{font-family:var(--f);font-size:12px;font-weight:600;color:#8a6a2a}
+.pur{margin-top:10px;font-size:16px;font-style:italic;font-family:var(--serif);padding:10px 16px;border-left:4px solid var(--gold-d);background:rgba(255,255,255,.4)}
+.shots{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.shot{position:relative;width:180px;height:112px;padding:0;border-radius:8px;overflow:hidden;border:2px solid #d6b56a;background:#fff;cursor:zoom-in}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top}
+.shot span{position:absolute;left:0;right:0;bottom:0;padding:3px 8px;text-align:left;font-size:11px;color:#fff;background:rgba(58,36,5,.8)}
+.nos{margin-top:8px;font-size:13px;color:#8a6a2a}
+.rq{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;background:rgba(255,255,255,.55);border-radius:10px;overflow:hidden}
+.rq th{text-align:left;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6b4a0c;background:rgba(214,182,110,.35);padding:9px 10px}
+.rq td{vertical-align:top;padding:10px;border-top:1px solid rgba(185,131,20,.25)}
+.rq td:first-child{white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--seal)}
+.rq td:last-child{font-size:13px;color:#5a4520}
+.who{display:inline-block;margin-bottom:3px;font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px;background:#efe3ff;color:#6a3fc1}
+.who.l{background:#dff4fb;color:#0d6b8a}
+.note{margin-top:12px;padding:10px 14px;border-radius:10px;background:#fff1d6;border:1px dashed #d08a16;font-size:13.5px;color:#6b4300}
+/* Triển khai: làm thế nào · cần chuẩn bị */
+.impl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.impl>div{background:rgba(255,255,255,.6);border-radius:12px;padding:12px 14px;border:1px solid rgba(185,131,20,.3)}
+.impl h5{margin:0 0 6px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6b4a0c}
+.impl ol,.impl ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.5}
+.impl li+li{margin-top:4px}
+@media (max-width:700px){.impl{grid-template-columns:1fr}}
+.try{list-style:none;margin:12px 0 0;padding:0;counter-reset:t;display:grid;gap:8px}
+.try li{counter-increment:t;display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.6);border:1px solid rgba(185,131,20,.3)}
+.try li::before{content:counter(t);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;background:var(--navy)}
+.try a{white-space:nowrap;text-decoration:none;font-size:12.5px;font-weight:700;color:#fff;background:var(--brand);border-radius:999px;padding:6px 12px}
+.try a:hover{background:#2534d6}
+.try em{font-style:normal;font-size:12px;color:#8a6a2a}
+.oos{margin-top:10px;font-size:14px;color:#5a4520}
+.lks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.lk{display:block;text-decoration:none;padding:10px 12px;border-radius:12px;border:1.5px solid rgba(185,131,20,.4);background:rgba(255,255,255,.55)}
+.lk:hover{border-color:var(--brand);background:#fff}
+.lk b{display:block;font-size:14px;color:#2a1a02}
+.lk small{display:block;font-size:12.5px;color:#6b5530}
+.lk code{display:block;margin-top:2px;font-size:11.5px;color:var(--brand);word-break:break-all}
+.lk .r{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;border-radius:6px;padding:1px 6px;background:#dff4fb;color:#0d6b8a;vertical-align:2px}
+.lk .r.a{background:#efe3ff;color:#6a3fc1}.lk .r.n{background:var(--seal);color:#fff}
+.ed-f{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:30px;padding-top:16px;border-top:1px solid rgba(185,131,20,.4)}
+.ed-f button{border:1.5px solid #b98314;background:#fff7e0;color:#4a3108;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:13px;max-width:44%}
+.ed-f button:hover:not(:disabled){background:#ffe9a8}
+.ed-f button:disabled{opacity:.4;cursor:default}
+.seal{flex:none;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;text-align:center;line-height:1.1;font-size:10px;font-weight:900;letter-spacing:.08em;color:var(--seal);border:3px double var(--seal);transform:rotate(-12deg);opacity:.85}
+
+.sum-lead{margin-top:10px;font-size:17px;font-weight:600;color:#2a1a02}
+.sum2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.sum2>div{border-radius:12px;padding:10px 14px;background:rgba(255,255,255,.55);border:1px solid rgba(185,131,20,.3)}
+.sum2 h5{margin:0;font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.sum2 .o h5{color:var(--red)}.sum2 .n h5{color:var(--green)}
+.sum2 ul{margin:6px 0 0;padding-left:18px;font-size:14.5px}.sum2 li{margin:3px 0}
+/* Lightbox */
+.lb{position:fixed;inset:0;z-index:95;display:none;place-items:center;padding:24px;background:rgba(3,10,32,.92);cursor:zoom-out}
+.lb.open{display:grid}
+.lb figure{margin:0;max-width:min(1200px,96vw)}
+.lb img{max-width:100%;max-height:82vh;border-radius:10px;background:#fff}
+.lb figcaption{margin-top:10px;text-align:center;color:#fff;font-size:14px}
+
+/* Hiện dần */
+.js .rv{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.js .rv.in{opacity:1;transform:none}
+
+/* ===== Chế độ danh sách (màn hẹp / thấp): bậc xếp dọc, lệch trái / phải ===== */
+.climb:not(.desk) .scene{display:none}
+.climb:not(.desk){padding:10px 0 50px}
+.climb:not(.desk) .mlist{display:grid;gap:22px;max-width:760px;margin:0 auto;padding:0 20px}
+.climb:not(.desk) .mbar{display:flex;position:sticky;top:0;z-index:40;align-items:center;gap:10px;padding:8px 20px;background:rgba(8,26,74,.95);border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:18px}
+.mbar .tt{width:34px;flex:none}
+.mbar b{font-size:13px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbar .segs{display:flex;gap:3px;flex:none}
+.mbar .segs i{width:10px;height:6px;border-radius:3px;background:rgba(255,255,255,.2)}
+.mbar .segs i.done{background:var(--gold)}
+.mstep{position:relative;scroll-margin-top:64px}
+.mstep:nth-child(odd){margin-right:7%}.mstep:nth-child(even){margin-left:7%}
+.mstep::after{content:"";display:block;height:12px;margin:0 10px;border-radius:0 0 8px 8px;background:linear-gradient(180deg,#c99428,#8a6214)}
+.mstep.on .card{outline:3px solid var(--sky);outline-offset:3px}
+.mseg{font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);text-align:center;margin-top:6px}
+@media (max-width:1000px){
+  .hero .wrap{grid-template-columns:1fr}
+  .hero-art{height:300px}
+}
+@media (max-width:760px){
+  .probs,.map,.next{grid-template-columns:1fr}
+  .sum2{grid-template-columns:1fr}
+  .lks{grid-template-columns:1fr}
+  .card{padding:18px}
+  .card .no{width:48px;height:48px;font-size:20px}
+  .mstep:nth-child(odd){margin-right:4%}.mstep:nth-child(even){margin-left:4%}
+  .edict{grid-template-columns:14px minmax(0,1fr) 14px;height:92vh}
+  .rod::before,.rod::after{left:-4px;right:-4px;height:24px}.rod::before{top:-16px}.rod::after{bottom:-16px}
+  .ed-x{right:20px;top:20px}
+  .ed-t{padding:0 30px}
+  .rq thead{display:none}.rq tr{display:grid;padding:6px 10px}.rq td{border:0;padding:3px 0}.rq tr+tr{border-top:1px solid rgba(185,131,20,.25)}
+  .try li{grid-template-columns:34px 1fr}.try li a,.try li em{grid-column:2;justify-self:start}
+  .shot{width:calc(50% - 5px)}
+  .seal{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  html{scroll-behavior:auto}
+  .js .rv{opacity:1;transform:none}
+}
+</style>
+
+
+</head>
+<body>
+<div class="bar" id="bar"></div>
+
+<!-- ============ HERO ============ -->
+<header class="hero sky" id="hero">
+  <div class="wrap">
+    <div class="top"><span>TECHVIFY · L&amp;D · LearningHub</span><span>Release Story · 11/2026</span></div>
+    <div>
+      <span class="kick">Release Story cùng Techter</span>
+      <h1>Đường lên đỉnh <span>LearningHub 2</span></h1>
+      <p class="lead">9 bậc là 9 yêu cầu của L&amp;D. Trên mỗi bậc chỉ ghi điều cốt lõi: làm gì, trước và giờ. Mở chiếu chỉ để đọc đầy đủ yêu cầu, thuật ngữ, quy tắc và cách thử trên prototype.</p>
+      <div class="facts"><b><i>9</i>yêu cầu</b><b><i>35</i>quyết định đã chốt</b><b><i>2</i>đợt triển khai</b><b><i>16</i>màn prototype</b></div>
+      <a class="cta" href="#base" id="go">Bắt đầu leo ↓</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download style="margin-left:12px">Tải Excel tính năng ↓</a>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 500 500" preserveAspectRatio="xMidYMax meet">
+        <defs><linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a63e8"/><stop offset="1" stop-color="#0a2160"/></linearGradient>
+          <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d4fc4" stop-opacity=".6"/><stop offset="1" stop-color="#081a4a" stop-opacity=".2"/></linearGradient>
+          <linearGradient id="stp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b98314"/><stop offset="1" stop-color="#5a3d08"/></linearGradient></defs>
+        <polygon points="0,500 120,330 200,380 330,200 420,300 500,250 500,500" fill="url(#m2)"/>
+        <polygon points="40,500 250,150 330,90 400,180 500,320 500,500" fill="url(#m1)"/>
+        <polygon points="330,90 300,130 320,124 334,140 350,122 366,132" fill="#eaf4ff"/>
+        <g><rect x="126" y="429" width="25" height="71" fill="url(#stp)"/><rect x="125" y="424" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="138.5" y="451" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">1</text><rect x="150" y="388" width="25" height="112" fill="url(#stp)"/><rect x="149" y="383" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="162.5" y="410" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">2</text><rect x="174" y="347" width="25" height="153" fill="url(#stp)"/><rect x="173" y="342" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="186.5" y="369" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">3</text><rect x="198" y="306" width="25" height="194" fill="url(#stp)"/><rect x="197" y="301" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="210.5" y="328" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">4</text><rect x="222" y="265" width="25" height="235" fill="url(#stp)"/><rect x="221" y="260" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="234.5" y="287" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">5</text><rect x="246" y="224" width="25" height="276" fill="url(#stp)"/><rect x="245" y="219" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="258.5" y="246" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">6</text><rect x="270" y="183" width="25" height="317" fill="url(#stp)"/><rect x="269" y="178" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="282.5" y="205" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">7</text><rect x="294" y="142" width="25" height="358" fill="url(#stp)"/><rect x="293" y="137" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="306.5" y="164" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">8</text><rect x="318" y="101" width="25" height="399" fill="url(#stp)"/><rect x="317" y="96" width="27" height="7" rx="2" fill="#f2bf3f"/><text x="330.5" y="123" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="900" font-size="12" fill="#fff1c4">9</text></g>
+        <line x1="332" y1="90" x2="332" y2="34" stroke="#fff" stroke-width="3"/><polygon points="332,34 370,44 332,54" fill="#f2bf3f"/>
+        <g transform="translate(332 22)" fill="none" stroke="#f2bf3f" stroke-width="3" stroke-linecap="round"><path d="M-22 6 Q-30 -8 -18 -20"/><path d="M22 6 Q30 -8 18 -20"/></g>
+      </svg>
+      <span class="tt" data-tt></span>
+    </div>
+  </div>
+  <div class="mtn"></div>
+</header>
+
+<!-- ============ CHÂN THANG ============ -->
+<section class="base sky" id="base" aria-labelledby="baseT">
+  <div class="wrap">
+    <div class="sec-h rv">
+      <span class="kick">Chân thang · Khởi động</span>
+      <h2 id="baseT">LearningHub hôm nay có <em>3 vấn đề lớn</em></h2>
+      <p>Từ file đề xuất của L&amp;D, rà soát hệ thống đang chạy và chụp màn hình hiện trạng. 9 yêu cầu chia làm 2 đợt, mỗi yêu cầu là một bậc cầu thang.</p>
+    </div>
+    <div class="probs">
+      <div class="prob rv"><b>Vấn đề 1 · Bài thi</b><h3>Đề thi bị lộ</h3><p>Luyện tập dùng chung đề thi, nộp bài là thấy đáp án. Điểm thi không phản ánh đúng năng lực.</p></div>
+      <div class="prob rv"><b>Vấn đề 2 · Đối tượng</b><h3>Sai người, sai khoá</h3><p>Khoá nào cũng mở cho toàn công ty, đăng ký không giới hạn, học dở dang nhiều khoá.</p></div>
+      <div class="prob rv"><b>Vấn đề 3 · Số liệu</b><h3>Số liệu không tin được</h3><p>Không xuất được dữ liệu, ô "Tỷ lệ hoàn thành" hiện điểm thi, tiến độ không tách video / bài test.</p></div>
+    </div>
+    <div class="map" id="map"></div>
+  </div>
+</section>
+
+<!-- ============ CẦU THANG 9 BẬC ============ -->
+<section class="climb sky" id="climb" aria-label="Cầu thang 9 bậc">
+  <div id="marks" aria-hidden="true"></div>
+  <div class="scene">
+    <div class="stage" id="stage">
+      <p class="stage-lb">Techter đang ở<b id="stNow">Chân cầu thang</b></p>
+      <span class="floor"></span>
+      <div id="blocks"></div>
+      <div class="walker" id="walker"><span class="tt" data-tt></span><div class="bubble" id="bubble" hidden></div></div>
+      <p class="hint">Cuộn để leo · bấm số bậc để mở chiếu chỉ</p>
+    </div>
+    <div class="panel" id="panel">
+      <div class="pnav"><button type="button" id="pPrev">↓ Bậc dưới</button><button type="button" id="pNext">Bậc trên ↑</button></div>
+    </div>
+  </div>
+  <div class="mbar" id="mbar"><span class="tt" data-tt></span><b id="mbarT">Chân cầu thang</b><span class="segs" id="segs"></span></div>
+  <div class="mlist" id="mlist"></div>
+</section>
+
+<!-- ============ ĐỈNH ============ -->
+<section class="summit sky" id="top" aria-labelledby="topT">
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="top-art" aria-hidden="true">
+      <svg class="laurel" viewBox="0 0 260 240" fill="none" stroke="#f2bf3f" stroke-width="4" stroke-linecap="round">
+        <path d="M130 228 C 50 220 20 150 40 80"/><path d="M130 228 C 210 220 240 150 220 80"/>
+        <g fill="#f2bf3f" stroke="none">
+          <ellipse cx="40" cy="96" rx="7" ry="15" transform="rotate(-20 40 96)"/><ellipse cx="38" cy="130" rx="7" ry="15" transform="rotate(-40 38 130)"/><ellipse cx="48" cy="162" rx="7" ry="15" transform="rotate(-60 48 162)"/><ellipse cx="68" cy="190" rx="7" ry="15" transform="rotate(-75 68 190)"/><ellipse cx="96" cy="212" rx="7" ry="15" transform="rotate(-85 96 212)"/>
+          <ellipse cx="220" cy="96" rx="7" ry="15" transform="rotate(20 220 96)"/><ellipse cx="222" cy="130" rx="7" ry="15" transform="rotate(40 222 130)"/><ellipse cx="212" cy="162" rx="7" ry="15" transform="rotate(60 212 162)"/><ellipse cx="192" cy="190" rx="7" ry="15" transform="rotate(75 192 190)"/><ellipse cx="164" cy="212" rx="7" ry="15" transform="rotate(85 164 212)"/>
+        </g>
+      </svg>
+      <span class="tt" data-tt></span>
+    </div>
+    <div class="cert rv">
+      <p class="k">Certificate of Completion · Đỉnh vinh quang</p>
+      <h2 id="topT">Đỉnh LearningHub 2</h2>
+      <p>Đề thi được bảo vệ, đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt, đúng người học đúng khoá, và một con số tiến độ đáng tin để L&amp;D báo cáo và cấp chứng nhận.</p>
+      <div class="nums"><div><b>9</b><small>bậc đã leo</small></div><div><b>35</b><small>quyết định đã chốt</small></div><div><b>42</b><small>link prototype</small></div><div><b>2</b><small>đợt triển khai</small></div></div>
+    </div>
+    <div class="next rv">
+      <div><b>Đang ở · 10/11</b><span>Prototype HTML + tinh chỉnh UI/UX bài thi, tìm kiếm, trang chủ</span></div>
+      <div><b>Tiếp theo</b><span>Demo cho L&amp;D, xác nhận luật thi 3 lượt</span></div>
+      <div><b>Sau demo</b><span>Dev Đợt 1 trước, Đợt 2 sau</span></div>
+    </div>
+    <div class="fin"><a class="cta" href="index.html" target="_blank" rel="noopener" style="margin-top:0">Mở toàn bộ prototype ↗</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download>Tải Excel tính năng ↓</a><a class="ghost" href="#hero">Leo lại từ đầu ↑</a></div>
+  </div>
+</section>
+
+<!-- Chiếu chỉ -->
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="edT" aria-hidden="true">
+  <div class="edict" id="edict">
+    <span class="rod l" aria-hidden="true"><i></i></span>
+    <div class="paper"><button class="ed-x" type="button" data-close aria-label="Đóng chiếu chỉ">×</button><div class="p-in" id="pin"></div></div>
+    <span class="rod r" aria-hidden="true"><i></i></span>
+  </div>
+</div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Ảnh hiện trạng"><figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure></div>
+
+<script src="../assets/js/lh2-feature-list.js"></script>
+<script>
+/* ===== DỮ LIỆU 9 YÊU CẦU =====
+   Nguồn: docs/specs/lh2/00-quyet-dinh-dot-1.md, 00-quyet-dinh-dot-2.md, 01..09-*.md
+   who: L = Learner, A = Admin L&D, C = Course Creator */
+const REQS = [];
+REQS.push({
+  id: 'r1', no: '#1', wave: 1, word: 'LUYENTAP', title: 'Practice tuỳ chọn, đề luyện tập riêng',
+  module: 'Assessment', who: 'Learner · Admin L&D', prio: 'Cao', spec: '01-practice-mode', dec: 'D-01 → D-04',
+  q: 'Học viên luyện Practice bằng bộ câu nào?',
+  purpose: 'Điểm bài kiểm tra phải phản ánh đúng năng lực học viên. Học viên vẫn có chỗ luyện tập, nhưng việc luyện tập không được làm lộ đề đánh giá.',
+  short: { b: 'Practice và Exam dùng chung một bộ câu; Practice xem đáp án ngay, không giới hạn số lần.', a: 'Practice bật / tắt theo từng bài, có bộ câu riêng, hệ thống chặn câu trùng đề Exam.' },
+  before: [
+    'Mọi bài test đều cho chọn Practice Mode hoặc Exam Mode, dùng <b>cùng một bộ câu hỏi</b>.',
+    'Practice: bấm "Check answer" từng câu là hiện ngay đáp án đúng + giải thích, làm lại không giới hạn, không tốn lượt.',
+    'Hệ quả: học viên luyện Practice tới khi thuộc đáp án rồi mới làm Exam. Điểm Exam không còn phản ánh năng lực.',
+    'Chưa có cài đặt bật / tắt Practice, chưa tách đề Practice khỏi đề Exam.'],
+  shots: [['03-learn-test-mode-select.jpg', 'Chọn Practice / Exam (cùng đề)'], ['04-practice-question.jpg', 'Câu hỏi Practice'], ['00-ld-yc1-test-quiz-chung-o.png', 'Test và Quiz chung 1 ô (ảnh L&D)']],
+  reqs: [
+    ['REQ-1.1', 'A', 'Màn soạn bài test có tab <b>Practice</b> với công tắc <b>Cho phép luyện tập</b>, bật / tắt riêng từng bài test. Mặc định Tắt.', 'Tắt → học viên không thấy nút, nhãn hay chữ "Practice" nào ở bài đó (BR-ASM-01).'],
+    ['REQ-1.2', 'A', 'Bật Practice thì soạn <b>bộ câu Practice riêng</b>: <b>Thêm</b>, <b>Sửa</b>, <b>Xoá</b> từng câu trong popup trình soạn (nội dung, Một / Nhiều đáp án, 2–6 lựa chọn, đáp án đúng, giải thích).', 'Câu thiếu nội dung, lựa chọn trống / trùng nhau, chưa chọn đáp án đúng → không lưu được câu, liệt kê đủ lỗi (BR-ASM-07). Bật mà danh sách rỗng → chặn Lưu (BR-ASM-02).'],
+    ['REQ-1.2b', 'A', '<b>Nhập từ file</b>: tải file mẫu .xlsx, điền nhiều câu, tải lên (.xlsx / .csv, ≤ 5 MB, ≤ 200 câu). Hệ thống kiểm tra từng dòng trước khi nhập.', 'Chỉ nhập dòng hợp lệ, thêm vào cuối, không ghi đè câu cũ. Dòng lỗi hiện lý do (sai loại, thiếu đáp án, trùng đề thi, trùng câu đã có…) (BR-ASM-08).'],
+    ['REQ-1.3', 'A', 'Khi Lưu, hệ thống so từng câu Practice với đề Exam của cùng bài và <b>chặn câu trùng y hệt</b>.', 'So sau khi bỏ khoảng trắng thừa, không phân biệt hoa thường. Câu trùng đánh dấu đỏ: "Câu này trùng với đề thi. Hãy viết câu khác." (BR-ASM-03).'],
+    ['REQ-1.4', 'A', 'Tắt Practice khi đã có bộ câu → giữ bộ câu, chỉ ẩn với học viên; bật lại dùng tiếp.', 'Không xoá dữ liệu khi tắt.'],
+    ['REQ-1.5', 'A', 'Bài test có trước bản này: Practice = <b>Tắt</b>, bộ câu Practice rỗng. Admin muốn bật lại phải nhập bộ câu mới.', 'Lý do: Practice cũ dùng chung đề Exam, giữ lại là tiếp tục lộ đề (BR-ASM-04).'],
+    ['REQ-1.6', 'L', 'Thẻ bài test cho chọn <b>Luyện tập</b> (nếu bài có Practice) hoặc <b>Làm bài thi</b>, mỗi chế độ ghi rõ luật.', 'Luyện tập: "Đề luyện riêng N câu. Xem đáp án ngay. Không tính lượt, không tính tiến độ."'],
+    ['REQ-1.7', 'L', 'Luyện tập: trả lời từng câu → <b>Check answer</b> → thấy ngay Đúng / Sai, đáp án đúng, giải thích. Tổng kết cuối bài có nút <b>Luyện lại câu sai</b>.', 'Không giới hạn số lần, không tính giờ, không trừ lượt Exam (BR-ASM-06).'],
+    ['REQ-1.8', 'L', 'Practice <b>không tính</b> vào tiến độ, hoàn thành khoá, và không có trong file export.', 'Xong Practice → % tiến độ khoá không đổi (BR-ASM-05).']],
+  brs: [['BR-ASM-01', 'Practice bật / tắt riêng từng bài test. Tắt → học viên không thấy dấu vết nào của Practice.'], ['BR-ASM-02', 'Bật Practice bắt buộc có ≥ 1 câu Practice.'], ['BR-ASM-03', 'Câu Practice không được trùng y hệt câu nào trong đề Exam cùng bài.'], ['BR-ASM-04', 'Bài test có trước bản này: Practice = Tắt, bộ câu rỗng.'], ['BR-ASM-05', 'Practice không tính tiến độ, hoàn thành khoá, không có trong export.'], ['BR-ASM-06', 'Practice không giới hạn số lần, không tính giờ, không trừ lượt Exam.'], ['BR-ASM-07', 'Câu Practice hợp lệ: có nội dung, 2–6 lựa chọn không trống / không trùng nhau, có đáp án đúng, không trùng đề thi hay câu Practice khác. Áp dụng cho câu soạn tay, sửa và nhập file.'], ['BR-ASM-08', 'Nhập từ file chỉ thêm vào cuối, không ghi đè; dòng lỗi bỏ qua, dòng hợp lệ vẫn nhập.']],
+  oos: 'Ngân hàng câu hỏi dùng chung nhiều bài / nhiều khoá; trộn ngẫu nhiên câu / đáp án mỗi lượt; so trùng theo ý nghĩa (chỉ chặn trùng y hệt).',
+  links: [
+    ['assessment.html', 'Bài test trọn luồng 1 trang', 'Chọn chế độ → luyện tập → thi → kết quả → làm lại, chung 1 link', 'L', 1],
+    ['test-start.html?practice=on', 'Thẻ chọn chế độ, có đề luyện', 'Hai lựa chọn Luyện tập / Làm bài thi kèm luật', 'L'],
+    ['test-start.html?practice=off', 'Thẻ chọn chế độ, bài cũ', 'Chỉ còn Làm bài thi, không có chữ Practice', 'L'],
+    ['practice.html?sc=done', 'Tổng kết luyện tập', 'Đáp án hiện ngay, nút Luyện lại câu sai', 'L'],
+    ['admin-test-practice.html?st=ok&open=edit', 'Soạn đề: sửa câu', 'Popup trình soạn điền sẵn câu, sửa lựa chọn / đáp án', 'A'],
+    ['admin-test-practice.html?st=ok&open=import', 'Soạn đề: nhập từ file', 'Tải mẫu → chọn file → bảng kiểm tra từng dòng → nhập câu hợp lệ', 'A'],
+    ['admin-test-practice.html?st=dup', 'Soạn đề: câu trùng đề thi', 'Lưu bị chặn, câu trùng đánh dấu đỏ', 'A'],
+    ['admin-test-practice.html?st=legacy', 'Soạn đề: bài cũ tắt sẵn', 'Practice tắt, bộ câu rỗng', 'A']]
+});
+
+REQS.push({
+  id: 'r2', no: '#2', wave: 1, word: 'DAPAN', title: 'Kiểm soát hiển thị đáp án bài thi',
+  module: 'Assessment', who: 'Learner', prio: 'Cao', spec: '02-review-answer', dec: 'D-06, D-07, D-36, D-40',
+  q: 'Nộp bài Exam xong, học viên thấy được gì?',
+  purpose: 'Học viên biết mình sai ở đâu để tự học lại, nhưng không lấy được đáp án đúng để học thuộc cho lượt sau hoặc chia sẻ cho người khác.',
+  short: { b: 'Nộp Exam là xem được đáp án đúng + giải thích của mọi câu.', a: 'Cố định 3 lượt. Chưa đạt thì lượt sau chỉ làm lại câu sai. Đạt hoặc hết 3 lượt thì bài khoá và mở đáp án. Điểm chính thức là điểm cao nhất.' },
+  before: [
+    'Exam ghi "Answers and explanations appear only after you submit": nộp xong là thấy đáp án đúng của mọi câu.',
+    'Màn kết quả có điểm, Pass / Fail và Review Answer hiện đúng / sai + đáp án từng câu ngay.',
+    'Lịch sử lượt nằm trong tab Overview, học viên khó tìm; đồng hồ đặt xa lưới câu hỏi.'],
+  shots: [['00-ld-yc2-ket-qua-review-answer.png', 'Review Answer sau khi nộp (ảnh L&D)'], ['05-practice-check-answer.jpg', 'Check answer hiện đáp án']],
+  reqs: [
+    ['REQ-2.1', 'L', 'Bài thi cho tối đa <b>3 lượt</b>. Mỗi lần Nộp bài trừ 1 lượt; màn làm bài ghi rõ "Lượt n/3".', 'Modal xác nhận nộp: số câu chưa trả lời, số câu đánh dấu, "Nộp bài sẽ dùng 1 lượt (còn x/3)".'],
+    ['REQ-2.2', 'L', 'Nộp bài xong hiện ngay <b>tổng số câu Đúng / Sai</b>, điểm, Đạt / Chưa đạt. Chưa đạt và còn lượt → nút <b>Làm lại n câu sai</b>.', '<b>Đạt → bài khoá</b>, không làm lại. Hết 3 lượt → bài khoá (BR-ASM-17).'],
+    ['REQ-2.2b', 'L', 'Lượt 2, 3 <b>chỉ gồm các câu Sai / Bỏ trống</b> của lượt trước, giữ số thứ tự gốc. Câu đúng giữ nguyên đáp án và vẫn tính Đúng.', 'Điểm tính trên toàn đề nên chỉ tăng hoặc giữ (BR-ASM-18). Thời gian như lượt 1.'],
+    ['REQ-2.3', 'L', '<b>Điểm chính thức = điểm cao nhất</b>. Đây là điểm duy nhất dùng ở Kết quả của tôi (#7), file export (#5) và tiến độ (#8).', 'Lượt điểm cao nhất gắn nhãn "Điểm cao nhất"; khi khoá đổi thành "Điểm chính thức" (BR-ASM-16).'],
+    ['REQ-2.4', 'L', 'Chưa đạt và còn lượt: Review chỉ hiện lựa chọn của học viên + nhãn Đúng / Sai cả câu, <b>không hiện đáp án đúng</b>, không hiện giải thích.', 'Thông báo: "Đáp án đúng và giải thích sẽ hiện khi bạn Đạt hoặc dùng hết 3 lượt."'],
+    ['REQ-2.5', 'L', '<b>Đạt</b> hoặc dùng hết 3 lượt: mở đáp án đúng + giải thích cho <b>mọi lượt</b> đã làm.', 'Điều kiện xét theo bài, không theo lượt (BR-ASM-11).'],
+    ['REQ-2.6', 'L', 'Câu nhiều đáp án chấm Đúng / Sai <b>cả câu</b>, không đánh dấu từng lựa chọn khi đang ẩn đáp án.', 'Không có điểm từng phần (BR-ASM-12).'],
+    ['REQ-2.7', 'L', 'Màn làm bài: <b>đồng hồ đặt cạnh lưới câu hỏi</b>, đánh dấu câu, lọc Review theo Tất cả / Đúng / Sai.', 'Rời trang giữa bài: đồng hồ vẫn chạy, quay lại làm tiếp; hết giờ tự nộp và trừ lượt.'],
+    ['REQ-2.8', 'A', 'Không có chức năng cộng thêm lượt: bài đã mở đáp án thì không làm lại được.', 'Tránh xem đáp án rồi làm lại để nâng điểm.']],
+  brs: [['BR-ASM-10', 'Đáp án đúng + giải thích chỉ hiện khi Đạt hoặc dùng hết 3 lượt.'], ['BR-ASM-16', 'Cố định 3 lượt; điểm chính thức = điểm cao nhất.'], ['BR-ASM-17', 'Bài khoá khi Đạt hoặc hết lượt.'], ['BR-ASM-18', 'Lượt sau chỉ làm lại câu sai, câu đúng giữ nguyên.'], ['BR-ASM-11', 'Điều kiện mở đáp án xét theo bài: đạt rồi thì mọi lượt cũ cũng hiện.'], ['BR-ASM-12', 'Câu nhiều đáp án chấm Đúng / Sai cả câu.'], ['BR-ASM-13', 'Giải thích ẩn / hiện cùng đáp án đúng.'],],
+  note: '<b>Chốt 11/11 theo đúng file đề xuất (D-40):</b> Đạt → khoá bài + mở đáp án. Chưa đạt → làm lại câu sai, tối đa 3 lượt. Hết 3 lượt → khoá + mở đáp án, điểm chính thức = điểm cao nhất; khoá học chuyển Không đạt (yêu cầu #9).',
+  oos: 'Thay đổi cách chấm điểm, ngưỡng Pass. Màn Practice luôn hiện đáp án (yêu cầu #1).',
+  links: [
+    ['assessment.html', 'Bài thi trọn luồng 1 trang', 'Đồng hồ cạnh lưới câu, nộp bài, tổng Đúng / Sai, làm lại 3 lượt', 'L', 1],
+    ['assessment.html?demo=reset', 'Bắt đầu lại từ lượt 1', 'Xoá dữ liệu demo để thử từ đầu', 'L'],
+    ['assessment.html?demo=5min', 'Đồng hồ còn 5 phút', 'Thử cảnh báo thời gian và tự nộp', 'L'],
+    ['exam.html?sc=mid', 'Màn làm bài: làm dở 20 câu', '2 câu đánh dấu, lưới câu hỏi', 'L'],
+    ['test-result.html?sc=one', 'Kết quả lượt 1 chưa đạt', 'Đáp án đang ẩn, còn lượt', 'L'],
+    ['test-result.html?sc=perfect', 'Kết quả lượt 2 Đạt', 'Khoá bài, mở đáp án và giải thích', 'L'],
+    ['test-result.html?sc=last', 'Kết quả hết 3 lượt chưa đạt', 'Điểm chính thức = điểm cao nhất, đáp án đã mở', 'L']]
+});
+
+REQS.push({
+  id: 'r4', no: '#4', wave: 1, word: 'DOITUONG', title: 'Thiết lập đối tượng học viên của khoá',
+  module: 'Course admin + Learner', who: 'Admin L&D · Learner', prio: 'Cao', spec: '04-course-audience', dec: 'D-08 → D-11, D-44, D-45, D-52',
+  q: 'Ai được học khoá QA Automation?',
+  purpose: 'Khoá chuyên sâu chỉ dành cho đúng nhóm nhân sự cần học. L&D kiểm soát được ai học, tránh người ngoài nhóm học lấy chứng nhận và làm sai số liệu đào tạo.',
+  short: { b: 'Khoá nào cũng mở cho toàn công ty, không giới hạn được theo nhóm.', a: 'Tab Đối tượng: Toàn công ty hoặc Giới hạn theo Phòng ban / Vị trí / Cá nhân; người ngoài chỉ xem giới thiệu.' },
+  before: [
+    'Mọi khoá mở cho toàn công ty; không có cài đặt đối tượng.',
+    'Không giới hạn được theo Phòng ban, Vị trí hay từng người; không có danh sách loại trừ.',
+    'Người ngoài nhóm vẫn đăng ký, học và lấy chứng nhận được.'],
+  shots: [], noshot: 'AS-IS phía Admin chưa chụp được (cần tài khoản Admin).',
+  reqs: [
+    ['REQ-4.1', 'A', 'Trang quản lý khoá có tab <b>Đối tượng</b>, chọn Phạm vi: <b>Toàn công ty</b> (mặc định) hoặc <b>Giới hạn</b>.', 'Khoá hiện có khi lên bản: Toàn công ty (BR-AUD-09).'],
+    ['REQ-4.2', 'A', 'Giới hạn: thêm quy tắc <b>Phòng ban</b>, <b>Vị trí</b> (multi-select từ hệ thống nhân sự) và <b>Cá nhân</b> (tìm theo tên / email / mã NV).', 'Cả 3 trống → chặn Lưu: "Chọn ít nhất một phòng ban, vị trí hoặc cá nhân." (BR-AUD-02).'],
+    ['REQ-4.3', 'A', 'Danh sách học viên tự tính từ quy tắc, cột <b>Nguồn</b> cho biết vì sao người đó được học.', 'Cột: Họ tên, Email, Phòng ban, Vị trí, Nguồn, Trạng thái học. Phân trang 20 dòng.'],
+    ['REQ-4.4', 'A', '<b>Remove</b> người có quyền nhờ quy tắc nhóm → đưa vào danh sách <b>Đã loại trừ</b>, có nút Thêm lại.', 'Đã loại trừ thắng mọi quy tắc, kể cả Cá nhân (BR-AUD-04).'],
+    ['REQ-4.5', 'A', 'Checkbox <b>Gửi email mời học</b> khi lưu: người tạo chọn gửi hoặc không.', 'Chỉ gửi cho người lần đầu có quyền nhờ lần lưu đó (BR-AUD-08).'],
+    ['REQ-4.6', 'L', 'Người không có quyền vẫn tìm thấy khoá, xem trang giới thiệu + mục lục; thay nút đăng ký bằng khung "Khoá học dành cho đối tượng được chỉ định" + người phụ trách.', 'Mở link thẳng vào bài học → chuyển về trang giới thiệu (BR-AUD-07).'],
+    ['REQ-4.7', 'L', 'Học viên bị Remove hoặc rời nhóm: <b>mất quyền vào nội dung ngay</b>, tiến độ + điểm được giữ; được thêm lại thì học tiếp.', 'Khung "Bạn không còn trong đối tượng của khoá học. Tiến độ của bạn vẫn được lưu." (BR-AUD-06).'],
+    ['REQ-4.8', 'A', '<i>Ưu tiên thấp, làm sau Đợt 1:</i> bấm Lưu → <b>cảnh báo</b> nếu người thêm theo Cá nhân không thuộc Phòng ban / Vị trí đã chọn (không chặn Lưu).', 'Bản đơn giản dùng luật cố định, chưa dùng AI (BR-AUD-11).'],
+    ['REQ-4.9', 'A', '<i>Ưu tiên thấp:</i> checkbox <b>Khoá có phí</b> → nhãn "Có phí" trên thẻ và trang khoá.', 'Chỉ gắn nhãn, không thanh toán trong app.'],
+    ['REQ-4.10', 'A', '<b>Lịch học</b>: Admin L&D đặt <b>Ngày bắt đầu</b> và <b>Ngày kết thúc</b> của khoá ("edit lịch" trong file đề xuất).', 'Email mời học ghi kèm lịch; đổi lịch thì tuỳ chọn gửi email báo.'], ['REQ-4.11', 'L', 'Trước Ngày bắt đầu: thấy khoá, chưa Start được. Sau Ngày kết thúc chưa xong: nhãn <b>Quá hạn</b>, vẫn học tiếp.', 'Không khoá nội dung; file export có cột Quá hạn (BR-AUD-12).']],
+  brs: [['BR-AUD-01', 'Có quyền khi: Toàn công ty; hoặc khớp ≥ 1 quy tắc và không nằm trong Đã loại trừ.'], ['BR-AUD-03', 'Phòng ban / Vị trí là nhóm động theo dữ liệu nhân sự lúc truy cập.'], ['BR-AUD-04', 'Đã loại trừ thắng mọi quy tắc.'], ['BR-AUD-06', 'Mất quyền → chặn nội dung ngay, giữ tiến độ, điểm, lượt làm.'], ['BR-AUD-07', 'Không có quyền vẫn xem được trang giới thiệu, không enroll được.'], ['BR-AUD-10', 'Mất quyền không tính là khoá đang học trong giới hạn enroll.']],
+  oos: 'Cảnh báo bằng AI; thanh toán phí trong app; lịch học riêng theo từng nhóm; khoá nội dung khi quá hạn.',
+  links: [
+    ['admin-audience.html?role=Admin&sc=limited', 'Tab Đối tượng: Giới hạn (QA)', 'Quy tắc Phòng ban / Vị trí / Cá nhân, cột Nguồn, Đã loại trừ', 'A', 1],
+    ['admin-audience.html?sc=empty', 'Tab Đối tượng: chưa có quy tắc', 'Lỗi chặn Lưu', 'A'],
+    ['course-detail.html?s=restricted', 'Trang khoá: ngoài đối tượng', 'Xem giới thiệu, không có nút đăng ký', 'L'],
+    ['course-detail.html?s=removed', 'Trang khoá: bị gỡ giữa khoá', 'Mất quyền, tiến độ vẫn lưu', 'L'],
+    ['course-detail.html?s=upcoming', 'Lịch học: chưa tới ngày bắt đầu', 'Thấy khoá, Start Courses tắt', 'L'],
+    ['course-detail.html?s=overdue', 'Lịch học: quá hạn', 'Nhãn Quá hạn, vẫn học tiếp', 'L']]
+});
+REQS.push({
+  id: 'r5', no: '#5', wave: 1, word: 'XUATFILE', title: 'Xuất tiến độ và kết quả học tập',
+  module: 'Report', who: 'Admin L&D', prio: 'Cao', spec: '05-export-learning-data', dec: 'D-13',
+  purpose: 'L&D lấy được số liệu học tập chính xác, đầy đủ để báo cáo đào tạo và theo dõi học viên, không phải dùng công cụ ngoài để gom dữ liệu thủ công.',
+  short: { b: 'Không có nút xuất dữ liệu; muốn báo cáo phải gom tay tiến độ và điểm từng người.', a: 'Nút Xuất dữ liệu ra file .xlsx, theo toàn khoá hoặc theo Session, có bộ lọc và số dự kiến.' },
+  before: [
+    'Không có chức năng xuất tiến độ / kết quả theo khoá.',
+    'L&D phải tự gom tiến độ, điểm từng học viên sang Excel để báo cáo.'],
+  shots: [], noshot: 'AS-IS phía Admin chưa chụp được (cần tài khoản Admin).',
+  reqs: [
+    ['REQ-5.1', 'A', 'Trang quản lý khoá có nút <b>Xuất dữ liệu</b>, mở popup Xuất dữ liệu.', 'Đợt 1 chỉ Admin L&D (mọi khoá). Đợt 2: Creator ở khoá mình phụ trách; Learner không có (BR-RPT-01).'],
+    ['REQ-5.2', 'A', 'Chọn <b>Phạm vi</b>: Toàn khoá hoặc <b>Theo session</b> (chương của khoá, chọn nhiều).', 'Theo session mà chưa chọn → "Chọn ít nhất 1 session." Tiến độ và bài thi chỉ tính trong các session đã chọn (BR-RPT-02).'],
+    ['REQ-5.3', 'A', 'Bộ lọc tuỳ chọn: <b>Thời gian enroll</b> (từ – đến), <b>Phòng ban</b>, <b>Trạng thái học</b>.', 'Từ ngày > Đến ngày → "Ngày bắt đầu phải trước ngày kết thúc." Trạng thái: Chưa bắt đầu · Đang học · Hoàn thành · Không đạt · Mất quyền.'],
+    ['REQ-5.4', 'A', 'Popup hiện <b>"Dự kiến N học viên"</b>, cập nhật mỗi khi đổi bộ lọc.', 'N = 0 → nút Xuất file tắt, "Không có học viên khớp bộ lọc." (BR-RPT-05).'],
+    ['REQ-5.5', 'A', 'Bấm <b>Xuất file</b> → tải 1 file <b>.xlsx</b>, tên <code>&lt;Mã khoá&gt;_&lt;Toàn khoá|Session&gt;_&lt;ddmmyyyy&gt;.xlsx</code>.', 'Dữ liệu tại thời điểm bấm (BR-RPT-03, 04). &gt; 2.000 dòng: tạo nền, xong báo toast.'],
+    ['REQ-5.6', 'A', 'Sheet Học viên: Mã NV, Họ tên, Email, Phòng ban, Vị trí, Ngày enroll, Trạng thái học, <b>Tiến độ (%)</b>, điểm từng bài = Điểm cao nhất (điểm chính thức).', 'Tiến độ (%) cùng công thức yêu cầu #8; Practice không có trong file (BR-RPT-06).'],
+    ['REQ-5.8', 'A', 'Học viên <b>Mất quyền</b> vẫn có trong file với trạng thái "Mất quyền".', 'BR-RPT-07.']],
+  brs: [['BR-RPT-01', 'Admin xuất mọi khoá; Creator chỉ khoá mình phụ trách; Learner không có.'], ['BR-RPT-02', 'Session = chương của khoá; xuất theo session chỉ tính trong session đã chọn.'], ['BR-RPT-03', 'Định dạng .xlsx, mỗi lần xuất 1 file.'], ['BR-RPT-05', 'Không tạo file rỗng.'], ['BR-RPT-06', 'Practice không có trong file.'], ['BR-RPT-07', 'Học viên Mất quyền vẫn có trong file.']],
+  oos: 'Xuất nhiều khoá cùng lúc; lịch xuất tự động / gửi file định kỳ; biểu đồ, dashboard; xuất bài làm chi tiết từng câu.',
+  links: [
+    ['admin-audience.html?role=Admin', 'Popup Xuất dữ liệu (Admin)', 'Bấm nút "Xuất dữ liệu" cạnh tên khoá', 'A', 1],
+    ['admin-audience.html?role=Creator', 'Popup Xuất dữ liệu (Creator)', 'Creator xuất khoá mình phụ trách', 'C']]
+});
+
+REQS.push({
+  id: 'r9', no: '#9', wave: 1, word: 'GIOIHAN', title: 'Giới hạn số khoá học song song',
+  module: 'Learner', who: 'Learner · Admin', prio: 'Cao', spec: '09-enroll-limit', dec: 'D-42, D-43',
+  q: 'Một học viên được học cùng lúc bao nhiêu khoá?',
+  purpose: 'Học viên tập trung hoàn thành khoá đang học, tránh đăng ký dàn trải rồi bỏ dở, làm tỷ lệ hoàn thành thấp và số liệu đào tạo sai lệch.',
+  short: { b: 'Đăng ký bao nhiêu khoá cũng được; nhiều khoá dở dang, tỷ lệ hoàn thành thấp.', a: 'Tối đa 2 khoá Đang học. Phải hoàn thành mới đăng ký thêm; trượt bài thi sau 3 lượt thì khoá Không đạt và trả suất.' },
+  before: [
+    'Không giới hạn số khoá đăng ký cùng lúc.',
+    'My Courses dồn nhiều khoá dở dang, tiến độ thấp.',
+    'Học viên thi trượt hết lượt thì khoá treo mãi ở Đang học.'],
+  shots: [['01-home.jpg', 'Trang chủ'], ['06-my-courses.jpg', 'My Courses']],
+  reqs: [
+    ['REQ-9.1', 'L', 'Mỗi học viên học tối đa <b>2 khoá Đang học</b> cùng lúc. Con số cố định, không cấu hình.', 'BR-LRN-01.'],
+    ['REQ-9.2', 'L', 'Bấm Start Courses khi đã đủ 2 khoá → popup <b>"Bạn đang học 2/2 khoá"</b> liệt kê khoá đang học, mỗi dòng có Tiếp tục học.', 'Không có nút Rời khoá: hoàn thành một khoá mới đăng ký được khoá mới.'],
+    ['REQ-9.3', 'L', 'Chỉ khoá <b>Đang học</b> tính vào giới hạn.', 'Hoàn thành, Không đạt, Mất quyền không tính (BR-LRN-01).'],
+    ['REQ-9.4', 'L', 'Một bài thi hết 3 lượt vẫn chưa đạt → khoá chuyển <b>Không đạt</b>, trả suất học.', 'Vẫn xem lại được nội dung; có trong file export với trạng thái "Không đạt" (BR-LRN-32).'],
+    ['REQ-9.5', 'L', 'Trang chủ hiện chỉ báo <b>Suất học n/2</b> cạnh khoá đang học.', 'Đầy suất → nhắc hoàn thành khoá đang học.'],
+    ['REQ-9.6', 'L', 'Người đang học nhiều hơn 2 khoá lúc lên bản: <b>học tiếp bình thường</b>, chỉ bị chặn khi enroll khoá mới.', 'BR-LRN-04.'],
+    ['REQ-9.7', 'L', 'Kiểm tra giới hạn tại thời điểm bấm đăng ký.', '2 tab cùng đăng ký → tab sau bị chặn (BR-LRN-06).'],
+    ['REQ-9.8', 'A', 'Chỉ Admin L&D gỡ được học viên khỏi khoá (tab Đối tượng, #4).', 'Học viên không tự rời khoá.']],
+  brs: [['BR-LRN-01', 'Khoá tính giới hạn = Đang học, tối đa 2.'], ['BR-LRN-04', 'Lên bản không gỡ ai; chỉ chặn đăng ký mới.'], ['BR-LRN-06', 'Kiểm tra tại thời điểm bấm đăng ký.'], ['BR-LRN-32', 'Hết 3 lượt thi chưa đạt → khoá Không đạt, không tính giới hạn.']],
+  oos: 'Tự rời khoá; Admin cấu hình con số giới hạn; giới hạn khác nhau theo phòng ban / vị trí; hàng chờ.',
+  links: [
+    ['home.html?f=1', 'Trang chủ: đạt giới hạn', 'Suất học 2/2', 'L', 1],
+    ['home.html?f=0', 'Trang chủ: còn suất', 'Suất học 1/2', 'L'],
+    ['course-detail.html?s=limit', 'Trang khoá: đạt giới hạn', 'Popup 2 khoá đang học, chỉ có Tiếp tục học', 'L'],
+    ['course-detail.html?s=failed', 'Trang khoá: Không đạt', 'Trượt bài thi sau 3 lượt, trả suất', 'L'],
+    ['my-courses.html?k=over', 'My Courses: đang quá giới hạn', 'Học tiếp, chỉ chặn đăng ký mới', 'L']]
+});
+REQS.push({
+  id: 'r3', no: '#3', wave: 2, sec: 10, title: 'Course Creator và duyệt trước khi Publish',
+  module: 'Course admin', who: 'Admin L&D · Course Creator', prio: 'Trung bình', spec: '03-course-approval', dec: 'D-16 → D-20, D-22 → D-24',
+  purpose: 'Cho SME, trainer, trưởng bộ phận chủ động xây dựng khoá học, đồng thời L&D vẫn kiểm soát cấu trúc và chất lượng nội dung trước khi khoá đến tay học viên.',
+  short: { b: 'Chỉ Admin L&D tạo khoá; không có bước duyệt, sửa là áp dụng ngay.', a: 'Admin cấp quyền Course Creator; Creator gửi duyệt, Admin Approve hoặc Yêu cầu chỉnh sửa; bản sửa không làm gián đoạn học viên.' },
+  before: [
+    'Chỉ Admin L&D tạo và sửa khoá; SME, trainer phải gửi nội dung để Admin nhập hộ.',
+    'Không có bước duyệt trước khi Publish.',
+    'Sửa khoá đang chạy là áp dụng ngay cho học viên đang học.'],
+  shots: [], noshot: 'AS-IS màn tạo khoá chưa chụp được (cần tài khoản Admin).',
+  reqs: [
+    ['REQ-3.1', 'A', 'Cài đặt → Phân quyền: <b>Thêm Course Creator</b> (chọn nhân viên), <b>Gỡ quyền</b> tại dòng.', 'Gỡ quyền → mất ngay mọi quyền quản lý, kể cả khoá đã tạo; khoá chuyển cho Admin L&D (BR-CRS-01, 02).'],
+    ['REQ-3.2', 'C', 'Creator bấm <b>Tạo khoá học</b> → khoá ở <b>Draft</b> → <b>Gửi duyệt</b> → <b>Pending approval</b>.', 'Gửi duyệt thiếu điều kiện → giữ Draft, hiện danh sách lỗi cần sửa (BR-CRS-11).'],
+    ['REQ-3.3', 'A', 'Danh sách <b>Chờ duyệt</b>; Admin xem trước như học viên rồi chọn <b>Approve</b>, <b>Yêu cầu chỉnh sửa</b> hoặc sửa trực tiếp rồi Approve.', 'Yêu cầu chỉnh sửa bắt buộc nhận xét 10–1000 ký tự (BR-CRS-04, 07).'],
+    ['REQ-3.4', 'C', 'Khoá / bản sửa đang chờ duyệt bị <b>khoá sửa</b> tới khi Admin xử lý.', 'BR-CRS-03.'],
+    ['REQ-3.5', 'C', 'Sửa khoá đang chạy tạo <b>bản sửa</b>; học viên vẫn học bản đang chạy tới khi Approve.', 'Mỗi khoá tối đa 1 bản sửa đang mở (BR-CRS-06, 12).'],
+    ['REQ-3.6', 'A', 'Màn duyệt bản sửa đánh dấu bài <b>Mới / Đã sửa / Đã xoá</b>.', 'Approve → bản sửa thay bản đang chạy, tiến độ tính lại theo BR-LRN-30.'],
+    ['REQ-3.7', 'AC', 'Khoá đang chạy: sửa nội dung (thông tin, Session, bài, video, đề Exam / Practice) và <b>Phạm vi, Phòng ban, Vị trí</b> phải duyệt. Add / Remove từng học viên áp dụng ngay.', 'Admin L&D tự tạo / sửa → Publish thẳng (BR-CRS-05, 08).'],
+    ['REQ-3.8', 'AC', 'Gửi duyệt, Approve, Yêu cầu chỉnh sửa, cấp quyền: thông báo <b>chuông trong app + email</b>.', 'BR-CRS-09.']],
+  brs: [['BR-CRS-01', 'Chỉ Admin L&D cấp quyền Creator; Creator tạo khoá → là người phụ trách duy nhất.'], ['BR-CRS-05', 'Sửa nội dung, Phạm vi, Phòng ban / Vị trí cần duyệt; Add / Remove từng người áp dụng ngay.'], ['BR-ROLE-02', 'Creator chỉ có quyền trên khoá mình phụ trách; đi học như Learner.'], ['BR-CRS-06', 'Bản sửa chưa Approve → học viên học bản đang chạy.'], ['BR-CRS-08', 'Admin L&D tạo / sửa → Publish thẳng.'], ['BR-CRS-12', 'Mỗi khoá tối đa 1 bản sửa đang mở.']],
+  oos: 'Đồng phụ trách nhiều Creator; người duyệt riêng ngoài Admin L&D; chuyển người phụ trách; so sánh nội dung từng chữ giữa 2 bản.',
+  links: [
+    ['admin-courses.html?r=admin&t=pending', 'Quản lý khoá: tab Chờ duyệt', 'Danh sách khoá chờ Admin duyệt', 'A', 1],
+    ['course-approval.html?k=new', 'Màn duyệt: khoá mới', 'Approve / Yêu cầu chỉnh sửa', 'A'],
+    ['course-approval.html?k=rev', 'Màn duyệt: bản sửa', 'Nhãn Mới · Đã sửa · Đã xoá', 'A'],
+    ['course-editor.html?st=rejected', 'Soạn khoá: Cần chỉnh sửa', 'Banner nhận xét của Admin', 'C'],
+    ['course-editor.html?st=draft&m=missing', 'Soạn khoá: gửi duyệt thiếu điều kiện', 'Danh sách lỗi BR-CRS-11', 'C'],
+    ['admin-settings.html', 'Cài đặt: cấp quyền Course Creator', 'Thêm / gỡ quyền', 'A']]
+});
+
+REQS.push({
+  id: 'r6', no: '#6', wave: 2, sec: 20, title: 'Tìm kiếm và lọc khoá học',
+  module: 'Learner', who: 'Learner', prio: 'Trung bình', spec: '06-course-search', dec: 'D-25 → D-27, D-41',
+  purpose: 'Học viên tìm đúng khoá mình cần bằng từ khoá, và lọc theo trạng thái và thời gian học của bản thân.',
+  short: { b: 'Gõ "testing" ra cả khoá Claude Certified Developer; không xếp theo độ liên quan.', a: 'Tìm trong tên + tag, đủ mọi từ, không cần dấu; lọc Hoàn thành / Chưa hoàn thành và theo thời gian học.' },
+  before: [
+    'Từ khoá khớp cả mô tả: gõ "testing" ra "CCDV-F Claude Certified Developer".',
+    'Không xếp theo độ liên quan; khi đang tải, danh sách cũ vẫn hiện.',
+    'Không lọc được khoá đã hoàn thành / chưa hoàn thành, hay theo thời gian học.'],
+  shots: [['07-search-testing.jpg', 'Tìm "testing" ra khoá không liên quan']],
+  reqs: [
+    ['REQ-6.1', 'L', 'Từ khoá tìm trong <b>tên khoá + tag / danh mục</b>, không tìm trong mô tả.', 'BR-LRN-11.'],
+    ['REQ-6.2', 'L', 'Nhiều từ → khoá phải chứa <b>đủ mọi từ</b>; không phân biệt hoa thường, gõ có / không dấu đều ra.', '"kiem thu" khớp "Kiểm thử" (BR-LRN-12).'],
+    ['REQ-6.3', 'L', 'Sắp xếp <b>Liên quan nhất</b>: tên bắt đầu bằng từ khoá → tên chứa đủ từ → chỉ khớp tag. Cùng nhóm → Publish mới hơn trước.', 'BR-LRN-13.'],
+    ['REQ-6.5', 'L', 'Lọc <b>Trạng thái của tôi</b>: Chưa bắt đầu · Đang học · Hoàn thành, ở cả trang Tìm khoá và My Courses.', 'BR-LRN-15.'],
+    ['REQ-6.6', 'L', 'Lọc <b>Thời gian</b> 7 / 30 / 90 ngày theo ngày của tôi: ngày <b>đăng ký</b> (khoá đang học / Không đạt) hoặc ngày <b>hoàn thành</b>.', 'Khoá chưa đăng ký bị ẩn khi bật lọc Thời gian (BR-LRN-16).'],
+    ['REQ-6.7', 'L', 'Trang kết quả: hàng tóm tắt gồm số khoá, chip lọc đang áp, Xoá tất cả, Sắp xếp. URL giữ đủ <code>?q=&amp;ct=&amp;st=&amp;pd=&amp;sort=</code>.', 'Refresh hoặc gửi link giữ đúng kết quả.'],
+    ['REQ-6.8', 'L', 'Không có kết quả → Empty state + nút Xoá bộ lọc. Đang tải → skeleton, bỏ kết quả về muộn.', 'BR-LRN-18. Khoá ngoài đối tượng vẫn hiện (BR-AUD-07).']],
+  brs: [['BR-LRN-11', 'Tìm trong tên khoá và tag / danh mục.'], ['BR-LRN-12', 'Đủ mọi từ, không phân biệt hoa thường và dấu.'], ['BR-LRN-13', 'Thứ tự liên quan: bắt đầu bằng → chứa đủ → chỉ tag.'], ['BR-LRN-14', 'Chỉ khoá đã phát hành (Published) xuất hiện trong kết quả.'], ['BR-LRN-15', 'Trạng thái của tôi: Chưa bắt đầu / Đang học / Hoàn thành.'], ['BR-LRN-18', 'Chỉ hiện kết quả lần tìm mới nhất.']],
+  oos: 'Tìm trong mô tả, nội dung bài học; tìm theo ý nghĩa.',
+  links: [
+    ['course-search.html?q=kiem+thu', 'Tìm "kiem thu" (không dấu)', 'Ra "Kiểm thử", xếp theo liên quan', 'L', 1],
+    ['course-search.html?sc=testing', 'Tìm "testing"', 'Không còn ra khoá Claude', 'L'],
+    ['course-search.html?sc=none', 'Không có kết quả', 'Empty state rộng hết lưới + Xoá bộ lọc', 'L'],
+    ['course-search.html?lat=slow', 'Đang tải chậm', 'Skeleton, không hiện danh sách cũ', 'L'],
+    ['my-courses.html?pre=d7', 'My Courses: 7 ngày qua', 'Lọc Trạng thái + Thời gian', 'L']]
+});
+
+REQS.push({
+  id: 'r7', no: '#7', wave: 2, sec: 30, title: 'Tỷ lệ hoàn thành và Điểm cao nhất',
+  module: 'Learner / Report', who: 'Learner', prio: 'Trung bình', spec: '07-learner-result', dec: 'D-29, D-30, D-40',
+  purpose: 'Ô "Tỷ lệ hoàn thành" phải cho biết học viên đã học được bao nhiêu phần khoá học, không phải điểm thi. Điểm cao nhất vẫn có, nhưng đặt đúng chỗ (từng bài test) và khớp màn kết quả bài thi.',
+  short: { b: 'Ô "Tỷ lệ hoàn thành" đang hiện giá trị "Điểm cao nhất".', a: 'Tỷ lệ hoàn thành = % tiến độ khoá; từng bài test hiện Điểm cao nhất (cũng là điểm chính thức).' },
+  before: [
+    'Theo L&D: ô có nhãn "Tỷ lệ hoàn thành" đang hiện giá trị "Điểm cao nhất".',
+    'Học viên và L&D hiểu sai: tưởng đã học xong phần lớn khoá trong khi đó là điểm thi.'],
+  shots: [], noshot: 'AS-IS chưa chụp được (tài khoản chưa có khoá đã làm test). Áp quy tắc cho mọi chỗ có nhãn này phía Learner.',
+  reqs: [
+    ['REQ-7.1', 'L', 'Trang khoá có khối <b>Kết quả của tôi</b> (khi đã đăng ký): Tỷ lệ hoàn thành dạng vòng tròn, dòng tách <b>Video a/b · Bài test c/d</b>, trạng thái khoá.', 'Tỷ lệ hoàn thành = P theo yêu cầu #8 (BR-LRN-27).'],
+    ['REQ-7.2', 'L', 'Bảng bài test: Bài test, <b>Điểm cao nhất</b>, Lượt đã làm (n/3), Kết quả (Đạt / Chưa đạt / Chưa làm), nút Xem lại.', 'Điểm cao nhất = điểm chính thức, cùng con số với màn kết quả bài thi; Practice không tính (BR-LRN-28).'],
+    ['REQ-7.3', 'L', 'Bài chưa làm lượt nào → điểm "—", trạng thái "Chưa làm".', ''],
+    ['REQ-7.4', 'L', 'Mất quyền → khối vẫn hiện số liệu đã lưu, ẩn nút Xem lại.', 'BR-AUD-06.'],
+    ['REQ-7.5', 'AC', '<b>Không nơi nào</b> dùng nhãn "Tỷ lệ hoàn thành" cho điểm; file export cột Tiến độ (%) = P.', 'Một con số cho thẻ kết quả, thanh tiến độ, file export.']],
+  brs: [['BR-LRN-27', '"Tỷ lệ hoàn thành" luôn là tiến độ khoá P (BR-LRN-21).'], ['BR-LRN-28', 'Điểm từng bài = Điểm cao nhất (điểm chính thức); Practice không tính.']],
+  oos: 'Dashboard, biểu đồ kết quả học tập.',
+  links: [
+    ['course-detail.html?s=learning', 'Trang khoá: Kết quả của tôi', 'Tỷ lệ hoàn thành 31% + Điểm cao nhất từng bài', 'L', 1],
+    ['course-detail.html?s=completed', 'Trang khoá: Hoàn thành', 'Tỷ lệ 100% + ngày hoàn thành', 'L']]
+});
+
+REQS.push({
+  id: 'r8', no: '#8', wave: 2, sec: 40, title: 'Cách tính và hiển thị tiến độ',
+  module: 'Learner', who: 'Learner', prio: 'Trung bình', spec: '08-progress-logic', dec: 'D-31 → D-35',
+  q: 'Thanh "Progress 7%" cho biết điều gì?',
+  purpose: 'Học viên và L&D nhìn thanh tiến độ là biết đúng phần nào của khoá đã học: bao nhiêu video đã xem thật, bao nhiêu bài test đã đạt, thay vì một con số chung dễ hiểu sai.',
+  short: { b: '"1 of 15 lessons completed", "Progress 7%": không biết đã xem bao nhiêu video, đạt bao nhiêu bài test.', a: 'Thêm dòng tách Video a/b · Bài test c/d; video xong khi phát thực ≥ 90%; Exam xong khi đạt.' },
+  before: [
+    'Popover "Your progress": "1 of 15 lessons completed", đếm số bài, mọi loại bài bằng nhau.',
+    'Thẻ khoá chỉ có "Progress 7%".',
+    'Chưa rõ thế nào là "xem xong" video; tua tới cuối cũng có thể tính xong.'],
+  shots: [['02-course-detail.jpg', 'Popover Your progress'], ['06-my-courses.jpg', 'Progress trên thẻ khoá']],
+  reqs: [
+    ['REQ-8.1', 'L', 'Tiến độ khoá P = số bài đã xong ÷ tổng số bài × 100, <b>làm tròn xuống</b>. Mọi loại bài bằng nhau.', 'Chỉ 100% khi xong hết; Practice không phải bài (BR-LRN-21).'],
+    ['REQ-8.2', 'L', 'Mọi nơi hiển thị tiến độ có dòng tách <b>Video a/b · Bài test c/d</b> (dạng gọn) hoặc thêm Tài liệu (dạng đầy đủ).', 'Thẻ khoá, My Courses, kết quả tìm kiếm, popover Tiến độ của bạn (BR-LRN-26).'],
+    ['REQ-8.3', 'L', 'Video xong khi <b>thời gian phát thực ≥ 90%</b> thời lượng. Đoạn tua qua không tính, nhưng không chặn tua.', 'Cộng dồn qua nhiều lần học; phát nhanh vẫn tính theo giây của video (BR-LRN-22, 25).'],
+    ['REQ-8.4', 'L', 'Dưới video có thanh nhỏ <b>"Đã xem x% · cần 90%"</b>; đạt 90% → toast "Đã hoàn thành bài …", tiến độ tăng ngay.', 'Tua tới cuối mà chưa đủ → chưa xong.'],
+    ['REQ-8.5', 'L', 'Bài Exam xong khi <b>Đạt</b> (Đạt thì bài khoá, không tụt). Hết 3 lượt chưa đạt → bài chưa xong, khoá chuyển Không đạt.', 'BR-LRN-23, BR-LRN-32. Tài liệu / slide xong khi mở bài (BR-LRN-24).'],
+    ['REQ-8.6', 'L', 'Bài đã đánh dấu xong theo luật cũ <b>giữ nguyên</b>.', 'BR-LRN-29.'],
+    ['REQ-8.7', 'L', 'Khi bản sửa được Approve: khoá đã Hoàn thành <b>giữ Hoàn thành</b>; khoá đang học tính lại P theo danh sách bài mới.', 'Bài mới chưa xong, bài xoá bị bỏ, video thay file tính là chưa xong (BR-LRN-30).']],
+  brs: [['BR-LRN-21', 'P = bài đã xong ÷ tổng bài × 100, làm tròn xuống.'], ['BR-LRN-22', 'Video xong khi phát thực ≥ 90%.'], ['BR-LRN-23', 'Bài thi (Exam) xong khi Đạt.'], ['BR-LRN-26', 'Mọi nơi hiển thị tiến độ có dòng tách.'], ['BR-LRN-29', 'Bài xong theo luật cũ giữ nguyên.'], ['BR-LRN-30', 'Khoá Hoàn thành giữ Hoàn thành khi có bài mới.']],
+  oos: 'Trọng số khác nhau theo loại bài; chặn tua video.',
+  links: [
+    ['lesson-video.html?v=seek', 'Trang học video: tua tới cuối', 'Chưa đủ 90% → chưa xong', 'L', 1],
+    ['lesson-video.html?v=near', 'Trang học video: đã xem 85%', 'Thanh "Đã xem 85% · cần 90%"', 'L'],
+    ['lesson-video.html?v=legacy', 'Xong theo luật cũ', 'Giữ nguyên trạng thái xong', 'L'],
+    ['my-courses.html', 'My Courses: tiến độ tách', 'Video a/b · Bài test c/d trên thẻ', 'L'],
+    ['course-detail.html?s=learning', 'Trang khoá: popover Tiến độ', 'Dạng đầy đủ Video / Bài test / Tài liệu', 'L']]
+});
+/* ===== BỔ SUNG CHO THẺ BẬC + CHIẾU CHỈ =====
+   lead: 1 câu "Làm gì" · cb / ca: Trước / Giờ dạng gạch đầu dòng · try: kịch bản thử trên prototype [bước, link|null] */
+const EXTRA = {
+  r1: {
+    lead: 'Tách đề luyện tập khỏi đề thi, để điểm thi phản ánh đúng năng lực.',
+    cb: ['Practice và Exam dùng chung một bộ câu', 'Practice bấm Check answer là thấy đáp án, làm lại không giới hạn', 'Học viên luyện tới thuộc đáp án rồi mới thi'],
+    ca: ['Bật / tắt Practice riêng từng bài test', 'Practice có bộ câu riêng: thêm / sửa / xoá từng câu hoặc nhập nhiều câu từ file mẫu; câu trùng đề thi bị chặn', 'Practice không tính lượt, không tính tiến độ, không có trong file export'],
+    try: [
+      ['Admin mở tab Practice của một bài có sẵn: Practice đang tắt, bộ câu rỗng.', 'admin-test-practice.html?st=legacy'],
+      ['Bấm vào một câu để sửa: đổi nội dung, lựa chọn, đáp án đúng rồi Lưu thay đổi.', 'admin-test-practice.html?st=ok&open=edit'],
+      ['Nhập từ file: tải mẫu, chọn file, xem dòng nào hợp lệ / lỗi rồi nhập.', 'admin-test-practice.html?st=ok&open=import'],
+      ['Thêm một câu trùng đề thi rồi bấm Lưu: bị chặn, câu trùng đánh dấu đỏ.', 'admin-test-practice.html?st=dup'],
+      ['Học viên mở bài có đề luyện: thấy 2 lựa chọn Luyện tập / Làm bài thi, mỗi bên ghi rõ luật.', 'test-start.html?practice=on'],
+      ['Bài cũ chưa có đề luyện: chỉ còn nút Làm bài thi, không còn chữ Practice.', 'test-start.html?practice=off'],
+      ['Luyện tập xong: màn tổng kết hiện đáp án ngay, có nút Luyện lại câu sai.', 'practice.html?sc=done']]
+  },
+  r2: {
+    lead: 'Học viên sửa câu sai trong 3 lượt; chỉ thấy đáp án khi Đạt hoặc hết lượt.',
+    cb: ['Nộp bài là thấy đáp án đúng + giải thích của mọi câu', 'Lịch sử lượt làm nằm trong tab Overview, khó tìm', 'Đáp án dễ bị chép cho lượt sau hoặc chia cho người khác'],
+    ca: ['Cố định 3 lượt; chưa đạt thì lượt sau chỉ làm lại câu sai', 'Đạt → bài khoá, mở đáp án đúng + giải thích', 'Hết 3 lượt → khoá, mở đáp án; điểm chính thức = điểm cao nhất'],
+    try: [
+      ['Mở bài thi từ đầu (đã xoá các lượt demo cũ).', 'assessment.html?demo=reset'],
+      ['Làm bài rồi Nộp: thấy tổng Đúng / Sai, đáp án đúng vẫn ẩn, nút "Làm lại n câu sai".', null],
+      ['Lượt 2 Đạt: bài khoá, mở đáp án + giải thích.', 'test-result.html?sc=perfect'],
+      ['Hết 3 lượt chưa đạt: mở đáp án cho mọi lượt, điểm chính thức là điểm cao nhất.', 'test-result.html?sc=last'],
+      ['Thử đồng hồ còn 5 phút; hết giờ thì bài tự nộp và trừ 1 lượt.', 'assessment.html?demo=5min']]
+  },
+  r4: {
+    lead: 'Khoá chuyên sâu chỉ mở cho đúng phòng ban, vị trí hoặc từng người được chọn.',
+    cb: ['Khoá nào cũng mở cho toàn công ty', 'Không giới hạn được theo phòng ban, vị trí, cá nhân', 'Người ngoài nhóm vẫn học và lấy chứng nhận được'],
+    ca: ['Tab Đối tượng: Toàn công ty, hoặc Giới hạn theo Phòng ban / Vị trí / Cá nhân', 'Danh sách học viên có cột Nguồn và danh sách Đã loại trừ', 'Người ngoài chỉ xem giới thiệu; bị gỡ thì mất quyền nhưng giữ tiến độ'],
+    try: [
+      ['Admin mở tab Đối tượng của khoá đang giới hạn cho QA.', 'admin-audience.html?role=Admin&sc=limited'],
+      ['Chọn Giới hạn mà chưa có quy tắc nào: bị chặn Lưu.', 'admin-audience.html?sc=empty'],
+      ['Học viên ngoài đối tượng mở trang khoá: chỉ xem giới thiệu, không có nút đăng ký.', 'course-detail.html?s=restricted'],
+      ['Học viên bị gỡ giữa khoá: mất quyền vào bài, tiến độ vẫn được lưu.', 'course-detail.html?s=removed']]
+  },
+  r5: {
+    lead: 'L&D xuất tiến độ và điểm của học viên ra file Excel, không phải gom tay.',
+    cb: ['Không có nút xuất dữ liệu', 'Muốn báo cáo phải tự gom tiến độ, điểm từng người sang Excel'],
+    ca: ['Nút Xuất dữ liệu ra file .xlsx', 'Xuất toàn khoá hoặc theo Session; lọc theo ngày enroll, phòng ban, trạng thái học', 'Hiện "Dự kiến N học viên"; N = 0 thì không cho xuất'],
+    try: [
+      ['Admin mở trang khoá, bấm Xuất dữ liệu cạnh tên khoá.', 'admin-audience.html?role=Admin'],
+      ['Đổi Phạm vi sang Theo session, chọn session, đổi bộ lọc: số dự kiến cập nhật theo.', null],
+      ['Lọc tới khi không còn học viên nào: nút Xuất file bị tắt.', null],
+      ['Đăng nhập vai Creator: chỉ xuất được khoá mình phụ trách.', 'admin-audience.html?role=Creator']]
+  },
+  r9: {
+    lead: 'Mỗi học viên học tối đa 2 khoá cùng lúc, phải học xong mới đăng ký thêm.',
+    cb: ['Đăng ký bao nhiêu khoá cũng được', 'Nhiều khoá dở dang, tỷ lệ hoàn thành thấp'],
+    ca: ['Tối đa 2 khoá Đang học, cố định', 'Không tự rời khoá: phải hoàn thành mới có suất mới', 'Trượt bài thi sau 3 lượt → khoá Không đạt, trả suất'],
+    try: [
+      ['Trang chủ khi đầy suất: Suất học 2/2.', 'home.html?f=1'],
+      ['Bấm Start Courses khoá mới khi đã đầy: popup 2 khoá đang học, chỉ có Tiếp tục học.', 'course-detail.html?s=limit'],
+      ['Khoá trượt bài thi sau 3 lượt: nhãn Không đạt, suất được trả.', 'course-detail.html?s=failed']]
+  },
+  r3: {
+    lead: 'SME, trainer tự soạn khoá; L&D duyệt trước khi khoá tới tay học viên.',
+    cb: ['Chỉ Admin L&D tạo và sửa khoá', 'Không có bước duyệt trước khi Publish', 'Sửa khoá đang chạy là áp dụng ngay cho người đang học'],
+    ca: ['Admin cấp quyền Course Creator', 'Creator gửi duyệt; Admin Approve hoặc Yêu cầu chỉnh sửa kèm nhận xét', 'Sửa khoá đang chạy tạo bản sửa; học viên học bản cũ tới khi bản sửa được duyệt'],
+    try: [
+      ['Admin cấp quyền Course Creator trong Cài đặt.', 'admin-settings.html'],
+      ['Creator gửi duyệt khi còn thiếu điều kiện: hiện danh sách lỗi cần sửa.', 'course-editor.html?st=draft&m=missing'],
+      ['Admin mở tab Chờ duyệt.', 'admin-courses.html?r=admin&t=pending'],
+      ['Admin duyệt khoá mới: Approve hoặc Yêu cầu chỉnh sửa.', 'course-approval.html?k=new'],
+      ['Admin duyệt bản sửa của khoá đang chạy: bài có nhãn Mới / Đã sửa / Đã xoá.', 'course-approval.html?k=rev']]
+  },
+  r6: {
+    lead: 'Học viên tìm đúng khoá bằng từ khoá, lọc theo trạng thái và thời gian học.',
+    cb: ['Gõ "testing" ra cả khoá Claude không liên quan', 'Kết quả không xếp theo độ liên quan', 'Không lọc được theo trạng thái học hay độ mới của khoá'],
+    ca: ['Tìm trong tên + tag, phải đủ mọi từ, gõ không dấu vẫn ra', 'Xếp theo Liên quan nhất', 'Lọc Hoàn thành / Chưa hoàn thành và Thời gian (ngày đăng ký / hoàn thành)'],
+    try: [
+      ['My Courses: lọc khoá trong 7 ngày qua.', 'my-courses.html?pre=d7'],
+      ['Tìm "kiem thu" (không dấu): ra khoá "Kiểm thử", xếp theo liên quan.', 'course-search.html?q=kiem+thu'],
+      ['Tìm "testing": không còn ra khoá Claude.', 'course-search.html?sc=testing'],
+      ['Không có kết quả: Empty state kèm nút Xoá bộ lọc.', 'course-search.html?sc=none']]
+  },
+  r7: {
+    lead: 'Ô "Tỷ lệ hoàn thành" hiện đúng % tiến độ khoá, không phải điểm thi.',
+    cb: ['Ô "Tỷ lệ hoàn thành" đang hiện giá trị "Điểm cao nhất"', 'Học viên và L&D hiểu sai mức độ đã học'],
+    ca: ['Tỷ lệ hoàn thành = % tiến độ khoá, kèm dòng Video a/b · Bài test c/d', 'Từng bài test hiện Điểm cao nhất, khớp màn kết quả bài thi'],
+    try: [
+      ['Trang khoá đang học: khối Kết quả của tôi 31% và Điểm cao nhất từng bài.', 'course-detail.html?s=learning'],
+      ['Khoá đã hoàn thành: 100% kèm ngày hoàn thành.', 'course-detail.html?s=completed']]
+  },
+  r8: {
+    lead: 'Thanh tiến độ cho biết đã xem bao nhiêu video thật, đạt bao nhiêu bài test.',
+    cb: ['Chỉ có "1 of 15 lessons completed", "Progress 7%"', 'Không tách được video và bài test', 'Tua tới cuối video có thể được tính là xong'],
+    ca: ['Dòng tách Video a/b · Bài test c/d ở mọi nơi hiện tiến độ', 'Video xong khi phát thực ≥ 90%; đoạn tua qua không tính', 'Bài thi xong khi Đạt; Practice không tính'],
+    try: [
+      ['Tua video tới cuối: vẫn chưa xong.', 'lesson-video.html?v=seek'],
+      ['Đã xem 85%: thanh nhỏ ghi "Đã xem 85% · cần 90%".', 'lesson-video.html?v=near'],
+      ['My Courses: thẻ khoá có dòng tách Video / Bài test.', 'my-courses.html'],
+      ['Bài đã xong theo luật cũ: giữ nguyên trạng thái xong.', 'lesson-video.html?v=legacy']]
+  }
+};
+REQS.forEach((r) => Object.assign(r, EXTRA[r.id]));
+</script>
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const AS = '../../references/web-capture/as-is/';
+  const IMG = '../assets/img/techter-climb.webp';
+  const BY = Object.fromEntries(REQS.map((r) => [r.id, r]));
+  const ORDER = ['r1', 'r2', 'r4', 'r5', 'r9', 'r3', 'r6', 'r7', 'r8'];
+  const NO = Object.fromEntries(ORDER.map((id, i) => [id, i + 1]));
+  const WHO = { L: ['Learner', 'l'], A: ['Admin L&amp;D', ''], C: ['Course Creator', ''], AC: ['Admin / Creator', ''] };
+  const ROLE = { L: ['Learner', ''], A: ['Admin', 'a'], C: ['Creator', 'a'] };
+  const esc = (s) => String(s).replace(/&(?!amp;|quot;|lt;|gt;)/g, '&amp;').replace(/"/g, '&quot;');
+
+  /* ---------- Techter: áo choàng cử nhân + khăn vàng + mũ (SVG phủ lên ảnh) ---------- */
+  const GOWN = '<svg class="gown" viewBox="0 0 317 494" aria-hidden="true"><defs><linearGradient id="gw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0e1330"/><stop offset=".5" stop-color="#1d2550"/><stop offset="1" stop-color="#0e1330"/></linearGradient></defs>'
+    + '<path d="M0 222 Q22 198 62 192 Q128 182 214 188 L240 224 L214 296 L202 424 Q112 446 12 428 L26 334 L0 306Z" fill="url(#gw)"/>'
+    + '<path d="M196 186 L256 166 L288 190 L240 238Z" fill="url(#gw)"/>'
+    + '<path d="M256 166 L288 190M0 306 L26 334" stroke="#f2bf3f" stroke-width="5" stroke-linecap="round"/>'
+    + '<path d="M60 300 Q110 312 196 300" stroke="#2c376e" stroke-width="2" fill="none"/>'
+    + '<polygon points="102,190 152,190 127,240" fill="#fff"/>'
+    + '<polygon points="94,189 110,189 100,336 82,334" fill="#f2bf3f"/><polygon points="144,189 160,189 170,334 152,336" fill="#f2bf3f"/>'
+    + '<text x="160" y="300" font-family="Arial" font-weight="900" font-size="18" fill="#0e1330" text-anchor="middle">T</text></svg>';
+  const CAP = '<svg viewBox="0 0 100 64"><path d="M26 28v14q24 14 48 0V28L50 38Z" fill="#232838"/><polygon points="50,4 98,21 50,38 2,21" fill="#151a28" stroke="#3b4258" stroke-width="1.5"/><circle cx="50" cy="21" r="3.2" fill="#f2bf3f"/><path d="M50 21 L84 27 L84 46" stroke="#f2bf3f" stroke-width="2.6" fill="none" stroke-linecap="round"/><rect x="80" y="44" width="8" height="12" rx="2" fill="#f2bf3f"/></svg>';
+  const tt = () => `<img src="${IMG}" alt="" draggable="false">${GOWN}<span class="cap">${CAP}</span>`;
+  document.querySelectorAll('[data-tt]').forEach((el) => { el.innerHTML = tt(); });
+  document.querySelector('#hero [data-tt] img').alt = 'Techter, mascot rái cá TECHVIFY, mặc áo cử nhân và đội mũ ở chân cầu thang';
+
+  /* ---------- Bản đồ (chân cầu thang) ---------- */
+  const mapItem = (id) => { const r = BY[id]; return `<li><a href="#buoc-${NO[id]}"><i>${NO[id]}</i><span style="color:inherit;font-size:inherit;font-weight:inherit"><b>${r.no} · ${r.title}</b><small>${r.lead}</small></span><span>Xem ↓</span></a></li>`; };
+  $('map').innerHTML = `
+    <div class="map-col rv"><h3>Đợt 1 · Bậc 1 → 5<small>Ưu tiên Cao · D-01 → D-15</small></h3><ol>${ORDER.slice(0, 5).map(mapItem).join('')}</ol></div>
+    <div class="map-col rv"><h3>Đợt 2 · Bậc 6 → 9<small>Ưu tiên Trung bình · D-16 → D-35</small></h3><ol>${ORDER.slice(5).map(mapItem).join('')}</ol></div>`;
+
+  /* ---------- Các vị trí trên cầu thang ----------
+     j = 0 chân · 1..5 bậc Đợt 1 · 6 chiếu nghỉ · 7..10 bậc Đợt 2 · 11 đỉnh */
+  const SEQ = ['base', ...ORDER.slice(0, 5), 'land', ...ORDER.slice(5), 'peak'];
+  const J_OF = Object.fromEntries(SEQ.map((k, j) => [k, j]));
+  const nameOf = (j) => { const k = SEQ[j]; return k === 'base' ? 'Chân cầu thang' : k === 'land' ? 'Chiếu nghỉ · Xong Đợt 1' : k === 'peak' ? 'Đỉnh LearningHub 2' : `Bậc ${NO[k]}/9 · ${BY[k].title}`; };
+
+  /* ---------- Thẻ gọn ---------- */
+  const card = (id) => {
+    const r = BY[id], n = NO[id];
+    return `<article class="card" data-open="${id}">
+      <div class="k"><span class="no"><span><small>BẬC</small>${n}</span></span><div style="min-width:0"><p class="meta">Yêu cầu ${r.no} · Đợt ${r.wave}</p><h3>${r.title}</h3></div></div>
+      <p class="what">${r.lead}</p>
+      <div class="ab"><p class="o"><b>Trước</b><span>${r.cb[0]}</span></p><p class="n"><b>Giờ</b><span>${r.ca[0]}</span></p></div>
+      <div class="acts"><button class="open-ed" type="button" data-open="${id}">📜 Mở chiếu chỉ</button><a class="try-btn" href="${r.links[0][0]}" target="_blank" rel="noopener">Thử prototype ↗</a></div>
+    </article>`;
+  };
+  const LAND = `<article class="card land"><div class="k"><span class="no">⛺</span><div><p class="meta">Chiếu nghỉ · D-01 → D-15</p><h3>Đã vượt Đợt 1</h3></div></div>
+    <ul><li>Đề luyện tách khỏi đề thi; đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt.</li><li>Khoá giới hạn đúng đối tượng; mỗi người tối đa 2 khoá tự chọn.</li><li>L&amp;D xuất được tiến độ và điểm ra Excel.</li></ul></article>`;
+  const INTRO = `<article class="card intro"><div class="k"><span class="no">🎓</span><div><p class="meta">Chân cầu thang</p><h3>9 bậc, 2 đợt, 1 đỉnh</h3></div></div>
+    <p class="what">Cuộn xuống để Techter leo từng bậc. Mỗi bậc là một yêu cầu; bấm số bậc hoặc "Mở chiếu chỉ" để đọc đặc tả đầy đủ.</p></article>`;
+  const PEAK = `<article class="card intro"><div class="k"><span class="no">🏆</span><div><p class="meta">Về đích</p><h3>Đã lên tới đỉnh</h3></div></div>
+    <p class="what">Đủ 9 yêu cầu của LearningHub 2. Cuộn tiếp để xem chứng nhận và các mốc tiếp theo.</p></article>`;
+  $('panel').insertAdjacentHTML('beforeend', SEQ.map((k, j) => `<div class="pc" data-j="${j}">${k === 'base' ? INTRO : k === 'land' ? LAND : k === 'peak' ? PEAK : card(k)}</div>`).join(''));
+  $('mlist').innerHTML = `<p class="mseg">Vượt chướng ngại vật · Đợt 1</p>`
+    + ORDER.slice(0, 5).map((id) => `<div class="mstep" data-j="${J_OF[id]}" data-n="${NO[id]}">${card(id)}</div>`).join('')
+    + `<div class="mstep" data-j="6">${LAND}</div><p class="mseg">Tăng tốc · Đợt 2</p>`
+    + ORDER.slice(5).map((id) => `<div class="mstep" data-j="${J_OF[id]}" data-n="${NO[id]}">${card(id)}</div>`).join('');
+  $('segs').innerHTML = ORDER.map(() => '<i></i>').join('');
+
+  /* ---------- Cầu thang (màn rộng) ---------- */
+  $('blocks').innerHTML = SEQ.slice(1).map((k, i) => {
+    const j = i + 1;
+    if (k === 'land') return `<button type="button" class="blk land" data-j="${j}" aria-label="Chiếu nghỉ, xong Đợt 1" tabindex="-1"><span class="n">CHIẾU NGHỈ</span></button>`;
+    if (k === 'peak') return `<span class="blk peak" data-j="${j}"><span class="n">🏆</span></span><span class="flag" id="flag"></span>`;
+    return `<button type="button" class="blk" data-j="${j}" data-open="${k}" aria-label="Bậc ${NO[k]}: ${BY[k].title}. Mở chiếu chỉ"><span class="n">${NO[k]}</span><span class="t">${BY[k].title}</span></button>`;
+  }).join('');
+  $('marks').innerHTML = SEQ.map((k, j) => `<span class="mk" data-j="${j}" style="top:calc(${j} * var(--u))"></span>`).join('');
+
+  const climb = $('climb'), walker = $('walker');
+  let desk = false, geo = null;
+  function layout() {
+    desk = innerWidth > 1000 && innerHeight >= 600;
+    climb.classList.toggle('desk', desk);
+    /* id #buoc-n gắn vào mốc cuộn (màn rộng) hoặc thẻ trong danh sách (màn hẹp) */
+    document.querySelectorAll('.mk,.mstep').forEach((el) => el.removeAttribute('id'));
+    ORDER.forEach((id, i) => { const sel = desk ? `.mk[data-j="${J_OF[id]}"]` : `.mstep[data-j="${J_OF[id]}"]`; document.querySelector(sel).id = 'buoc-' + (i + 1); });
+    if (!desk) return;
+    const st = $('stage'), W = st.clientWidth, H = st.clientHeight;
+    const w = W / 12.8, tw = Math.min(w * 1.3, 92), th = tw * 494 / 317;
+    const rise = (H - 70 - th - 34) / 11;
+    st.style.setProperty('--w', w + 'px'); st.style.setProperty('--rise', rise + 'px'); walker.style.setProperty('--tw', tw + 'px');
+    const pts = [{ x: w * 0.7, y: 10 }];
+    let x = w * 1.4;
+    document.querySelectorAll('#blocks .blk').forEach((b) => {
+      const j = +b.dataset.j, bw = b.classList.contains('land') ? w * 1.7 : w;
+      b.style.left = x + 'px'; b.style.width = bw + 'px'; b.style.setProperty('--h', j);
+      pts[j] = { x: x + bw / 2, y: 10 + rise * j + 34 + 4 };
+      x += bw;
+    });
+    const f = $('flag'), pk = pts[11]; f.style.left = (pk.x + w * 0.1) + 'px'; f.style.bottom = (pk.y) + 'px';
+    geo = { pts, tw, unit: innerHeight * 0.46 };
+    place(level < 0 ? 0 : level, false);
+  }
+  function place(j, anim) {
+    if (!geo) return;
+    const p = geo.pts[j]; if (!p) return;
+    walker.style.transform = `translate(${p.x - geo.tw / 2}px, ${-p.y}px)`;
+    if (anim && !reduce) { walker.classList.remove('hop'); void walker.offsetWidth; walker.classList.add('hop'); }
+  }
+
+  let level = -1, bubbleT;
+  function setLevel(j) {
+    if (j === level) return;
+    const up = j > level && level >= 0; level = j;
+    place(j, true);
+    document.querySelectorAll('#blocks .blk').forEach((b) => { const k = +b.dataset.j; b.classList.toggle('done', k < j); b.classList.toggle('on', k === j); });
+    document.querySelectorAll('.pc').forEach((c) => c.classList.toggle('show', +c.dataset.j === j));
+    document.querySelectorAll('.mstep').forEach((c) => c.classList.toggle('on', +c.dataset.j === j));
+    const steps = ORDER.filter((id) => J_OF[id] <= j).length;
+    [...$('segs').children].forEach((el, i) => el.classList.toggle('done', i < steps));
+    $('stNow').textContent = j === 0 ? 'Chân cầu thang' : j === 6 ? 'Chiếu nghỉ' : j === 11 ? 'Đỉnh' : `Bậc ${NO[SEQ[j]]}/9`;
+    $('mbarT').textContent = nameOf(j);
+    $('pPrev').disabled = j === 0; $('pNext').disabled = j === 11;
+    const b = $('bubble');
+    if (up && desk) {
+      const k = SEQ[j];
+      b.innerHTML = k === 'peak' ? '<small>Về đích!</small>Đã lên tới đỉnh' : k === 'land' ? '<small>Nghỉ chân</small>Xong Đợt 1, sang Đợt 2' : `<small>Lên bậc ${NO[k]}</small>${BY[k].title}`;
+      b.hidden = false; clearTimeout(bubbleT); bubbleT = setTimeout(() => { b.hidden = true; }, 2000);
+    }
+  }
+  function goJ(j) {
+    j = Math.max(0, Math.min(11, j));
+    const top = climb.getBoundingClientRect().top + scrollY + j * geo.unit + 2;
+    scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+  }
+  $('pPrev').onclick = () => goJ(level - 1);
+  $('pNext').onclick = () => goJ(level + 1);
+
+  /* ---------- Đỉnh: tung mũ + pháo giấy ---------- */
+  let reached = false;
+  function summit() {
+    if (reached) return; reached = true;
+    $('top').classList.add('in');
+    if (reduce) return;
+    const cf = $('confetti'), cx = cf.getContext('2d'), r = cf.getBoundingClientRect();
+    cf.width = r.width; cf.height = r.height;
+    const pal = ['#f2bf3f', '#41c8ff', '#ffffff', '#d13a32', '#1f9d55', '#374bfa'];
+    let parts = Array.from({ length: 170 }, (_, i) => ({ x: r.width / 2, y: 200, vx: (Math.random() - 0.5) * 15, vy: -Math.random() * 13 - 4, s: 5 + Math.random() * 6, c: pal[i % 6], a: Math.random() * 6, va: (Math.random() - 0.5) * 0.3 }));
+    (function tick() {
+      cx.clearRect(0, 0, cf.width, cf.height);
+      parts = parts.filter((p) => p.y < cf.height + 20);
+      parts.forEach((p) => { p.vy += 0.3; p.x += p.vx; p.y += p.vy; p.a += p.va; cx.save(); cx.translate(p.x, p.y); cx.rotate(p.a); cx.fillStyle = p.c; cx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); cx.restore(); });
+      if (parts.length) requestAnimationFrame(tick);
+    })();
+  }
+
+  /* ---------- Cuộn ---------- */
+  let pending = [...document.querySelectorAll('.rv')];
+  function onScroll() {
+    const h = document.documentElement;
+    $('bar').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight || 1)) * 100 + '%';
+    pending = pending.filter((el) => { if (el.getBoundingClientRect().top > innerHeight * 0.92) return true; el.classList.add('in'); return false; });
+    let j = 0;
+    if (desk) {
+      j = Math.max(0, Math.min(11, Math.floor(-climb.getBoundingClientRect().top / geo.unit + 0.35)));
+    } else {
+      document.querySelectorAll('.mstep').forEach((el) => { if (el.getBoundingClientRect().top < innerHeight * 0.5) j = +el.dataset.j; });
+      if ($('top').getBoundingClientRect().top < innerHeight * 0.6) j = 11;
+    }
+    setLevel(j);
+    if ($('top').getBoundingClientRect().top < innerHeight * 0.55) summit();
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', () => { layout(); onScroll(); });
+  layout(); onScroll();
+  addEventListener('load', () => { layout(); onScroll(); }); setTimeout(onScroll, 300);
+  /* ---------- Chiếu chỉ ---------- */
+  const ov = $('ov'), pin = $('pin'), edict = $('edict');
+  let cur = null, lastFocus = null, closeT;
+  /* Triển khai (làm thế nào · cần chuẩn bị): đọc từ lh2-feature-list.js, sinh bởi tools/feature-list/build.py */
+  const FL = window.LH2_FEATURES || {};
+  const hx = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  function edictHTML(r) {
+    const n = NO[r.id], prev = ORDER[n - 2], next = ORDER[n], f = FL[r.no];
+    const shots = r.shots.length
+      ? `<div class="shots">${r.shots.map(([f, c]) => `<button type="button" class="shot" data-img="${f}" data-cap="${esc(c)}" aria-label="Phóng to ảnh: ${esc(c)}"><img loading="lazy" src="${AS + f}" alt=""><span>${c}</span></button>`).join('')}</div>`
+      : '';
+    let i = 0; const H = (id, t, sm) => `<h4><i>${++i}</i>${t}${sm ? ` <small>· ${sm}</small>` : ''}</h4>`;
+    const secs = [
+      ['e0', 'Tóm tắt', `${H('e0', 'Tóm tắt', 'vì sao, trước và giờ')}<p class="sum-lead">${r.lead}</p><p class="pur">${r.purpose}</p>
+        <div class="sum2"><div class="o"><h5>Trước</h5><ul>${r.cb.map((x) => `<li>${x}</li>`).join('')}</ul></div><div class="n"><h5>Giờ đổi / thêm</h5><ul>${r.ca.map((x) => `<li>${x}</li>`).join('')}</ul></div></div>${shots}`],
+      ['e3', 'Yêu cầu', `${H('e3', 'Yêu cầu tính năng', 'mỗi mã một yêu cầu, kèm tiêu chí chấp nhận')}
+        <table class="rq"><thead><tr><th>Mã</th><th>Yêu cầu</th><th>Tiêu chí chấp nhận</th></tr></thead><tbody>
+        ${r.reqs.map(([c, w, s, a]) => `<tr><td>${c}</td><td><span class="who ${WHO[w][1]}">${WHO[w][0]}</span><br>${s}</td><td>${a || '—'}</td></tr>`).join('')}
+        </tbody></table>${r.note ? `<p class="note">${r.note}</p>` : ''}`],
+      f && ['ei', 'Triển khai', `${H('ei', 'Triển khai', 'làm thế nào, cần chuẩn bị gì')}
+        <div class="impl"><div><h5>Làm thế nào</h5><ol>${f.how.map((t) => `<li>${hx(t)}</li>`).join('')}</ol></div>
+        <div><h5>Cần chuẩn bị</h5><ul>${f.need.map((t) => `<li>${hx(t)}</li>`).join('')}</ul></div></div>`],
+      ['e4', 'Thử', `${H('e4', 'Thử trên prototype')}
+        <ol class="try">${r.try.map(([t, h]) => `<li><span>${t}</span>${h ? `<a href="${h}" target="_blank" rel="noopener">Mở ↗</a>` : '<em>tiếp tục ở màn trên</em>'}</li>`).join('')}</ol>`],
+      ['e6', 'Link & phạm vi', `${H('e6', 'Link prototype', 'bản mới nhất')}<div class="lks">
+        ${r.links.map(([h, t, d, ro, nw]) => `<a class="lk" href="${h}" target="_blank" rel="noopener"><b>${t}<span class="r ${ROLE[ro][1]}">${ROLE[ro][0]}</span>${nw ? '<span class="r n">Bắt đầu ở đây</span>' : ''}</b><small>${d}</small></a>`).join('')}
+        </div><p class="oos"><b>Ngoài phạm vi:</b> ${r.oos}</p>`]].filter(Boolean);
+    return `
+      <p class="ed-k">Chiếu chỉ · Bậc ${n}/9 · Yêu cầu ${r.no} · Đợt ${r.wave}</p>
+      <h3 class="ed-t" id="edT">${r.title}</h3>
+      <div class="ed-orn" aria-hidden="true">✦</div>
+      <div class="ed-tags"><span>${r.module}</span><span>${r.who}</span><span>Ưu tiên ${r.prio}</span><span class="h">${r.dec}</span></div>
+      <nav class="ed-nav" aria-label="Mục trong chiếu chỉ">${secs.map(([id, t]) => `<a href="#${id}">${t}</a>`).join('')}</nav>
+      ${secs.map(([id, , body]) => `<section class="es" id="${id}">${body}</section>`).join('\n      ')}
+
+      <div class="ed-f">
+        <button type="button" data-go="${prev || ''}" ${prev ? '' : 'disabled'}>← ${prev ? 'Bậc ' + (n - 1) + ' · ' + BY[prev].title : 'Chân thang'}</button>
+        <span class="seal" aria-hidden="true">LH2<br>ĐÃ CHỐT</span>
+        <button type="button" data-go="${next || ''}" ${next ? '' : 'disabled'}>${next ? 'Bậc ' + (n + 1) + ' · ' + BY[next].title : 'Đỉnh'} →</button>
+      </div>`;
+  }
+  function roll() { // cuộn chiếu chỉ mở từ giữa ra hai bên
+    edict.style.setProperty('--shift', (edict.offsetWidth / 2 - 30) + 'px');
+    ov.classList.remove('shown'); void ov.offsetWidth;
+    requestAnimationFrame(() => ov.classList.add('shown'));
+  }
+  function open(id) {
+    const r = BY[id]; if (!r) return;
+    clearTimeout(closeT);
+    if (!cur) lastFocus = document.activeElement;
+    cur = id; pin.innerHTML = edictHTML(r); pin.scrollTop = 0;
+    ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    roll();
+    ov.querySelector('.ed-x').focus({ preventScroll: true });
+    history.replaceState(null, '', '#buoc-' + NO[id]);
+  }
+  function close() {
+    if (!cur) return; cur = null;
+    ov.classList.remove('shown'); ov.setAttribute('aria-hidden', 'true');
+    closeT = setTimeout(() => ov.classList.remove('open'), reduce ? 0 : 380);
+    document.body.style.overflow = '';
+    history.replaceState(null, '', location.pathname + location.search);
+    if (lastFocus) lastFocus.focus({ preventScroll: true });
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#lb')) { $('lb').classList.remove('open'); return; }
+    const s = e.target.closest('.shot');
+    if (s) { $('lbImg').src = AS + s.dataset.img; $('lbImg').alt = s.dataset.cap; $('lbCap').textContent = 'Hiện trạng · ' + s.dataset.cap; $('lb').classList.add('open'); return; }
+    if (e.target.closest('[data-close]') || e.target === ov) { close(); return; }
+    const g = e.target.closest('[data-go]'); if (g) { if (g.dataset.go) open(g.dataset.go); return; }
+    const nv = e.target.closest('.ed-nav a'); if (nv) { e.preventDefault(); pin.querySelector(nv.getAttribute('href')).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); return; }
+    if (e.target.closest('a')) return; // link prototype mở tab mới, không mở chiếu chỉ
+    const o = e.target.closest('[data-open]'); if (o && !cur) open(o.dataset.open);
+  });
+  document.addEventListener('keydown', (e) => {
+    const lbOpen = $('lb').classList.contains('open');
+    if (e.key === 'Escape') { if (lbOpen) $('lb').classList.remove('open'); else close(); }
+    if (!cur || lbOpen) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const j = NO[cur] - 1 + (e.key === 'ArrowRight' ? 1 : -1); if (ORDER[j]) open(ORDER[j]); }
+    if (e.key === 'Tab') { // giữ focus trong chiếu chỉ
+      const f = [...ov.querySelectorAll('button:not([disabled]),a[href]')]; if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  /* Mở thẳng một bậc: release-story.html#buoc-3 */
+  const m = location.hash.match(/^#buoc-([1-9])$/);
+  if (m) { $('buoc-' + m[1]).scrollIntoView(); open(ORDER[+m[1] - 1]); }
+
+})();
+</script>
+</body>
+</html>

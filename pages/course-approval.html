@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duyệt khoá học · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  .rv-head { background: #fff; border-bottom: 1px solid var(--border-default); }
+  .rv-head .container { padding-top: 20px; padding-bottom: 20px; display: flex; gap: 16px; align-items: center; }
+  .rv-meta { display: flex; gap: 16px; font-size: var(--fs-sm); color: var(--text-subtle); flex-wrap: wrap; }
+  .preview-hero { border-radius: var(--card-radius); background: linear-gradient(135deg, var(--primary-900), #2a37c4); color: #fff; padding: 28px; display: flex; flex-direction: column; gap: 8px; }
+  .preview-hero h2 { font-size: 24px; line-height: 32px; font-weight: 700; }
+  .preview-hero p { color: #dce2ff; font-size: var(--fs-sm); }
+  .legend { display: flex; gap: 12px; align-items: center; font-size: var(--fs-xs); color: var(--text-subtle); }
+</style>
+</head>
+<body>
+<div id="header"></div>
+<div class="rv-head"><div class="container">
+  <a class="icon-btn" href="admin-courses.html?t=pending" aria-label="Quay lại"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
+  <div class="grow stack gap-4"><div class="row gap-8"><b class="t-lg" id="h-title"></b><span id="h-status"></span></div><div class="rv-meta" id="h-meta"></div></div>
+  <div class="row gap-8" id="h-act"></div>
+</div></div>
+<main class="container screen"><div class="layout-2col">
+  <div class="stack gap-24">
+    <div id="banner"></div>
+    <div class="row"><b class="section-title grow">Xem trước — như học viên thấy</b><span class="legend" id="legend"></span></div>
+    <div class="preview-hero"><span class="t-xs" style="color:#c3cbff">5 session · 12 bài</span><h2 id="p-title"></h2><p>Nắm vững kiến trúc agent, tool design, MCP và context management để thiết kế giải pháp Claude ở môi trường production.</p></div>
+    <div class="syllabus" id="syllabus"></div>
+  </div>
+  <aside class="sticky-side stack gap-16">
+    <section class="panel"><div class="panel__head"><b class="t-sm">Thông tin gửi duyệt</b></div><div class="panel__body stack gap-8 t-sm" id="info"></div></section>
+    <section class="panel"><div class="panel__head"><b class="t-sm">Lịch sử duyệt</b></div><div class="panel__body"><div class="timeline" id="history"></div></div></section>
+  </aside>
+</div></main>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/approval.js"></script>
+<script>
+const { ICON, AppHeader, Button, Badge, CourseStatus, Avatar, Alert, esc, toast } = LH; const D = LHData; const C = D.course;
+document.getElementById('header').innerHTML = AppHeader({ role: 'Admin', user: 'Lê Thị Mai' });
+// Nhãn thay đổi của bản sửa: [session, lesson] → new | edit | del ; bài xoá được chèn vào mục lục
+const CHG = { '1:1': 'edit', '2:0': 'edit', '4:1': 'new' };
+const DELETED = { 1: [['video', 'MCP transport cũ (SSE)']] };
+const ADDED = { 4: [['video', 'Prompt caching thực chiến']] };
+let K, state, history;
+function render() {
+  const rev = K === 'rev';
+  const title = rev ? C.title : 'Kiểm thử tự động với Playwright';
+  const owner = rev ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long';
+  document.getElementById('h-title').textContent = title;
+  document.getElementById('p-title').textContent = title;
+  document.getElementById('h-status').innerHTML = state === 'approved' ? CourseStatus('published') : state === 'rejected' ? (rev ? CourseStatus('published', 'rejected') : CourseStatus('rejected')) : rev ? CourseStatus('published', 'pending') : CourseStatus('pending');
+  document.getElementById('h-meta').innerHTML = `<span class="row gap-4">${ICON.user}${owner}</span><span class="row gap-4">${ICON.file}${rev ? 'Bản sửa của khoá đang chạy' : 'Khoá mới'}</span><span class="row gap-4">${ICON.clock}Gửi lúc ${rev ? '16:02 · 08/11/2026' : '10:24 · 09/11/2026'}</span>`;
+  document.getElementById('h-act').innerHTML = state === 'pending'
+    ? Button({ label: 'Sửa', variant: 'ghost', icon: 'settings', attrs: 'data-edit' }) + Button({ label: 'Yêu cầu chỉnh sửa', variant: 'outline', attrs: 'data-reject' }) + Button({ label: 'Approve', icon: 'check', attrs: 'data-approve' })
+    : `<a class="btn btn--secondary" href="admin-courses.html">Về danh sách</a>`;
+  document.getElementById('banner').innerHTML = state === 'approved'
+    ? Alert({ tone: 'success', icon: 'check', title: rev ? 'Đã thay nội dung đang chạy bằng bản sửa' : 'Khoá đã Publish', })
+    : state === 'rejected' ? Alert({ tone: 'danger', icon: 'alert', title: 'Đã gửi yêu cầu chỉnh sửa', })
+    : '';
+  document.getElementById('legend').innerHTML = rev ? `<span class="chg chg--new">Mới</span><span class="chg chg--edit">Đã sửa</span><span class="chg chg--del">Đã xoá</span>` : '';
+  document.getElementById('syllabus').innerHTML = C.sessions.map((s, si) => {
+    const items = s.lessons.map((l, li) => [l, rev ? CHG[`${si}:${li}`] : null]);
+    if (rev) (DELETED[si] || []).forEach((l) => items.push([l, 'del'])), (ADDED[si] || []).forEach((l) => items.push([l, 'new']));
+    return `<div class="syllabus__session">${esc(s.name)}</div>` + items.map(([[k, n], c]) =>
+      `<div class="syllabus__lesson ${c === 'del' ? 'is-deleted' : ''}">${ICON[k]}<span>${esc(n)}</span>${c ? `<span class="chg chg--${c}">${{ new: 'Mới', edit: 'Đã sửa', del: 'Đã xoá' }[c]}</span>` : ''}</div>`).join('');
+  }).join('');
+  document.getElementById('info').innerHTML = `<div class="row gap-8">${Avatar(owner, 'sm')}<div class="stack"><b>${owner}</b><span class="t-xs muted">Course Creator · ${rev ? 'L&D' : 'QA'}</span></div></div>
+    ${rev ? `<div class="row"><span class="muted grow">Phòng ban</span><b>QA → QA, <span class="chg chg--new">BA</span></b></div><div class="row"><span class="muted grow">Dự kiến học viên</span><b>48 → 64</b></div>` : `<div class="row"><span class="muted grow">Đối tượng</span><b>Phòng QA + 3 cá nhân</b></div>`}
+    <div class="row"><span class="muted grow">Email mời học</span><b>${rev ? '—' : 'Gửi khi Publish'}</b></div>
+    ${rev ? `<div class="row"><span class="muted grow">Thay đổi</span><b>1 mới · 2 sửa · 1 xoá</b></div><div class="row"><span class="muted grow">Học viên đang học</span><b>48</b></div>` : ''}`;
+  document.getElementById('history').innerHTML = history.map(([tone, t, who, at, cmt]) => `<div class="timeline__it"><span class="timeline__dot timeline__dot--${tone}"></span><div class="stack gap-4"><b>${t}</b><span class="t-xs muted">${who} · ${at}</span>${cmt ? `<span class="ab__quote" style="background:var(--bg-subtle)">“${esc(cmt)}”</span>` : ''}</div></div>`).join('');
+}
+const now = () => new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' · 09/11/2026';
+document.addEventListener('click', (e) => {
+  const rev = K === 'rev', title = rev ? C.title : 'Kiểm thử tự động với Playwright';
+  if (e.target.closest('[data-approve]')) LHApproval.approve({ course: title, revision: rev, onOk: () => { state = 'approved'; history.unshift(['ok', 'Approve', 'Lê Thị Mai', now()]); render(); toast(rev ? 'Đã duyệt bản sửa' : 'Đã Publish khoá học'); } });
+  if (e.target.closest('[data-reject]')) LHApproval.comment({ kind: 'reject', course: title, onSend: (c) => { state = 'rejected'; history.unshift(['bad', 'Yêu cầu chỉnh sửa', 'Lê Thị Mai', now(), c]); render(); toast('Đã gửi yêu cầu chỉnh sửa'); } });
+  if (e.target.closest('[data-edit]')) { history.unshift(['', 'Admin đã sửa', 'Lê Thị Mai', now()]); render(); toast('Đã lưu'); }
+});
+LH.DemoBar('#3 — Màn duyệt khoá (Admin)', [
+  { label: 'Loại', key: 'k', options: [['new', 'Khoá mới'], ['rev', 'Bản sửa khoá đang chạy']] },
+  { label: 'Lần gửi', key: 'n', options: [['1', 'Lần đầu'], ['2', 'Gửi lại sau chỉnh sửa']] },
+], (s) => {
+  K = s.k; state = 'pending';
+  history = [['warn', s.k === 'rev' ? 'Gửi duyệt bản sửa' : 'Gửi duyệt', s.k === 'rev' ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long', s.k === 'rev' ? '16:02 · 08/11/2026' : '10:24 · 09/11/2026']];
+  if (s.n === '2') history.push(['bad', 'Yêu cầu chỉnh sửa', 'Lê Thị Mai', '09:10 · 07/11/2026', 'Session 2 thiếu bài thực hành MCP. Ngưỡng Pass Test Domain 2 đang để 0%.'], ['warn', 'Gửi duyệt', s.k === 'rev' ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long', '17:45 · 06/11/2026']);
+  render();
+});
+</script>
+</body>
+</html>

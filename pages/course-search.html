@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All courses · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="page">
+<!-- Chép bố cục /course/search?ct=…: header → category 60 → container py-13 → Back + tiêu đề → dòng tóm tắt → lưới card 336 → footer.
+     LH2 #6 — phương án A (10/11): bộ lọc Trạng thái / Thời gian (ngày đăng ký hoặc hoàn thành của tôi) nằm trong bảng xổ dưới ô search (LH.SearchPanel).
+     · Trang này bỏ thanh lọc. Còn 1 dòng: "N khoá học" + chip Trạng thái / Thời gian (✕ để bỏ) + Xoá tất cả + Sắp xếp bên phải.
+     · Không chip từ khoá (đã ở ô search), không chip danh mục (thanh danh mục đã gạch chân).
+     · Thanh danh mục + menu Explore lọc tại chỗ. Bảng xổ phát 'search:apply' → trang lọc tại chỗ, không tải lại. -->
+<div id="header"></div>
+<div id="cats"></div>
+<main class="container page__in">
+  <div id="back"></div>
+  <div class="search-sum" id="sum"></div>
+  <div class="course-grid" id="grid"></div>
+</main>
+<div id="footer"></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/search.js"></script>
+<script>
+const { AppHeader, CategoryNav, AppFooter, BackLink, CourseCard, FilterDropdown, Button, ICON, esc } = LH; const D = LHData; const S = LHSearch;
+const p = new URLSearchParams(location.search);
+const f = { q: p.get('q') || '', ct: p.get('ct') || 'all', st: p.get('st') || 'all', pd: p.get('pd') || 'all', sort: p.get('sort') || '' };
+let mode = 'ok', reqId = 0, lat = 'fast';
+document.getElementById('header').innerHTML = AppHeader({ search: f.q }); // vẽ 1 lần để không mất focus khi gõ
+document.getElementById('footer').innerHTML = AppFooter();
+const qInput = document.querySelector('.search-pill input');
+
+function syncUrl() {
+  const u = new URLSearchParams(); Object.entries(f).forEach(([k, v]) => { if (v && v !== 'all') u.set(k, v); });
+  history.replaceState(null, '', '?' + u.toString());
+}
+const count = (patch) => S.run(D.catalog, { ...f, ...patch }).items.length;
+
+const title = () => f.q ? `Kết quả cho “${S.clean(f.q)}”` : f.ct !== 'all' ? f.ct : 'All courses';
+function render() {
+  document.getElementById('cats').innerHTML = CategoryNav(f.ct);
+  document.getElementById('back').innerHTML = BackLink(title(), { href: 'home.html' });
+  document.title = title() + ' · Learning Hub';
+  if (document.activeElement !== qInput) { qInput.value = f.q; qInput.form.querySelector('.search-pill__x').hidden = !f.q; }
+  const r = S.run(D.catalog, f);
+  const sortOpts = [...(r.q ? [['rel', 'Liên quan nhất']] : []), ['new', 'Mới nhất'], ['az', 'Tên A–Z']];
+  const chips = [];
+  if (f.st !== 'all') chips.push(['st', S.STATUS_OPTS.find((o) => o[0] === f.st)[1]]);
+  if (f.pd !== 'all') chips.push(['pd', 'Đăng ký / hoàn thành ' + S.DAY_OPTS.find((o) => o[0] === f.pd)[1].toLowerCase()]);
+  document.getElementById('sum').innerHTML = `<span class="search-sum__n">${mode === 'loading' ? 'Đang tìm…' : `${r.items.length} khoá học`}</span>` +
+    chips.map(([k, t]) => `<span class="chip is-active">${esc(t)}<button class="icon-btn" data-rm="${k}" aria-label="Bỏ điều kiện ${esc(t)}" style="width:20px;height:20px">${ICON.x}</button></span>`).join('') +
+    (chips.length ? '<button class="btn btn--link" data-rm-all>Xoá tất cả</button>' : '') +
+    '<span class="search-sum__sp"></span>' +
+    FilterDropdown({ key: 'sort', label: 'Sắp xếp:', value: r.sort, def: r.sort, options: sortOpts, align: 'right' });
+
+  const grid = document.getElementById('grid');
+  if (mode === 'loading') { grid.innerHTML = '<div class="skeleton"></div>'.repeat(3); return; }
+  if (!r.items.length) {
+    const filtered = r.q || chips.length;
+    const seeAll = r.q ? Button({ label: f.ct !== 'all' ? `Xem tất cả khoá trong ${f.ct}` : 'Xem tất cả khoá học', variant: 'link', attrs: 'data-see-all' }) : '';
+    grid.innerHTML = `<div class="empty search-empty">${ICON.search}<b>Không tìm thấy khoá học phù hợp${r.q ? ` với “${esc(r.q)}”` : ''}</b><span class="muted t-sm">${!filtered ? 'Danh mục này chưa có khoá học nào.' : 'Thử từ khoá ngắn hơn, không dấu, hoặc bỏ bớt bộ lọc.'}</span><div class="row gap-12">${filtered ? Button({ label: 'Xoá bộ lọc', variant: 'outline', attrs: 'data-reset' }) : ''}${seeAll}</div></div>`;
+    return;
+  }
+  grid.innerHTML = r.items.map((c) => {
+    const state = c.restricted ? 'restricted' : c.st === 'done' ? 'completed' : c.st === 'learning' ? 'in-progress' : c.st === 'fail' ? 'failed' : 'default';
+    return CourseCard({ title: c.title, desc: c.desc || c.tags.map((t) => '#' + t).join('  '), state, progress: c.progress || 0, video: c.video, test: c.test, q: r.q, done: c.done, cover: c.cover, lessons: c.lessons, hours: c.hours, sched: c.sched });
+  }).join('');
+}
+function apply(patch) {
+  Object.assign(f, patch); syncUrl();
+  // BR-LRN-18 — chỉ nhận kết quả của lần tìm mới nhất
+  const id = ++reqId; mode = 'loading'; render();
+  setTimeout(() => { if (id !== reqId) return; mode = 'ok'; render(); }, lat === 'slow' ? 900 : 120);
+}
+/* Bảng xổ dưới ô search (Enter, Xem tất cả, chip lọc nhanh, tìm gần đây) → lọc tại chỗ */
+document.addEventListener('search:apply', (e) => {
+  e.preventDefault(); const d = e.detail;
+  apply({ q: d.q, st: d.st, pd: d.pd, ...(d.q !== f.q ? { sort: '' } : {}) });
+});
+document.addEventListener('fdd:change', (e) => apply({ [e.detail.key]: e.detail.value }));
+document.addEventListener('click', (e) => {
+  const cat = e.target.closest('[data-cat]');
+  if (cat) { e.preventDefault(); document.querySelector('.explore.is-open')?.classList.remove('is-open'); document.querySelector('.explore__menu').hidden = true;
+    apply({ ct: f.ct === cat.dataset.cat && cat.closest('.cat-nav') ? 'all' : cat.dataset.cat }); return; }
+  if (e.target.closest('.explore__all')) { e.preventDefault(); document.querySelector('.explore__menu').hidden = true; apply({ q: '', ct: 'all', st: 'all', pd: 'all', sort: '' }); return; }
+  const rm = e.target.closest('[data-rm]'); if (rm) { apply({ [rm.dataset.rm]: 'all' }); return; }
+  if (e.target.closest('[data-rm-all]')) { apply({ st: 'all', pd: 'all' }); return; }
+  if (e.target.closest('[data-see-all]')) { qInput.value = ''; apply({ q: '', st: 'all', pd: 'all', sort: '' }); return; }
+  if (e.target.closest('[data-reset]')) { qInput.value = ''; apply({ q: '', ct: 'all', st: 'all', pd: 'all', sort: '' }); }
+});
+LH.DemoBar('#6 — Tìm khoá học', [
+  { label: 'Từ khoá mẫu', key: 'sc', options: [['url', 'Theo URL'], ['kiem-thu', '“kiem thu”'], ['testing', '“testing”'], ['claude', '“claude ai”'], ['none', 'Không kết quả']] },
+  { label: 'Mạng', key: 'lat', options: [['fast', 'Nhanh'], ['slow', 'Chậm (skeleton)']] },
+], (s) => {
+  lat = s.lat;
+  const preset = { 'kiem-thu': 'kiem thu', testing: 'testing', claude: 'claude ai', none: 'blockchain' }[s.sc];
+  if (preset !== undefined) { qInput.value = preset; apply({ q: preset, sort: '', ct: 'all', st: 'all', pd: 'all' }); return; }
+  render();
+});
+</script>
+</body>
+</html>

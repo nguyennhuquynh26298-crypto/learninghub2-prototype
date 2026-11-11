@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="page">
+<!-- Chép bố cục learninghub.techvify.com/ : header 64 → category 60 → container py-13 → My Courses → All Courses → footer -->
+<div id="header"></div>
+<div id="cats"></div>
+<main class="container page__in">
+  <section>
+    <div id="h-my"></div>
+    <div class="my-row" id="learning"></div>
+  </section>
+  <section>
+    <div id="h-all"></div>
+    <div class="course-grid" id="featured"></div>
+  </section>
+</main>
+<div id="footer"></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/enroll-limit.js"></script>
+<script src="../assets/js/search.js"></script>
+<script>
+const { AppHeader, CategoryNav, AppFooter, SectionHead, CourseCard, EnrollSlotPanel } = LH; const D = LHData;
+document.getElementById('header').innerHTML = AppHeader();
+document.getElementById('cats').innerHTML = CategoryNav();
+document.getElementById('footer').innerHTML = AppFooter();
+const card = (c, st) => CourseCard({ title: c.title, desc: c.desc, cover: c.cover, lessons: c.lessons, hours: c.hours, progress: c.progress || 0, video: c.video, test: c.test, sched: c.sched, state: st });
+let full;
+function render() {
+  // My Courses: tối đa 2 thẻ + khung Suất học bên phải (khoá còn lại xem ở View More)
+  // BR-LRN-01: chỉ khoá Đang học tính suất (tối đa 2); Hoàn thành, Không đạt không tính
+  const learning = D.catalog.filter((c) => c.st === 'learning').slice(0, full ? 2 : 1);
+  const failed = D.catalog.filter((c) => c.st === 'fail').length;
+  const done = D.catalog.filter((c) => c.st === 'done').length;
+  const cards = learning.map((c) => card(c, 'in-progress')).slice(0, 2);
+  document.getElementById('h-my').innerHTML = SectionHead('My Courses', 'myCourses', 'my-courses.html');
+  document.getElementById('learning').innerHTML = cards.join('') + EnrollSlotPanel({ used: learning.length, limit: 2, failed, done });
+  // All Courses
+  const st = full ? 'limit-reached' : 'default';
+  const all = D.catalog.filter((c) => c.st === 'none').slice(0, 6);
+  document.getElementById('h-all').innerHTML = SectionHead('All Courses', 'allCourses', 'course-search.html');
+  document.getElementById('featured').innerHTML = all.map((c) => card(c, c.restricted ? 'restricted' : st)).join('');
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-start]'); if (b) { const t = b.closest('.course-card').querySelector('.course-card__title').textContent;
+    if (full) LHEnroll.open({ target: t, courses: D.myCourses }); else location.href = 'course-detail.html'; return; }
+});
+LH.DemoBar('#4 · #9 — Trang chủ', [{ label: 'Suất', key: 'f', options: [['0', 'Còn suất 1/2'], ['1', 'Đạt giới hạn 2/2']] }], (s) => { full = s.f === '1'; render(); });
+</script>
+</body>
+</html>

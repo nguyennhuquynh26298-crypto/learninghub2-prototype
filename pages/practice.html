@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practice · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+<!-- Khung /quiz của web (Practice Mode) + thanh trên dính. Spec 01: đề luyện riêng, Check answer từng câu,
+     không tính lượt / tiến độ (BR-ASM-05, 06). Tổng kết có "Luyện lại câu sai" (chốt Q4 10/11). -->
+<div class="quiz-page"><div id="bar"></div><div class="stage-card"><div class="quiz">
+  <div class="quiz-head">
+    <div class="quiz-head__t"><h1 id="t-name"></h1><span class="quiz-badge">Practice</span></div>
+    <p id="t-sub"></p>
+  </div>
+  <div id="summary"></div>
+  <div class="wq-list" id="qs"></div>
+  <div class="quiz-foot" id="foot">
+    <button class="wbtn" id="finish">Finish Practice</button>
+    <span class="t-sm muted" id="foot-note"></span>
+  </div>
+</div></div></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script>
+const { WebQuestion, DashMeter, QuizTopBar, PracticeSummary, Modal } = LH; const Q = LHData.practiceQuestions; const T = LHData.test;
+document.getElementById('t-name').textContent = T.name;
+let st, only = null, done = false; // only = danh sách index khi "Luyện lại câu sai"
+const isOk = (i) => { const q = Q[i], c = st[i].chosen; return c.length === q.correct.length && c.every((x) => q.correct.includes(x)); };
+const scope = () => only || Q.map((_, i) => i);
+function render() {
+  const sc = scope(); const checked = sc.filter((i) => st[i].checked).length;
+  document.getElementById('t-sub').textContent = only ? `Luyện lại ${only.length} câu sai. Không tính lượt, không tính tiến độ.` : `Đề luyện tập riêng ${Q.length} câu, không trùng đề thi. Đáp án hiện ngay sau khi bấm Check answer. Không tính lượt, không tính tiến độ.`;
+  document.getElementById('bar').innerHTML = QuizTopBar({ mode: 'practice', title: T.name, center: DashMeter(checked, sc.length, 'đã kiểm tra'),
+    right: '<button class="wbtn wbtn--outline" data-exit>Thoát</button>' });
+  document.getElementById('qs').innerHTML = sc.map((i) => WebQuestion({ n: i + 1, ...Q[i], chosen: st[i].chosen, state: st[i].checked ? 'checked' : 'answering', showCheck: true })).join('');
+  document.getElementById('foot-note').textContent = checked < sc.length ? `Còn ${sc.length - checked} câu chưa kiểm tra` : '';
+  document.getElementById('foot').style.display = done ? 'none' : '';
+  if (done) {
+    const right = sc.filter((i) => st[i].checked && isOk(i)).length;
+    const wrong = sc.filter((i) => !(st[i].checked && isOk(i))).map((i) => i + 1);
+    document.getElementById('summary').innerHTML = PracticeSummary({ right, total: sc.length, wrong });
+  } else document.getElementById('summary').innerHTML = '';
+}
+function reset(list) { list.forEach((i) => { st[i] = { chosen: [], checked: false }; }); done = false; render(); scrollTo({ top: 0 }); }
+document.addEventListener('click', (e) => {
+  const box = e.target.closest('.wq');
+  if (box) { const i = +box.dataset.n - 1; const s = st[i];
+    if (e.target.closest('[data-check]')) { s.checked = true; render();
+      const next = scope().find((k) => !st[k].checked); if (next != null) document.getElementById('q' + (next + 1))?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    const o = e.target.closest('.wq-opt'); if (o && !s.checked) { const k = +o.dataset.k;
+      s.chosen = Q[i].type === 'multi' ? (s.chosen.includes(k) ? s.chosen.filter((x) => x !== k) : [...s.chosen, k]) : [k]; render(); }
+    return; }
+  if (e.target.closest('#finish')) { done = true; render(); scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (e.target.closest('[data-retry-wrong]')) { only = scope().filter((i) => !(st[i].checked && isOk(i))); reset(only); }
+  if (e.target.closest('[data-restart]')) { only = null; reset(Q.map((_, i) => i)); }
+  const j = e.target.closest('[data-jump]'); if (j) { e.preventDefault(); document.getElementById('q' + j.dataset.jump)?.scrollIntoView({ behavior: 'smooth' }); }
+  if (e.target.closest('[data-exit]')) {
+    if (!st.some((s) => s.chosen.length) || done) { location.href = 'test-start.html'; return; }
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'exit', size: 'sm', icon: 'info', title: 'Thoát luyện tập?',
+      body: '<p class="t-sm">Các câu đã làm sẽ không được lưu.</p>',
+      foot: '<button class="wbtn wbtn--outline" data-close>Ở lại</button><a class="wbtn" href="test-start.html">Thoát</a>' }));
+  }
+});
+LH.DemoBar('#1 Luyện tập', [
+  { label: 'Kịch bản', key: 'sc', options: [['new', 'Mới vào'], ['mid', 'Đã kiểm tra 2 câu'], ['done', 'Tổng kết (1 câu sai)']] },
+], (s) => {
+  st = Q.map(() => ({ chosen: [], checked: false })); only = null; done = false;
+  if (s.sc !== 'new') { st[0] = { chosen: [...Q[0].correct], checked: true }; st[1] = { chosen: [0, 1], checked: true }; }
+  if (s.sc === 'done') { st[2] = { chosen: [...Q[2].correct], checked: true }; done = true; }
+  render();
+});
+</script>
+</body>
+</html>

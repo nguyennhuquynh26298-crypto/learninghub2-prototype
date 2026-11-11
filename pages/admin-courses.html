@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản lý khoá học · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+<div id="header"></div>
+<main class="container screen stack gap-24">
+  <div class="row gap-16"><h1 class="page-title grow">Quản lý khoá học</h1><span id="new"></span></div>
+  <div id="note"></div>
+  <div class="tabs" id="tabs"></div>
+  <section class="panel"><table class="table" id="tbl"></table></section>
+</main>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/approval.js"></script>
+<script>
+const { ICON, AppHeader, Button, CourseStatus, Avatar, Alert, esc, toast } = LH; const D = LHData;
+let role, tab = 'all', rows;
+const TABS = [['all', 'Tất cả'], ['pending', 'Chờ duyệt'], ['draft', 'Nháp'], ['rejected', 'Cần chỉnh sửa'], ['published', 'Đang chạy']];
+// Bản sửa chờ duyệt cũng nằm ở tab Chờ duyệt
+const inTab = (c, t) => t === 'all' || (t === 'pending' ? c.status === 'pending' || c.revision === 'pending' : t === 'rejected' ? c.status === 'rejected' || c.revision === 'rejected' : c.status === t);
+function render() {
+  const admin = role === 'admin';
+  document.getElementById('header').innerHTML = AppHeader(admin ? { role: 'Admin', user: 'Lê Thị Mai' } : { role: 'Course Creator', user: 'Phạm Thanh Long' });
+  document.getElementById('new').innerHTML = role === 'learner' ? '' : Button({ label: 'Tạo khoá học', icon: 'plus' });
+  const mine = admin ? rows : rows.filter((c) => c.owner === 'Phạm Thanh Long'); // Creator chỉ thấy khoá mình phụ trách
+  const pend = mine.filter((c) => inTab(c, 'pending')).length;
+  document.getElementById('note').innerHTML = admin && pend ? Alert({ tone: 'warning', icon: 'clock', title: `${pend} khoá đang chờ bạn duyệt` }) : '';
+  document.getElementById('tabs').innerHTML = TABS.filter(([v]) => admin || v !== 'pending').map(([v, t]) => `<button class="tab ${tab === v ? 'is-active' : ''}" data-tab="${v}">${t}${v === 'pending' && admin ? ` <span class="badge badge--warning">${pend}</span>` : ''}</button>`).join('');
+  const list = mine.filter((c) => inTab(c, tab));
+  document.getElementById('tbl').innerHTML = `<thead><tr><th>Khoá học</th>${admin ? '<th>Người phụ trách</th>' : ''}<th>Trạng thái</th><th>Gửi duyệt</th><th>Cập nhật</th><th></th></tr></thead><tbody>` +
+    (list.length ? list.map((c) => {
+      const i = rows.indexOf(c); const waiting = c.status === 'pending' || c.revision === 'pending';
+      let act;
+      if (admin && waiting) act = `<a class="btn btn--primary btn--sm" href="course-approval.html?k=${c.revision ? 'rev' : 'new'}">Duyệt</a>`;
+      else if (!admin) act = `<a class="btn btn--ghost btn--sm" href="course-editor.html?st=${c.revision ? 'rev-' + c.revision : c.status}">Mở</a>`;
+      else act = '';
+      return `<tr><td><b>${esc(c.title)}</b>${c.kind ? `<div class="t-xs muted">${c.kind}</div>` : ''}</td>${admin ? `<td><span class="row gap-8">${Avatar(c.owner, 'sm')}${esc(c.owner)}</span></td>` : ''}
+        <td>${CourseStatus(c.status, c.revision)}</td><td>${c.sent || '—'}</td><td>${c.updated}</td><td style="text-align:right">${act}</td></tr>`;
+    }).join('') : `<tr><td colspan="6"><div class="empty" style="border:0">${ICON.book}<b>Không có khoá nào ở mục này</b></div></td></tr>`) + '</tbody>';
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-tab]'); if (t) { tab = t.dataset.tab; render(); }
+});
+LH.DemoBar('#3 — Quản lý khoá học', [
+  { label: 'Vai trò', key: 'r', options: [['admin', 'Admin L&D'], ['creator', 'Course Creator']] },
+  { label: 'Tab', key: 't', options: [['all', 'Tất cả'], ['pending', 'Chờ duyệt'], ['rejected', 'Cần chỉnh sửa']] },
+], (s) => { role = s.r; tab = s.t; rows = D.adminCourses.map((c) => ({ ...c })); render(); });
+</script>
+</body>
+</html>

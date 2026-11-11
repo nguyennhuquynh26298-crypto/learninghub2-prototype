@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAR-F Claude Certified Architect – Foundations · Learn</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="learn-body">
+<!-- Chép bố cục /course/<id>/learn khi mở 1 bài test: stage 16:9 nền #F7F7F7 + thẻ chọn chế độ; drawer Course content 400 bên phải.
+     LH2 #1: Practice Mode = đề luyện riêng, không tính lượt / tiến độ. Bài cũ chưa có đề luyện → chỉ còn Exam Mode. -->
+<div id="app"></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script>
+const { LearnShell, ModeSelect, CourseContent, Badge, esc } = LH; const D = LHData; const T = D.test; const R = D.myResult;
+/* bài đang mở = "Practice: Agentic Architecture & Orchestration" (index 1) */
+const CURRENT = 1;
+function attempts(rows) {
+  if (!rows.length) return '';
+  return `<section><h2 class="t-lg fw-600" style="margin-bottom:12px">Lượt đã làm</h2>
+    <table class="table"><thead><tr><th>Lượt</th><th>Ngày nộp</th><th>Điểm</th><th>Kết quả</th><th></th></tr></thead><tbody>
+    ${rows.map((p, k) => `<tr><td>${k + 1}</td><td>0${6 + k}/11/2026 ${9 + k}:${String(10 + k * 7).padStart(2, '0')}</td><td><b>${p}</b>/100</td><td>${p >= T.passMark ? Badge('Đạt', 'success') : Badge('Chưa đạt', 'danger')}</td><td style="text-align:right"><a href="test-result.html">Xem lại</a></td></tr>`).join('')}
+    </tbody></table></section>`;
+}
+/* Chốt 11/11: lượt sau chỉ làm lại câu sai, điểm = cao nhất, khoá khi Đạt. 4 trạng thái: Mặc định · Đang làm dở (đồng hồ vẫn chạy) · Đã đạt (khoá) · Hết lượt chưa đạt */
+const ST = {
+  default: { rows: [56], att: 'Còn 2/3 lượt', wrong: 14 },
+  'in-progress': { rows: [56], att: 'Đang làm lượt 2/3' },
+  passed: { rows: [56, 78], att: 'Đạt ở lượt 2/3' },
+  out: { rows: [56, 63, 66], att: 'Hết lượt (3/3)' },
+};
+LH.DemoBar('#1 Chọn chế độ', [
+  { label: 'Trạng thái', key: 'st', options: [['default', 'Mặc định'], ['in-progress', 'Đang làm dở'], ['passed', 'Đã đạt (khoá)'], ['out', 'Hết lượt chưa đạt']] },
+  { label: 'Practice', key: 'practice', options: [['on', 'Có đề luyện'], ['off', 'Bài cũ (chỉ Exam)']] },
+], (s) => {
+  const c = ST[s.st];
+  const stage = `<div class="stage-bg">${ModeSelect({
+    title: T.name, questions: T.questions, minutes: T.minutes, attempts: c.att, passMark: T.passMark,
+    practice: s.practice === 'on', practiceQ: T.practiceQuestions, state: s.st,
+    best: c.rows.length ? Math.max(...c.rows) : null, wrong: c.wrong, last: c.rows.length ? `${c.rows[c.rows.length - 1]} điểm` : '',
+  })}</div>`;
+  const below = `<section><h2 class="t-lg fw-600">About this lesson</h2><p class="muted t-sm" style="margin-top:8px">${esc(T.sub)}. Bài thi tính điểm và tiến độ; Practice Mode dùng đề riêng, xem đáp án ngay.</p></section>${attempts(c.rows)}`;
+  document.getElementById('app').innerHTML = LearnShell({ course: D.course.title, pct: s.st === 'passed' ? 37 : R.pct, stage, below,
+    drawer: CourseContent(D.course.sessions, { current: CURRENT, marks: R.lessons, meta: { [CURRENT]: `${LH.ICON.fileQ}<span>${T.questions} Questions</span>` } }) });
+});
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-go]'); if (!b) return;
+  location.href = { practice: 'practice.html', exam: 'exam.html', result: 'test-result.html?sc=last' }[b.dataset.go];
+});
+</script>
+</body>
+</html>

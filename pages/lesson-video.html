@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAR-F Claude Certified Architect – Foundations · Learn</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  .learn-stage .player { position: absolute; inset: 0; border-radius: 0; aspect-ratio: auto; }
+  .player__seg { position: absolute; top: 0; bottom: 0; background: rgba(147,150,255,.55); }
+  .player__pos { position: absolute; top: -5px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transform: translateX(-50%); }
+  .player__time { position: absolute; right: 16px; bottom: 30px; font-size: 12px; color: #e2e8f0; }
+  .learn-hd__pg { position: relative; }
+</style>
+</head>
+<body class="learn-body">
+<!-- Chép bố cục /course/<id>/learn: stage 16:9 = trình phát video; drawer Course content 400.
+     LH2 #8: video chỉ hoàn thành khi xem thật ≥ 90% (đoạn tua qua không tính). -->
+<div id="app"></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script>
+const { ICON, LearnShell, CourseContent, ProgressBreakdown, Progress, Gauge, toast, esc } = LH; const D = LHData; const C = D.course;
+document.getElementById('app').innerHTML = LearnShell({ course: C.title, pct: D.myResult.pct, stage: '<div class="player" id="player"></div>',
+  below: `<div class="watch-meter" id="meter"></div>
+    <div class="row gap-8" id="ctrl">
+      <button class="wbtn wbtn--outline" data-play="60">Phát thêm 1 phút</button>
+      <button class="wbtn wbtn--outline" data-seek="0.8">Tua tới 80%</button>
+      <button class="wbtn wbtn--outline" data-seek="0.98">Tua tới cuối</button>
+      <button class="wbtn wbtn--outline" data-seek="0">Về đầu</button>
+      <span class="grow"></span><span class="t-xs muted">Mô phỏng: video 10:00, tốc độ 1×</span></div>
+    <section><h2 class="t-xl fw-700">CLAUDE.md, hooks, subagents</h2><p class="t-sm muted" style="margin-top:4px">Session 3 · Domain 3 — Claude Code Configuration & Workflows</p></section>`,
+  drawer: '<div id="drawer"></div>' });
+const DUR = 600, NEED = 0.9, CUR = 6; // bài thứ 7 trong mục lục
+let seen, pos, lessons, legacy;
+const pctSeen = () => Math.floor(seen.reduce((a, x) => a + x, 0) / DUR * 100);
+const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function stats() {
+  const kinds = C.sessions.flatMap((s) => s.lessons.map(([k]) => k));
+  const cnt = (k) => [kinds.filter((x, i) => x === k && lessons[i] === 'done').length, kinds.filter((x) => x === k).length];
+  const done = lessons.filter((x) => x === 'done').length;
+  return { pct: Math.floor(done / lessons.length * 100), video: cnt('video'), test: cnt('quiz'), doc: cnt('file') };
+}
+function segments() { // gom giây đã phát thành đoạn để vẽ
+  const out = []; let st = -1;
+  for (let i = 0; i <= DUR; i++) { if (seen[i] && st < 0) st = i; if (!seen[i] && st >= 0) { out.push([st, i]); st = -1; } }
+  return out;
+}
+function render() {
+  const p = pctSeen(), done = lessons[CUR] === 'done';
+  document.getElementById('player').innerHTML = `<div class="player__play">${ICON.play}</div><span class="player__time">${fmt(pos)} / ${fmt(DUR)}</span>
+    <div class="player__bar">${segments().map(([a, b]) => `<i class="player__seg" style="left:${a / DUR * 100}%;width:${(b - a) / DUR * 100}%"></i>`).join('')}<span class="player__pos" style="left:${pos / DUR * 100}%"></span></div>`;
+  document.getElementById('meter').innerHTML = done
+    ? `<span class="ls ls--done">${ICON.check}</span><b>Đã xem</b>`
+    : `<span class="ls ls--part" style="--p:${p}"></span><span>Đã xem <b>${p}%</b> · cần 90%</span>${Progress(p)}`;
+  const s = stats();
+  document.querySelector('.learn-hd__pg .gauge').outerHTML = Gauge(s.pct);
+  const marks = lessons.map((m, i) => i === CUR && !done ? `part:${p}` : m);
+  document.getElementById('drawer').innerHTML = CourseContent(C.sessions, { current: CUR, marks, meta: { [CUR]: `${ICON.tvPlay}<span>10 min · đã xem ${done ? 100 : p}%</span>` } });
+}
+function play(sec) {
+  const end = Math.min(DUR, pos + sec);
+  for (let i = Math.floor(pos); i < end; i++) seen[i] = 1;
+  pos = end;
+  if (lessons[CUR] !== 'done' && pctSeen() >= NEED * 100) { lessons[CUR] = 'done'; toast('Đã hoàn thành bài CLAUDE.md, hooks, subagents'); }
+  render();
+}
+document.getElementById('ctrl').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.play) play(+b.dataset.play);
+  else { pos = Math.floor(DUR * +b.dataset.seek); render(); }
+});
+document.addEventListener('click', (e) => {
+  const pop = document.querySelector('.popover'); const b = e.target.closest('[data-pop]');
+  if (pop && !e.target.closest('.popover')) pop.remove();
+  if (!b || pop) return;
+  const s = stats(), r = b.getBoundingClientRect();
+  document.body.insertAdjacentHTML('beforeend', `<div class="popover" style="top:${r.bottom + scrollY + 8}px;left:${r.right - 320 + scrollX}px;position:fixed;top:${r.bottom + 8}px"><b class="t-sm">Tiến độ của bạn</b><div style="margin-top:12px">${ProgressBreakdown({ ...s, mode: 'full', practice: true })}</div></div>`);
+});
+LH.DemoBar('#8 — Trang học video', [
+  { label: 'Kịch bản', key: 'v', options: [['part', 'Đã xem 40%'], ['seek', 'Xem tới 80% rồi tua cuối'], ['near', 'Đã xem 85%'], ['done', 'Đã xong, xem lại'], ['legacy', 'Xong theo luật cũ (BR-LRN-29)']] },
+], (s) => {
+  seen = new Array(DUR + 1).fill(0); lessons = [...D.myResult.lessons]; legacy = s.v === 'legacy';
+  const upto = { part: 0.4, seek: 0.8, near: 0.85, done: 1, legacy: 0.3 }[s.v];
+  for (let i = 0; i < DUR * upto; i++) seen[i] = 1;
+  pos = s.v === 'seek' ? Math.floor(DUR * 0.98) : Math.floor(DUR * upto);
+  if (s.v === 'done' || s.v === 'legacy') lessons[CUR] = 'done';
+  render();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My courses · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="page">
+<div id="header"></div>
+<main class="container page__in stack gap-24">
+  <div class="row gap-16" style="align-items:flex-end"><div class="grow" id="back"></div><span id="slot" style="margin-bottom:32px"></span></div>
+  <div id="note"></div>
+  <!-- #6 §3.2 — Trạng thái thay 2 tab cũ; có số đếm -->
+  <div class="tabs" id="tabs"></div>
+  <div class="toolbar">
+    <label class="input-wrap" style="width:320px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" id="q" placeholder="Tìm trong khoá của tôi"></label>
+    <label class="row gap-8 t-sm" title="Ngày đăng ký, hoặc ngày hoàn thành nếu đã xong">Thời gian<select class="input select" id="ld" style="width:150px"></select></label>
+    <span class="grow"></span>
+    <label class="row gap-8 t-sm">Sắp xếp<select class="input select" id="sort" style="width:190px"><option value="last">Học gần nhất</option><option value="pg">Tiến độ cao → thấp</option><option value="az">Tên A–Z</option></select></label>
+  </div>
+  <div class="course-grid" id="grid"></div>
+</main>
+<div id="footer"></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/enroll-limit.js"></script>
+<script src="../assets/js/search.js"></script>
+<script>
+const { ICON, AppHeader, AppFooter, BackLink, CourseCard, SlotMeter, Alert, esc } = LH; const D = LHData; const S = LHSearch;
+document.getElementById('header').innerHTML = AppHeader();
+document.getElementById('back').innerHTML = BackLink('My courses', { href: 'home.html' });
+document.getElementById('footer').innerHTML = AppFooter();
+const covers = ['', 'background:linear-gradient(135deg,#0f172a,#334155)', 'background:linear-gradient(135deg,#15803d,#4ade80)', 'background:linear-gradient(135deg,#5163ff,#9396ff)', 'background:linear-gradient(135deg,#b45309,#f59e0b)'];
+const f = { st: 'all', ld: 'all', q: '', sort: 'last' };
+document.getElementById('ld').innerHTML = S.DAY_OPTS.map(([v, t]) => `<option value="${v}">${t}</option>`).join('');
+let courses;
+const lastLabel = (d) => d == null ? '' : d === 0 ? 'Hôm nay' : d === 1 ? 'Hôm qua' : d < 7 ? `${d} ngày trước` : d < 30 ? `${Math.round(d / 7)} tuần trước` : `${Math.round(d / 30)} tháng trước`;
+
+function filtered(st) {
+  return courses
+    .filter((c) => S.rank(c, f.q) > 0)
+    .filter((c) => st === 'all' || S.myStatus(c) === st)
+    .filter((c) => f.ld === 'all' || (c.my != null && c.my <= +f.ld)); // BR-LRN-16: ngày đăng ký / hoàn thành của tôi
+}
+function render() {
+  const learning = courses.filter((c) => c.st === 'learning').length; // BR-LRN-01: Hoàn thành, Không đạt không tính
+  document.getElementById('slot').innerHTML = SlotMeter(learning, LHEnroll.LIMIT);
+  document.getElementById('note').innerHTML = learning > LHEnroll.LIMIT ? Alert({ tone: 'warning', icon: 'info', title: `Bạn đang học ${learning} khoá, nhiều hơn giới hạn ${LHEnroll.LIMIT} khoá`, text: 'Hoàn thành bớt khoá để đăng ký khoá mới.' }) : '';
+  document.getElementById('tabs').innerHTML = S.STATUS_OPTS.map(([v, t]) => `<button class="tab ${f.st === v ? 'is-active' : ''}" data-st="${v}">${t} <span class="badge badge--neutral">${filtered(v).length}</span></button>`).join('');
+  const list = filtered(f.st);
+  if (f.sort === 'pg') list.sort((a, b) => (b.progress || 0) - (a.progress || 0));
+  else if (f.sort === 'az') list.sort((a, b) => a.title.localeCompare(b.title, 'vi'));
+  else list.sort((a, b) => (a.lastDays ?? 1e9) - (b.lastDays ?? 1e9));
+  const grid = document.getElementById('grid');
+  if (!list.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${ICON.book}<b>Không có khoá học nào khớp bộ lọc</b></div>`; return; }
+  grid.innerHTML = list.map((c) => CourseCard({
+    title: c.title, desc: c.desc, lessons: c.lessons, hours: c.hours, q: f.q, cover: c.cover, progress: c.progress, video: c.video, test: c.test, done: c.done,
+    state: c.st === 'done' ? 'completed' : c.st === 'fail' ? 'failed' : 'in-progress', failScore: c.failScore, sched: c.sched, last: c.lastDays != null ? lastLabel(c.lastDays) : 'Chưa mở bài nào',
+  }).replace('<article', `<article data-idx="${courses.indexOf(c)}"`)).join('');
+}
+document.getElementById('tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-st]'); if (b) { f.st = b.dataset.st; render(); } });
+document.getElementById('q').addEventListener('input', (e) => { f.q = S.clean(e.target.value); render(); });
+document.getElementById('ld').addEventListener('change', (e) => { f.ld = e.target.value; render(); });
+document.getElementById('sort').addEventListener('change', (e) => { f.sort = e.target.value; render(); });
+document.addEventListener('click', (e) => {
+});
+LH.DemoBar('#6 #8 #9 — Khoá học của tôi', [
+  { label: 'Kịch bản', key: 'k', options: [['full', '2 đang học + 1 không đạt + 2 hoàn thành'], ['over', 'Đang quá giới hạn (lên bản)']] },
+  { label: 'Lọc nhanh', key: 'pre', options: [['none', 'Không'], ['done', 'Hoàn thành'], ['d30', 'Đăng ký / hoàn thành 30 ngày']] },
+], (s) => {
+  // My Courses = khoá đã đăng ký: Đang học, Hoàn thành, Không đạt
+  courses = D.catalog.filter((c) => ['learning', 'done', 'fail'].includes(c.st)).map((c) => ({ ...c }));
+  if (s.k === 'over') courses.push({ title: 'QA IN THE AGE OF AI AGENTS: RETHINKING SOFTWARE QUALITY', cover: '../assets/img/covers/qa-ai-agents.png', lessons: 5, hours: '6h 0m', desc: 'Chất lượng phần mềm khi làm việc cùng AI agent.', tags: ['AI'], st: 'learning', my: 40, progress: 10, video: [1, 6], test: [0, 2], lastDays: 14 }, { title: 'HARNESS IS AL YOU NEED', cover: '../assets/img/covers/harness.png', lessons: 4, hours: '5h 0m', desc: 'Thiết kế harness cho agent.', tags: ['AI'], st: 'learning', my: 50, progress: 75, video: [6, 8], test: [1, 2], lastDays: 0 });
+  Object.assign(f, { st: s.pre === 'done' ? 'done' : 'all', ld: s.pre === 'd30' ? '30' : 'all' });
+  document.getElementById('ld').value = f.ld;
+  render();
+});
+</script>
+</body>
+</html>

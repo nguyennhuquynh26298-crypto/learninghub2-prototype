@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản lý khoá — Đối tượng · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  .wrap { max-width: 1080px; }
+  .rule-grid { display: grid; grid-template-columns: 140px 1fr; gap: 14px 16px; align-items: start; }
+  .rule-grid > .lbl { display: flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 500; height: 36px; }
+  .rule-grid > .lbl svg { width: 16px; height: 16px; color: var(--text-subtle); }
+  details.excl summary { cursor: pointer; list-style: none; display: flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 600; }
+  details.excl summary svg { width: 16px; height: 16px; transition: transform .15s; }
+  details.excl[open] summary svg { transform: rotate(180deg); }
+  .src { display: flex; flex-wrap: wrap; gap: 4px; }
+</style>
+</head>
+<body>
+<div id="header"></div>
+<div class="admin-bar"><div class="container stack gap-12">
+  <nav class="breadcrumb"><a href="#">Quản lý khoá học</a><span class="chev"></span><span>Claude Certified Architect – Foundations</span></nav>
+  <div class="row gap-12"><h1 class="page-title grow">Claude Certified Architect – Foundations</h1><span class="badge badge--success">Published</span><span id="export-slot"></span></div>
+  <div class="tabs" style="border:0"><button class="tab">Thông tin</button><button class="tab">Nội dung</button><button class="tab is-active">Đối tượng</button><button class="tab">Học viên</button></div>
+</div></div>
+
+<main class="container screen"><div class="wrap stack gap-24">
+  <section class="panel"><div class="panel__body stack gap-16">
+    <div class="field"><span class="field__label">Phạm vi<span class="req">*</span></span>
+      <div class="choice-cards" id="scope">
+        <label class="choice-card" data-v="all"><input type="radio" name="scope" value="all"><div><b>Toàn công ty</b></div></label>
+        <label class="choice-card" data-v="limited"><input type="radio" name="scope" value="limited"><div><b>Giới hạn</b></div></label>
+      </div></div>
+    <div id="rules"></div>
+  </div></section>
+
+  <section class="panel" id="extra-panel"></section>
+  <section class="panel" id="paid-panel"></section>
+
+  <section class="panel" id="members"></section>
+</div></main>
+
+<div style="position:sticky;bottom:64px;background:#fff;border-top:1px solid var(--border-default)"><div class="container row gap-16" style="height:64px">
+  <label class="check grow"><input type="checkbox" id="mail"><span>Gửi email mời học</span></label>
+  <button class="btn btn--secondary">Huỷ</button><button class="btn btn--primary" id="save">Lưu</button>
+</div></div>
+
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/export-modal.js"></script>
+<script>
+const { ICON, AppHeader, Alert, Badge, Avatar, Modal, Button, toast, esc } = LH; const D = LHData;
+let role = 'Admin';
+const base = { scope: 'limited', depts: 'QA|QC Automation', pos: 'Automation Tester' };
+const groupChanged = () => st.scope !== base.scope || st.depts.join('|') !== base.depts || st.pos.join('|') !== base.pos;
+const toRevision = () => role === 'Creator' && groupChanged();
+const st = { start: '2026-11-15', end: '2026-11-30', saved: { start: '2026-11-15', end: '2026-11-30' }, schedErr: '', scope: 'limited', depts: ['QA', 'QC Automation'], pos: ['Automation Tester'], people: ['Đỗ Quang Huy'], paid: false, due: '', members: [...D.members], excluded: [...D.excluded], err: '' };
+document.querySelectorAll('.chev').forEach((c) => c.innerHTML = ICON.chevronR);
+
+const tagInput = (key, list, ph) => `<div class="tag-input" data-key="${key}">${list.map((v) => `<span class="tag">${esc(v)}<button data-rm="${key}" data-v="${esc(v)}" aria-label="Bỏ ${esc(v)}">${ICON.x}</button></span>`).join('')}<input placeholder="${ph}"></div>`;
+function render() {
+  document.getElementById('header').innerHTML = AppHeader({ role, user: role === 'Admin' ? 'Lê Thị Mai' : 'Nguyễn Thu Hà' });
+  document.getElementById('export-slot').innerHTML = Button({ label: 'Xuất dữ liệu', variant: 'outline', icon: 'download', attrs: 'id="open-export"' });
+  document.querySelectorAll('#scope .choice-card').forEach((c) => { c.classList.toggle('is-selected', c.dataset.v === st.scope); c.querySelector('input').checked = c.dataset.v === st.scope; });
+  const limited = st.scope === 'limited';
+  document.getElementById('rules').innerHTML = !limited ? '' :
+    `<hr class="sep" style="margin-bottom:16px"><div class="rule-grid">
+      <span class="lbl">${ICON.building}Phòng ban</span>${tagInput('depts', st.depts, 'Tìm phòng ban…')}
+      <span class="lbl">${ICON.briefcase}Vị trí</span>${tagInput('pos', st.pos, 'Tìm vị trí…')}
+      <span class="lbl">${ICON.user}Cá nhân</span>${tagInput('people', st.people, 'Tìm theo tên, email hoặc mã NV…')}
+    </div>${st.err ? `<div class="field__error" style="margin-top:12px">${ICON.alert}${st.err}</div>` : ''}`;
+
+  const isAdmin = role === 'Admin';
+  // #4 §3.4 — Lịch học (Must Have, chỉ Admin L&D sửa) · §3.5 Khoá có phí (Could Have)
+  const changed = st.start !== st.saved.start || st.end !== st.saved.end;
+  document.getElementById('extra-panel').innerHTML = `<div class="panel__head"><b class="t-sm grow">Lịch học</b>${isAdmin ? '' : Badge('Chỉ xem', 'neutral', 'lock')}</div>
+    <div class="panel__body stack gap-16">
+      <div class="row gap-16" style="align-items:flex-end">
+        <div class="field" style="width:200px"><span class="field__label">Ngày bắt đầu</span><input class="input" type="date" id="d-start" value="${st.start}" ${isAdmin ? '' : 'disabled'}></div>
+        <div class="field" style="width:200px"><span class="field__label">Ngày kết thúc</span><input class="input ${st.schedErr ? 'is-error' : ''}" type="date" id="d-end" value="${st.end}" ${isAdmin ? '' : 'disabled'}></div>
+        ${isAdmin && changed && st.saved.start ? `<label class="check"><input type="checkbox" id="mail-sched"><span>Gửi email báo đổi lịch</span></label>` : ''}</div>
+      ${st.schedErr ? `<div class="field__error" style="margin-top:-8px">${ICON.alert}${st.schedErr}</div>` : ''}
+    </div>`;
+  document.getElementById('paid-panel').innerHTML = `<div class="panel__head"><b class="t-sm grow">Khoá có phí</b>${Badge('Could Have · sau Đợt 1', 'neutral')}</div>
+    <div class="panel__body stack gap-16">
+      <div class="row gap-16"><label class="check grow"><input type="checkbox" id="paid" ${st.paid ? 'checked' : ''}><span>Khoá có phí</span></label></div>
+      ${!limited && st.paidTry ? `<div class="field__error" style="margin-top:-8px">${ICON.alert}Khoá có phí cần chọn đối tượng cụ thể.</div>` : ''}
+    </div>`;
+
+  const sv = document.getElementById('save'); sv.textContent = toRevision() ? 'Lưu vào bản sửa' : 'Lưu';
+  document.getElementById('export-slot').classList.toggle('hidden', role !== 'Admin' && !st.wave2);
+  const rows = limited ? st.members : [];
+  document.getElementById('members').innerHTML = `<div class="panel__head"><b class="t-sm">Danh sách học viên</b><span class="badge badge--info">${limited ? rows.length : 'Toàn công ty'}${limited ? ' học viên' : ''}</span><span class="grow"></span>
+      <label class="input-wrap" style="width:260px">${ICON.search}<input class="input" placeholder="Tìm học viên…"></label></div>
+    ${limited ? `<table class="table"><tr><th>Họ tên</th><th>Phòng ban</th><th>Vị trí</th><th>Nguồn</th><th>Trạng thái học</th><th></th></tr>
+    ${rows.map((m, k) => `<tr><td><div class="person">${Avatar(m.name, 'sm')}<div><div class="fw-500">${esc(m.name)}</div><div class="t-xs muted">${esc(m.email)}</div></div></div></td>
+      <td>${esc(m.dept)}</td><td>${esc(m.pos)}</td><td><div class="src">${m.src.map((s) => Badge(s, s === 'Cá nhân' ? 'violet' : 'info')).join('')}</div></td>
+      <td>${Badge(m.status, m.status === 'Hoàn thành' ? 'success' : m.status === 'Đang học' ? 'warning' : 'neutral')}</td>
+      <td style="text-align:right"><button class="btn btn--danger-ghost btn--sm" data-remove="${k}">Remove</button></td></tr>`).join('')}</table>
+    <div class="panel__body" style="border-top:0"><details class="excl" ${st.excluded.length ? '' : ''}><summary>Đã loại trừ (${st.excluded.length}) ${ICON.chevronD}</summary>
+      ${st.excluded.length ? `<table class="table">${st.excluded.map((m, k) => `<tr><td><div class="person">${Avatar(m.name, 'sm')}<div><div class="fw-500">${esc(m.name)}</div><div class="t-xs muted">${esc(m.email)}</div></div></div></td><td>${esc(m.dept)}</td><td>${Badge('Mất quyền', 'neutral', 'lock')}</td><td style="text-align:right"><button class="btn btn--outline btn--sm" data-readd="${k}">${ICON.undo}Thêm lại</button></td></tr>`).join('')}</table>` : '<p class="t-sm muted">Chưa có ai.</p>'}
+    </details></div>`
+    : `<div class="panel__body t-sm muted">Toàn công ty</div>`}`;
+}
+
+document.addEventListener('click', (e) => {
+  const rm = e.target.closest('[data-rm]'); if (rm) { st[rm.dataset.rm] = st[rm.dataset.rm].filter((v) => v !== rm.dataset.v); st.err = ''; render(); return; }
+  const card = e.target.closest('#scope .choice-card'); if (card) {
+    e.preventDefault(); const v = card.dataset.v; if (v === st.scope) return;
+    if (v === 'all') { document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-all', size: 'sm', icon: 'globe', iconTone: 'warning', title: 'Mọi nhân viên đều học được khoá này. Tiếp tục?', body: '', foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Tiếp tục', attrs: 'id="ok-all"' }) })); }
+    else { st.scope = 'limited'; render(); }
+    return;
+  }
+  if (e.target.closest('#ok-all')) { st.scope = 'all'; st.paid = false; document.getElementById('m-all').remove(); render(); return; }
+  const r = e.target.closest('[data-remove]'); if (r) {
+    const m = st.members[+r.dataset.remove];
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-rm', size: 'sm', icon: 'alert', iconTone: 'danger', title: `Gỡ ${esc(m.name)} khỏi khoá học?`, body: '<p class="t-sm">Người này mất quyền vào nội dung ngay, tiến độ được giữ.</p>', foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Remove', variant: 'danger', attrs: `data-confirm-rm="${r.dataset.remove}"` }) }));
+    return;
+  }
+  const c = e.target.closest('[data-confirm-rm]'); if (c) { const [m] = st.members.splice(+c.dataset.confirmRm, 1); st.excluded.push(m); document.getElementById('m-rm').remove(); render(); document.querySelector('details.excl').open = true; toast(`Đã gỡ ${m.name} — tiến độ được giữ`); return; }
+  const ra = e.target.closest('[data-readd]'); if (ra) { const [m] = st.excluded.splice(+ra.dataset.readd, 1); st.members.push({ ...m, status: 'Đang học' }); render(); toast(`Đã thêm lại ${m.name}`); return; }
+  if (e.target.closest('#open-export')) { LHExport.open({ role }); return; }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'paid') { if (st.scope !== 'limited') { st.paidTry = true; e.target.checked = false; render(); return; } st.paid = e.target.checked; render(); }
+  if (e.target.id === 'd-start') { st.start = e.target.value; st.schedErr = ''; render(); }
+  if (e.target.id === 'd-end') { st.end = e.target.value; st.schedErr = ''; render(); }
+});
+document.getElementById('save').onclick = () => {
+  if (st.start && st.end && st.end < st.start) { st.schedErr = 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.'; render(); return; }
+  if (st.end && st.end !== st.saved.end && st.end < '2026-11-11') { st.schedErr = 'Ngày kết thúc không được ở quá khứ.'; render(); return; }
+  if (!st.warned) st.mailSched = !!document.getElementById('mail-sched')?.checked;
+  if (st.scope === 'limited' && !st.depts.length && !st.pos.length && !st.people.length) { st.err = 'Chọn ít nhất một phòng ban, vị trí hoặc cá nhân.'; render(); return; }
+  // #4 §3.4 — cảnh báo gán nhầm (luật cố định, chỉ nhắc, không chặn lưu): người thêm theo Cá nhân không thuộc phòng ban / vị trí đã chọn
+  const odd = st.scope === 'limited' ? st.members.filter((m) => m.src.includes('Cá nhân') && st.people.includes(m.name) && !st.depts.includes(m.dept) && !st.pos.includes(m.pos)) : [];
+  if (odd.length && !st.warned) {
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-warn', size: 'sm', icon: 'alert', iconTone: 'warning', title: 'Kiểm tra lại đối tượng',
+      body: `<p class="t-sm">Những người sau được thêm theo Cá nhân nhưng không thuộc phòng ban / vị trí đã chọn:</p><ul class="t-sm" style="margin:8px 0 0 18px">${odd.map((m) => `<li><b>${esc(m.name)}</b> — ${esc(m.dept)} · ${esc(m.pos)}</li>`).join('')}</ul>`,
+      foot: Button({ label: 'Xem lại', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Vẫn lưu', attrs: 'id="warn-ok"' }) }));
+    document.getElementById('warn-ok').onclick = () => { document.getElementById('m-warn').remove(); st.warned = true; document.getElementById('save').click(); st.warned = false; };
+    return;
+  }
+  const schedMsg = st.mailSched ? ' · đã gửi email báo đổi lịch' : ''; st.saved = { start: st.start, end: st.end };
+  if (toRevision()) { render(); toast('Đã lưu vào bản sửa — gửi duyệt để áp dụng'); return; }
+  toast(`Đã cập nhật đối tượng — ${st.scope === 'limited' ? st.members.length + ' học viên' : 'toàn công ty'}${document.getElementById('mail').checked ? ' · đã gửi email cho 2 người mới' : ''}${schedMsg}`); render();
+};
+LH.DemoBar('#4 Đối tượng · #5 Export', [
+  { label: 'Vai trò', key: 'role', options: [['Admin', 'Admin L&D'], ['Creator', 'Creator (Đợt 2)']] },
+  { label: 'Kịch bản', key: 'sc', options: [['limited', 'Giới hạn (QA)'], ['all', 'Toàn công ty'], ['empty', 'Giới hạn, chưa có quy tắc']] },
+], (s) => {
+  role = s.role; st.wave2 = s.role === 'Creator'; st.paidTry = false; st.err = '';
+  if (s.sc === 'all') st.scope = 'all';
+  else { st.scope = 'limited'; if (s.sc === 'empty') { st.depts = []; st.pos = []; st.people = []; } else { st.depts = ['QA', 'QC Automation']; st.pos = ['Automation Tester']; st.people = ['Đỗ Quang Huy']; } }
+  render();
+});
+</script>
+</body>
+</html>

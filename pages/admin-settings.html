@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cài đặt hệ thống · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+<div id="header"></div>
+<main class="container screen stack gap-24" style="max-width:800px">
+  <h1 class="page-title">Phân quyền</h1>
+  <!-- #3 §3.1 — Phân quyền Course Creator -->
+  <section class="panel">
+    <div class="panel__head"><b class="t-sm grow">Course Creator</b><button class="btn btn--outline btn--sm" id="add-cr">+ Thêm Course Creator</button></div>
+    <table class="table" id="creators"></table>
+  </section>
+</main>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script>
+const { ICON, AppHeader, toast, Avatar, Modal, Button, esc } = LH;
+const creators = LHData.creators.map((c) => ({ ...c }));
+const pool = [['Đỗ Minh Quân', 'QA'], ['Vũ Thị Lan', 'Development'], ['Hoàng Anh Tuấn', 'BA'], ['Ngô Bảo Châu', 'Design']];
+function renderCreators() {
+  document.getElementById('creators').innerHTML = `<thead><tr><th>Nhân viên</th><th>Phòng ban</th><th>Khoá phụ trách</th><th>Ngày cấp</th><th></th></tr></thead><tbody>` +
+    creators.map((c, i) => `<tr><td><span class="row gap-8">${Avatar(c.name, 'sm')}<span class="stack"><b>${esc(c.name)}</b><span class="t-xs muted">${esc(c.email)}</span></span></span></td><td>${c.dept}</td><td>${c.courses}</td><td>${c.since}</td>
+      <td style="text-align:right">${Button({ label: 'Gỡ quyền', variant: 'danger-ghost', size: 'sm', attrs: `data-rmcr="${i}"` })}</td></tr>`).join('') + '</tbody>';
+}
+renderCreators();
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#add-cr')) {
+    const left = pool.filter(([n]) => !creators.some((c) => c.name === n)); // người đã là Creator / Admin không hiện
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-cr', icon: 'users', title: 'Thêm Course Creator', 
+      body: `<div class="stack gap-8"><label class="input-wrap">${ICON.search}<input class="input" placeholder="Tìm theo tên, email, mã NV"></label>
+        <div class="radio-list">${left.map(([n, d]) => `<label><input type="checkbox" value="${n}" data-dept="${d}">${Avatar(n, 'sm')}${n}<span class="count">${d}</span></label>`).join('')}</div>
+        <span class="field__error hidden" id="cr-err">${ICON.alert}Chọn ít nhất 1 nhân viên.</span></div>`,
+      foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Lưu', attrs: 'id="cr-save"' }) }));
+  }
+  if (e.target.closest('#cr-save')) {
+    const sel = [...document.querySelectorAll('#m-cr input[type=checkbox]:checked')];
+    document.getElementById('cr-err').classList.toggle('hidden', sel.length > 0); if (!sel.length) return;
+    sel.forEach((x) => creators.push({ name: x.value, email: '—', dept: x.dataset.dept, courses: 0, since: '09/11/2026' }));
+    document.getElementById('m-cr').remove(); renderCreators(); toast(`Đã cấp quyền cho ${sel.length} người`);
+  }
+  const rm = e.target.closest('[data-rmcr]');
+  if (rm) {
+    const c = creators[+rm.dataset.rmcr];
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-rm', icon: 'alert', iconTone: 'danger', title: `Gỡ quyền Course Creator của ${esc(c.name)}?`, desc: `Người này không còn quản lý ${c.courses} khoá đang phụ trách; các khoá chuyển cho Admin L&D.`,
+      foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Gỡ quyền', variant: 'danger', attrs: `data-rmok="${rm.dataset.rmcr}"` }) }));
+  }
+  const ok = e.target.closest('[data-rmok]');
+  if (ok) { const c = creators.splice(+ok.dataset.rmok, 1)[0]; document.getElementById('m-rm').remove(); renderCreators(); toast(`Đã gỡ quyền của ${c.name}`); }
+});
+document.getElementById('header').innerHTML = AppHeader({ role: 'Admin', user: 'Lê Thị Mai' });
+</script>
+</body>
+</html>

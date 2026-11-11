@@ -1,0 +1,40 @@
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: var(--font); font-size: var(--fs-md); line-height: 1.5; color: var(--text-strong); background: var(--bg-page); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, h5, p { margin: 0; }
+a { color: var(--text-brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; }
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
+
+/* Tailwind container của web: rộng 1280 ở ≥1280, không padding */
+.container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+@media (min-width: 1328px) { .container { padding: 0; } }
+body.bg-white { background: #fff; }
+.stack { display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; }
+.gap-4 { gap: 4px; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; } .gap-16 { gap: 16px; } .gap-24 { gap: 24px; } .gap-32 { gap: 32px; }
+.grow { flex: 1; min-width: 0; }
+.muted { color: var(--text-subtle); }
+.t-xs { font-size: var(--fs-xs); line-height: 16px; }
+.t-sm { font-size: var(--fs-sm); line-height: 20px; }
+.t-lg { font-size: var(--fs-lg); line-height: 28px; }
+.t-xl { font-size: var(--fs-xl); line-height: 28px; }
+.t-2xl { font-size: var(--fs-2xl); line-height: 32px; }
+.fw-500 { font-weight: 500; } .fw-600 { font-weight: 600; } .fw-700 { font-weight: 700; }
+.page-title { font-size: var(--fs-2xl); line-height: 32px; font-weight: 700; color: var(--text-strong); }
+.section-title { font-size: var(--fs-lg); line-height: 28px; font-weight: 600; color: var(--text-strong); }
+.hidden { display: none !important; }
+
+/* Thanh chọn trạng thái demo — chỉ có trên bản HTML local, không thuộc thiết kế */
+body.has-demo { padding-bottom: 64px; }
+.demo-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 300; box-shadow: 0 -4px 16px rgba(0,0,0,.2); background: #0f172a; color: #e2e8f0; font-size: 12px; padding: 8px 24px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.demo-bar b { color: var(--lime-500); font-weight: 600; margin-right: 4px; }
+.demo-bar a { color: #cbd5e1; }
+.demo-bar .demo-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.demo-bar .demo-group > span { color: #94a3b8; margin-right: 4px; }
+.demo-bar button { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 3px 8px; font-size: 12px; cursor: pointer; }
+.demo-bar button[aria-pressed="true"] { background: var(--lime-500); color: #0f172a; border-color: var(--lime-500); font-weight: 600; }
+.demo-bar .demo-sep { flex: 1; }
+.demo-note { font-size: 12px; color: #94a3b8; }

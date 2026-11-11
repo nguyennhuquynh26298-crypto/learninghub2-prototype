@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exam · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+<!-- Màn làm bài thi (Exam Mode) — mới, chốt 10/11/2026:
+     Q1 cuộn 1 trang như /quiz của web + lưới câu dính bên phải.
+     Q2 rời trang: bài dở được giữ, đồng hồ vẫn chạy; hết giờ → tự nộp, trừ 1 lượt (BR-ASM-16).
+     Không có Check answer, không hiện đúng/sai tới khi nộp. -->
+<div class="quiz-page"><div id="bar"></div><div class="stage-card">
+  <div class="exam-wrap">
+    <div class="quiz">
+      <div class="quiz-head">
+        <div class="quiz-head__t"><h1 id="t-name"></h1><span class="quiz-badge quiz-badge--exam">Exam</span></div>
+        <p id="t-sub"></p>
+      </div>
+      <div class="wq-list" id="qs"></div>
+      <div class="quiz-foot"><button class="wbtn" data-submit>Nộp bài</button><span class="t-sm muted" id="foot-note"></span></div>
+    </div>
+    <aside class="exam-side"><div id="nav"></div></aside>
+  </div>
+</div></div>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/data.js"></script>
+<script>
+const { WebQuestion, QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, Modal, toast } = LH; const D = LHData; const T = D.test; const Q = D.examFull;
+document.getElementById('t-name').textContent = T.name;
+/* Lượt đã nộp lưu ở localStorage để màn kết quả đọc lại (prototype). Chốt 11/11: tối đa 3 lượt; lượt 2, 3 chỉ làm lại câu sai; điểm = cao nhất; Đạt → khoá. */
+const KEY = 'lhExamAttempts', MAX = 3;
+const saved = () => JSON.parse(localStorage.getItem(KEY) || '[]');
+{ const s = saved(); if ((s.length >= MAX || s.some((x) => x.score >= T.passMark)) && !location.search.includes('reset')) location.replace('test-result.html?sc=live'); } // khoá khi Đạt hoặc hết lượt
+const okQ = (q, c) => c.length === q.correct.length && c.every((x) => q.correct.includes(x));
+let SC = Q.map((q, i) => i); // câu được làm ở lượt này
+const attemptNo = () => saved().length + 1;
+const sub = () => document.getElementById('t-sub').textContent = (SC.length < Q.length ? `Lượt ${attemptNo()}/${MAX} · làm lại ${SC.length} câu sai` : `${Q.length} câu · Lượt ${attemptNo()}/${MAX}`) + ` · ${T.minutes} phút · Đạt từ ${T.passMark} điểm`;
+let st, left, tick, cur = 0;
+const answered = () => SC.filter((i) => st[i].chosen.length).length;
+function navItems() { return SC.map((i) => st[i]).map((s) => s.flag ? (s.chosen.length ? 'flagged-answered' : 'flagged') : s.chosen.length ? 'answered' : 'empty'); }
+function renderBar() {
+  document.getElementById('bar').innerHTML = QuizTopBar({ mode: 'exam', title: T.name,
+    center: `<span class="qbar__count">Đã trả lời <b>${answered()}</b> / ${SC.length}</span>`,
+    right: `<button class="wbtn" data-submit>Nộp bài</button>` });
+  document.getElementById('nav').innerHTML = QuestionNav(navItems(), { current: SC.indexOf(cur), nums: SC.map((i) => i + 1), timer: ExamTimer(left) });
+  document.getElementById('foot-note').textContent = `Đã trả lời ${answered()}/${SC.length} câu${SC.length < Q.length ? ` · ${Q.length - SC.length} câu đúng được giữ` : ''}`;
+}
+function renderQ(i) {
+  const el = document.getElementById('q' + (i + 1));
+  const html = WebQuestion({ n: i + 1, ...Q[i], chosen: st[i].chosen, state: 'exam', flagged: st[i].flag });
+  if (el) el.outerHTML = html; else return html;
+}
+function renderAll() { document.getElementById('qs').innerHTML = SC.map((i) => renderQ(i)).join(''); renderBar(); }
+function grade() {
+  const ok = (q, c) => c.length === q.correct.length && c.every((x) => q.correct.includes(x));
+  const right = Q.filter((q, i) => ok(q, st[i].chosen)).length, blank = st.filter((x) => !x.chosen.length).length;
+  return { score: Math.round(right / Q.length * 100), right, wrong: Q.length - right - blank, blank, total: Q.length,
+    minutes: Math.max(1, Math.round((T.minutes * 60 - left) / 60)), chosen: st.map((x) => x.chosen), at: new Date().toISOString(), redo: SC.length < Q.length ? SC.length : 0 };
+}
+function submit(auto) {
+  clearInterval(tick); document.querySelectorAll('.modal-backdrop').forEach((m) => m.remove());
+  const g = grade(); localStorage.setItem(KEY, JSON.stringify([...saved(), g])); left = 0;
+  if (auto) {
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'expired', size: 'sm', icon: 'clock', iconTone: 'warning', title: 'Đã hết giờ',
+      body: `<p class="t-sm">Bài thi đã được nộp tự động. Còn <b>${g.blank}</b> câu bỏ trống (tính là Sai). Lượt này đã được tính.</p>`,
+      foot: '<a class="wbtn" href="test-result.html?sc=live">Xem kết quả</a>' }));
+    return;
+  }
+  location.href = 'test-result.html?sc=live';
+}
+function start(sec) {
+  clearInterval(tick); left = sec; renderBar();
+  tick = setInterval(() => { left--; const t = document.querySelector('.timer'); if (t) t.outerHTML = ExamTimer(left);
+    if (left === 300) toast('Còn 5 phút — kiểm tra lại các câu chưa làm');
+    if (left <= 0) submit(true); }, 1000);
+}
+document.addEventListener('click', (e) => {
+  const q = e.target.closest('.wq'); const i = q ? +q.dataset.n - 1 : -1;
+  if (e.target.closest('[data-flag]')) { st[i].flag = !st[i].flag; renderQ(i); renderBar(); return; }
+  const o = e.target.closest('.wq-opt');
+  if (o && i >= 0) { const k = +o.dataset.k; const s = st[i];
+    s.chosen = Q[i].type === 'multi' ? (s.chosen.includes(k) ? s.chosen.filter((x) => x !== k) : [...s.chosen, k]) : [k];
+    cur = i; renderQ(i); renderBar(); return; }
+  const j = e.target.closest('[data-jump]'); if (j) { cur = +j.dataset.jump - 1; renderBar(); }
+  if (e.target.closest('[data-submit]')) {
+    const un = SC.filter((x) => !st[x].chosen.length).length, fl = SC.filter((x) => st[x].flag).length;
+    document.body.insertAdjacentHTML('beforeend', SubmitConfirm({ unanswered: un, flagged: fl, attempts: `lượt ${attemptNo()}/${MAX}` }));
+  }
+  if (e.target.closest('[data-submit-now]')) submit(false);
+  if (e.target.closest('[data-review-empty]')) { const k = SC.find((x) => !st[x].chosen.length || st[x].flag) ?? -1; if (k >= 0) { cur = k; renderBar(); document.getElementById('q' + (k + 1)).scrollIntoView({ behavior: 'smooth' }); } }
+});
+addEventListener('beforeunload', (e) => { if (left > 0) { e.preventDefault(); e.returnValue = 'Bài thi vẫn tính giờ khi bạn rời đi.'; } });
+LH.DemoBar('#2 Làm bài thi', [
+  { label: 'Kịch bản', key: 'sc', options: [['new', 'Mới bắt đầu'], ['mid', 'Làm dở 20 câu, 2 đánh dấu'], ['warn', 'Còn 5 phút'], ['end', 'Còn 5 giây (tự nộp)'], ['reset', 'Xoá lượt đã nộp (demo)']] },
+], (s) => {
+  if (s.sc === 'reset') { localStorage.removeItem(KEY); s.sc = 'new'; }
+  st = Q.map(() => ({ chosen: [], flag: false }));
+  /* Đã có lượt trước → chỉ mở câu sai / bỏ trống; câu đúng giữ nguyên đáp án */
+  const prev = saved().length ? saved()[saved().length - 1].chosen : null;
+  SC = Q.map((q, i) => i).filter((i) => !prev || !okQ(Q[i], prev[i] || []));
+  if (prev) Q.forEach((q, i) => { if (!SC.includes(i)) st[i].chosen = [...prev[i]]; });
+  sub();
+  if (s.sc !== 'new' && !prev) Q.forEach((q, i) => { if (i < 20 || s.sc === 'end') st[i].chosen = q.chosen.length ? [...q.chosen] : [0]; });
+  if (s.sc !== 'new' && !prev) { st[4].flag = true; st[11].flag = true; st[25] && (st[25].chosen = []); }
+  cur = s.sc === 'new' || prev ? SC[0] : 20;
+  renderAll();
+  start({ reset: T.minutes * 60, new: T.minutes * 60, mid: 41 * 60 + 20, warn: 301, end: 5 }[s.sc]);
+});
+</script>
+</body>
+</html>
