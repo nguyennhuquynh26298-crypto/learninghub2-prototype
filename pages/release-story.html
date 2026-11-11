@@ -324,7 +324,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <span class="kick">Release Story cùng Techter</span>
       <h1>Đường lên đỉnh <span>LearningHub 2</span></h1>
       <p class="lead">9 bậc là 9 yêu cầu của L&amp;D. Trên mỗi bậc chỉ ghi điều cốt lõi: làm gì, trước và giờ. Mở chiếu chỉ để đọc đầy đủ yêu cầu, thuật ngữ, quy tắc và cách thử trên prototype.</p>
-      <div class="facts"><b><i>9</i>yêu cầu</b><b><i>35</i>quyết định đã chốt</b><b><i>2</i>đợt triển khai</b><b><i>16</i>màn prototype</b></div>
+      <div class="facts"><b><i>9</i>yêu cầu</b><b><i>42</i>quyết định đã chốt</b><b><i>2</i>đợt triển khai</b><b><i>16</i>màn prototype</b></div>
       <a class="cta" href="#base" id="go">Bắt đầu leo ↓</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download style="margin-left:12px">Tải Excel tính năng ↓</a>
     </div>
     <div class="hero-art" aria-hidden="true">
@@ -399,12 +399,12 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <p class="k">Certificate of Completion · Đỉnh vinh quang</p>
       <h2 id="topT">Đỉnh LearningHub 2</h2>
       <p>Đề thi được bảo vệ, đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt, đúng người học đúng khoá, và một con số tiến độ đáng tin để L&amp;D báo cáo và cấp chứng nhận.</p>
-      <div class="nums"><div><b>9</b><small>bậc đã leo</small></div><div><b>35</b><small>quyết định đã chốt</small></div><div><b>42</b><small>link prototype</small></div><div><b>2</b><small>đợt triển khai</small></div></div>
+      <div class="nums"><div><b>9</b><small>bậc đã leo</small></div><div><b>42</b><small>quyết định đã chốt</small></div><div><b>44</b><small>link prototype</small></div><div><b>2</b><small>đợt triển khai</small></div></div>
     </div>
     <div class="next rv">
-      <div><b>Đang ở · 10/11</b><span>Prototype HTML + tinh chỉnh UI/UX bài thi, tìm kiếm, trang chủ</span></div>
-      <div><b>Tiếp theo</b><span>Demo cho L&amp;D, xác nhận luật thi 3 lượt</span></div>
-      <div><b>Sau demo</b><span>Dev Đợt 1 trước, Đợt 2 sau</span></div>
+      <div><b>Đang ở · 11/11</b><span>Rà soát, chốt và verify tài liệu + prototype</span></div>
+      <div><b>Tiếp theo</b><span>Verify xong → cập nhật design Figma</span></div>
+      <div><b>Sau đó</b><span>Dev Đợt 1 trước, Đợt 2 sau</span></div>
     </div>
     <div class="fin"><a class="cta" href="index.html" target="_blank" rel="noopener" style="margin-top:0">Mở toàn bộ prototype ↗</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download>Tải Excel tính năng ↓</a><a class="ghost" href="#hero">Leo lại từ đầu ↑</a></div>
   </div>
@@ -428,7 +428,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
 const REQS = [];
 REQS.push({
   id: 'r1', no: '#1', wave: 1, word: 'LUYENTAP', title: 'Practice tuỳ chọn, đề luyện tập riêng',
-  module: 'Assessment', who: 'Learner · Admin L&D', prio: 'Cao', spec: '01-practice-mode', dec: 'D-01 → D-04',
+  module: 'Assessment', who: 'Learner · Admin L&D', prio: 'Cao', spec: '01-practice-mode', dec: 'D-01 → D-04, D-46',
   q: 'Học viên luyện Practice bằng bộ câu nào?',
   purpose: 'Điểm bài kiểm tra phải phản ánh đúng năng lực học viên. Học viên vẫn có chỗ luyện tập, nhưng việc luyện tập không được làm lộ đề đánh giá.',
   short: { b: 'Practice và Exam dùng chung một bộ câu; Practice xem đáp án ngay, không giới hạn số lần.', a: 'Practice bật / tắt theo từng bài, có bộ câu riêng, hệ thống chặn câu trùng đề Exam.' },
@@ -463,7 +463,7 @@ REQS.push({
 
 REQS.push({
   id: 'r2', no: '#2', wave: 1, word: 'DAPAN', title: 'Kiểm soát hiển thị đáp án bài thi',
-  module: 'Assessment', who: 'Learner', prio: 'Cao', spec: '02-review-answer', dec: 'D-06, D-07, D-36, D-40',
+  module: 'Assessment', who: 'Learner', prio: 'Cao', spec: '02-review-answer', dec: 'D-06, D-07, D-36, D-39, D-40',
   q: 'Nộp bài Exam xong, học viên thấy được gì?',
   purpose: 'Học viên biết mình sai ở đâu để tự học lại, nhưng không lấy được đáp án đúng để học thuộc cho lượt sau hoặc chia sẻ cho người khác.',
   short: { b: 'Nộp Exam là xem được đáp án đúng + giải thích của mọi câu.', a: 'Cố định 3 lượt. Chưa đạt thì lượt sau chỉ làm lại câu sai. Đạt hoặc hết 3 lượt thì bài khoá và mở đáp án. Điểm chính thức là điểm cao nhất.' },
@@ -497,7 +497,7 @@ REQS.push({
 
 REQS.push({
   id: 'r4', no: '#4', wave: 1, word: 'DOITUONG', title: 'Thiết lập đối tượng học viên của khoá',
-  module: 'Course admin + Learner', who: 'Admin L&D · Learner', prio: 'Cao', spec: '04-course-audience', dec: 'D-08 → D-11, D-44, D-45, D-52',
+  module: 'Course admin + Learner', who: 'Admin L&D · Learner', prio: 'Cao', spec: '04-course-audience', dec: 'D-08 → D-11, D-44 → D-47, D-49, D-51, D-52',
   q: 'Ai được học khoá QA Automation?',
   purpose: 'Khoá chuyên sâu chỉ dành cho đúng nhóm nhân sự cần học. L&D kiểm soát được ai học, tránh người ngoài nhóm học lấy chứng nhận và làm sai số liệu đào tạo.',
   short: { b: 'Khoá nào cũng mở cho toàn công ty, không giới hạn được theo nhóm.', a: 'Tab Đối tượng: Toàn công ty hoặc Giới hạn theo Phòng ban / Vị trí / Cá nhân; người ngoài chỉ xem giới thiệu.' },
@@ -529,7 +529,7 @@ REQS.push({
 });
 REQS.push({
   id: 'r5', no: '#5', wave: 1, word: 'XUATFILE', title: 'Xuất tiến độ và kết quả học tập',
-  module: 'Report', who: 'Admin L&D', prio: 'Cao', spec: '05-export-learning-data', dec: 'D-13',
+  module: 'Report', who: 'Admin L&D', prio: 'Cao', spec: '05-export-learning-data', dec: 'D-13, D-46',
   purpose: 'L&D lấy được số liệu học tập chính xác, đầy đủ để báo cáo đào tạo và theo dõi học viên, không phải dùng công cụ ngoài để gom dữ liệu thủ công.',
   short: { b: 'Không có nút xuất dữ liệu; muốn báo cáo phải gom tay tiến độ và điểm từng người.', a: 'Nút Xuất dữ liệu ra file .xlsx, theo toàn khoá hoặc theo Session, có bộ lọc và số dự kiến.' },
   before: [
@@ -553,7 +553,7 @@ REQS.push({
 
 REQS.push({
   id: 'r9', no: '#9', wave: 1, word: 'GIOIHAN', title: 'Giới hạn số khoá học song song',
-  module: 'Learner', who: 'Learner · Admin', prio: 'Cao', spec: '09-enroll-limit', dec: 'D-42, D-43',
+  module: 'Learner', who: 'Learner · Admin', prio: 'Cao', spec: '09-enroll-limit', dec: 'D-42, D-43, D-49, D-51',
   q: 'Một học viên được học cùng lúc bao nhiêu khoá?',
   purpose: 'Học viên tập trung hoàn thành khoá đang học, tránh đăng ký dàn trải rồi bỏ dở, làm tỷ lệ hoàn thành thấp và số liệu đào tạo sai lệch.',
   short: { b: 'Đăng ký bao nhiêu khoá cũng được; nhiều khoá dở dang, tỷ lệ hoàn thành thấp.', a: 'Tối đa 2 khoá Đang học. Phải hoàn thành mới đăng ký thêm; trượt bài thi sau 3 lượt thì khoá Không đạt và trả suất.' },
@@ -582,7 +582,7 @@ REQS.push({
 });
 REQS.push({
   id: 'r3', no: '#3', wave: 2, sec: 10, title: 'Course Creator và duyệt trước khi Publish',
-  module: 'Course admin', who: 'Admin L&D · Course Creator', prio: 'Trung bình', spec: '03-course-approval', dec: 'D-16 → D-20, D-22 → D-24',
+  module: 'Course admin', who: 'Admin L&D · Course Creator', prio: 'Trung bình', spec: '03-course-approval', dec: 'D-16, D-17, D-19, D-20, D-22, D-23, D-47, D-48',
   purpose: 'Cho SME, trainer, trưởng bộ phận chủ động xây dựng khoá học, đồng thời L&D vẫn kiểm soát cấu trúc và chất lượng nội dung trước khi khoá đến tay học viên.',
   short: { b: 'Chỉ Admin L&D tạo khoá; không có bước duyệt, sửa là áp dụng ngay.', a: 'Admin cấp quyền Course Creator; Creator gửi duyệt, Admin Approve hoặc Yêu cầu chỉnh sửa; bản sửa không làm gián đoạn học viên.' },
   before: [
@@ -816,8 +816,8 @@ REQS.forEach((r) => Object.assign(r, EXTRA[r.id]));
   /* ---------- Bản đồ (chân cầu thang) ---------- */
   const mapItem = (id) => { const r = BY[id]; return `<li><a href="#buoc-${NO[id]}"><i>${NO[id]}</i><span style="color:inherit;font-size:inherit;font-weight:inherit"><b>${r.no} · ${r.title}</b><small>${r.lead}</small></span><span>Xem ↓</span></a></li>`; };
   $('map').innerHTML = `
-    <div class="map-col rv"><h3>Đợt 1 · Bậc 1 → 5<small>Ưu tiên Cao · D-01 → D-15</small></h3><ol>${ORDER.slice(0, 5).map(mapItem).join('')}</ol></div>
-    <div class="map-col rv"><h3>Đợt 2 · Bậc 6 → 9<small>Ưu tiên Trung bình · D-16 → D-35</small></h3><ol>${ORDER.slice(5).map(mapItem).join('')}</ol></div>`;
+    <div class="map-col rv"><h3>Đợt 1 · Bậc 1 → 5<small>Ưu tiên Cao</small></h3><ol>${ORDER.slice(0, 5).map(mapItem).join('')}</ol></div>
+    <div class="map-col rv"><h3>Đợt 2 · Bậc 6 → 9<small>Ưu tiên Trung bình</small></h3><ol>${ORDER.slice(5).map(mapItem).join('')}</ol></div>`;
 
   /* ---------- Các vị trí trên cầu thang ----------
      j = 0 chân · 1..5 bậc Đợt 1 · 6 chiếu nghỉ · 7..10 bậc Đợt 2 · 11 đỉnh */
@@ -835,7 +835,7 @@ REQS.forEach((r) => Object.assign(r, EXTRA[r.id]));
       <div class="acts"><button class="open-ed" type="button" data-open="${id}">📜 Mở chiếu chỉ</button><a class="try-btn" href="${r.links[0][0]}" target="_blank" rel="noopener">Thử prototype ↗</a></div>
     </article>`;
   };
-  const LAND = `<article class="card land"><div class="k"><span class="no">⛺</span><div><p class="meta">Chiếu nghỉ · D-01 → D-15</p><h3>Đã vượt Đợt 1</h3></div></div>
+  const LAND = `<article class="card land"><div class="k"><span class="no">⛺</span><div><p class="meta">Chiếu nghỉ · Xong Đợt 1</p><h3>Đã vượt Đợt 1</h3></div></div>
     <ul><li>Đề luyện tách khỏi đề thi; đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt.</li><li>Khoá giới hạn đúng đối tượng; mỗi người tối đa 2 khoá tự chọn.</li><li>L&amp;D xuất được tiến độ và điểm ra Excel.</li></ul></article>`;
   const INTRO = `<article class="card intro"><div class="k"><span class="no">🎓</span><div><p class="meta">Chân cầu thang</p><h3>9 bậc, 2 đợt, 1 đỉnh</h3></div></div>
     <p class="what">Cuộn xuống để Techter leo từng bậc. Mỗi bậc là một yêu cầu; bấm số bậc hoặc "Mở chiếu chỉ" để đọc đặc tả đầy đủ.</p></article>`;
