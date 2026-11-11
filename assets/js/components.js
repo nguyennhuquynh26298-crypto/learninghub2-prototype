@@ -466,7 +466,7 @@
     const dots = Array.from({ length: Math.max(limit, used) }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('');
     return `<span class="slot-chip ${full ? 'slot-chip--full' : ''}" title="${full ? 'Hoàn thành 1 khoá đang học để đăng ký khoá mới.' : 'Khoá Hoàn thành và Không đạt không tính suất.'}"><span class="slot-chip__dots">${dots}</span>Suất học <b>${used}/${limit}</b>${full ? ' · Đạt giới hạn' : ''}</span>`;
   }
-  /** Learner / Empty slot — thẻ mini 64px (thông tin phụ), cuối hàng My Courses, căn đỉnh */
+  /** Learner / Empty slot — khung nét đứt cùng cỡ thẻ khoá (336 × cao thẻ), nội dung gọn ở giữa */
   function EmptySlotCard(n = 1) {
     return `<a class="slot-empty" href="course-search.html"><span class="slot-empty__ic">${ICON.plus}</span><b>Còn ${n} suất</b><span class="grow"></span><span class="slot-empty__go">Khám phá khoá học${ICON.chevronR}</span></a>`;
   }
