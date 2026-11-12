@@ -44,6 +44,9 @@ window.LHData = {
     { type: 'single', text: 'Trong handoff giữa hai agent, thông tin nào bắt buộc phải truyền?',
       options: ['Toàn bộ lịch sử hội thoại', 'Mục tiêu, trạng thái hiện tại và ràng buộc', 'Chỉ câu hỏi cuối', 'Không cần truyền gì'], correct: [1],
       explain: 'Truyền mục tiêu + trạng thái + ràng buộc đủ để agent sau tiếp tục mà không phình context.' },
+    { type: 'tf', text: 'Prompt caching giúp mở rộng context window của mô hình.',
+      options: ['Đúng', 'Sai'], correct: [1],
+      explain: 'Caching chỉ giảm độ trễ và chi phí cho phần prompt lặp lại, không đổi kích thước context window.' },
   ],
   hr: {
     departments: ['QA', 'QC Automation', 'Development', 'BA', 'Design', 'HR', 'Sales', 'L&D'],

@@ -2,7 +2,7 @@
  * Variant: Scope = course | session ; State = default | empty | generating */
 (function () {
   const { ICON, Modal, Button, esc, toast } = LH; const D = LHData;
-  const STATUSES = ['Chưa bắt đầu', 'Đang học', 'Hoàn thành', 'Không đạt', 'Mất quyền'];
+  const STATUSES = ['Chưa đăng ký', 'Đang học', 'Hoàn thành', 'Không đạt', 'Mất quyền']; // Chưa đăng ký chỉ có ở khoá Giới hạn (BR-RPT-08)
   const s = { scope: 'course', sessions: [], from: '', to: '', depts: [], statuses: STATUSES.slice() };
 
   function estimate() {

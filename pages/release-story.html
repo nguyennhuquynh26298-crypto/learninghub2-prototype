@@ -69,6 +69,15 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
 .map-col a b{font-size:14.5px}
 .map-col a small{display:block;font-size:12.5px;color:var(--soft);font-weight:500}
 .map-col a span{font-size:12px;font-weight:700;color:var(--brand)}
+.map-col a small.kp{margin-top:3px;color:#4a5578}
+.map-col a em{font-style:normal;font-size:11.5px;font-weight:800;color:var(--royal);background:#eef2ff;border-radius:999px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+.map-col .wn{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:#fff7e0;font-size:12.5px;color:#6b4e0a}
+.goal{margin:0 auto 22px;max-width:980px;text-align:center;background:rgba(242,191,63,.12);border:1px solid rgba(242,191,63,.4);border-radius:16px;padding:14px 18px;font-size:15px}
+.goal b{color:var(--gold)}
+.notes{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.notes .prob b{color:var(--gold)}
+.notes ul{margin:8px 0 0;padding-left:18px;color:#c3cff0;font-size:14.5px;display:grid;gap:4px}
+@media (max-width:900px){.notes{grid-template-columns:1fr}}
 </style>
 <style>
 /* ===== CẦU THANG (màn rộng: cảnh dính, bậc đi lên trái-dưới → phải-trên) ===== */
@@ -324,7 +333,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <span class="kick">Release Story cùng Techter</span>
       <h1>Đường lên đỉnh <span>LearningHub 2</span></h1>
       <p class="lead">9 bậc là 9 yêu cầu của L&amp;D. Trên mỗi bậc chỉ ghi điều cốt lõi: làm gì, trước và giờ. Mở chiếu chỉ để đọc đầy đủ yêu cầu, thuật ngữ, quy tắc và cách thử trên prototype.</p>
-      <div class="facts"><b><i>9</i>yêu cầu</b><b><i>42</i>quyết định đã chốt</b><b><i>2</i>đợt triển khai</b><b><i>16</i>màn prototype</b></div>
+      <div class="facts"><b><i>9</i>yêu cầu</b><b><i>59</i>tính năng</b><b><i>2</i>đợt triển khai</b><b><i>16</i>màn prototype</b></div>
       <a class="cta" href="#base" id="go">Bắt đầu leo ↓</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download style="margin-left:12px">Tải Excel tính năng ↓</a>
     </div>
     <div class="hero-art" aria-hidden="true">
@@ -353,12 +362,25 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <h2 id="baseT">LearningHub hôm nay có <em>3 vấn đề lớn</em></h2>
       <p>Từ file đề xuất của L&amp;D, rà soát hệ thống đang chạy và chụp màn hình hiện trạng. 9 yêu cầu chia làm 2 đợt, mỗi yêu cầu là một bậc cầu thang.</p>
     </div>
+    <p class="goal rv"><b>Mục tiêu:</b> làm đúng 9 yêu cầu trong file đề xuất, không thêm tính năng ngoài file. Tổng <b>59 tính năng</b> (57 Must Have, 2 Could Have), chia <b>2 đợt</b>.</p>
     <div class="probs">
-      <div class="prob rv"><b>Vấn đề 1 · Bài thi</b><h3>Đề thi bị lộ</h3><p>Luyện tập dùng chung đề thi, nộp bài là thấy đáp án. Điểm thi không phản ánh đúng năng lực.</p></div>
-      <div class="prob rv"><b>Vấn đề 2 · Đối tượng</b><h3>Sai người, sai khoá</h3><p>Khoá nào cũng mở cho toàn công ty, đăng ký không giới hạn, học dở dang nhiều khoá.</p></div>
-      <div class="prob rv"><b>Vấn đề 3 · Số liệu</b><h3>Số liệu không tin được</h3><p>Không xuất được dữ liệu, ô "Tỷ lệ hoàn thành" hiện điểm thi, tiến độ không tách video / bài test.</p></div>
+      <div class="prob rv"><b>Vấn đề 1 · Bài thi</b><h3>Học viên học thuộc đề</h3><p>Luyện tập dùng chung đề thi, nộp bài là thấy đáp án. Điểm thi không phản ánh đúng năng lực.</p></div>
+      <div class="prob rv"><b>Vấn đề 2 · Đối tượng</b><h3>L&amp;D không kiểm soát ai học khoá nào</h3><p>Khoá nào cũng mở cho toàn công ty, đăng ký không giới hạn, học dở dang nhiều khoá.</p></div>
+      <div class="prob rv"><b>Vấn đề 3 · Số liệu</b><h3>Không xuất được số liệu</h3><p>L&amp;D gom số liệu bằng tay. Ô "Tỷ lệ hoàn thành" đang hiện điểm thi, tiến độ không tách video / bài test.</p></div>
     </div>
     <div class="map" id="map"></div>
+    <div class="notes">
+      <div class="prob rv"><b>Khi phát hành · dữ liệu cũ</b><ul>
+        <li>Bài test có từ trước: tự <b>tắt</b> Luyện tập, bộ câu luyện tập rỗng.</li>
+        <li>Mọi bài thi về 3 lượt. Đã Đạt giữ kết quả; chưa Đạt đếm lại đủ 3 lượt mới.</li>
+        <li>Bài đã tính xong theo luật tiến độ cũ giữ nguyên.</li>
+        <li>Khoá hiện có để Toàn công ty. Ai đang học quá 2 khoá vẫn học tiếp, chỉ bị chặn đăng ký mới.</li></ul></div>
+      <div class="prob rv"><b>Không làm trong bản này</b><ul>
+        <li>Bắt buộc học, tự ghi danh, ngân hàng câu hỏi dùng chung.</li>
+        <li>Admin cộng thêm lượt thi, Rời khoá, đổi số khoá tối đa.</li>
+        <li>Chứng chỉ, bảng xếp hạng, biểu đồ / dashboard báo cáo.</li>
+        <li>Cảnh báo bằng AI, thu phí trong hệ thống.</li></ul></div>
+    </div>
   </div>
 </section>
 
@@ -399,7 +421,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <p class="k">Certificate of Completion · Đỉnh vinh quang</p>
       <h2 id="topT">Đỉnh LearningHub 2</h2>
       <p>Đề thi được bảo vệ, đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt, đúng người học đúng khoá, và một con số tiến độ đáng tin để L&amp;D báo cáo và cấp chứng nhận.</p>
-      <div class="nums"><div><b>9</b><small>bậc đã leo</small></div><div><b>42</b><small>quyết định đã chốt</small></div><div><b>44</b><small>link prototype</small></div><div><b>2</b><small>đợt triển khai</small></div></div>
+      <div class="nums"><div><b>9</b><small>bậc đã leo</small></div><div><b>59</b><small>tính năng</small></div><div><b>44</b><small>link prototype</small></div><div><b>2</b><small>đợt triển khai</small></div></div>
     </div>
     <div class="next rv">
       <div><b>Đang ở · 11/11</b><span>Rà soát, chốt và verify tài liệu + prototype</span></div>
@@ -440,15 +462,15 @@ REQS.push({
   shots: [['03-learn-test-mode-select.jpg', 'Chọn Practice / Exam (cùng đề)'], ['04-practice-question.jpg', 'Câu hỏi Practice'], ['00-ld-yc1-test-quiz-chung-o.png', 'Test và Quiz chung 1 ô (ảnh L&D)']],
   reqs: [
     ['REQ-1.1', 'A', 'Màn soạn bài test có tab <b>Practice</b> với công tắc <b>Cho phép luyện tập</b>, bật / tắt riêng từng bài test. Mặc định Tắt.', 'Tắt → học viên không thấy nút, nhãn hay chữ "Practice" nào ở bài đó (BR-ASM-01).'],
-    ['REQ-1.2', 'A', 'Bật Practice thì soạn <b>bộ câu Practice riêng</b>: <b>Thêm</b>, <b>Sửa</b>, <b>Xoá</b> từng câu trong popup trình soạn (nội dung, Một / Nhiều đáp án, 2–6 lựa chọn, đáp án đúng, giải thích).', 'Câu thiếu nội dung, lựa chọn trống / trùng nhau, chưa chọn đáp án đúng → không lưu được câu, liệt kê đủ lỗi (BR-ASM-07). Bật mà danh sách rỗng → chặn Lưu (BR-ASM-02).'],
-    ['REQ-1.2b', 'A', '<b>Nhập từ file</b>: tải file mẫu .xlsx, điền nhiều câu, tải lên (.xlsx / .csv, ≤ 5 MB, ≤ 200 câu). Hệ thống kiểm tra từng dòng trước khi nhập.', 'Chỉ nhập dòng hợp lệ, thêm vào cuối, không ghi đè câu cũ. Dòng lỗi hiện lý do (sai loại, thiếu đáp án, trùng đề thi, trùng câu đã có…) (BR-ASM-08).'],
+    ['REQ-1.2', 'A', 'Bật Practice thì soạn <b>bộ câu Practice riêng</b>: <b>Thêm</b>, <b>Sửa</b>, <b>Xoá</b> từng câu trong popup trình soạn (nội dung, Một đáp án / Nhiều đáp án / Đúng/Sai, 2–4 lựa chọn, đáp án đúng, giải thích).', 'Câu thiếu nội dung, lựa chọn trống / trùng nhau, chưa chọn đáp án đúng → không lưu được câu, liệt kê đủ lỗi (BR-ASM-07). Bật mà danh sách rỗng → chặn Lưu (BR-ASM-02).'],
+    ['REQ-1.2b', 'A', '<b>Nhập từ file</b>: tải thẳng file câu hỏi đang có, <b>không cần file mẫu</b> (.xlsx / .csv / .docx, ≤ 5 MB, ≤ 200 câu). Hệ thống tự tách câu, lựa chọn, đáp án, giải thích rồi kiểm tra từng câu trước khi nhập.', 'Đáp án đúng phải ghi rõ ("Đáp án: B", "Answer: A,C" hoặc cột tiêu đề chứa "đáp án"); không đoán theo in đậm / màu tô, câu không rõ đáp án báo lỗi để nhập tay. Chỉ nhập câu hợp lệ, thêm vào cuối, không ghi đè câu cũ (BR-ASM-08, 24).'],
     ['REQ-1.3', 'A', 'Khi Lưu, hệ thống so từng câu Practice với đề Exam của cùng bài và <b>chặn câu trùng y hệt</b>.', 'So sau khi bỏ khoảng trắng thừa, không phân biệt hoa thường. Câu trùng đánh dấu đỏ: "Câu này trùng với đề thi. Hãy viết câu khác." (BR-ASM-03).'],
     ['REQ-1.4', 'A', 'Tắt Practice khi đã có bộ câu → giữ bộ câu, chỉ ẩn với học viên; bật lại dùng tiếp.', 'Không xoá dữ liệu khi tắt.'],
     ['REQ-1.5', 'A', 'Bài test có trước bản này: Practice = <b>Tắt</b>, bộ câu Practice rỗng. Admin muốn bật lại phải nhập bộ câu mới.', 'Lý do: Practice cũ dùng chung đề Exam, giữ lại là tiếp tục lộ đề (BR-ASM-04).'],
     ['REQ-1.6', 'L', 'Thẻ bài test cho chọn <b>Luyện tập</b> (nếu bài có Practice) hoặc <b>Làm bài thi</b>, mỗi chế độ ghi rõ luật.', 'Luyện tập: "Đề luyện riêng N câu. Xem đáp án ngay. Không tính lượt, không tính tiến độ."'],
     ['REQ-1.7', 'L', 'Luyện tập: trả lời từng câu → <b>Check answer</b> → thấy ngay Đúng / Sai, đáp án đúng, giải thích. Tổng kết cuối bài có nút <b>Luyện lại câu sai</b>.', 'Không giới hạn số lần, không tính giờ, không trừ lượt Exam (BR-ASM-06).'],
     ['REQ-1.8', 'L', 'Practice <b>không tính</b> vào tiến độ, hoàn thành khoá, và không có trong file export.', 'Xong Practice → % tiến độ khoá không đổi (BR-ASM-05).']],
-  brs: [['BR-ASM-01', 'Practice bật / tắt riêng từng bài test. Tắt → học viên không thấy dấu vết nào của Practice.'], ['BR-ASM-02', 'Bật Practice bắt buộc có ≥ 1 câu Practice.'], ['BR-ASM-03', 'Câu Practice không được trùng y hệt câu nào trong đề Exam cùng bài.'], ['BR-ASM-04', 'Bài test có trước bản này: Practice = Tắt, bộ câu rỗng.'], ['BR-ASM-05', 'Practice không tính tiến độ, hoàn thành khoá, không có trong export.'], ['BR-ASM-06', 'Practice không giới hạn số lần, không tính giờ, không trừ lượt Exam.'], ['BR-ASM-07', 'Câu Practice hợp lệ: có nội dung, 2–6 lựa chọn không trống / không trùng nhau, có đáp án đúng, không trùng đề thi hay câu Practice khác. Áp dụng cho câu soạn tay, sửa và nhập file.'], ['BR-ASM-08', 'Nhập từ file chỉ thêm vào cuối, không ghi đè; dòng lỗi bỏ qua, dòng hợp lệ vẫn nhập.']],
+  brs: [['BR-ASM-01', 'Practice bật / tắt riêng từng bài test. Tắt → học viên không thấy dấu vết nào của Practice.'], ['BR-ASM-02', 'Bật Practice bắt buộc có ≥ 1 câu Practice.'], ['BR-ASM-03', 'Câu Practice không được trùng y hệt câu nào trong đề Exam cùng bài.'], ['BR-ASM-04', 'Bài test có trước bản này: Practice = Tắt, bộ câu rỗng.'], ['BR-ASM-05', 'Practice không tính tiến độ, hoàn thành khoá, không có trong export.'], ['BR-ASM-06', 'Practice không giới hạn số lần, không tính giờ, không trừ lượt Exam.'], ['BR-ASM-07', 'Câu Practice hợp lệ: có nội dung, 2–4 lựa chọn không trống / không trùng nhau, có đáp án đúng, không trùng đề thi hay câu Practice khác. Áp dụng cho câu soạn tay, sửa và nhập file.'], ['BR-ASM-08', 'Nhập từ file chỉ thêm vào cuối, không ghi đè; câu lỗi bỏ qua, câu hợp lệ vẫn nhập.'], ['BR-ASM-24', 'Không có file mẫu; hệ thống tự tách câu từ .xlsx / .csv / .docx. Đáp án đúng chỉ lấy từ chỗ ghi rõ; câu không rõ đáp án → Admin nhập tay.']],
   oos: 'Ngân hàng câu hỏi dùng chung nhiều bài / nhiều khoá; trộn ngẫu nhiên câu / đáp án mỗi lượt; so trùng theo ý nghĩa (chỉ chặn trùng y hệt).',
   links: [
     ['assessment.html', 'Bài test trọn luồng 1 trang', 'Chọn chế độ → luyện tập → thi → kết quả → làm lại, chung 1 link', 'L', 1],
@@ -456,7 +478,8 @@ REQS.push({
     ['test-start.html?practice=off', 'Thẻ chọn chế độ, bài cũ', 'Chỉ còn Làm bài thi, không có chữ Practice', 'L'],
     ['practice.html?sc=done', 'Tổng kết luyện tập', 'Đáp án hiện ngay, nút Luyện lại câu sai', 'L'],
     ['admin-test-practice.html?st=ok&open=edit', 'Soạn đề: sửa câu', 'Popup trình soạn điền sẵn câu, sửa lựa chọn / đáp án', 'A'],
-    ['admin-test-practice.html?st=ok&open=import', 'Soạn đề: nhập từ file', 'Tải mẫu → chọn file → bảng kiểm tra từng dòng → nhập câu hợp lệ', 'A'],
+    ['admin-test-practice.html?st=ok&open=import', 'Soạn đề: nhập từ file', 'Chọn file câu hỏi đang có → hệ thống tự tách câu → bảng kiểm tra → nhập câu hợp lệ', 'A'],
+    ['admin-test-practice.html?st=ok&open=importdemo', 'Soạn đề: kết quả tách file Word', '5 câu: 3 hợp lệ, 1 thiếu đáp án, 1 chỉ có 1 lựa chọn', 'A'],
     ['admin-test-practice.html?st=dup', 'Soạn đề: câu trùng đề thi', 'Lưu bị chặn, câu trùng đánh dấu đỏ', 'A'],
     ['admin-test-practice.html?st=legacy', 'Soạn đề: bài cũ tắt sẵn', 'Practice tắt, bộ câu rỗng', 'A']]
 });
@@ -539,7 +562,7 @@ REQS.push({
   reqs: [
     ['REQ-5.1', 'A', 'Trang quản lý khoá có nút <b>Xuất dữ liệu</b>, mở popup Xuất dữ liệu.', 'Đợt 1 chỉ Admin L&D (mọi khoá). Đợt 2: Creator ở khoá mình phụ trách; Learner không có (BR-RPT-01).'],
     ['REQ-5.2', 'A', 'Chọn <b>Phạm vi</b>: Toàn khoá hoặc <b>Theo session</b> (chương của khoá, chọn nhiều).', 'Theo session mà chưa chọn → "Chọn ít nhất 1 session." Tiến độ và bài thi chỉ tính trong các session đã chọn (BR-RPT-02).'],
-    ['REQ-5.3', 'A', 'Bộ lọc tuỳ chọn: <b>Thời gian enroll</b> (từ – đến), <b>Phòng ban</b>, <b>Trạng thái học</b>.', 'Từ ngày > Đến ngày → "Ngày bắt đầu phải trước ngày kết thúc." Trạng thái: Chưa bắt đầu · Đang học · Hoàn thành · Không đạt · Mất quyền.'],
+    ['REQ-5.3', 'A', 'Bộ lọc tuỳ chọn: <b>Thời gian enroll</b> (từ – đến), <b>Phòng ban</b>, <b>Trạng thái học</b>.', 'Từ ngày > Đến ngày → "Ngày bắt đầu phải trước ngày kết thúc." Trạng thái: Đang học · Hoàn thành · Không đạt · Mất quyền, thêm Chưa đăng ký ở khoá Giới hạn (BR-RPT-08).'],
     ['REQ-5.4', 'A', 'Popup hiện <b>"Dự kiến N học viên"</b>, cập nhật mỗi khi đổi bộ lọc.', 'N = 0 → nút Xuất file tắt, "Không có học viên khớp bộ lọc." (BR-RPT-05).'],
     ['REQ-5.5', 'A', 'Bấm <b>Xuất file</b> → tải 1 file <b>.xlsx</b>, tên <code>&lt;Mã khoá&gt;_&lt;Toàn khoá|Session&gt;_&lt;ddmmyyyy&gt;.xlsx</code>.', 'Dữ liệu tại thời điểm bấm (BR-RPT-03, 04). &gt; 2.000 dòng: tạo nền, xong báo toast.'],
     ['REQ-5.6', 'A', 'Sheet Học viên: Mã NV, Họ tên, Email, Phòng ban, Vị trí, Ngày enroll, Trạng thái học, <b>Tiến độ (%)</b>, điểm từng bài = Điểm cao nhất (điểm chính thức).', 'Tiến độ (%) cùng công thức yêu cầu #8; Practice không có trong file (BR-RPT-06).'],
@@ -624,11 +647,11 @@ REQS.push({
     ['REQ-6.1', 'L', 'Từ khoá tìm trong <b>tên khoá + tag / danh mục</b>, không tìm trong mô tả.', 'BR-LRN-11.'],
     ['REQ-6.2', 'L', 'Nhiều từ → khoá phải chứa <b>đủ mọi từ</b>; không phân biệt hoa thường, gõ có / không dấu đều ra.', '"kiem thu" khớp "Kiểm thử" (BR-LRN-12).'],
     ['REQ-6.3', 'L', 'Sắp xếp <b>Liên quan nhất</b>: tên bắt đầu bằng từ khoá → tên chứa đủ từ → chỉ khớp tag. Cùng nhóm → Publish mới hơn trước.', 'BR-LRN-13.'],
-    ['REQ-6.5', 'L', 'Lọc <b>Trạng thái của tôi</b>: Chưa bắt đầu · Đang học · Hoàn thành, ở cả trang Tìm khoá và My Courses.', 'BR-LRN-15.'],
+    ['REQ-6.5', 'L', 'Lọc <b>Trạng thái của tôi</b>: trang Tìm khoá Chưa đăng ký · Đang học · Hoàn thành; My Courses Đang học · Hoàn thành · Không đạt. Đã enroll mà 0% vẫn là Đang học.', 'BR-LRN-15 · D-60.'],
     ['REQ-6.6', 'L', 'Lọc <b>Thời gian</b> 7 / 30 / 90 ngày theo ngày của tôi: ngày <b>đăng ký</b> (khoá đang học / Không đạt) hoặc ngày <b>hoàn thành</b>.', 'Khoá chưa đăng ký bị ẩn khi bật lọc Thời gian (BR-LRN-16).'],
     ['REQ-6.7', 'L', 'Trang kết quả: hàng tóm tắt gồm số khoá, chip lọc đang áp, Xoá tất cả, Sắp xếp. URL giữ đủ <code>?q=&amp;ct=&amp;st=&amp;pd=&amp;sort=</code>.', 'Refresh hoặc gửi link giữ đúng kết quả.'],
     ['REQ-6.8', 'L', 'Không có kết quả → Empty state + nút Xoá bộ lọc. Đang tải → skeleton, bỏ kết quả về muộn.', 'BR-LRN-18. Khoá ngoài đối tượng vẫn hiện (BR-AUD-07).']],
-  brs: [['BR-LRN-11', 'Tìm trong tên khoá và tag / danh mục.'], ['BR-LRN-12', 'Đủ mọi từ, không phân biệt hoa thường và dấu.'], ['BR-LRN-13', 'Thứ tự liên quan: bắt đầu bằng → chứa đủ → chỉ tag.'], ['BR-LRN-14', 'Chỉ khoá đã phát hành (Published) xuất hiện trong kết quả.'], ['BR-LRN-15', 'Trạng thái của tôi: Chưa bắt đầu / Đang học / Hoàn thành.'], ['BR-LRN-18', 'Chỉ hiện kết quả lần tìm mới nhất.']],
+  brs: [['BR-LRN-11', 'Tìm trong tên khoá và tag / danh mục.'], ['BR-LRN-12', 'Đủ mọi từ, không phân biệt hoa thường và dấu.'], ['BR-LRN-13', 'Thứ tự liên quan: bắt đầu bằng → chứa đủ → chỉ tag.'], ['BR-LRN-14', 'Chỉ khoá đã phát hành (Published) xuất hiện trong kết quả.'], ['BR-LRN-15', 'Trạng thái của tôi: Chưa đăng ký (chưa enroll) / Đang học (kể cả 0%) / Hoàn thành / Không đạt.'], ['BR-LRN-18', 'Chỉ hiện kết quả lần tìm mới nhất.']],
   oos: 'Tìm trong mô tả, nội dung bài học; tìm theo ý nghĩa.',
   links: [
     ['course-search.html?q=kiem+thu', 'Tìm "kiem thu" (không dấu)', 'Ra "Kiểm thử", xếp theo liên quan', 'L', 1],
@@ -694,11 +717,11 @@ const EXTRA = {
   r1: {
     lead: 'Tách đề luyện tập khỏi đề thi, để điểm thi phản ánh đúng năng lực.',
     cb: ['Practice và Exam dùng chung một bộ câu', 'Practice bấm Check answer là thấy đáp án, làm lại không giới hạn', 'Học viên luyện tới thuộc đáp án rồi mới thi'],
-    ca: ['Bật / tắt Practice riêng từng bài test', 'Practice có bộ câu riêng: thêm / sửa / xoá từng câu hoặc nhập nhiều câu từ file mẫu; câu trùng đề thi bị chặn', 'Practice không tính lượt, không tính tiến độ, không có trong file export'],
+    ca: ['Bật / tắt Practice riêng từng bài test', 'Practice có bộ câu riêng: thêm / sửa / xoá từng câu hoặc tải file câu hỏi đang có để hệ thống tự tách câu; câu trùng đề thi bị chặn', 'Practice không tính lượt, không tính tiến độ, không có trong file export'],
     try: [
       ['Admin mở tab Practice của một bài có sẵn: Practice đang tắt, bộ câu rỗng.', 'admin-test-practice.html?st=legacy'],
       ['Bấm vào một câu để sửa: đổi nội dung, lựa chọn, đáp án đúng rồi Lưu thay đổi.', 'admin-test-practice.html?st=ok&open=edit'],
-      ['Nhập từ file: tải mẫu, chọn file, xem dòng nào hợp lệ / lỗi rồi nhập.', 'admin-test-practice.html?st=ok&open=import'],
+      ['Nhập từ file Word / Excel đang có: hệ thống tự tách câu, câu thiếu "Đáp án:" báo lỗi để nhập tay.', 'admin-test-practice.html?st=ok&open=importdemo'],
       ['Thêm một câu trùng đề thi rồi bấm Lưu: bị chặn, câu trùng đánh dấu đỏ.', 'admin-test-practice.html?st=dup'],
       ['Học viên mở bài có đề luyện: thấy 2 lựa chọn Luyện tập / Làm bài thi, mỗi bên ghi rõ luật.', 'test-start.html?practice=on'],
       ['Bài cũ chưa có đề luyện: chỉ còn nút Làm bài thi, không còn chữ Practice.', 'test-start.html?practice=off'],
@@ -814,10 +837,22 @@ REQS.forEach((r) => Object.assign(r, EXTRA[r.id]));
   document.querySelector('#hero [data-tt] img').alt = 'Techter, mascot rái cá TECHVIFY, mặc áo cử nhân và đội mũ ở chân cầu thang';
 
   /* ---------- Bản đồ (chân cầu thang) ---------- */
-  const mapItem = (id) => { const r = BY[id]; return `<li><a href="#buoc-${NO[id]}"><i>${NO[id]}</i><span style="color:inherit;font-size:inherit;font-weight:inherit"><b>${r.no} · ${r.title}</b><small>${r.lead}</small></span><span>Xem ↓</span></a></li>`; };
+  /* Tóm gọn từng yêu cầu: số tính năng + điểm chính (khớp Notion LH2 Product Docs) */
+  const KEY = {
+    r1: [8, 'Bật / tắt theo từng bài test · bộ câu riêng, chặn trùng đề thi · luyện không giới hạn, xem đáp án ngay · không tính tiến độ, không trừ lượt thi'],
+    r2: [10, 'Cố định 3 lượt · lượt sau chỉ làm lại câu sai · Đạt hoặc hết lượt thì khoá bài, mở đáp án · điểm chính thức = điểm cao nhất · bỏ ô số lượt và tuỳ chọn hiện đáp án sau khi nộp'],
+    r4: [10, 'Toàn công ty hoặc Giới hạn theo Phòng ban, Vị trí, từng người · Lịch học · email mời tuỳ chọn · người ngoài chỉ xem giới thiệu · bị gỡ mất quyền, giữ tiến độ'],
+    r5: [5, 'File .xlsx theo khoá, toàn khoá hoặc theo Session · khoá Giới hạn xuất cả người chưa đăng ký'],
+    r9: [4, 'Tối đa 2 khoá Đang học, cố định · không có Rời khoá · Hoàn thành, Không đạt không chiếm suất'],
+    r3: [8, 'Admin L&amp;D cấp quyền cho SME · Creator gửi duyệt trước khi Publish · bản sửa chờ duyệt thì học viên vẫn học bản đang chạy'],
+    r6: [5, 'Tìm trong tên khoá + tag, không phân biệt hoa thường và dấu · lọc theo trạng thái và thời gian học'],
+    r7: [3, 'Tỷ lệ hoàn thành = tiến độ khoá, không phải điểm thi · Điểm cao nhất hiện ở từng bài test'],
+    r8: [6, 'Tính theo số bài, mọi loại bằng nhau · video xong khi phát thực ≥ 90% · bài thi xong khi Đạt · bỏ khoá bài theo thứ tự']
+  };
+  const mapItem = (id) => { const r = BY[id], k = KEY[id]; return `<li><a href="#buoc-${NO[id]}"><i>${NO[id]}</i><span style="color:inherit;font-size:inherit;font-weight:inherit"><b>${r.no} · ${r.title}</b><em>${k[0]} tính năng</em><small>${r.lead}</small><small class="kp">${k[1]}</small></span><span>Xem ↓</span></a></li>`; };
   $('map').innerHTML = `
-    <div class="map-col rv"><h3>Đợt 1 · Bậc 1 → 5<small>Ưu tiên Cao</small></h3><ol>${ORDER.slice(0, 5).map(mapItem).join('')}</ol></div>
-    <div class="map-col rv"><h3>Đợt 2 · Bậc 6 → 9<small>Ưu tiên Trung bình</small></h3><ol>${ORDER.slice(5).map(mapItem).join('')}</ol></div>`;
+    <div class="map-col rv"><h3>Đợt 1 · Bậc 1 → 5<small>Ưu tiên Cao · 37 tính năng</small></h3><ol>${ORDER.slice(0, 5).map(mapItem).join('')}</ol><p class="wn"><b>Làm kèm Đợt 1:</b> luật tính tiến độ của bậc 9 (#8), vì xuất dữ liệu (#5) và giới hạn khoá (#9) dùng tới. Phần hiển thị tiến độ làm Đợt 2.</p></div>
+    <div class="map-col rv"><h3>Đợt 2 · Bậc 6 → 9<small>Ưu tiên Trung bình · 22 tính năng</small></h3><ol>${ORDER.slice(5).map(mapItem).join('')}</ol></div>`;
 
   /* ---------- Các vị trí trên cầu thang ----------
      j = 0 chân · 1..5 bậc Đợt 1 · 6 chiếu nghỉ · 7..10 bậc Đợt 2 · 11 đỉnh */

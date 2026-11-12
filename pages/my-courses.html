@@ -47,7 +47,7 @@ function render() {
   const learning = courses.filter((c) => c.st === 'learning').length; // BR-LRN-01: Hoàn thành, Không đạt không tính
   document.getElementById('slot').innerHTML = SlotMeter(learning, LHEnroll.LIMIT);
   document.getElementById('note').innerHTML = learning > LHEnroll.LIMIT ? Alert({ tone: 'warning', icon: 'info', title: `Bạn đang học ${learning} khoá, nhiều hơn giới hạn ${LHEnroll.LIMIT} khoá`, text: 'Hoàn thành bớt khoá để đăng ký khoá mới.' }) : '';
-  document.getElementById('tabs').innerHTML = S.STATUS_OPTS.map(([v, t]) => `<button class="tab ${f.st === v ? 'is-active' : ''}" data-st="${v}">${t} <span class="badge badge--neutral">${filtered(v).length}</span></button>`).join('');
+  document.getElementById('tabs').innerHTML = S.MY_STATUS_OPTS.map(([v, t]) => `<button class="tab ${f.st === v ? 'is-active' : ''}" data-st="${v}">${t} <span class="badge badge--neutral">${filtered(v).length}</span></button>`).join('');
   const list = filtered(f.st);
   if (f.sort === 'pg') list.sort((a, b) => (b.progress || 0) - (a.progress || 0));
   else if (f.sort === 'az') list.sort((a, b) => a.title.localeCompare(b.title, 'vi'));

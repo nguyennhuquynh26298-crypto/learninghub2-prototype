@@ -149,27 +149,21 @@
   /**
    * Search / Panel — bảng xổ dưới ô search trên header.
    * State: recent (chưa gõ) | typing (có gợi ý) | empty (gõ mà không khớp).
-   * recent: [từ khoá]; results: [{title, cover, cat, st}]; total: số kết quả đầy đủ; f: {st, pd}; counts: {st:{v:n}, pd:{v:n}}
+   * recent: [từ khoá]; results: [{title, cover, cat, st}]; total: số kết quả đầy đủ.
+   * Không có lọc nhanh trong bảng xổ (D-41) — lọc Trạng thái / Thời gian nằm ở trang Tìm khoá.
    */
-  const ST_LABEL = { notstarted: 'Chưa bắt đầu', learning: 'Đang học', done: 'Hoàn thành', fail: 'Không đạt' };
-  function SearchQuickChip({ key, value, label, on, n }) {
-    return `<button type="button" class="sp-chip ${on ? 'is-on' : ''}" data-sp-f="${key}" data-v="${value}" aria-pressed="${on}" ${n === 0 && !on ? 'data-zero' : ''}>${on ? ICON.check : ''}${esc(label)}${n != null ? `<i>${n}</i>` : ''}</button>`;
-  }
+  const ST_LABEL = { notenrolled: 'Chưa đăng ký', learning: 'Đang học', done: 'Hoàn thành', fail: 'Không đạt' };
   function SearchResultItem({ title, cover, cat, st, q, i }) {
-    return `<a class="sp-item" href="course-detail.html" data-sp-i="${i}" role="option"><img src="${cover}" alt=""><span class="sp-item__b"><b>${q ? highlight(title, q) : esc(title)}</b><span>${esc(cat)} · ${ST_LABEL[st] || 'Chưa bắt đầu'}</span></span></a>`;
+    return `<a class="sp-item" href="course-detail.html" data-sp-i="${i}" role="option"><img src="${cover}" alt=""><span class="sp-item__b"><b>${q ? highlight(title, q) : esc(title)}</b><span>${esc(cat)} · ${ST_LABEL[st] || 'Chưa đăng ký'}</span></span></a>`;
   }
-  function SearchPanel({ q = '', recent = [], results = [], total = 0, f = {}, counts = {} }) {
+  function SearchPanel({ q = '', recent = [], results = [], total = 0 }) {
     const state = !q ? 'recent' : results.length ? 'typing' : 'empty';
-    const filtered = (f.st && f.st !== 'all') || (f.pd && f.pd !== 'all');
-    const chips = `<div class="sp-sec"><div class="sp-h">Lọc nhanh${filtered ? '<button type="button" class="sp-link" data-sp-clear>Bỏ lọc</button>' : ''}</div>
-      <div class="sp-chips"><span class="sp-chips__l">Trạng thái</span>${[['notstarted', 'Chưa bắt đầu'], ['learning', 'Đang học'], ['done', 'Hoàn thành']].map(([v, t]) => SearchQuickChip({ key: 'st', value: v, label: t, on: f.st === v, n: counts.st && counts.st[v] })).join('')}</div>
-      <div class="sp-chips"><span class="sp-chips__l" title="Ngày tôi đăng ký, hoặc ngày hoàn thành nếu đã xong">Thời gian</span>${[['7', '7 ngày'], ['30', '30 ngày'], ['90', '90 ngày']].map(([v, t]) => SearchQuickChip({ key: 'pd', value: v, label: t, on: f.pd === v, n: counts.pd && counts.pd[v] })).join('')}</div></div>`;
     let main = '';
     if (state === 'recent') main = recent.length ? `<div class="sp-sec"><div class="sp-h">Tìm gần đây</div>${recent.map((r, i) => `<div class="sp-rec" data-sp-i="${i}" data-sp-q="${esc(r)}" role="option">${ICON.clock}<span>${esc(r)}</span><button type="button" class="sp-rec__x" data-sp-del="${esc(r)}" aria-label="Xoá khỏi lịch sử">${ICON.x}</button></div>`).join('')}</div>` : '';
     if (state === 'typing') main = `<div class="sp-sec"><div class="sp-h">Khoá học</div>${results.map((r, i) => SearchResultItem({ ...r, q, i })).join('')}</div>`;
-    if (state === 'empty') main = `<div class="sp-empty">${ICON.search}<b>Không có khoá nào khớp “${esc(q)}”</b><span>${filtered ? 'Thử bỏ bớt bộ lọc bên dưới.' : 'Thử từ khoá ngắn hơn hoặc không dấu.'}</span></div>`;
-    const all = q || filtered ? `<button type="button" class="sp-all" data-sp-all data-sp-i="${state === 'typing' ? results.length : state === 'recent' ? recent.length : 0}" role="option">${ICON.search}<span>${q ? `Xem tất cả <b>${total}</b> kết quả cho “${esc(q)}”` : `Xem <b>${total}</b> khoá theo bộ lọc`}</span>${ICON.chevronR}</button>` : '';
-    return `<div class="sp" data-state="${state}">${main}${chips}${all}</div>`;
+    if (state === 'empty') main = `<div class="sp-empty">${ICON.search}<b>Không có khoá nào khớp “${esc(q)}”</b><span>Thử từ khoá ngắn hơn hoặc không dấu.</span></div>`;
+    const all = q ? `<button type="button" class="sp-all" data-sp-all data-sp-i="${state === 'typing' ? results.length : state === 'recent' ? recent.length : 0}" role="option">${ICON.search}<span>Xem tất cả <b>${total}</b> kết quả cho “${esc(q)}”</span>${ICON.chevronR}</button>` : '';
+    return `<div class="sp" data-state="${state}">${main}${all}</div>`;
   }
 
   function Modal({ id, size = 'md', icon, iconTone = 'info', title, desc, body = '', foot = '', footNote = '' }) {
@@ -594,8 +588,7 @@
       const q = S.clean(input.value), f = spF();
       const run = (patch) => S.run(data, { q, ...f, ...patch }).items;
       const items = run({});
-      const counts = { st: Object.fromEntries(['notstarted', 'learning', 'done'].map((v) => [v, run({ st: v }).length])), pd: Object.fromEntries(['7', '30', '90'].map((v) => [v, run({ pd: v }).length])) };
-      pop.innerHTML = SearchPanel({ q, recent: recentGet(), total: items.length, f, counts,
+      pop.innerHTML = SearchPanel({ q, recent: recentGet(), total: items.length,
         results: items.slice(0, 5).map((c) => ({ title: c.title, cover: c.cover, cat: c.cat, st: S.myStatus(c) })) });
       SP.hl = -1;
     });
@@ -641,9 +634,6 @@
     if (del) { e.stopPropagation(); localStorage.setItem(SP.KEY, JSON.stringify(recentGet().filter((x) => x !== del.dataset.spDel))); spRender(); input.focus(); return; }
     const rec = e.target.closest('[data-sp-q]');
     if (rec) { input.value = rec.dataset.spQ; input.closest('form').querySelector('.search-pill__x').hidden = false; spClose(); spApply({ q: rec.dataset.spQ }); return; }
-    const chip = e.target.closest('[data-sp-f]');
-    if (chip) { const k = chip.dataset.spF; spApply({ [k]: spF()[k] === chip.dataset.v ? 'all' : chip.dataset.v }); if (onResultsPage()) { spRender(); input.focus(); } return; }
-    if (e.target.closest('[data-sp-clear]')) { spApply({ st: 'all', pd: 'all' }); if (onResultsPage()) { spRender(); input.focus(); } return; }
     if (e.target.closest('[data-sp-all]')) { spClose(); spApply({}); return; }
     const item = e.target.closest('.sp-item'); if (item) { recentAdd(LHSearch.clean(input.value)); spClose(); }
   });
@@ -682,6 +672,6 @@
 
   window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
     ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight,
-    CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, SearchQuickChip, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
+    CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
     QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary };
 })();

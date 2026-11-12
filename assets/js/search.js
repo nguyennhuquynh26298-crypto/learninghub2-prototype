@@ -15,10 +15,13 @@
     return 3;
   }
 
-  /** BR-LRN-15 — Trạng thái của tôi. Không đạt (fail) và Mất quyền chỉ hiện ở Tất cả */
-  const myStatus = (c) => (c.st === 'done' ? 'done' : c.st === 'learning' ? 'learning' : c.st === 'fail' ? 'fail' : 'notstarted');
+  /** BR-LRN-15 (D-60) — Trạng thái của tôi. Chưa đăng ký = chưa enroll; Đang học gồm cả 0%. Không có "Chưa bắt đầu" */
+  const myStatus = (c) => (c.st === 'done' ? 'done' : c.st === 'learning' ? 'learning' : c.st === 'fail' ? 'fail' : 'notenrolled');
 
-  const STATUS_OPTS = [['all', 'Tất cả'], ['notstarted', 'Chưa bắt đầu'], ['learning', 'Đang học'], ['done', 'Hoàn thành']];
+  /** Trang Tìm khoá: có Chưa đăng ký; Không đạt chỉ hiện ở Tất cả */
+  const STATUS_OPTS = [['all', 'Tất cả'], ['notenrolled', 'Chưa đăng ký'], ['learning', 'Đang học'], ['done', 'Hoàn thành']];
+  /** Khoá của tôi: chỉ khoá đã enroll → không có Chưa đăng ký; có Không đạt */
+  const MY_STATUS_OPTS = [['all', 'Tất cả'], ['learning', 'Đang học'], ['done', 'Hoàn thành'], ['fail', 'Không đạt']];
   /** BR-LRN-16 — Thời gian của tôi: ngày hoàn thành (khoá đã xong) hoặc ngày đăng ký (khoá chưa xong). Khoá chưa đăng ký chỉ hiện ở Tất cả */
   const DAY_OPTS = [['all', 'Tất cả'], ['7', '7 ngày qua'], ['30', '30 ngày qua'], ['90', '90 ngày qua']];
 
@@ -37,5 +40,5 @@
     return { q, sort, items: out.map((x) => x.c) };
   }
 
-  window.LHSearch = { clean, rank, myStatus, run, STATUS_OPTS, DAY_OPTS };
+  window.LHSearch = { clean, rank, myStatus, run, STATUS_OPTS, MY_STATUS_OPTS, DAY_OPTS };
 })();
