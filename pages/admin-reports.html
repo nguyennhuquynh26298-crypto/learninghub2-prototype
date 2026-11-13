@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Báo cáo · Learning Dashboard · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+<style>
+  /* Báo cáo — Learning Dashboard LH2 #10 (Figma chưa có frame; dùng Content/Card + Admin/Table của section Admin) */
+  /* Bộ lọc: hàng 1 Khoá · Enroll từ · đến · Xoá lọc (canh đáy) — hàng 2 Phòng ban chạy hết khổ */
+  .dsh-filter { display: grid; grid-template-columns: minmax(0, 2fr) minmax(150px, 1fr) minmax(150px, 1fr) auto; gap: 16px 20px; align-items: end; }
+  .dsh-filter .f-depts, .dsh-filter .f-err { grid-column: 1 / -1; }
+  .dsh-filter .filter-btn { height: 44px; }
+  .dsh-depts { display: flex; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 1023px) {
+    .dsh-filter { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dsh-filter .f-course { grid-column: 1 / -1; }
+    .dsh-filter .filter-btn { justify-self: start; }
+  }
+  .dsh-depts button { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--adm-stroke); background: #fff; font: 400 14px Inter, sans-serif; color: var(--adm-body); cursor: pointer; }
+  .dsh-depts button.is-active { background: var(--adm-primary-50); border-color: var(--adm-primary); color: var(--adm-primary); font-weight: 500; }
+  .adm-table tr[data-course] { cursor: pointer; }
+  .gap-pct { color: #f04438; font-weight: 600; }
+  .dsh-tabs { display: flex; gap: 0; }
+  .dsh-tabs .combo { background: var(--adm-side); }
+</style>
+</head>
+<body>
+<div id="header"></div>
+<main>
+  <div id="head"></div>
+  <section class="adm-card"><div class="dsh-filter" id="filter"></div></section>
+  <div class="kpi-grid" id="kpis"></div>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Theo khoá</h2><span class="adm-hint">Sắp theo Học chậm + Quá hạn · bấm 1 dòng để lọc theo khoá</span></div><div class="adm-card" id="by-course"></div></section>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title">Theo phòng ban</h2></div><div class="adm-card" id="by-dept"></div></section>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Danh sách học viên</h2><div class="dsh-tabs" id="tabs"></div></div><div class="adm-card" id="learners"></div></section>
+</main>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/export-modal.js?v=1113c"></script>
+<script>
+/* Learning Dashboard — spec docs/specs/lh2/10-learning-dashboard.md (BR-DSH-01…07) · Notion: Learning Dashboard (D-66…D-69) */
+const { ICON, Progress, Avatar, esc, AdminLayout, AdminHead, AdminTable, Tag } = LH; const D = LHData;
+const TODAY = new Date(2026, 10, 20); // 20/11/2026 — mốc demo, khớp ví dụ trong spec
+const d = (s) => { if (!s) return null; const [dd, mm, yy] = s.split('/').map(Number); return new Date(yy, mm - 1, dd); };
+const iso = (s) => { const x = d(s); return x ? `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}` : ''; };
+
+/* Khoá đã Publish. start/end = Lịch học (Course Schedule); end trống = Khoá chưa có hạn */
+const COURSES = [
+  { id: 'ccar', code: 'CCAR-F', title: 'CCAR-F Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', limited: true, start: '01/11/2026', end: '30/11/2026' },
+  { id: 'qa2', code: 'QA-M2', title: 'QA AUTOMATION _ MODULE 2: FUNDAMENTAL TESTING', owner: 'Phạm Thanh Long', limited: true, start: '15/10/2026', end: '15/11/2026' },
+  { id: 'dock', code: 'DOCKER', title: 'Docker cho người mới', owner: 'Phạm Thanh Long', limited: false, start: '', end: '10/12/2026' },
+  { id: 'aiae', code: 'AIAE', title: 'AI Agent Engineering', owner: 'Lê Thị Mai', limited: false, start: '', end: '' },
+];
+/* st: learning | done | fail | removed | none (Chưa đăng ký — chỉ khoá Giới hạn) */
+const R = (course, name, dept, st, enroll, p, last) => ({ course, name, dept, st, enroll, p, last });
+const ROWS = [
+  R('ccar', 'Trần Minh Anh', 'QA', 'learning', '02/11/2026', 50, '19/11/2026 21:10'),
+  R('ccar', 'Vũ Ngọc Lan', 'QA', 'learning', '03/11/2026', 30, '12/11/2026 09:02'),
+  R('ccar', 'Đỗ Quang Huy', 'Development', 'learning', '05/11/2026', 12, '08/11/2026 17:45'),
+  R('ccar', 'Lê Hoàng Nam', 'QC Automation', 'done', '01/11/2026', 100, '18/11/2026 16:30'),
+  R('ccar', 'Hoàng Thị Yến', 'BA', 'learning', '04/11/2026', 75, '20/11/2026 08:15'),
+  R('ccar', 'Phạm Thu Trang', 'QA', 'none', '', 0, ''),
+  R('ccar', 'Ngô Đức Thịnh', 'QC Automation', 'none', '', 0, ''),
+  R('ccar', 'Bùi Thanh Tùng', 'QA', 'removed', '02/11/2026', 25, '06/11/2026 10:00'),
+  R('ccar', 'Đặng Văn Khoa', 'Development', 'fail', '01/11/2026', 44, '15/11/2026 14:20'),
+  R('qa2', 'Trần Minh Anh', 'QA', 'learning', '16/10/2026', 80, '19/11/2026 20:00'),
+  R('qa2', 'Nguyễn Hải Đăng', 'QC Automation', 'learning', '16/10/2026', 45, '10/11/2026 11:11'),
+  R('qa2', 'Lê Hoàng Nam', 'QC Automation', 'done', '15/10/2026', 100, '12/11/2026 09:30'),
+  R('qa2', 'Vũ Ngọc Lan', 'QA', 'done', '17/10/2026', 100, '14/11/2026 15:40'),
+  R('qa2', 'Phan Minh Quân', 'QA', 'fail', '18/10/2026', 60, '09/11/2026 16:05'),
+  R('qa2', 'Ngô Đức Thịnh', 'QC Automation', 'none', '', 0, ''),
+  R('dock', 'Trịnh Bảo Ngọc', 'Development', 'learning', '20/10/2026', 20, '01/11/2026 10:00'),
+  R('dock', 'Đỗ Quang Huy', 'Development', 'learning', '01/11/2026', 55, '19/11/2026 22:30'),
+  R('dock', 'Mai Anh Tuấn', 'Development', 'done', '22/10/2026', 100, '05/11/2026 18:00'),
+  R('dock', 'Hoàng Thị Yến', 'BA', 'learning', '10/11/2026', 10, '11/11/2026 09:00'),
+  R('dock', 'Lý Thu Hằng', 'Design', 'learning', '25/10/2026', 70, '18/11/2026 13:00'),
+  R('aiae', 'Trần Minh Anh', 'QA', 'learning', '05/10/2026', 40, '17/11/2026 20:45'),
+  R('aiae', 'Lý Thu Hằng', 'Design', 'learning', '12/10/2026', 5, '13/10/2026 08:00'),
+  R('aiae', 'Mai Anh Tuấn', 'Development', 'done', '01/10/2026', 100, '30/10/2026 17:00'),
+  R('aiae', 'Đặng Văn Khoa', 'Development', 'learning', '20/10/2026', 65, '19/11/2026 11:20'),
+];
+const C = Object.fromEntries(COURSES.map((c) => [c.id, c]));
+
+/* BR-DSH-01: tiến độ cần có, kẹp 0–100; khoá chỉ có ngày kết thúc → mốc bắt đầu = ngày enroll */
+function needed(r) {
+  const c = C[r.course]; if (!c.end) return null;
+  const s = d(c.start || r.enroll), e = d(c.end); if (!s) return null;
+  if (TODAY <= s) return 0;
+  return Math.max(0, Math.min(100, Math.round((TODAY - s) / (e - s) * 100)));
+}
+/* BR-DSH-02…04: mỗi học viên mỗi khoá một nhóm, xét theo thứ tự */
+function group(r) {
+  if (r.st === 'removed') return 'Mất quyền';
+  if (r.st === 'done') return 'Hoàn thành';
+  if (r.st === 'fail') return 'Không đạt';
+  if (r.st === 'none') return 'Chưa đăng ký';
+  const c = C[r.course];
+  if (!c.end) return 'Khoá chưa có hạn';
+  if (TODAY > d(c.end)) return 'Quá hạn';
+  return needed(r) - r.p >= 20 ? 'Học chậm' : 'Đúng tiến độ';
+}
+const TONE = { 'Học chậm': 'rejected', 'Quá hạn': 'pending', 'Không đạt': 'pending', 'Hoàn thành': 'published', 'Đúng tiến độ': 'info', 'Chưa đăng ký': 'neutral', 'Mất quyền': 'draft', 'Khoá chưa có hạn': 'neutral' };
+
+let role = 'admin';
+const f = { course: 'all', depts: [], from: '', to: '' };
+let tab = 'Học chậm';
+
+const myCourses = () => COURSES.filter((c) => role === 'admin' || c.owner === 'Phạm Thanh Long'); // BR-DSH-07
+function rows() {
+  const ids = f.course === 'all' ? myCourses().map((c) => c.id) : [f.course];
+  const dateOn = f.from || f.to;
+  return ROWS.filter((r) => ids.includes(r.course)
+    && (!f.depts.length || f.depts.includes(r.dept))
+    && (!dateOn || (r.enroll && (!f.from || iso(r.enroll) >= f.from) && (!f.to || iso(r.enroll) <= f.to)))) // có lọc ngày → bỏ Chưa đăng ký
+    .map((r) => ({ ...r, g: group(r), need: needed(r) }));
+}
+const enrolled = (L) => L.filter((r) => r.st !== 'none');
+const avg = (L) => { const x = L.filter((r) => r.st !== 'none' && r.st !== 'removed'); return x.length ? Math.round(x.reduce((a, r) => a + r.p, 0) / x.length) : null; }; // BR-DSH-06
+const cnt = (L, g) => L.filter((r) => r.g === g).length;
+
+function render() {
+  const admin = role === 'admin';
+  AdminLayout({ active: 'reports', role });
+  const dateErr = f.from && f.to && f.from > f.to;
+  const one = f.course !== 'all' ? C[f.course] : null;
+  document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Báo cáo · LH2', title: 'Learning Dashboard',
+    desc: (admin ? 'Mọi khoá đã Publish' : 'Khoá bạn phụ trách') + ' · số liệu tới 20/11/2026 · cùng công thức với file Xuất dữ liệu',
+    right: `<button class="btn-cta btn-cta--line" id="dsh-export" ${!one || dateErr ? 'disabled' : ''} title="${one ? '' : 'Chọn 1 khoá để xuất dữ liệu'}">${ICON.download}Xuất dữ liệu</button>` });
+
+  document.getElementById('filter').innerHTML = `
+    <div class="adm-field f-course"><label>Khoá</label><select class="adm-input" id="f-course"><option value="all">Tất cả khoá</option>${myCourses().map((c) => `<option value="${c.id}" ${f.course === c.id ? 'selected' : ''}>${esc(c.title)}</option>`).join('')}</select></div>
+    <div class="adm-field"><label>Enroll từ</label><input class="adm-input ${dateErr ? 'is-error' : ''}" type="date" id="f-from" value="${f.from}"></div>
+    <div class="adm-field"><label>đến</label><input class="adm-input ${dateErr ? 'is-error' : ''}" type="date" id="f-to" value="${f.to}"></div>
+    <button class="filter-btn" id="f-clear">${ICON.x}Xoá lọc</button>
+    <div class="adm-field f-depts"><label>Phòng ban <span class="adm-hint">· chọn nhiều</span></label><div class="dsh-depts">${D.hr.departments.map((x) => `<button type="button" class="${f.depts.includes(x) ? 'is-active' : ''}" data-dept="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+    ${dateErr ? `<span class="adm-hint is-error f-err">Ngày bắt đầu phải trước ngày kết thúc.</span>` : ''}`;
+
+  const L = dateErr ? [] : rows();
+  const courseIds = [...new Set((f.course === 'all' ? myCourses() : [one]).map((c) => c.id))];
+  const due = !one || one.end;
+  /* Content / Card: icon tròn 60 + nhãn + số 32 */
+  const k = (label, v, icon, tone = '', key = '') => `<${key ? 'button type="button"' : 'div'} class="kpi-card ${tone ? 'kpi-card--' + tone : ''} ${key && key === tab ? 'is-active' : ''}" ${key ? `data-kpi="${key}"` : ''}><span class="kpi-card__ic">${ICON[icon]}</span><span class="kpi-card__text"><span class="kpi-card__label" title="${label}">${label}</span><span class="kpi-card__value">${v}</span></span></${key ? 'button' : 'div'}>`;
+  const a = avg(L);
+  document.getElementById('kpis').innerHTML =
+    k('Khoá đang chạy', courseIds.length, 'bookOpen') + k('Học viên đã enroll', enrolled(L).length, 'users', '', 'Tất cả') + k('Tiến độ trung bình', a == null ? '–' : a + '%', 'trending', 'pink')
+    + k('Hoàn thành', cnt(L, 'Hoàn thành'), 'award', 'success') + k('Không đạt', cnt(L, 'Không đạt'), 'x', 'danger', 'Không đạt')
+    + k('Học chậm', due ? cnt(L, 'Học chậm') : '–', 'turtle', 'warning', due ? 'Học chậm' : '') + k('Quá hạn', due ? cnt(L, 'Quá hạn') : '–', 'clock', 'danger', due ? 'Quá hạn' : '')
+    + (one && one.limited ? k('Chưa đăng ký', cnt(L, 'Chưa đăng ký'), 'userX') : '');
+
+  /* Bảng theo khoá — sắp Học chậm + Quá hạn giảm dần */
+  const byC = courseIds.map((id) => { const c = C[id]; const x = L.filter((r) => r.course === id); return { c, x, risk: cnt(x, 'Học chậm') + cnt(x, 'Quá hạn') }; }).sort((p, q) => q.risk - p.risk);
+  document.getElementById('by-course').innerHTML = AdminTable(['Khoá', 'Lịch học', ['Đã enroll', 'num'], ['Tiến độ TB', 'num'], ['Hoàn thành', 'num'], ['Không đạt', 'num'], ['Học chậm', 'num'], ['Quá hạn', 'num']],
+    byC.map(({ c, x }) => { const av = avg(x); const nd = !c.end;
+      return `<tr data-course="${c.id}"><td><b>${esc(c.title)}</b><div class="adm-hint">${c.limited ? 'Giới hạn' : 'Toàn công ty'}${admin ? ' · ' + esc(c.owner) : ''}</div></td>
+        <td>${nd ? Tag('Khoá chưa có hạn') : `<span class="adm-meta">${ICON.calendar}${c.start || 'Từ ngày enroll'} – ${c.end}</span>`}</td>
+        <td class="num">${enrolled(x).length}</td><td class="num">${av == null ? '–' : av + '%'}</td><td class="num">${cnt(x, 'Hoàn thành')}</td><td class="num">${cnt(x, 'Không đạt')}</td>
+        <td class="num">${nd ? '–' : cnt(x, 'Học chậm')}</td><td class="num">${nd ? '–' : cnt(x, 'Quá hạn')}</td></tr>`; }).join(''));
+
+  /* Bảng theo phòng ban */
+  const depts = [...new Set(L.map((r) => r.dept))].sort();
+  document.getElementById('by-dept').innerHTML = AdminTable(['Phòng ban', ['Đã enroll', 'num'], ['Tiến độ TB', 'num'], ['% Hoàn thành', 'num'], ['Học chậm', 'num'], ['Quá hạn', 'num']],
+    depts.length ? depts.map((dp) => { const x = L.filter((r) => r.dept === dp); const en = enrolled(x).length; const av = avg(x);
+      return `<tr><td><span class="adm-meta">${ICON.building}<b>${esc(dp)}</b></span></td><td class="num">${en}</td><td class="num">${av == null ? '–' : av + '%'}</td><td class="num">${en ? Math.round(cnt(x, 'Hoàn thành') / en * 100) + '%' : '–'}</td><td class="num">${cnt(x, 'Học chậm')}</td><td class="num">${cnt(x, 'Quá hạn')}</td></tr>`; }).join('')
+      : `<tr><td colspan="6" class="adm-hint" style="text-align:center">Không có dữ liệu.</td></tr>`);
+
+  /* Danh sách học viên theo nhóm — Combo button 4 tab */
+  const TABS = ['Học chậm', 'Quá hạn', 'Không đạt', 'Tất cả'];
+  document.getElementById('tabs').innerHTML = `<div class="combo">${TABS.map((t) => `<button class="${tab === t ? 'is-active' : ''}" data-tab="${t}">${t} (${t === 'Tất cả' ? L.length : cnt(L, t)})</button>`).join('')}</div>`;
+  const list = tab === 'Tất cả' ? L : L.filter((r) => r.g === tab);
+  document.getElementById('learners').innerHTML = AdminTable(['Họ tên', 'Phòng ban', 'Khoá', 'Tình trạng', 'Tiến độ thực / cần có', ['Thiếu', 'num'], 'Ngày kết thúc', 'Truy cập gần nhất'],
+    list.length ? list.map((r) => { const c = C[r.course]; const gap = r.need != null && r.st === 'learning' ? r.need - r.p : null;
+      return `<tr><td><span class="adm-meta">${Avatar(r.name, 'sm')}<b>${esc(r.name)}</b></span></td><td>${esc(r.dept)}</td><td>${esc(c.code)}</td>
+        <td>${Tag(r.g, TONE[r.g])}</td>
+        <td style="min-width:200px">${r.st === 'none' ? '<span class="adm-hint">—</span>' : `<div class="adm-meta" style="width:100%"><div style="flex:1">${Progress(r.p)}</div><span class="adm-hint">${r.p}% / ${r.need == null ? '–' : r.need + '%'}</span></div>`}</td>
+        <td class="num">${gap != null && gap > 0 ? `<span class="${gap >= 20 ? 'gap-pct' : ''}">${gap}%</span>` : '–'}</td>
+        <td>${c.end || '<span class="adm-hint">Khoá chưa có hạn</span>'}</td><td>${r.last || '—'}</td></tr>`; }).join('')
+      : `<tr><td colspan="8"><div class="empty" style="border:0">${ICON.users}<b>Không có học viên nào trong nhóm này.</b></div></td></tr>`);
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-tab]'); if (t) { tab = t.dataset.tab; render(); return; }
+  const kp = e.target.closest('[data-kpi]'); if (kp) { tab = kp.dataset.kpi; render(); document.getElementById('learners').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  const dp = e.target.closest('[data-dept]'); if (dp) { const v = dp.dataset.dept; f.depts = f.depts.includes(v) ? f.depts.filter((x) => x !== v) : [...f.depts, v]; render(); return; }
+  const cr = e.target.closest('tr[data-course]'); if (cr) { f.course = cr.dataset.course; render(); return; }
+  if (e.target.closest('#f-clear')) { Object.assign(f, { course: 'all', depts: [], from: '', to: '' }); render(); return; }
+  const qx = e.target.closest('[data-qa-export]'); if (qx) { e.preventDefault(); if (f.course === 'all') { LH.toast('Chọn 1 khoá ở bộ lọc Khoá để xuất dữ liệu'); document.getElementById('f-course').focus(); return; } }
+  const ex = e.target.closest('#dsh-export') || qx; if (ex && !ex.disabled) {
+    const c = C[f.course]; const L = rows();
+    LHExport.open({ course: c.title, code: c.code, limited: c.limited, depts: f.depts, from: f.from, to: f.to, total: L.length * 6, source: 'Learning Dashboard' });
+  }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'f-course') { f.course = e.target.value; render(); }
+  else if (e.target.id === 'f-from' || e.target.id === 'f-to') { f[e.target.id.slice(2)] = e.target.value; render(); }
+});
+
+LH.DemoBar('Báo cáo — Learning Dashboard (Đợt 2)', [
+  { label: 'Vai trò', key: 'r', options: [['admin', 'Admin L&D'], ['creator', 'Course Creator']] },
+  { label: 'Mở sẵn', key: 'v', options: [['all', 'Tất cả khoá'], ['limited', 'Khoá Giới hạn (CCAR-F)'], ['overdue', 'Khoá quá hạn (QA-M2)'], ['nodue', 'Khoá chưa có hạn'], ['empty', 'Nhóm trống']] },
+], (s) => {
+  role = s.r === 'creator' ? 'creator' : 'admin';
+  Object.assign(f, { course: 'all', depts: [], from: '', to: '' }); tab = 'Học chậm';
+  if (s.v === 'limited') f.course = role === 'admin' ? 'ccar' : 'qa2';
+  if (s.v === 'overdue') { f.course = 'qa2'; tab = 'Quá hạn'; }
+  if (s.v === 'nodue') { f.course = role === 'admin' ? 'aiae' : 'dock'; tab = 'Tất cả'; }
+  if (s.v === 'empty') { f.depts = ['HR']; }
+  render();
+});
+</script>
+</body>
+</html>

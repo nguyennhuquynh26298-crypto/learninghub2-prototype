@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · LearningHub Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+<style>
+  .dsh-alert { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 20px; border-radius: 12px; background: #fff4e5; border: 1px solid #fedf89; color: #93370d; font-size: 15px; }
+  .dsh-alert svg { width: 20px; height: 20px; flex: none; }
+  .dsh-alert b { color: #7a2e0e; }
+  .dsh-alert .grow { flex: 1 1 260px; }
+</style>
+</head>
+<body>
+<div id="header"></div>
+<!-- Figma: Dashboard 71:1346 — Header (Welcome back) · 3 Content/Card có % · Quick Actions 3 thẻ có nút · Recent Activity (Admin / Table row).
+     [KT] bố cục gốc · [MỚI] LH2 #3: dòng cảnh báo chờ duyệt, trạng thái Chờ duyệt / Bản sửa, biến thể Course Creator.
+     Learning Dashboard LH2 #10 chuyển sang Báo cáo (admin-reports.html). -->
+<main>
+  <div id="head"></div>
+  <div id="alert"></div>
+  <div class="kpi-grid kpi-grid--3" id="kpis"></div>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title">Lối tắt</h2></div><div class="qa-grid qa-grid--3" id="qa"></div></section>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Hoạt động gần đây</h2><a class="btn-cta btn-cta--line btn-cta--sm" id="see-all" href="admin-courses.html">Xem tất cả</a></div><div class="adm-card" id="recent"></div></section>
+</main>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script>
+const { ICON, esc, AdminLayout, AdminHead, AdminTable, AdminEmpty, TrendKpi, StageTag, RowMenu, Avatar } = LH;
+const ME = 'Phạm Thanh Long';
+/* Hoạt động gần đây: khoá vừa tạo / sửa / gửi duyệt. Cột theo Figma: Tên · Danh mục · Danh mục con · Phiên bản · Thời lượng · Trạng thái · Phụ trách */
+const META = {
+  'Kiểm thử tự động với Playwright': ['Software Development', 'Testing', '1.0', '6 giờ'],
+  'Claude Certified Architect – Foundations': ['Data & AI', 'AI Agent', '2.0', '12 giờ'],
+  'Kiểm thử API với Postman': ['Software Development', 'Testing', '1.0', '4 giờ'],
+  'Clean Code cho Frontend': ['Software Development', 'Web', '1.0', '5 giờ'],
+  'AI Agent Engineering': ['Data & AI', 'AI Agent', '1.0', '8 giờ'],
+  'Docker cho người mới': ['Software Development', 'DevOps', '2.0', '4 giờ'],
+};
+const COURSES = LHData.adminCourses.map((c, i) => ({ ...c, i, cat: META[c.title][0], sub: META[c.title][1], ver: c.revision ? META[c.title][2] : '1.0', dur: META[c.title][3] }));
+let role = 'admin', data = 'full';
+
+function render() {
+  const admin = role === 'admin'; const q = '?r=' + role;
+  AdminLayout({ active: 'dashboard', role });
+  const list = data === 'empty' ? [] : COURSES.filter((c) => admin || c.owner === ME);
+  const pend = list.filter((c) => c.status === 'pending' || c.revision === 'pending');
+  const back = list.filter((c) => c.status === 'rejected' || c.revision === 'rejected');
+
+  document.getElementById('head').innerHTML = AdminHead({ xl: true, eyebrow: 'Chào mừng trở lại!',
+    title: admin ? 'Tổng quan nền tảng học tập' : 'Khoá học của bạn',
+    desc: admin ? 'Chào mừng trở lại! Đây là tổng quan nền tảng học tập của bạn.' : 'Số liệu chỉ tính các khoá bạn phụ trách.' });
+
+  /* [MỚI] #3 — Admin: khoá chờ duyệt · Creator: chờ duyệt + bị trả về */
+  document.getElementById('alert').innerHTML = pend.length || (!admin && back.length)
+    ? `<div class="dsh-alert">${ICON.alert}<span class="grow">${admin
+        ? `<b>${pend.length} khoá</b> đang chờ bạn duyệt (${pend.filter((c) => c.revision).length} bản sửa của khoá đang chạy).`
+        : `<b>${pend.length}</b> khoá đang chờ Admin L&amp;D duyệt · <b>${back.length}</b> khoá cần chỉnh sửa.`}</span>
+       <a class="btn-cta btn-cta--sm" href="admin-courses.html${q}&t=${admin ? 'pending' : 'rejected'}">${admin ? 'Duyệt ngay' : 'Xem khoá cần sửa'}</a></div>` : '';
+
+  /* Content / Card có % (3 thẻ Figma) */
+  const n = (v) => (data === 'empty' ? 0 : v);
+  document.getElementById('kpis').innerHTML = admin
+    ? TrendKpi('Tổng khoá học', n(156), data === 'empty' ? null : 12, 'bookOpen') + TrendKpi('Nhân viên đang học', n(2847).toLocaleString('en-US'), data === 'empty' ? null : 8, 'usersRound', 'pink') + TrendKpi('Lượt hoàn thành khoá', n(1234).toLocaleString('en-US'), data === 'empty' ? null : 10, 'award', 'success')
+    : TrendKpi('Khoá phụ trách', list.length, data === 'empty' ? null : 50, 'bookOpen') + TrendKpi('Học viên đang học', n(86), data === 'empty' ? null : 6, 'usersRound', 'pink') + TrendKpi('Lượt hoàn thành khoá', n(31), data === 'empty' ? null : -4, 'award', 'success');
+
+  /* Quick Actions — Figma: Tạo khoá · Xem tất cả khoá · Gán khoá. Creator không gán khoá (D-52) → Báo cáo */
+  const qa = (href, icon, t, sub, btn) => `<div class="qa-card qa-card--btn"><span class="qa-card__ic">${ICON[icon]}</span><b>${t}</b><p>${sub}</p><a class="btn-cta btn-cta--sm" href="${href}">${btn}</a></div>`;
+  document.getElementById('qa').innerHTML = qa('course-editor.html' + q, 'plus', 'Tạo khoá học', admin ? 'Thêm khoá mới vào nền tảng học tập.' : 'Soạn nội dung rồi gửi Admin L&D duyệt.', 'Tạo')
+    + qa('admin-courses.html' + q, 'bookOpen', admin ? 'Xem tất cả khoá' : 'Khoá học của tôi', admin ? 'Duyệt và quản lý toàn bộ khoá học.' : 'Xem trạng thái duyệt, sửa khoá bị trả về.', 'Xem')
+    + (admin ? qa('admin-audience.html?role=Admin', 'network', 'Gán khoá', 'Gán khoá cho nhân viên hoặc phòng ban, đặt lịch học.', 'Gán')
+      : qa('admin-reports.html' + q, 'chart', 'Báo cáo học tập', 'Theo dõi tiến độ học viên các khoá bạn phụ trách.', 'Xem'));
+
+  document.getElementById('see-all').href = 'admin-courses.html' + q;
+  document.getElementById('recent').innerHTML = list.length
+    ? AdminTable([['Tên khoá', 't-name'], 'Danh mục', ['Danh mục con', 'col-opt'], 'Phiên bản', ['Thời lượng', 'col-opt'], 'Trạng thái', 'Phụ trách', ['', 't-act']],
+      list.map((c) => {
+        const canReview = admin && (c.status === 'pending' || c.revision === 'pending');
+        const menu = [{ label: 'Xem', icon: 'eye', href: `course-approval.html?k=${c.revision ? 'rev' : 'new'}&r=${role}` },
+          { label: 'Sửa', icon: 'edit', href: 'course-editor.html' + q },
+          ...(canReview ? [{ label: 'Duyệt', icon: 'shieldCheck', href: `course-approval.html?k=${c.revision ? 'rev' : 'new'}` }] : []),
+          ...(admin ? [{ label: 'Quản lý đối tượng', icon: 'network', href: 'admin-audience.html?role=Admin' }] : [])];
+        return `<tr><td class="t-name"><b>${esc(c.title)}</b><div class="adm-hint">Cập nhật ${c.updated}</div></td><td>${esc(c.cat)}</td><td class="col-opt">${esc(c.sub)}</td>
+          <td>Ver ${c.ver}</td><td class="col-opt">${c.dur}</td><td>${StageTag(c.status, c.revision)}</td>
+          <td><span class="adm-meta">${Avatar(c.owner, 'sm')}${esc(c.owner)}</span></td><td class="t-act">${RowMenu(menu)}</td></tr>`;
+      }).join(''))
+    : AdminEmpty({ icon: 'bookOpen', title: 'Chưa có dữ liệu', desc: admin ? 'Chưa có khoá học nào. Tạo khoá đầu tiên để bắt đầu.' : 'Bạn chưa phụ trách khoá nào.', cta: `<a class="btn-cta" href="course-editor.html${q}">${ICON.plus}Tạo khoá học</a>` });
+}
+
+LH.DemoBar('Dashboard — Figma 71:1346', [
+  { label: 'Vai trò', key: 'r', options: [['admin', 'Admin L&D'], ['creator', 'Course Creator']] },
+  { label: 'Dữ liệu', key: 'data', options: [['full', 'Có dữ liệu'], ['empty', 'Chưa có dữ liệu']] },
+], (s) => { role = s.r === 'creator' ? 'creator' : 'admin'; data = s.data; render(); });
+</script>
+</body>
+</html>

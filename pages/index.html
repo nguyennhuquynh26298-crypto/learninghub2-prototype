@@ -4,10 +4,11 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LearningHub 2 — Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
 <style>
   .idx { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
   .idx h2 { margin: 32px 0 12px; font-size: 16px; }
+  .idx h2 small { font-weight: 500; color: var(--text-subtle); font-size: 13px; margin-left: 8px; }
   .idx a.item { display: flex; gap: 16px; align-items: center; padding: 14px 16px; border: 1px solid var(--border-default); border-radius: var(--radius); margin-bottom: 8px; color: var(--text-strong); text-decoration: none; }
   .idx a.item:hover { border-color: var(--primary-900); background: var(--primary-50); }
   .idx a.item code { font-size: 12px; color: var(--text-subtle); margin-left: auto; }
@@ -19,6 +20,7 @@
 <div class="idx">
   <a class="logo" href="#">Learning<b>Hub</b><i></i></a>
   <h1 class="page-title" style="margin-top:16px">LearningHub 2 — Prototype</h1>
+  <p class="t-sm muted">Theo Feature List v4 (12/11/2026): 15 function, 31 feature. Prototype chỉ minh hoạ luồng và thông tin trên màn; bố cục, màu, chữ xem trên Figma Learning Hub _TVF.</p>
 
   <div class="top">
     <a class="item" href="../hoc-vien.html" target="_top"><b>Bản Học viên — thao tác trọn luồng</b><span class="badge badge--info">1 link</span></a>
@@ -27,29 +29,35 @@
     <a class="item" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download><b>Excel danh sách tính năng</b><span class="badge badge--neutral">.xlsx</span></a>
   </div>
 
-  <h2>Đợt 1 · #1 Practice · #2 Bài thi 3 lượt</h2>
-  <a class="item" href="assessment.html"><b>Bài test — trọn luồng</b> chọn chế độ → Practice / Exam → kết quả → làm lại<span class="badge badge--info">Learner</span><code>01 · 02</code></a>
-  <a class="item" href="admin-test-practice.html?st=ok">Soạn bài test — tab Practice, thêm / sửa câu, nhập từ file<span class="badge badge--violet">Admin L&amp;D</span><code>01 §3.1–3.3</code></a>
+  <h2>Đợt 1<small>16–20/11/2026 · 17 feature</small></h2>
+  <a class="item" href="assessment.html"><b>Assessment · Practice / Exam</b> chọn chế độ → Practice / Exam 3 lượt → kết quả → làm lại<span class="badge badge--info">Learner</span><code>01 · 02</code></a>
+  <a class="item" href="course-editor.html?quiz=1"><b>Assessment · Quiz Exam / Practice</b> trong Soạn khoá: tạo quiz, tab Exam | Practice, thêm / sửa / xoá câu, nhập từ file<span class="badge badge--violet">Admin L&amp;D</span><code>01 §3.1–3.3</code></a>
+  <a class="item" href="admin-audience.html"><b>Course Audience + Lịch học · Learning Data Export</b> phạm vi, quy tắc, loại trừ, email mời học, Xuất dữ liệu<span class="badge badge--violet">Admin L&amp;D</span><code>04 · 05</code></a>
+  <a class="item" href="course-detail.html?s=restricted"><b>Course Audience · trang khoá</b> ngoài đối tượng / bị gỡ / chưa tới ngày bắt đầu / quá hạn<span class="badge badge--info">Learner</span><code>04 §3.2–3.4</code></a>
+  <a class="item" href="home.html"><b>Enrollment · trang chủ</b> card Giới hạn, Bắt đầu, Quá hạn, Không đạt<span class="badge badge--info">Learner</span><code>04 §3.3 · 09</code></a>
+  <a class="item" href="course-detail.html?s=limit"><b>Enrollment · giới hạn 2 khoá</b> đạt giới hạn, popup giới hạn<span class="badge badge--info">Learner</span><code>09 §3.1</code></a>
+  <a class="item" href="lesson-video.html"><b>Learning Progress · Progress Tracking</b> video xem thực ≥ 90% (luật tính làm Đợt 1)<span class="badge badge--info">Learner</span><code>08</code></a>
 
-  <h2>Đợt 1 · #4 Đối tượng + Lịch học · #5 Xuất dữ liệu</h2>
-  <a class="item" href="admin-audience.html">Tab Đối tượng — phạm vi, quy tắc, loại trừ, lịch học, email mời học, Xuất dữ liệu<span class="badge badge--violet">Admin L&amp;D</span><code>04 · 05</code></a>
-  <a class="item" href="course-detail.html?s=restricted">Trang khoá — ngoài đối tượng / bị gỡ / chưa tới ngày bắt đầu / quá hạn<span class="badge badge--info">Learner</span><code>04 §3.2–3.4</code></a>
-  <a class="item" href="home.html">Trang chủ — card Giới hạn, Bắt đầu, Quá hạn, Không đạt<span class="badge badge--info">Learner</span><code>04 §3.3 · 09</code></a>
+  <h2>Đợt 2<small>23–27/11/2026 · 12 feature</small></h2>
+  <a class="item" href="admin-reports.html"><b>Báo cáo · Learning Dashboard</b> thẻ tổng, theo khoá, theo phòng ban, học chậm / quá hạn, mở Xuất dữ liệu<span class="badge badge--violet">Admin · Creator</span><code>10 · D-66…69</code></a>
+  <a class="item" href="admin-settings.html"><b>Role &amp; Permission</b> cấp quyền Course Creator<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.1</code></a>
+  <a class="item" href="admin-courses.html?r=admin&amp;t=pending"><b>Course List</b> Chờ duyệt / Nháp / Cần chỉnh sửa / Đang chạy<span class="badge badge--violet">Admin · Creator</span><code>03 §3.2</code></a>
+  <a class="item" href="course-editor.html"><b>Course Approval · Submit</b> trạng thái duyệt, lỗi gửi duyệt (thông báo qua email)<span class="badge badge--violet">Creator</span><code>03 §3.3</code></a>
+  <a class="item" href="course-approval.html?k=rev"><b>Course Approval · Review</b> khoá mới / bản sửa<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.4–3.5</code></a>
+  <a class="item" href="course-search.html?q=kiem+thu"><b>Course Search</b> gõ không dấu, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>06</code></a>
+  <a class="item" href="my-courses.html"><b>My Courses</b> chỉ báo suất, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>09 §3.2 · 06</code></a>
+  <a class="item" href="course-detail.html?s=learning"><b>Learning Progress · Display / My Learning Result</b> kết quả của tôi<span class="badge badge--info">Learner</span><code>07 · 08</code></a>
 
-  <h2>Đợt 1 · #9 Tối đa 2 khoá đang học</h2>
-  <a class="item" href="course-detail.html?s=limit">Trang khoá — đạt giới hạn, popup giới hạn<span class="badge badge--info">Learner</span><code>09 §3.1</code></a>
-  <a class="item" href="my-courses.html">Khoá học của tôi — chỉ báo suất, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>09 §3.2 · 06</code></a>
+  <h2>Khung Admin theo Figma<small>LH2 không đổi · mở ra hiện Chưa có dữ liệu</small></h2>
+  <a class="item" href="admin-dashboard.html"><b>Dashboard</b> 3 thẻ %, Lối tắt, Hoạt động gần đây + cảnh báo chờ duyệt<span class="badge badge--violet">Admin · Creator</span><code>71:1346</code></a>
+  <a class="item" href="admin-employees.html"><b>Nhân viên</b> danh sách, sửa vai trò<span class="badge badge--neutral">Khung</span><code>457:2164</code></a>
+  <a class="item" href="admin-roles.html"><b>Cài đặt · Vai trò</b> danh sách, tạo / sửa / chi tiết<span class="badge badge--neutral">Khung</span><code>421:6741</code></a>
+  <a class="item" href="admin-sync.html"><b>Cài đặt · Đồng bộ dữ liệu</b> chọn mục → Đồng bộ, lịch sử<span class="badge badge--neutral">Khung</span><code>464:3450</code></a>
+  <a class="item" href="admin-categories.html"><b>Cài đặt · Danh mục khoá học</b> danh mục + danh mục con<span class="badge badge--neutral">Khung</span><code>Notion</code></a>
 
-  <h2>Đợt 2 · #3 Course Creator + duyệt khoá</h2>
-  <a class="item" href="admin-settings.html">Phân quyền — Course Creator<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.1</code></a>
-  <a class="item" href="admin-courses.html?r=admin&amp;t=pending">Quản lý khoá học — Chờ duyệt / Nháp / Cần chỉnh sửa / Đang chạy<span class="badge badge--violet">Admin · Creator</span><code>03 §3.2</code></a>
-  <a class="item" href="course-editor.html">Soạn khoá — trạng thái duyệt, lỗi gửi duyệt<span class="badge badge--violet">Creator</span><code>03 §3.3</code></a>
-  <a class="item" href="course-approval.html?k=rev">Màn duyệt khoá — khoá mới / bản sửa<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.4–3.5</code></a>
-
-  <h2>Đợt 2 · #6 Tìm kiếm · #7 Kết quả · #8 Tiến độ</h2>
-  <a class="item" href="course-search.html?q=kiem+thu">Tìm khoá học — gõ không dấu, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>06</code></a>
-  <a class="item" href="course-detail.html?s=learning">Trang khoá — Kết quả của tôi<span class="badge badge--info">Learner</span><code>07 · 08</code></a>
-  <a class="item" href="lesson-video.html">Trang học video — xem thực ≥ 90%<span class="badge badge--info">Learner</span><code>08</code></a>
+  <h2>Sau Đợt 1 · Sau Đợt 2<small>đợt kế tiếp</small></h2>
+  <a class="item" href="admin-audience.html"><b>Course Information · nhãn Khoá có phí</b> Could Have<span class="badge badge--neutral">Sau Đợt 1</span><code>04 §3.4</code></a>
+  <a class="item" href="course-approval.html?k=new"><b>In-app Notification (chuông)</b> header đã có UI, chưa có backend; Đợt 2 chỉ email<span class="badge badge--neutral">Sau Đợt 2</span><code>03 §3.6</code></a>
 </div>
 </body>
 </html>

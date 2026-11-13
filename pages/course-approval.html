@@ -4,46 +4,102 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duyệt khoá học · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
 <style>
-  .rv-head { background: #fff; border-bottom: 1px solid var(--border-default); }
-  .rv-head .container { padding-top: 20px; padding-bottom: 20px; display: flex; gap: 16px; align-items: center; }
-  .rv-meta { display: flex; gap: 16px; font-size: var(--fs-sm); color: var(--text-subtle); flex-wrap: wrap; }
-  .preview-hero { border-radius: var(--card-radius); background: linear-gradient(135deg, var(--primary-900), #2a37c4); color: #fff; padding: 28px; display: flex; flex-direction: column; gap: 8px; }
-  .preview-hero h2 { font-size: 24px; line-height: 32px; font-weight: 700; }
-  .preview-hero p { color: #dce2ff; font-size: var(--fs-sm); }
-  .legend { display: flex; gap: 12px; align-items: center; font-size: var(--fs-xs); color: var(--text-subtle); }
+  /* Duyệt khoá — bố cục Create new course ở dạng chỉ đọc; cột phải: Thông tin gửi duyệt + Lịch sử duyệt */
+  .rv-meta { display: flex; gap: 20px; font-size: 16px; color: var(--adm-sub); flex-wrap: wrap; margin-top: 8px; }
+  .rv-meta span { display: inline-flex; gap: 6px; align-items: center; }
+  .rv-meta svg { width: 18px; height: 18px; }
+  .preview-hero { border-radius: 20px; background: linear-gradient(135deg, #4757ff, #2a37c4); color: #fff; padding: 28px; display: flex; flex-direction: column; gap: 8px; }
+  .preview-hero h2 { font-size: 24px; line-height: 32px; font-weight: 700; margin: 0; }
+  .preview-hero p { color: #dce2ff; font-size: 15px; margin: 0; }
+  .legend { display: flex; gap: 12px; align-items: center; font-size: 13px; color: var(--adm-sub); }
+  .kv { display: flex; gap: 12px; font-size: 15px; } .kv span { flex: 1; color: var(--adm-sub); }
+  .adm-lesson.is-deleted b { text-decoration: line-through; color: var(--adm-sub); }
+  /* Quiz trong màn duyệt: tóm tắt + popup so sánh câu hỏi Exam | Practice (chỉ đọc) */
+  .rq-sum { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .rq-row { display: flex; gap: 12px; padding: 12px 14px; border: 1px solid var(--adm-stroke); border-radius: 10px; align-items: flex-start; }
+  .rq-row.is-del { background: #fafafa; } .rq-row.is-del .rq-text { text-decoration: line-through; color: var(--adm-sub); }
+  .rq-num { width: 28px; height: 28px; border-radius: 50%; background: var(--adm-side); display: grid; place-items: center; font-size: 13px; font-weight: 600; flex: none; }
+  .rq-text { font-weight: 500; } .rq-meta { font-size: 13px; color: var(--adm-sub); margin-top: 4px; }
+  .rq-old { font-size: 13px; color: var(--adm-sub); margin-top: 4px; text-decoration: line-through; }
+  .rq-set { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px 16px; padding: 12px 14px; border-radius: 10px; background: var(--adm-side); font-size: 14px; }
+  .rq-set span { color: var(--adm-sub); display: block; font-size: 12px; }
 </style>
 </head>
 <body>
 <div id="header"></div>
-<div class="rv-head"><div class="container">
-  <a class="icon-btn" href="admin-courses.html?t=pending" aria-label="Quay lại"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
-  <div class="grow stack gap-4"><div class="row gap-8"><b class="t-lg" id="h-title"></b><span id="h-status"></span></div><div class="rv-meta" id="h-meta"></div></div>
-  <div class="row gap-8" id="h-act"></div>
-</div></div>
-<main class="container screen"><div class="layout-2col">
-  <div class="stack gap-24">
-    <div id="banner"></div>
-    <div class="row"><b class="section-title grow">Xem trước — như học viên thấy</b><span class="legend" id="legend"></span></div>
-    <div class="preview-hero"><span class="t-xs" style="color:#c3cbff">5 session · 12 bài</span><h2 id="p-title"></h2><p>Nắm vững kiến trúc agent, tool design, MCP và context management để thiết kế giải pháp Claude ở môi trường production.</p></div>
-    <div class="syllabus" id="syllabus"></div>
+<main>
+  <div class="adm-head"><div class="adm-head__text"><a class="adm-back" id="back" href="admin-courses.html?r=admin&t=pending">Quay lại</a><span class="adm-head__eyebrow">Duyệt khoá học</span>
+    <h1><span id="h-title"></span> <span id="h-status"></span></h1><div class="rv-meta" id="h-meta"></div></div>
+    <div style="display:flex;gap:12px" id="h-act"></div></div>
+  <div id="banner"></div>
+  <div class="adm-grid-2">
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div class="preview-hero"><span style="color:#c3cbff;font-size:13px">5 session · 12 bài</span><h2 id="p-title"></h2><p>Nắm vững kiến trúc agent, tool design, MCP và context management để thiết kế giải pháp Claude ở môi trường production.</p></div>
+      <section class="adm-card"><div class="adm-box__head" style="margin-bottom:20px"><h2 class="adm-box__title" style="flex:1">Nội dung khoá — như học viên thấy</h2><span class="legend" id="legend"></span></div>
+        <div style="display:flex;flex-direction:column;gap:16px" id="syllabus"></div></section>
+    </div>
+    <aside style="display:flex;flex-direction:column;gap:24px">
+      <section class="adm-card"><h2 class="adm-card__title">Thông tin gửi duyệt</h2><div style="display:flex;flex-direction:column;gap:12px" id="info"></div></section>
+      <section class="adm-card"><h2 class="adm-card__title">Lịch sử duyệt</h2><div class="timeline" id="history"></div></section>
+    </aside>
   </div>
-  <aside class="sticky-side stack gap-16">
-    <section class="panel"><div class="panel__head"><b class="t-sm">Thông tin gửi duyệt</b></div><div class="panel__body stack gap-8 t-sm" id="info"></div></section>
-    <section class="panel"><div class="panel__head"><b class="t-sm">Lịch sử duyệt</b></div><div class="panel__body"><div class="timeline" id="history"></div></div></section>
-  </aside>
-</div></main>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/data.js"></script>
-<script src="../assets/js/approval.js"></script>
+</main>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/approval.js?v=1113c"></script>
 <script>
-const { ICON, AppHeader, Button, Badge, CourseStatus, Avatar, Alert, esc, toast } = LH; const D = LHData; const C = D.course;
-document.getElementById('header').innerHTML = AppHeader({ role: 'Admin', user: 'Lê Thị Mai' });
+const { ICON, Avatar, Alert, esc, toast, AdminLayout, StageTag } = LH; const D = LHData; const C = D.course;
+AdminLayout({ active: 'courses', collapsed: true, role: 'admin' });
+document.getElementById('back').insertAdjacentHTML('afterbegin', ICON.undo);
+const CourseStatus = StageTag;
 // Nhãn thay đổi của bản sửa: [session, lesson] → new | edit | del ; bài xoá được chèn vào mục lục
 const CHG = { '1:1': 'edit', '2:0': 'edit', '4:1': 'new' };
 const DELETED = { 1: [['video', 'MCP transport cũ (SSE)']] };
 const ADDED = { 4: [['video', 'Prompt caching thực chiến']] };
+/* Câu hỏi quiz trong gói duyệt. chg: new | edit | del (chỉ bản sửa) · old: nội dung trước khi sửa */
+const Q = (text, type, n, ans, score, chg, old) => ({ text, type, n, ans, score, chg, old });
+const QUIZ = {
+  base: { pass: 80, minutes: 30, shuffle: true, practice: true,
+    exam: [Q('MCP server giao tiếp với client qua giao thức nào?', 'Một đáp án', 4, 'B', 2), Q('Tool description nên chứa gì để model chọn đúng tool?', 'Nhiều đáp án', 4, 'A, C', 3), Q('Một tool có thể trả về nhiều content block.', 'Đúng / Sai', 2, 'Đúng', 1), Q('Khi nào nên tách một tool lớn thành nhiều tool nhỏ?', 'Một đáp án', 4, 'D', 2)],
+    practice: [Q('Resource khác Tool ở điểm nào?', 'Một đáp án', 3, 'A', 1), Q('Prompt template của MCP dùng để làm gì?', 'Một đáp án', 4, 'C', 1), Q('Tool name nên viết theo snake_case.', 'Đúng / Sai', 2, 'Đúng', 1)] },
+  rev: { pass: 80, oldPass: 70, minutes: 30, shuffle: true, practice: true, oldPractice: false,
+    exam: [Q('MCP server giao tiếp với client qua giao thức nào?', 'Một đáp án', 4, 'B', 2), Q('Tool description nên chứa gì để model chọn đúng tool?', 'Nhiều đáp án', 4, 'A, C', 3, 'edit', 'Đáp án cũ: A · 2 điểm'), Q('Transport SSE là lựa chọn mặc định cho server mới.', 'Đúng / Sai', 2, 'Sai', 1, 'del'), Q('Khi nào nên tách một tool lớn thành nhiều tool nhỏ?', 'Một đáp án', 4, 'D', 2), Q('Streamable HTTP thay thế transport nào?', 'Một đáp án', 4, 'A', 2, 'new')],
+    practice: [Q('Resource khác Tool ở điểm nào?', 'Một đáp án', 3, 'A', 1, 'new'), Q('Prompt template của MCP dùng để làm gì?', 'Một đáp án', 4, 'C', 1, 'new'), Q('Tool name nên viết theo snake_case.', 'Đúng / Sai', 2, 'Đúng', 1, 'new')] },
+};
+const CHG_TXT = { new: 'Mới', edit: 'Đã sửa', del: 'Đã xoá' };
+const live = (L) => L.filter((q) => q.chg !== 'del');
+const pts = (L) => live(L).reduce((a, q) => a + q.score, 0);
+/* Quiz đang xem: bản sửa → bài '1:1' có thay đổi câu hỏi; còn lại dùng bộ câu gốc */
+const quizOf = (key) => (K === 'rev' && key === '1:1' ? QUIZ.rev : QUIZ.base);
+function quizSum(key) {
+  const z = quizOf(key), n = (L) => L.filter((q) => q.chg).length;
+  return `<span class="rq-sum"><span class="adm-hint">Exam ${live(z.exam).length} câu · ${pts(z.exam)} điểm · Practice ${z.practice ? live(z.practice).length : 'tắt'}</span>${K === 'rev' && (n(z.exam) + n(z.practice)) ? `<span class="chg chg--edit">${n(z.exam) + n(z.practice)} câu thay đổi</span>` : ''}<button class="btn-cta btn-cta--soft btn-cta--sm" data-rq="${key}">Xem câu hỏi</button></span>`;
+}
+function openQuiz(key, name, tab = 'exam') {
+  const z = quizOf(key), rev = K === 'rev';
+  // Kiểm tra chặn trùng 2 chiều (BR-ASM-03/07) ngay trên gói duyệt
+  const norm = (t) => LH.norm(t).replace(/\s+/g, ' ').trim();
+  const ex = new Set(live(z.exam).map((q) => norm(q.text)));
+  const dup = live(z.practice).filter((q) => ex.has(norm(q.text))).length;
+  const L = tab === 'exam' ? z.exam : z.practice;
+  const set = `<div class="rq-set"><div><span>Điểm đạt</span><b>${rev && z.oldPass ? `<s class="muted">${z.oldPass}%</s> → ` : ''}${z.pass}%</b></div><div><span>Thời gian</span><b>${z.minutes} phút</b></div><div><span>Số lượt Exam</span><b>3 lượt (cố định)</b></div><div><span>Trộn câu (Exam)</span><b>${z.shuffle ? 'Bật' : 'Tắt'}</b></div><div><span>Cho phép luyện tập</span><b>${rev && z.oldPractice === false ? '<s class="muted">Tắt</s> → ' : ''}${z.practice ? 'Bật' : 'Tắt'}</b></div></div>`;
+  const rows = L.length ? L.map((q, i) => `<div class="rq-row ${q.chg === 'del' ? 'is-del' : ''}"><span class="rq-num">${i + 1}</span><div class="grow"><div class="rq-text">${esc(q.text)}</div>
+      <div class="rq-meta">${q.type} · ${q.n} lựa chọn · Đáp án: <b>${q.ans}</b> · ${q.score} điểm</div>${q.old ? `<div class="rq-old">${esc(q.old)}</div>` : ''}</div>${rev && q.chg ? `<span class="chg chg--${q.chg}">${CHG_TXT[q.chg]}</span>` : ''}</div>`).join('')
+    : LH.AdminEmpty({ icon: 'quiz', title: 'Chưa có câu hỏi', desc: 'Quiz chưa có câu ở mục này.', compact: true });
+  document.querySelectorAll('#m-rq').forEach((m) => m.remove());
+  document.body.insertAdjacentHTML('beforeend', LH.Modal({ id: 'm-rq', size: 'xl', title: `Câu hỏi · ${esc(name)}`, desc: rev ? 'So sánh với bản đang chạy · chỉ đọc' : 'Chỉ đọc',
+    body: `<div class="qm">${set}
+      <div class="qm-top"><div class="combo qm-tabs"><button data-rq-tab="exam" class="${tab === 'exam' ? 'is-active' : ''}">${ICON.quiz}Đề thi (Exam) · ${live(z.exam).length}</button><button data-rq-tab="practice" class="${tab === 'practice' ? 'is-active' : ''}">${ICON.dumbbell}Luyện tập (Practice) · ${z.practice ? live(z.practice).length : 'Tắt'}</button></div>
+        <span class="qm-total">Tổng điểm: <b>${pts(L)}</b> điểm</span></div>
+      ${dup ? `<div class="qm-flag qm-flag--warn">${ICON.alert}<span><b>${dup} câu Practice trùng Exam.</b> Yêu cầu Creator sửa trước khi duyệt (BR-ASM-03/07).</span></div>` : `<div class="qm-flag">${ICON.check}<span>Không có câu trùng giữa Exam và Practice.</span></div>`}
+      ${rev && tab === 'exam' && L.some((q) => q.chg) ? `<div class="qm-flag qm-flag--warn">${ICON.alert}<span>Duyệt sẽ tạo đề phiên bản v2. Học viên đang làm dở tiếp tục đề v1 (D-59).</span></div>` : ''}
+      <div class="qm-list">${rows}</div></div>`,
+    foot: LH.Button({ label: 'Đóng', variant: 'secondary', attrs: 'data-close' }) }));
+  document.querySelector('#m-rq').dataset.key = key; document.querySelector('#m-rq').dataset.name = name;
+}
 let K, state, history;
 function render() {
   const rev = K === 'rev';
@@ -52,10 +108,10 @@ function render() {
   document.getElementById('h-title').textContent = title;
   document.getElementById('p-title').textContent = title;
   document.getElementById('h-status').innerHTML = state === 'approved' ? CourseStatus('published') : state === 'rejected' ? (rev ? CourseStatus('published', 'rejected') : CourseStatus('rejected')) : rev ? CourseStatus('published', 'pending') : CourseStatus('pending');
-  document.getElementById('h-meta').innerHTML = `<span class="row gap-4">${ICON.user}${owner}</span><span class="row gap-4">${ICON.file}${rev ? 'Bản sửa của khoá đang chạy' : 'Khoá mới'}</span><span class="row gap-4">${ICON.clock}Gửi lúc ${rev ? '16:02 · 08/11/2026' : '10:24 · 09/11/2026'}</span>`;
+  document.getElementById('h-meta').innerHTML = `<span>${ICON.user}${owner}</span><span>${ICON.file}${rev ? 'Bản sửa của khoá đang chạy · Ver 2.0' : 'Khoá mới · Ver 1.0'}</span><span>${ICON.clock}Gửi lúc ${rev ? '16:02 · 08/11/2026' : '10:24 · 09/11/2026'}</span>`;
   document.getElementById('h-act').innerHTML = state === 'pending'
-    ? Button({ label: 'Sửa', variant: 'ghost', icon: 'settings', attrs: 'data-edit' }) + Button({ label: 'Yêu cầu chỉnh sửa', variant: 'outline', attrs: 'data-reject' }) + Button({ label: 'Approve', icon: 'check', attrs: 'data-approve' })
-    : `<a class="btn btn--secondary" href="admin-courses.html">Về danh sách</a>`;
+    ? `<button class="btn-cta btn-cta--line" data-edit>${ICON.edit}Sửa</button><button class="btn-cta btn-cta--soft" data-reject>Yêu cầu chỉnh sửa</button><button class="btn-cta" data-approve>${ICON.check}Duyệt</button>`
+    : `<a class="btn-cta btn-cta--line" href="admin-courses.html?r=admin">Về danh sách</a>`;
   document.getElementById('banner').innerHTML = state === 'approved'
     ? Alert({ tone: 'success', icon: 'check', title: rev ? 'Đã thay nội dung đang chạy bằng bản sửa' : 'Khoá đã Publish', })
     : state === 'rejected' ? Alert({ tone: 'danger', icon: 'alert', title: 'Đã gửi yêu cầu chỉnh sửa', })
@@ -64,20 +120,22 @@ function render() {
   document.getElementById('syllabus').innerHTML = C.sessions.map((s, si) => {
     const items = s.lessons.map((l, li) => [l, rev ? CHG[`${si}:${li}`] : null]);
     if (rev) (DELETED[si] || []).forEach((l) => items.push([l, 'del'])), (ADDED[si] || []).forEach((l) => items.push([l, 'new']));
-    return `<div class="syllabus__session">${esc(s.name)}</div>` + items.map(([[k, n], c]) =>
-      `<div class="syllabus__lesson ${c === 'del' ? 'is-deleted' : ''}">${ICON[k]}<span>${esc(n)}</span>${c ? `<span class="chg chg--${c}">${{ new: 'Mới', edit: 'Đã sửa', del: 'Đã xoá' }[c]}</span>` : ''}</div>`).join('');
+    return `<div class="adm-section"><div class="adm-section__head"><b>${esc(s.name)}</b></div>` + items.map(([[k, n], c], li) =>
+      `<div class="adm-lesson ${c === 'del' ? 'is-deleted' : ''}">${ICON[k]}<b>${esc(n)}</b>${c ? `<span class="chg chg--${c}">${CHG_TXT[c]}</span>` : ''}${k === 'quiz' && c !== 'del' ? quizSum(`${si}:${li}`).replace('data-rq=', `data-rq-name="${esc(n)}" data-rq=`) : ''}</div>`).join('') + '</div>';
   }).join('');
-  document.getElementById('info').innerHTML = `<div class="row gap-8">${Avatar(owner, 'sm')}<div class="stack"><b>${owner}</b><span class="t-xs muted">Course Creator · ${rev ? 'L&D' : 'QA'}</span></div></div>
-    ${rev ? `<div class="row"><span class="muted grow">Phòng ban</span><b>QA → QA, <span class="chg chg--new">BA</span></b></div><div class="row"><span class="muted grow">Dự kiến học viên</span><b>48 → 64</b></div>` : `<div class="row"><span class="muted grow">Đối tượng</span><b>Phòng QA + 3 cá nhân</b></div>`}
-    <div class="row"><span class="muted grow">Email mời học</span><b>${rev ? '—' : 'Gửi khi Publish'}</b></div>
-    ${rev ? `<div class="row"><span class="muted grow">Thay đổi</span><b>1 mới · 2 sửa · 1 xoá</b></div><div class="row"><span class="muted grow">Học viên đang học</span><b>48</b></div>` : ''}`;
+  document.getElementById('info').innerHTML = `<div class="adm-meta">${Avatar(owner, 'sm')}<div style="display:flex;flex-direction:column"><b>${owner}</b><span class="adm-hint">Course Creator · ${rev ? 'L&D' : 'QA'}</span></div></div>
+    ${rev ? `<div class="kv"><span>Phòng ban</span><b>QA → QA, <span class="chg chg--new">BA</span></b></div><div class="kv"><span>Dự kiến học viên</span><b>48 → 64</b></div>` : `<div class="kv"><span>Đối tượng</span><b>Phòng QA + 3 cá nhân</b></div>`}
+    <div class="kv"><span>Email mời học</span><b>${rev ? '—' : 'Gửi khi Publish'}</b></div>
+    ${rev ? `<div class="kv"><span>Thay đổi bài</span><b>1 mới · 2 sửa · 1 xoá</b></div><div class="kv"><span>Câu hỏi quiz</span><b>Exam +1 · 1 sửa · −1 · Practice +3</b></div><div class="kv"><span>Học viên đang học</span><b>48</b></div>` : ''}`;
   document.getElementById('history').innerHTML = history.map(([tone, t, who, at, cmt]) => `<div class="timeline__it"><span class="timeline__dot timeline__dot--${tone}"></span><div class="stack gap-4"><b>${t}</b><span class="t-xs muted">${who} · ${at}</span>${cmt ? `<span class="ab__quote" style="background:var(--bg-subtle)">“${esc(cmt)}”</span>` : ''}</div></div>`).join('');
 }
 const now = () => new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' · 09/11/2026';
 document.addEventListener('click', (e) => {
   const rev = K === 'rev', title = rev ? C.title : 'Kiểm thử tự động với Playwright';
-  if (e.target.closest('[data-approve]')) LHApproval.approve({ course: title, revision: rev, onOk: () => { state = 'approved'; history.unshift(['ok', 'Approve', 'Lê Thị Mai', now()]); render(); toast(rev ? 'Đã duyệt bản sửa' : 'Đã Publish khoá học'); } });
-  if (e.target.closest('[data-reject]')) LHApproval.comment({ kind: 'reject', course: title, onSend: (c) => { state = 'rejected'; history.unshift(['bad', 'Yêu cầu chỉnh sửa', 'Lê Thị Mai', now(), c]); render(); toast('Đã gửi yêu cầu chỉnh sửa'); } });
+  if (e.target.closest('[data-approve]')) LHApproval.approve({ course: title, revision: rev, onOk: () => { state = 'approved'; history.unshift(['ok', 'Duyệt', 'Lê Thị Mai', now()]); render(); toast((rev ? 'Đã duyệt bản sửa' : 'Đã Publish khoá học') + ' · đã email cho Creator'); } });
+  if (e.target.closest('[data-reject]')) LHApproval.comment({ kind: 'reject', course: title, onSend: (c) => { state = 'rejected'; history.unshift(['bad', 'Yêu cầu chỉnh sửa', 'Lê Thị Mai', now(), c]); render(); toast('Đã gửi yêu cầu chỉnh sửa · đã email cho Creator'); } });
+  const rq = e.target.closest('[data-rq]'); if (rq) { openQuiz(rq.dataset.rq, rq.dataset.rqName); return; }
+  const rt = e.target.closest('[data-rq-tab]'); if (rt) { const m = document.getElementById('m-rq'); openQuiz(m.dataset.key, m.dataset.name, rt.dataset.rqTab); return; }
   if (e.target.closest('[data-edit]')) { history.unshift(['', 'Admin đã sửa', 'Lê Thị Mai', now()]); render(); toast('Đã lưu'); }
 });
 LH.DemoBar('#3 — Màn duyệt khoá (Admin)', [

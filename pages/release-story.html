@@ -77,7 +77,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
 .notes{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .notes .prob b{color:var(--gold)}
 .notes ul{margin:8px 0 0;padding-left:18px;color:#c3cff0;font-size:14.5px;display:grid;gap:4px}
-@media (max-width:900px){.notes{grid-template-columns:1fr}}
+@media (max-width:900px){.notes{grid-template-columns:1fr}.next{grid-template-columns:1fr 1fr}}
 </style>
 <style>
 /* ===== CẦU THANG (màn rộng: cảnh dính, bậc đi lên trái-dưới → phải-trên) ===== */
@@ -173,7 +173,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
 .nums div{min-width:120px;border-radius:12px;background:#f3f6ff;padding:8px 12px}
 .nums b{display:block;font-size:28px;font-weight:900;color:var(--royal)}
 .nums small{font-size:12.5px;color:var(--soft)}
-.next{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:860px;margin:22px auto 0}
+.next{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:1040px;margin:22px auto 0}
 .next div{border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:12px 14px}
 .next b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .next span{font-size:14.5px;font-weight:600}
@@ -333,7 +333,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <span class="kick">Release Story cùng Techter</span>
       <h1>Đường lên đỉnh <span>LearningHub 2</span></h1>
       <p class="lead">9 bậc là 9 yêu cầu của L&amp;D. Trên mỗi bậc chỉ ghi điều cốt lõi: làm gì, trước và giờ. Mở chiếu chỉ để đọc đầy đủ yêu cầu, thuật ngữ, quy tắc và cách thử trên prototype.</p>
-      <div class="facts"><b><i>9</i>yêu cầu</b><b><i>59</i>tính năng</b><b><i>2</i>đợt triển khai</b><b><i>16</i>màn prototype</b></div>
+      <div class="facts"><b><i>9</i>yêu cầu</b><b><i>31</i>tính năng</b><b><i>2</i>đợt × 5 ngày</b><b><i>16</i>màn prototype</b></div>
       <a class="cta" href="#base" id="go">Bắt đầu leo ↓</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download style="margin-left:12px">Tải Excel tính năng ↓</a>
     </div>
     <div class="hero-art" aria-hidden="true">
@@ -362,7 +362,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <h2 id="baseT">LearningHub hôm nay có <em>3 vấn đề lớn</em></h2>
       <p>Từ file đề xuất của L&amp;D, rà soát hệ thống đang chạy và chụp màn hình hiện trạng. 9 yêu cầu chia làm 2 đợt, mỗi yêu cầu là một bậc cầu thang.</p>
     </div>
-    <p class="goal rv"><b>Mục tiêu:</b> làm đúng 9 yêu cầu trong file đề xuất, không thêm tính năng ngoài file. Tổng <b>59 tính năng</b> (57 Must Have, 2 Could Have), chia <b>2 đợt</b>.</p>
+    <p class="goal rv"><b>Mục tiêu:</b> làm đúng 9 yêu cầu trong file đề xuất của L&amp;D, cộng <b>Learning Dashboard</b> do BA đề xuất. Tổng <b>31 tính năng</b> (30 Must Have, 1 Could Have), xếp theo <b>5 module · 15 function</b>, làm cuốn chiếu <b>2 đợt × 5 ngày</b> từ 16/11.</p>
     <div class="probs">
       <div class="prob rv"><b>Vấn đề 1 · Bài thi</b><h3>Học viên học thuộc đề</h3><p>Luyện tập dùng chung đề thi, nộp bài là thấy đáp án. Điểm thi không phản ánh đúng năng lực.</p></div>
       <div class="prob rv"><b>Vấn đề 2 · Đối tượng</b><h3>L&amp;D không kiểm soát ai học khoá nào</h3><p>Khoá nào cũng mở cho toàn công ty, đăng ký không giới hạn, học dở dang nhiều khoá.</p></div>
@@ -375,11 +375,11 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
         <li>Mọi bài thi về 3 lượt. Đã Đạt giữ kết quả; chưa Đạt đếm lại đủ 3 lượt mới.</li>
         <li>Bài đã tính xong theo luật tiến độ cũ giữ nguyên.</li>
         <li>Khoá hiện có để Toàn công ty. Ai đang học quá 2 khoá vẫn học tiếp, chỉ bị chặn đăng ký mới.</li></ul></div>
-      <div class="prob rv"><b>Không làm trong bản này</b><ul>
-        <li>Bắt buộc học, tự ghi danh, ngân hàng câu hỏi dùng chung.</li>
-        <li>Admin cộng thêm lượt thi, Rời khoá, đổi số khoá tối đa.</li>
-        <li>Chứng chỉ, bảng xếp hạng, biểu đồ / dashboard báo cáo.</li>
-        <li>Cảnh báo bằng AI, thu phí trong hệ thống.</li></ul></div>
+      <div class="prob rv"><b>Làm sau · Không làm</b><ul>
+        <li><b>Sau Đợt 1:</b> nhãn Khoá có phí. <b>Sau Đợt 2:</b> chuông thông báo trong app (đang có UI, chưa có backend).</li>
+        <li><b>Đề xuất PM không làm</b> (ngoài file L&amp;D): Giao khoá bắt buộc, Manager View, Learning Alerts.</li>
+        <li>Tự ghi danh, ngân hàng câu hỏi dùng chung, Admin cộng lượt thi, Rời khoá, đổi số khoá tối đa.</li>
+        <li>Chứng chỉ, bảng xếp hạng, cảnh báo bằng AI, thu phí trong hệ thống.</li></ul></div>
     </div>
   </div>
 </section>
@@ -421,14 +421,15 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
       <p class="k">Certificate of Completion · Đỉnh vinh quang</p>
       <h2 id="topT">Đỉnh LearningHub 2</h2>
       <p>Đề thi được bảo vệ, đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt, đúng người học đúng khoá, và một con số tiến độ đáng tin để L&amp;D báo cáo và cấp chứng nhận.</p>
-      <div class="nums"><div><b>9</b><small>bậc đã leo</small></div><div><b>59</b><small>tính năng</small></div><div><b>44</b><small>link prototype</small></div><div><b>2</b><small>đợt triển khai</small></div></div>
+      <div class="nums"><div><b>9</b><small>bậc đã leo</small></div><div><b>31</b><small>tính năng</small></div><div><b>15</b><small>function · 5 module</small></div><div><b>2</b><small>đợt triển khai</small></div></div>
     </div>
     <div class="next rv">
-      <div><b>Đang ở · 11/11</b><span>Rà soát, chốt và verify tài liệu + prototype</span></div>
-      <div><b>Tiếp theo</b><span>Verify xong → cập nhật design</span></div>
-      <div><b>Sau đó</b><span>Dev Đợt 1 trước, Đợt 2 sau</span></div>
+      <div><b>Đang ở · 12/11</b><span>Chốt Feature List v4; Notion xếp 5 module · 15 function · 31 feature</span></div>
+      <div><b>Đợt 1 · 16–20/11</b><span>17 tính năng: Practice, 3 lượt thi, Đối tượng + Lịch học, Export, giới hạn 2 khoá</span></div>
+      <div><b>Đợt 2 · 23–27/11</b><span>12 tính năng: Creator + duyệt khoá, Tìm kiếm, Kết quả, Dashboard</span></div>
+      <div><b>Sau 2 đợt</b><span>Nhãn Có phí, chuông thông báo trong app</span></div>
     </div>
-    <div class="fin"><a class="cta" href="index.html" target="_blank" rel="noopener" style="margin-top:0">Mở toàn bộ prototype ↗</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download>Tải Excel tính năng ↓</a><a class="ghost" href="#hero">Leo lại từ đầu ↑</a></div>
+    <div class="fin"><a class="cta" href="index.html" target="_blank" rel="noopener" style="margin-top:0">Mở toàn bộ prototype ↗</a><a class="ghost" href="https://app.notion.com/p/41732a5c82988126b806d1743f86e6c7" target="_blank" rel="noopener">Notion Product Overview ↗</a><a class="ghost" href="https://app.notion.com/p/41732a5c8298810486c6f79132de9069" target="_blank" rel="noopener">Notion SRS Phase 2 ↗</a><a class="ghost" href="../LEARNINGHUB2_FEATURE_LIST.xlsx" download>Tải Excel tính năng ↓</a><a class="ghost" href="#hero">Leo lại từ đầu ↑</a></div>
   </div>
 </section>
 
@@ -442,7 +443,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
 </div>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Ảnh hiện trạng"><figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure></div>
 
-<script src="../assets/js/lh2-feature-list.js"></script>
+<script src="../assets/js/lh2-feature-list.js?v=1113c"></script>
 <script>
 /* ===== DỮ LIỆU 9 YÊU CẦU =====
    Nguồn: docs/specs/lh2/00-quyet-dinh-dot-1.md, 00-quyet-dinh-dot-2.md, 01..09-*.md
@@ -539,7 +540,7 @@ REQS.push({
     ['REQ-4.7', 'L', 'Học viên bị Remove hoặc rời nhóm: <b>mất quyền vào nội dung ngay</b>, tiến độ + điểm được giữ; được thêm lại thì học tiếp.', 'Khung "Bạn không còn trong đối tượng của khoá học. Tiến độ của bạn vẫn được lưu." (BR-AUD-06).'],
     ['REQ-4.8', 'A', '<i>Ưu tiên thấp, làm sau Đợt 1:</i> bấm Lưu → <b>cảnh báo</b> nếu người thêm theo Cá nhân không thuộc Phòng ban / Vị trí đã chọn (không chặn Lưu).', 'Bản đơn giản dùng luật cố định, chưa dùng AI (BR-AUD-11).'],
     ['REQ-4.9', 'A', '<i>Ưu tiên thấp:</i> checkbox <b>Khoá có phí</b> → nhãn "Có phí" trên thẻ và trang khoá.', 'Chỉ gắn nhãn, không thanh toán trong app.'],
-    ['REQ-4.10', 'A', '<b>Lịch học</b>: Admin L&D đặt <b>Ngày bắt đầu</b> và <b>Ngày kết thúc</b> của khoá ("edit lịch" trong file đề xuất).', 'Email mời học ghi kèm lịch; đổi lịch thì tuỳ chọn gửi email báo.'], ['REQ-4.11', 'L', 'Trước Ngày bắt đầu: thấy khoá, chưa Start được. Sau Ngày kết thúc chưa xong: nhãn <b>Quá hạn</b>, vẫn học tiếp.', 'Không khoá nội dung; file export có cột Quá hạn (BR-AUD-12).']],
+    ['REQ-4.10', 'A', '<b>Lịch học</b>: Admin L&D đặt <b>Ngày bắt đầu</b> và <b>Ngày kết thúc</b> của khoá ("edit lịch" trong file đề xuất).', 'Email mời học ghi kèm lịch; đổi lịch thì tuỳ chọn gửi email báo.'], ['REQ-4.11', 'L', 'Trước Ngày bắt đầu: thấy khoá, chưa Start được. Sau Ngày kết thúc chưa xong: nhãn <b>Quá hạn</b>, vẫn học tiếp.', 'Không khoá nội dung; file export và Dashboard có cột Tình trạng tiến độ (Đúng tiến độ / Học chậm / Quá hạn) (BR-AUD-12).']],
   brs: [['BR-AUD-01', 'Có quyền khi: Toàn công ty; hoặc khớp ≥ 1 quy tắc và không nằm trong Đã loại trừ.'], ['BR-AUD-03', 'Phòng ban / Vị trí là nhóm động theo dữ liệu nhân sự lúc truy cập.'], ['BR-AUD-04', 'Đã loại trừ thắng mọi quy tắc.'], ['BR-AUD-06', 'Mất quyền → chặn nội dung ngay, giữ tiến độ, điểm, lượt làm.'], ['BR-AUD-07', 'Không có quyền vẫn xem được trang giới thiệu, không enroll được.'], ['BR-AUD-10', 'Mất quyền không tính là khoá đang học trong giới hạn enroll.']],
   oos: 'Cảnh báo bằng AI; thanh toán phí trong app; lịch học riêng theo từng nhóm; khoá nội dung khi quá hạn.',
   links: [
@@ -565,10 +566,10 @@ REQS.push({
     ['REQ-5.3', 'A', 'Bộ lọc tuỳ chọn: <b>Thời gian enroll</b> (từ – đến), <b>Phòng ban</b>, <b>Trạng thái học</b>.', 'Từ ngày > Đến ngày → "Ngày bắt đầu phải trước ngày kết thúc." Trạng thái: Đang học · Hoàn thành · Không đạt · Mất quyền, thêm Chưa đăng ký ở khoá Giới hạn (BR-RPT-08).'],
     ['REQ-5.4', 'A', 'Popup hiện <b>"Dự kiến N học viên"</b>, cập nhật mỗi khi đổi bộ lọc.', 'N = 0 → nút Xuất file tắt, "Không có học viên khớp bộ lọc." (BR-RPT-05).'],
     ['REQ-5.5', 'A', 'Bấm <b>Xuất file</b> → tải 1 file <b>.xlsx</b>, tên <code>&lt;Mã khoá&gt;_&lt;Toàn khoá|Session&gt;_&lt;ddmmyyyy&gt;.xlsx</code>.', 'Dữ liệu tại thời điểm bấm (BR-RPT-03, 04). &gt; 2.000 dòng: tạo nền, xong báo toast.'],
-    ['REQ-5.6', 'A', 'Sheet Học viên: Mã NV, Họ tên, Email, Phòng ban, Vị trí, Ngày enroll, Trạng thái học, <b>Tiến độ (%)</b>, điểm từng bài = Điểm cao nhất (điểm chính thức).', 'Tiến độ (%) cùng công thức yêu cầu #8; Practice không có trong file (BR-RPT-06).'],
+    ['REQ-5.6', 'A', 'Sheet Học viên: Mã NV, Họ tên, Email, Phòng ban, Vị trí, Ngày enroll, Trạng thái học, <b>Tiến độ (%)</b>, điểm từng bài = Điểm cao nhất (điểm chính thức), <b>Tình trạng tiến độ</b> (Đúng tiến độ / Học chậm / Quá hạn).', 'Tiến độ (%) cùng công thức yêu cầu #8; Dashboard dùng chung công thức nên ra cùng số; Practice không có trong file (BR-RPT-06).'],
     ['REQ-5.8', 'A', 'Học viên <b>Mất quyền</b> vẫn có trong file với trạng thái "Mất quyền".', 'BR-RPT-07.']],
   brs: [['BR-RPT-01', 'Admin xuất mọi khoá; Creator chỉ khoá mình phụ trách; Learner không có.'], ['BR-RPT-02', 'Session = chương của khoá; xuất theo session chỉ tính trong session đã chọn.'], ['BR-RPT-03', 'Định dạng .xlsx, mỗi lần xuất 1 file.'], ['BR-RPT-05', 'Không tạo file rỗng.'], ['BR-RPT-06', 'Practice không có trong file.'], ['BR-RPT-07', 'Học viên Mất quyền vẫn có trong file.']],
-  oos: 'Xuất nhiều khoá cùng lúc; lịch xuất tự động / gửi file định kỳ; biểu đồ, dashboard; xuất bài làm chi tiết từng câu.',
+  oos: 'Xuất nhiều khoá cùng lúc; lịch xuất tự động / gửi file định kỳ; xuất bài làm chi tiết từng câu. Learning Dashboard là tính năng riêng do BA đề xuất, làm Đợt 2.',
   links: [
     ['admin-audience.html?role=Admin', 'Popup Xuất dữ liệu (Admin)', 'Bấm nút "Xuất dữ liệu" cạnh tên khoá', 'A', 1],
     ['admin-audience.html?role=Creator', 'Popup Xuất dữ liệu (Creator)', 'Creator xuất khoá mình phụ trách', 'C']]
@@ -621,7 +622,7 @@ REQS.push({
     ['REQ-3.5', 'C', 'Sửa khoá đang chạy tạo <b>bản sửa</b>; học viên vẫn học bản đang chạy tới khi Approve.', 'Mỗi khoá tối đa 1 bản sửa đang mở (BR-CRS-06, 12).'],
     ['REQ-3.6', 'A', 'Màn duyệt bản sửa đánh dấu bài <b>Mới / Đã sửa / Đã xoá</b>.', 'Approve → bản sửa thay bản đang chạy, tiến độ tính lại theo BR-LRN-30.'],
     ['REQ-3.7', 'AC', 'Khoá đang chạy: sửa nội dung (thông tin, Session, bài, video, đề Exam / Practice) và <b>Phạm vi, Phòng ban, Vị trí</b> phải duyệt. Add / Remove từng học viên áp dụng ngay.', 'Admin L&D tự tạo / sửa → Publish thẳng (BR-CRS-05, 08).'],
-    ['REQ-3.8', 'AC', 'Gửi duyệt, Approve, Yêu cầu chỉnh sửa, cấp quyền: thông báo <b>chuông trong app + email</b>.', 'BR-CRS-09.']],
+    ['REQ-3.8', 'AC', 'Gửi duyệt, Approve, Yêu cầu chỉnh sửa, cấp quyền: thông báo qua <b>email</b> (Đợt 2). Chuông trong app làm sau Đợt 2.', 'Chuông hiện chỉ có UI, chưa có backend (BR-CRS-09).']],
   brs: [['BR-CRS-01', 'Chỉ Admin L&D cấp quyền Creator; Creator tạo khoá → là người phụ trách duy nhất.'], ['BR-CRS-05', 'Sửa nội dung, Phạm vi, Phòng ban / Vị trí cần duyệt; Add / Remove từng người áp dụng ngay.'], ['BR-ROLE-02', 'Creator chỉ có quyền trên khoá mình phụ trách; đi học như Learner.'], ['BR-CRS-06', 'Bản sửa chưa Approve → học viên học bản đang chạy.'], ['BR-CRS-08', 'Admin L&D tạo / sửa → Publish thẳng.'], ['BR-CRS-12', 'Mỗi khoá tối đa 1 bản sửa đang mở.']],
   oos: 'Đồng phụ trách nhiều Creator; người duyệt riêng ngoài Admin L&D; chuyển người phụ trách; so sánh nội dung từng chữ giữa 2 bản.',
   links: [
@@ -677,7 +678,7 @@ REQS.push({
     ['REQ-7.4', 'L', 'Mất quyền → khối vẫn hiện số liệu đã lưu, ẩn nút Xem lại.', 'BR-AUD-06.'],
     ['REQ-7.5', 'AC', '<b>Không nơi nào</b> dùng nhãn "Tỷ lệ hoàn thành" cho điểm; file export cột Tiến độ (%) = P.', 'Một con số cho thẻ kết quả, thanh tiến độ, file export.']],
   brs: [['BR-LRN-27', '"Tỷ lệ hoàn thành" luôn là tiến độ khoá P (BR-LRN-21).'], ['BR-LRN-28', 'Điểm từng bài = Điểm cao nhất (điểm chính thức); Practice không tính.']],
-  oos: 'Dashboard, biểu đồ kết quả học tập.',
+  oos: 'Biểu đồ kết quả cho học viên. Dashboard theo dõi học tập dành cho L&D, làm Đợt 2.',
   links: [
     ['course-detail.html?s=learning', 'Trang khoá: Kết quả của tôi', 'Tỷ lệ hoàn thành 31% + Điểm cao nhất từng bài', 'L', 1],
     ['course-detail.html?s=completed', 'Trang khoá: Hoàn thành', 'Tỷ lệ 100% + ngày hoàn thành', 'L']]
@@ -837,22 +838,22 @@ REQS.forEach((r) => Object.assign(r, EXTRA[r.id]));
   document.querySelector('#hero [data-tt] img').alt = 'Techter, mascot rái cá TECHVIFY, mặc áo cử nhân và đội mũ ở chân cầu thang';
 
   /* ---------- Bản đồ (chân cầu thang) ---------- */
-  /* Tóm gọn từng yêu cầu: số tính năng + điểm chính (khớp Notion LH2 Product Docs) */
+  /* Tóm gọn từng yêu cầu: số tính năng + điểm chính (khớp Feature List v4 12/11 và Notion LH2 Features) */
   const KEY = {
-    r1: [8, 'Bật / tắt theo từng bài test · bộ câu riêng, chặn trùng đề thi · luyện không giới hạn, xem đáp án ngay · không tính tiến độ, không trừ lượt thi'],
-    r2: [10, 'Cố định 3 lượt · lượt sau chỉ làm lại câu sai · Đạt hoặc hết lượt thì khoá bài, mở đáp án · điểm chính thức = điểm cao nhất · bỏ ô số lượt và tuỳ chọn hiện đáp án sau khi nộp'],
-    r4: [10, 'Toàn công ty hoặc Giới hạn theo Phòng ban, Vị trí, từng người · Lịch học · email mời tuỳ chọn · người ngoài chỉ xem giới thiệu · bị gỡ mất quyền, giữ tiến độ'],
-    r5: [5, 'File .xlsx theo khoá, toàn khoá hoặc theo Session · khoá Giới hạn xuất cả người chưa đăng ký'],
-    r9: [4, 'Tối đa 2 khoá Đang học, cố định · không có Rời khoá · Hoàn thành, Không đạt không chiếm suất'],
-    r3: [8, 'Admin L&amp;D cấp quyền cho SME · Creator gửi duyệt trước khi Publish · bản sửa chờ duyệt thì học viên vẫn học bản đang chạy'],
-    r6: [5, 'Tìm trong tên khoá + tag, không phân biệt hoa thường và dấu · lọc theo trạng thái và thời gian học'],
-    r7: [3, 'Tỷ lệ hoàn thành = tiến độ khoá, không phải điểm thi · Điểm cao nhất hiện ở từng bài test'],
-    r8: [6, 'Tính theo số bài, mọi loại bằng nhau · video xong khi phát thực ≥ 90% · bài thi xong khi Đạt · bỏ khoá bài theo thứ tự']
+    r1: [6, 'Assessment · Bật / tắt theo từng bài test · bộ câu riêng (soạn tay hoặc nhập file), chặn trùng đề thi · luyện không giới hạn, xem đáp án ngay · không tính tiến độ, không trừ lượt thi'],
+    r2: [4, 'Assessment · Cố định 3 lượt · lượt sau chỉ làm lại câu sai · Đạt hoặc hết lượt thì khoá bài, mở đáp án · điểm chính thức = điểm cao nhất'],
+    r4: [5, 'Course Management · Toàn công ty hoặc Giới hạn theo Phòng ban, Vị trí, từng người · Lịch học · email mời tuỳ chọn · bị gỡ mất quyền, giữ tiến độ · nhãn Có phí làm sau Đợt 1'],
+    r5: [1, 'Report · File .xlsx theo khoá, toàn khoá hoặc theo Session · cột Tình trạng tiến độ (Đúng tiến độ / Học chậm / Quá hạn), cùng công thức với Dashboard'],
+    r9: [1, 'Learning · Tối đa 2 khoá Đang học, cố định · không có Rời khoá · Hoàn thành, Không đạt không chiếm suất'],
+    r3: [7, 'Course Management + Settings · Admin L&amp;D cấp quyền Course Creator · gửi duyệt trước khi Publish · email báo duyệt · chuông trong app làm sau Đợt 2'],
+    r6: [3, 'Learning · Tìm trong tên khoá + tag, không phân biệt hoa thường và dấu · lọc theo trạng thái và thời gian học · My Courses lọc / sắp xếp'],
+    r7: [2, 'Learning · Tỷ lệ hoàn thành = tiến độ khoá, không phải điểm thi · Điểm cao nhất hiện ở từng bài test'],
+    r8: [1, 'Learning · Tính theo số bài · video xong khi phát thực ≥ 90% · bài thi xong khi Đạt · luật tính chạy từ Đợt 1'],
   };
   const mapItem = (id) => { const r = BY[id], k = KEY[id]; return `<li><a href="#buoc-${NO[id]}"><i>${NO[id]}</i><span style="color:inherit;font-size:inherit;font-weight:inherit"><b>${r.no} · ${r.title}</b><em>${k[0]} tính năng</em><small>${r.lead}</small><small class="kp">${k[1]}</small></span><span>Xem ↓</span></a></li>`; };
   $('map').innerHTML = `
-    <div class="map-col rv"><h3>Đợt 1 · Bậc 1 → 5<small>Ưu tiên Cao · 37 tính năng</small></h3><ol>${ORDER.slice(0, 5).map(mapItem).join('')}</ol><p class="wn"><b>Làm kèm Đợt 1:</b> luật tính tiến độ của bậc 9 (#8), vì xuất dữ liệu (#5) và giới hạn khoá (#9) dùng tới. Phần hiển thị tiến độ làm Đợt 2.</p></div>
-    <div class="map-col rv"><h3>Đợt 2 · Bậc 6 → 9<small>Ưu tiên Trung bình · 22 tính năng</small></h3><ol>${ORDER.slice(5).map(mapItem).join('')}</ol></div>`;
+    <div class="map-col rv"><h3>Đợt 1 · 16–20/11 · Bậc 1 → 5<small>17 tính năng</small></h3><ol>${ORDER.slice(0, 5).map(mapItem).join('')}</ol><p class="wn"><b>Làm kèm Đợt 1:</b> luật tính tiến độ của bậc 9 (#8), vì xuất dữ liệu (#5) và giới hạn khoá (#9) dùng tới. Phần hiển thị tiến độ làm Đợt 2.</p></div>
+    <div class="map-col rv"><h3>Đợt 2 · 23–27/11 · Bậc 6 → 9<small>12 tính năng</small></h3><ol>${ORDER.slice(5).map(mapItem).join('')}</ol><p class="wn"><b>BA đề xuất thêm · Đợt 2:</b> Learning Dashboard cho L&amp;D: lọc theo khoá, phòng ban, thời gian; thẻ tổng và bảng học viên. Dùng chung công thức với file Excel nên hai nơi ra cùng số.</p></div>`;
 
   /* ---------- Các vị trí trên cầu thang ----------
      j = 0 chân · 1..5 bậc Đợt 1 · 6 chiếu nghỉ · 7..10 bậc Đợt 2 · 11 đỉnh */

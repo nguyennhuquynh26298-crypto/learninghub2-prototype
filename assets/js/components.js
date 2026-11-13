@@ -1,8 +1,10 @@
 /* LearningHub component library (vanilla).
  * Mỗi hàm = 1 component Figma cùng tên. Trạng thái = tham số (variant), chữ = tham số (text property).
  * Dùng: <script src="../assets/js/components.js"></script> → window.LH.* */
+/* Số phiên bản tài nguyên — tăng cùng ?v= trong pages/*.html mỗi lần sửa JS/CSS để trình duyệt không dùng bản cũ */
+var LH_V = '1113c';
 (function () {
-  const P = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const P = (d) => `<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const ICON = {
     search: P('<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>'),
     bell: P('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>'),
@@ -54,11 +56,11 @@
     fileQ: P('<path d="M12 17h.01"/><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/>'),
     bell2: P('<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>'),
     /* Icon 2 màu của web (xanh #374BFA + lime #C1F129) */
-    grid: '<svg viewBox="0 0 20 20" fill="none"><path d="M3.33 6.67h3.34V3.33H3.33v3.34Zm5 10h3.34v-3.34H8.33v3.34Zm-5 0h3.34v-3.34H3.33v3.34Zm0-5h3.34V8.33H3.33v3.34Zm5 0h3.34V8.33H8.33v3.34Zm5-8.34v3.34h3.34V3.33h-3.34Zm-5 3.34h3.34V3.33H8.33v3.34Zm5 5h3.34V8.33h-3.34v3.34Zm0 5h3.34v-3.34h-3.34v3.34Z" fill="#334155"/></svg>',
-    lessons2: '<svg viewBox="0 0 24 24" fill="none"><path d="M3.67 2.83c-.23 0-.44.09-.6.25a.86.86 0 0 0-.25.61v12.88c0 .47.38.86.86.86 2 0 5.35.42 7.66 2.84V6.79a1 1 0 0 0-.12-.44C9.32 3.3 5.67 2.84 3.67 2.83Z" fill="#374BFA"/><path d="M21.19 16.57V3.69a.86.86 0 0 0-.86-.86c-2 0-5.65.47-7.55 3.52a1 1 0 0 0-.11.44v13.48c2.31-2.42 5.66-2.84 7.66-2.84.47 0 .86-.39.86-.86Z" fill="#374BFA"/><path d="M23.14 5.8h-.62v10.77a2.2 2.2 0 0 1-2.19 2.19c-1.7 0-4.5.34-6.47 2.21 3.42-.84 7.03-.29 9.09.18a.86.86 0 0 0 1.05-.84V6.66a.86.86 0 0 0-.86-.86Z" fill="#C1F129"/><path d="M1.48 16.57V5.8H.86A.86.86 0 0 0 0 6.66v13.65c0 .26.12.5.32.67.21.16.47.22.73.17 2.06-.47 5.67-1.01 9.09-.18-1.98-1.87-4.77-2.2-6.47-2.21a2.2 2.2 0 0 1-2.19-2.19Z" fill="#C1F129"/></svg>',
-    clock2: '<svg viewBox="0 0 24 24" fill="none"><path d="M11.75 5.32a6.93 6.93 0 1 0 0 13.86 6.93 6.93 0 0 0 0-13.86Zm4.41 7.56h-5.04V7.84h1.26v3.78h3.78v1.26Z" fill="#374BFA"/><path d="M11.75 1.5C5.85 1.5 1 6.35 1 12.25S5.85 23 11.75 23 22.5 18.15 22.5 12.25 17.65 1.5 11.75 1.5Zm0 18.94a8.19 8.19 0 1 1 0-16.38 8.19 8.19 0 0 1 0 16.38Z" fill="#C1F129"/></svg>',
-    myCourses: '<svg viewBox="0 0 24 24" fill="none"><path d="M24 7.03v15.56h-7.15c-1.97 0-3 1.33-3.1 1.41h-3.5c-.1-.07-1.12-1.41-3.1-1.41H0V5.63h1.41v15.56h5.75c2.2 0 3.42 1.24 3.73 1.4h2.23c.3-.16 1.53-1.4 3.73-1.4h5.75V7.03H24Z" fill="#C1F129"/><path d="M9.89 20.34a6.8 6.8 0 0 0-2.73-.56H2.81V2.81h1.41v14.16h2.11c1.92 0 3.48 1.5 3.56 3.37Z" fill="#C1F129"/><path d="M16.84 4.22c-1.49 0-2.92.39-4.19 1.13.03.32.05.65.05.98v14.83l.37-.23c2.17-1.45 3.67-1.15 8.16-1.15V4.22h-4.39Z" fill="#374BFA"/><path d="M11.3 20.48a4.95 4.95 0 0 0-4.97-4.92h-.7V0c3.51 0 5.67 2.84 5.67 6.33v14.15Z" fill="#374BFA"/></svg>',
-    allCourses: '<svg viewBox="0 0 24 24" fill="none"><path d="M6.4 5.2V3.6a.4.4 0 0 0-.4-.4H.4a.4.4 0 0 0-.4.4v1.6h6.4ZM0 6v13.2h6.4V6H0Zm4.8 5.2H1.6a.4.4 0 0 1-.4-.4V7.6c0-.22.18-.4.4-.4h3.2c.22 0 .4.18.4.4v3.2a.4.4 0 0 1-.4.4ZM0 21.6v2c0 .22.18.4.4.4H6a.4.4 0 0 0 .4-.4v-2H0Zm0-1.6h6.4v.8H0V20Zm7.2 0h5.2v.8H7.2V20Zm5.2-18.4V.4A.4.4 0 0 0 12 0H7.6a.4.4 0 0 0-.4.4v1.2h5.2ZM7.2 4.4h5.2v14.8H7.2V4.4Zm0 17.2v2c0 .22.18.4.4.4H12a.4.4 0 0 0 .4-.4v-2H7.2Zm0-19.2h5.2v1.2H7.2V2.4Z" fill="#374BFA"/><path d="m13.19 8.28.21.83 6.78-1.81-.21-.82-6.78 1.8Zm3.34 12.82 6.78-1.81-.43-1.64-6.78 1.8.43 1.65Zm6.15-4.23-2.3-8.8-6.77 1.81 2.3 8.8 6.77-1.81Zm-9.69-9.36 6.77-1.8-.57-2.2a.4.4 0 0 0-.49-.29l-6 1.6a.4.4 0 0 0-.28.49l.57 2.2Zm10.52 12.56-6.77 1.8.48 1.83a.4.4 0 0 0 .49.29l6-1.6a.4.4 0 0 0 .28-.49l-.48-1.83Z" fill="#C1F129"/></svg>',
+    grid: '<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none"><path d="M3.33 6.67h3.34V3.33H3.33v3.34Zm5 10h3.34v-3.34H8.33v3.34Zm-5 0h3.34v-3.34H3.33v3.34Zm0-5h3.34V8.33H3.33v3.34Zm5 0h3.34V8.33H8.33v3.34Zm5-8.34v3.34h3.34V3.33h-3.34Zm-5 3.34h3.34V3.33H8.33v3.34Zm5 5h3.34V8.33h-3.34v3.34Zm0 5h3.34v-3.34h-3.34v3.34Z" fill="#334155"/></svg>',
+    lessons2: '<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none"><path d="M3.67 2.83c-.23 0-.44.09-.6.25a.86.86 0 0 0-.25.61v12.88c0 .47.38.86.86.86 2 0 5.35.42 7.66 2.84V6.79a1 1 0 0 0-.12-.44C9.32 3.3 5.67 2.84 3.67 2.83Z" fill="#374BFA"/><path d="M21.19 16.57V3.69a.86.86 0 0 0-.86-.86c-2 0-5.65.47-7.55 3.52a1 1 0 0 0-.11.44v13.48c2.31-2.42 5.66-2.84 7.66-2.84.47 0 .86-.39.86-.86Z" fill="#374BFA"/><path d="M23.14 5.8h-.62v10.77a2.2 2.2 0 0 1-2.19 2.19c-1.7 0-4.5.34-6.47 2.21 3.42-.84 7.03-.29 9.09.18a.86.86 0 0 0 1.05-.84V6.66a.86.86 0 0 0-.86-.86Z" fill="#C1F129"/><path d="M1.48 16.57V5.8H.86A.86.86 0 0 0 0 6.66v13.65c0 .26.12.5.32.67.21.16.47.22.73.17 2.06-.47 5.67-1.01 9.09-.18-1.98-1.87-4.77-2.2-6.47-2.21a2.2 2.2 0 0 1-2.19-2.19Z" fill="#C1F129"/></svg>',
+    clock2: '<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none"><path d="M11.75 5.32a6.93 6.93 0 1 0 0 13.86 6.93 6.93 0 0 0 0-13.86Zm4.41 7.56h-5.04V7.84h1.26v3.78h3.78v1.26Z" fill="#374BFA"/><path d="M11.75 1.5C5.85 1.5 1 6.35 1 12.25S5.85 23 11.75 23 22.5 18.15 22.5 12.25 17.65 1.5 11.75 1.5Zm0 18.94a8.19 8.19 0 1 1 0-16.38 8.19 8.19 0 0 1 0 16.38Z" fill="#C1F129"/></svg>',
+    myCourses: '<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none"><path d="M24 7.03v15.56h-7.15c-1.97 0-3 1.33-3.1 1.41h-3.5c-.1-.07-1.12-1.41-3.1-1.41H0V5.63h1.41v15.56h5.75c2.2 0 3.42 1.24 3.73 1.4h2.23c.3-.16 1.53-1.4 3.73-1.4h5.75V7.03H24Z" fill="#C1F129"/><path d="M9.89 20.34a6.8 6.8 0 0 0-2.73-.56H2.81V2.81h1.41v14.16h2.11c1.92 0 3.48 1.5 3.56 3.37Z" fill="#C1F129"/><path d="M16.84 4.22c-1.49 0-2.92.39-4.19 1.13.03.32.05.65.05.98v14.83l.37-.23c2.17-1.45 3.67-1.15 8.16-1.15V4.22h-4.39Z" fill="#374BFA"/><path d="M11.3 20.48a4.95 4.95 0 0 0-4.97-4.92h-.7V0c3.51 0 5.67 2.84 5.67 6.33v14.15Z" fill="#374BFA"/></svg>',
+    allCourses: '<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none"><path d="M6.4 5.2V3.6a.4.4 0 0 0-.4-.4H.4a.4.4 0 0 0-.4.4v1.6h6.4ZM0 6v13.2h6.4V6H0Zm4.8 5.2H1.6a.4.4 0 0 1-.4-.4V7.6c0-.22.18-.4.4-.4h3.2c.22 0 .4.18.4.4v3.2a.4.4 0 0 1-.4.4ZM0 21.6v2c0 .22.18.4.4.4H6a.4.4 0 0 0 .4-.4v-2H0Zm0-1.6h6.4v.8H0V20Zm7.2 0h5.2v.8H7.2V20Zm5.2-18.4V.4A.4.4 0 0 0 12 0H7.6a.4.4 0 0 0-.4.4v1.2h5.2ZM7.2 4.4h5.2v14.8H7.2V4.4Zm0 17.2v2c0 .22.18.4.4.4H12a.4.4 0 0 0 .4-.4v-2H7.2Zm0-19.2h5.2v1.2H7.2V2.4Z" fill="#374BFA"/><path d="m13.19 8.28.21.83 6.78-1.81-.21-.82-6.78 1.8Zm3.34 12.82 6.78-1.81-.43-1.64-6.78 1.8.43 1.65Zm6.15-4.23-2.3-8.8-6.77 1.81 2.3 8.8 6.77-1.81Zm-9.69-9.36 6.77-1.8-.57-2.2a.4.4 0 0 0-.49-.29l-6 1.6a.4.4 0 0 0-.28.49l.57 2.2Zm10.52 12.56-6.77 1.8.48 1.83a.4.4 0 0 0 .49.29l6-1.6a.4.4 0 0 0 .28-.49l-.48-1.83Z" fill="#C1F129"/></svg>',
   };
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   /* ---------- Chế độ app: hoc-vien.html / admin.html bọc các màn trong 1 iframe ----------
@@ -107,7 +109,7 @@
           <div class="explore__menu" hidden><div class="explore__h">Danh mục khoá học</div>${((window.LHData && LHData.categories) || []).map((c) => `<a href="course-search.html?ct=${encodeURIComponent(c)}" data-cat="${esc(c)}">${esc(c)}</a>`).join('')}<a class="explore__all" href="course-search.html">Xem tất cả khoá học${ICON.chevronR}</a></div></div>
       </div>
       <div class="app-header__right">
-        <button class="hd-icon" aria-label="Thông báo">${ICON.bell2}</button>
+        <button class="hd-icon" aria-label="Thông báo" title="Chuông thông báo: làm Sau Đợt 2 (hiện chỉ có UI)">${ICON.bell2}</button>
         <button class="hd-icon" aria-label="Ứng dụng">${ICON.grid}</button>
         <a class="user-chip" href="my-courses.html"><span class="user-chip__av">${initials(user)}<i></i></span><span class="user-chip__name">${esc(user)}</span>${role !== 'Learner' ? `<span class="role-pill">${esc(role)}</span>` : ''}${ICON.chevronD}</a>
       </div></div></header>`;
@@ -168,7 +170,7 @@
 
   function Modal({ id, size = 'md', icon, iconTone = 'info', title, desc, body = '', foot = '', footNote = '' }) {
     return `<div class="modal-backdrop" id="${id}" role="dialog" aria-modal="true" aria-labelledby="${id}-t">
-      <div class="modal modal--${size}">
+      <div class="modal modal--${size}${document.body.classList.contains('adm-body') ? ' adm-popup' : ''}">
         <div class="modal__head">${icon ? `<span class="modal__icon modal__icon--${iconTone}">${ICON[icon]}</span>` : ''}
           <div class="grow"><div class="modal__title" id="${id}-t">${title}</div>${desc ? `<div class="modal__desc">${desc}</div>` : ''}</div>
           <button class="icon-btn" data-close aria-label="Đóng">${ICON.x}</button></div>
@@ -197,14 +199,14 @@
    */
   function CourseCard({ title, desc = '', cover = '', state = 'default', progress = 0, lessons = 2, hours = '14h 0m', last = '', menu = false, video, test, q = '', done = '', failScore = null, href = 'course-detail.html', sched = null }) {
     const badge = {
-      restricted: `<span class="cc-tag">${ICON.lock}Dành cho nhóm chỉ định</span>`,
+      restricted: `<span class="cc-tag cc-tag--restricted">${ICON.lock}Dành cho nhóm chỉ định</span>`,
       failed: `<span class="cc-tag cc-tag--fail">${ICON.x}Không đạt</span>`,
       completed: `<span class="cc-tag cc-tag--ok">${ICON.check}Hoàn thành</span>`,
     }[state] || '';
     // #4 §3.4 Lịch học (BR-AUD-12): chưa tới ngày bắt đầu → nút tắt; quá hạn chưa xong → nhãn đỏ
     if (APP && href === 'course-detail.html') href = App.courseHref(title);
     const upcoming = sched && sched.start && state !== 'restricted';
-    const schedTag = upcoming ? `<span class="cc-tag">${ICON.clock}Bắt đầu ${esc(sched.start)}</span>` : sched && sched.overdue && state === 'in-progress' ? `<span class="cc-tag cc-tag--fail">${ICON.clock}Quá hạn</span>` : '';
+    const schedTag = upcoming ? `<span class="cc-tag cc-tag--upcoming">${ICON.clock}Bắt đầu ${esc(sched.start)}</span>` : sched && sched.overdue && state === 'in-progress' ? `<span class="cc-tag cc-tag--fail">${ICON.clock}Quá hạn</span>` : '';
     const label = state === 'restricted' ? 'Xem giới thiệu' : (state === 'completed' || state === 'failed') ? 'Xem lại khoá học' : state === 'in-progress' ? 'Continue Learning' : 'Start Courses';
     const btnCls = state === 'restricted' || state === 'completed' || state === 'failed' ? 'cc-btn cc-btn--outline' : 'cc-btn';
     const attrs = state === 'default' || state === 'limit-reached' ? 'data-start' : '';
@@ -476,7 +478,7 @@
     }[state] || '';
     const right = state === 'overdue' ? Badge('Quá hạn', 'danger') : '';
     const head = tags || right ? `<div class="cta-card__tags">${tags}${right ? `<span class="grow"></span>${right}` : ''}</div>` : '';
-    const meta = sched ? `<div class="cta-card__meta"><span class="ic">${ICON.clock}</span><span>${esc(sched.label)} <b>${esc(sched.range)}</b></span></div>` : '';
+    const meta = sched ? `<div class="cta-card__meta"><span class="ic-box">${ICON.clock}</span><span>${esc(sched.label)} <b>${esc(sched.range)}</b></span></div>` : '';
     let body = '', btn = '';
     if (result) {
       const review = state === 'completed' || state === 'failed';
@@ -521,16 +523,11 @@
     const rev = revision === 'pending' ? Badge('Bản sửa chờ duyệt', 'warning') : revision === 'rejected' ? Badge('Bản sửa cần chỉnh sửa', 'danger') : revision === 'draft' ? Badge('Bản sửa nháp', 'neutral') : '';
     return `<span class="row gap-4">${Badge(l, t)}${rev}</span>`;
   }
-  /** Course / Approval banner — State: draft | pending | rejected | approved. BR-CRS-03, 07 */
-  function ApprovalBanner({ state, comment = '', by = 'Lê Thị Mai (Admin L&D)', at = '10:24 · 09/11/2026', revision = false }) {
-    const B = {
-      draft: ['neutral', 'file', revision ? 'Bản sửa — học viên vẫn học nội dung đang chạy' : 'Bản nháp — chỉ bạn và Admin L&D thấy', '', Button({ label: 'Gửi duyệt', attrs: 'data-submit' })],
-      pending: ['warning', 'clock', 'Đang chờ Admin L&D duyệt', `Đã gửi duyệt lúc ${at}.`, ''],
-      rejected: ['danger', 'alert', 'Admin L&D yêu cầu chỉnh sửa', '', Button({ label: 'Gửi duyệt lại', attrs: 'data-submit' })],
-      approved: ['success', 'check', 'Khoá học đang chạy', `Được duyệt lúc ${at}.`, Button({ label: 'Sửa nội dung', variant: 'outline', attrs: 'data-edit' })],
-    }[state];
+  /** Course / Approval banner — chỉ dùng khi Admin trả về kèm nhận xét (BR-CRS-07).
+   *  Không có nút (Gửi duyệt / Sửa nội dung nằm ở chân trang), không có câu ghi chú trạng thái (đã có tag cạnh tiêu đề). */
+  function ApprovalBanner({ title = 'Admin L&D yêu cầu chỉnh sửa', comment = '', by = 'Lê Thị Mai (Admin L&D)', at = '10:24 · 09/11/2026' }) {
     const quote = comment ? `<blockquote class="ab__quote">“${esc(comment)}”<cite>${esc(by)} · ${esc(at)}</cite></blockquote>` : '';
-    return `<div class="ab alert alert--${B[0]}">${ICON[B[1]]}<div class="grow stack gap-4"><b>${B[2]}</b>${B[3] ? `<span>${B[3]}</span>` : ''}${quote}</div><div class="ab__act">${B[4]}</div></div>`;
+    return `<div class="ab alert alert--danger">${ICON.alert}<div class="grow stack gap-4"><b>${esc(title)}</b>${quote}</div></div>`;
   }
 
   /* ---------- Đợt 2 · #6 Tìm kiếm ---------- */
@@ -555,22 +552,30 @@
     const def = APP === 'admin' ? { r: role, role: role === 'admin' ? 'Admin' : 'Creator' } : {};
     const state = Object.fromEntries(groups.map((g) => [g.key, q.get(g.key) ?? def[g.key] ?? g.value ?? g.options[0][0]]));
     if (APP) { const set = (k, v) => { state[k] = v; onChange({ ...state }); }; onChange({ ...state }); return { state, set }; }
+    /* Thu gọn mặc định thành nút DEMO góc dưới phải (nhớ trạng thái) · tự ẩn khi có popup để thấy trọn popup */
+    const KEY = 'lh-demo-open';
+    const setMin = (min) => { bar.classList.toggle('is-min', min); document.body.classList.toggle('demo-min', min); localStorage.setItem(KEY, min ? '0' : '1'); };
     const render = () => {
-      bar.innerHTML = `<b>DEMO</b><span>${esc(title)}</span>` + groups.map((g) => `<div class="demo-group"><span>${esc(g.label)}</span>${g.options.map(([v, t]) => `<button data-k="${g.key}" data-v="${v}" aria-pressed="${state[g.key] === v}">${esc(t)}</button>`).join('')}</div>`).join('') + `<span class="demo-sep"></span><a href="index.html">← Danh sách màn</a>`;
+      bar.innerHTML = `<button class="demo-toggle" data-demo-toggle title="Mở / thu gọn thanh DEMO" aria-label="Mở / thu gọn thanh DEMO">DEMO</button><b>DEMO</b><span>${esc(title)}</span>` + groups.map((g) => `<div class="demo-group"><span>${esc(g.label)}</span>${g.options.map(([v, t]) => `<button data-k="${g.key}" data-v="${v}" aria-pressed="${state[g.key] === v}">${esc(t)}</button>`).join('')}</div>`).join('') + `<span class="demo-sep"></span><a href="index.html">← Danh sách màn</a><button class="demo-close" data-demo-toggle aria-label="Thu gọn">×</button>`;
     };
+    const POP = '.modal-backdrop, .qz-modal, .adm-confirm';
+    new MutationObserver(() => bar.classList.toggle('is-hidden', !!document.querySelector(POP))).observe(document.body, { childList: true, subtree: true });
     bar.addEventListener('click', (e) => {
+      if (e.target.closest('[data-demo-toggle]')) { setMin(!bar.classList.contains('is-min')); return; }
       const b = e.target.closest('button[data-k]'); if (!b) return;
       state[b.dataset.k] = b.dataset.v; render(); onChange({ ...state });
     });
-    render(); document.body.classList.add('has-demo'); document.body.appendChild(bar);
+    render(); document.body.classList.add('has-demo'); document.body.appendChild(bar); setMin(localStorage.getItem(KEY) !== '1');
     const set = (k, v) => { state[k] = v; render(); onChange({ ...state }); };
     onChange({ ...state });
     return { state, set };
   }
 
-  /* ---------- Search panel: mở khi bấm ô, gõ 200ms thì cập nhật, phím ↑↓ Enter Esc, lịch sử 5 từ ----------
-     Áp dụng: phát 'search:apply' {q, st, pd} (cancelable). Trang kết quả gọi preventDefault để lọc tại chỗ;
-     trang khác → chuyển sang course-search.html?… */
+  /* ---------- Ô tìm header — lọc ngay khi gõ (D-72) ----------
+     · Ô trống: bảng xổ chỉ hiện "Tìm gần đây" (≤ 5 từ, ↑↓ Enter Esc). Có chữ: không có bảng gợi ý.
+     · Trang Tìm khoá: gõ 200ms → phát 'search:live' {q}, trang lọc lưới khoá tại chỗ.
+     · Trang khác: gõ ký tự đầu → chuyển sang course-search.html?q=…, giữ chữ đang gõ + con trỏ.
+     · Enter / chọn từ gần đây: phát 'search:apply' {q, st, pd} (cancelable) + lưu lịch sử. */
   const SP = { hl: -1, timer: null, KEY: 'lhRecentSearch' };
   const onResultsPage = () => /course-search\.html$/.test(location.pathname);
   const spF = () => { const p = new URLSearchParams(onResultsPage() ? location.search : ''); return { ct: p.get('ct') || 'all', st: p.get('st') || 'all', pd: p.get('pd') || 'all' }; };
@@ -578,7 +583,7 @@
   const recentAdd = (q) => { if (!q) return; localStorage.setItem(SP.KEY, JSON.stringify([q, ...recentGet().filter((x) => norm(x) !== norm(q))].slice(0, 5))); };
   function needSearch(cb) {
     if (window.LHSearch) return cb();
-    const s = document.createElement('script'); s.src = '../assets/js/search.js'; s.onload = cb; document.head.appendChild(s);
+    const s = document.createElement('script'); s.src = '../assets/js/search.js?v=' + LH_V; s.onload = cb; document.head.appendChild(s);
   }
   function spRender() {
     const pop = document.getElementById('search-pop'); if (!pop || pop.hidden) return;
@@ -587,9 +592,9 @@
       const S = window.LHSearch, data = (window.LHData && LHData.catalog) || [];
       const q = S.clean(input.value), f = spF();
       const run = (patch) => S.run(data, { q, ...f, ...patch }).items;
-      const items = run({});
-      pop.innerHTML = SearchPanel({ q, recent: recentGet(), total: items.length,
-        results: items.slice(0, 5).map((c) => ({ title: c.title, cover: c.cover, cat: c.cat, st: S.myStatus(c) })) });
+      const recent = recentGet();
+      if (q || !recent.length) { spClose(); return; } // có chữ → không gợi ý, lưới khoá lọc ngay
+      pop.innerHTML = SearchPanel({ q: '', recent, total: run({}).items.length });
       SP.hl = -1;
     });
   }
@@ -605,8 +610,33 @@
       location.href = 'course-search.html' + (u.toString() ? '?' + u : '');
     }
   }
-  document.addEventListener('focusin', (e) => { if (e.target.matches('.search-pill input')) spOpen(); });
-  document.addEventListener('input', (e) => { if (!e.target.matches('.search-pill input')) return; clearTimeout(SP.timer); SP.timer = setTimeout(() => { spOpen(); spRender(); }, 200); });
+  document.addEventListener('focusin', (e) => { if (e.target.matches('.search-pill input') && !e.target.value.trim()) spOpen(); });
+  document.addEventListener('input', (e) => {
+    if (!e.target.matches('.search-pill input')) return;
+    const input = e.target; clearTimeout(SP.timer);
+    if (input.value.trim()) spClose();
+    if (!onResultsPage()) {
+      if (!input.value.trim()) { spOpen(); return; }
+      SP.timer = setTimeout(() => { // sang trang Tìm khoá, giữ chữ đang gõ
+        sessionStorage.setItem('lhSearchFocus', '1');
+        const u = new URLSearchParams({ q: input.value });
+        location.href = 'course-search.html?' + u;
+      }, 150);
+      return;
+    }
+    SP.timer = setTimeout(() => {
+      const q = window.LHSearch ? LHSearch.clean(input.value) : input.value.trim();
+      document.dispatchEvent(new CustomEvent('search:live', { detail: { q } }));
+      if (!q) spOpen();
+    }, 200);
+  });
+  /* Vừa chuyển sang trang Tìm khoá từ trang khác → đặt lại con trỏ cuối ô để gõ tiếp */
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!onResultsPage() || !sessionStorage.getItem('lhSearchFocus')) return;
+    sessionStorage.removeItem('lhSearchFocus');
+    const i = document.querySelector('.search-pill input'); if (!i) return;
+    i.focus(); const n = i.value.length; try { i.setSelectionRange(n, n); } catch (_) {}
+  });
   document.addEventListener('submit', (e) => {
     if (!e.target.matches('.search-pill')) return; e.preventDefault(); clearTimeout(SP.timer);
     const sel = document.querySelector('#search-pop [data-sp-i].is-hl'); if (sel) { sel.click(); return; }
@@ -627,7 +657,7 @@
   });
   document.addEventListener('mousedown', (e) => { if (!e.target.closest('.search-wrap')) spClose(); });
   document.addEventListener('click', (e) => {
-    if (e.target.matches('.search-pill input')) { spOpen(); return; } // bấm lại sau Esc vẫn mở
+    if (e.target.matches('.search-pill input')) { if (!e.target.value.trim()) spOpen(); return; } // bấm lại sau Esc vẫn mở
     const pop = e.target.closest('#search-pop'); if (!pop) return;
     const input = document.querySelector('.search-pill input');
     const del = e.target.closest('[data-sp-del]');
@@ -670,7 +700,155 @@
     if (s) { const box = s.parentElement; box.classList.toggle('is-open'); s.querySelector('svg').outerHTML = box.classList.contains('is-open') ? ICON.chevronU : ICON.chevronD; }
   });
 
+  /* ================= ADMIN — khớp Figma section Admin (32:1096) · CSS: assets/css/admin.css =================
+   * Admin / Sidebar (Mode Expanded 300 | Collapsed 102) + Admin / Toolbar (421:7216) bọc quanh <main> của trang.
+   * Gọi LH.AdminLayout({ active, collapsed, role }) thay cho AppHeader ở mọi màn admin; gọi lại được (đổi vai trò). */
+  Object.assign(ICON, {
+    dash: P('<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>'),
+    bookOpen: P('<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>'),
+    usersRound: P('<path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>'),
+    chart: P('<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9M13 17V5M8 17v-3"/>'),
+    ellipsisV: P('<circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>'),
+    lightbulb: P('<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>'),
+    timer: P('<path d="M10 2h4M12 14l3-3"/><circle cx="12" cy="14" r="8"/>'),
+    trending: P('<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>'),
+    turtle: P('<path d="m12 10 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a8 8 0 1 0-16 0v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3l2-4h4Z"/><path d="M4.82 7.9 8 10M15.18 7.9 12 10M16.93 10H20a2 2 0 0 1 0 4H2"/>'),
+    userX: P('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5M22 8l-5 5"/>'),
+    send: P('<path d="M14.5 21.7a.5.5 0 0 0 .9 0L22 3.5a.5.5 0 0 0-.6-.6L3.3 9.5a.5.5 0 0 0 0 .9l7.6 3.4a2 2 0 0 1 1 1z"/><path d="m21.9 2.1-11 10.9"/>'),
+    shieldCheck: P('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>'),
+    network: P('<rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/>'),
+  });
+  const ADM_USER = { admin: ['Lê Thị Mai', 'Admin L&D'], creator: ['Phạm Thanh Long', 'Course Creator'] };
+  const OUT = 'Ngoài phạm vi LearningHub 2';
+  function admRole(r) { const v = String(r || App.role() || 'admin').toLowerCase(); return v.startsWith('cr') ? 'creator' : 'admin'; }
+  function AdminSidebar({ active = 'courses', collapsed = false, role = 'admin' } = {}) {
+    const q = `?r=${role}`;
+    const it = (key, icon, label, href, extra = '') => href
+      ? `<a class="adm-item ${active === key ? 'is-active' : ''}" href="${href}" title="${esc(label)}">${ICON[icon]}<span>${esc(label)}</span>${extra}</a>`
+      : `<button type="button" class="adm-item" data-out="${esc(label)}" title="${esc(label)}">${ICON[icon]}<span>${esc(label)}</span></button>`;
+    /* Cài đặt (Figma 421:6741 · 464:3450): Vai trò · Đồng bộ dữ liệu · Danh mục khoá học + LH2: Phân quyền Course Creator */
+    const SUB = ['roles', 'sync', 'categories', 'settings'];
+    const settingsOpen = SUB.includes(active);
+    return `<aside class="adm-side ${collapsed ? 'adm-side--collapsed' : ''}" aria-label="Menu Admin">
+      <a class="adm-side__logo" href="admin-dashboard.html${q}"><img src="${LOGO}" alt=""><span>Learning Hub</span></a>
+      <div class="adm-side__groups">
+        <div class="adm-side__group"><div class="adm-side__title">Tổng quan</div><div class="adm-side__items">
+          ${it('dashboard', 'dash', 'Dashboard', 'admin-dashboard.html' + q)}
+          ${it('courses', 'bookOpen', role === 'admin' ? 'Khoá học' : 'Khoá học của tôi', 'admin-courses.html' + q)}
+          ${role === 'admin' ? it('employees', 'usersRound', 'Nhân viên', 'admin-employees.html' + q) : ''}
+          ${it('reports', 'chart', 'Báo cáo', 'admin-reports.html' + q, '<i>LH2</i>')}
+        </div></div>
+        <div class="adm-side__group"><div class="adm-side__title">Cài đặt</div><div class="adm-side__items">
+          ${role === 'admin'
+            ? `<button type="button" class="adm-item ${settingsOpen ? 'is-open' : ''}" data-adm-toggle title="Cài đặt">${ICON.settings}<span>Cài đặt</span><svg class="ic adm-item__chev" width="16" height="16" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+               <div class="adm-sub" ${settingsOpen ? '' : 'hidden'}>
+                 ${it('roles', 'shield', 'Vai trò', 'admin-roles.html' + q)}
+                 ${it('sync', 'repeat', 'Đồng bộ dữ liệu', 'admin-sync.html' + q)}
+                 ${it('categories', 'list', 'Danh mục khoá học', 'admin-categories.html' + q)}
+                 ${it('settings', 'shieldCheck', 'Phân quyền Course Creator', 'admin-settings.html' + q, '<i>LH2</i>')}
+               </div>`
+            : it('settings-x', 'settings', 'Cài đặt')}
+          ${it('logout', 'logout', 'Đăng xuất')}
+        </div></div>
+      </div></aside>`;
+  }
+  function AdminToolbar({ role = 'admin', active = '' } = {}) {
+    const [name, title] = ADM_USER[role];
+    const q = `?r=${role}`;
+    return `<div class="adm-toolbar">
+      <form class="adm-search" action="admin-courses.html" role="search"><input type="hidden" name="r" value="${role}"><input name="q" placeholder="Tìm kiếm khoá học tại đây" autocomplete="off"><button aria-label="Tìm">${ICON.search}</button></form>
+      <nav class="adm-tnav"><a href="admin-dashboard.html${q}" class="${active === 'dashboard' ? 'is-active' : ''}">Dashboard</a><a href="admin-courses.html${q}" class="${active === 'courses' ? 'is-active' : ''}">Khoá học</a>${role === 'admin' ? `<a href="admin-employees.html${q}" class="${active === 'employees' ? 'is-active' : ''}">Nhân viên</a>` : `<a href="admin-reports.html${q}" class="${active === 'reports' ? 'is-active' : ''}">Báo cáo</a>`}</nav>
+      <div class="adm-actions">
+        <button class="adm-round" aria-label="Thông báo" title="Chuông thông báo: làm Sau Đợt 2 (Đợt 2 chỉ gửi email)" data-out="Chuông thông báo — làm Sau Đợt 2">${ICON.bell2}</button>
+        <button class="adm-round adm-round--opt" aria-label="Ứng dụng" data-out="Ứng dụng">${ICON.grid}</button>
+        <button class="adm-round adm-round--opt" aria-label="Ngôn ngữ" data-out="Đổi ngôn ngữ">VI</button>
+        <div class="adm-user"><button type="button" data-adm-user aria-expanded="false" title="${esc(name)} · ${esc(title)}"><span class="adm-user__av">${initials(name)}</span><span class="adm-user__name"><b>${esc(name)}</b><small>${esc(title)}</small></span>${ICON.chevronD}</button>
+          <div class="adm-user__menu" hidden><span>Đổi vai trò (demo)</span>
+            <button data-adm-role="admin" class="${role === 'admin' ? 'is-on' : ''}">${ICON.shieldCheck}Admin L&amp;D</button>
+            <button data-adm-role="creator" class="${role === 'creator' ? 'is-on' : ''}">${ICON.edit}Course Creator <small class="muted">Đợt 2</small></button>
+            <button data-out="Đăng xuất">${ICON.logout}Đăng xuất</button></div></div>
+      </div></div>`;
+  }
+  function AdminLayout({ active = 'courses', collapsed = false, role } = {}) {
+    const r = admRole(role);
+    document.body.classList.add('adm-body');
+    let shell = document.querySelector('.adm');
+    if (!shell) {
+      const main = document.querySelector('main');
+      main.classList.remove('container', 'screen');
+      shell = document.createElement('div'); shell.className = 'adm';
+      shell.innerHTML = '<div class="adm-side-slot"></div><div class="adm-main"><div class="adm-tb-slot"></div></div>';
+      main.parentNode.insertBefore(shell, main);
+      shell.querySelector('.adm-main').appendChild(main);
+      const h = document.getElementById('header'); if (h) h.hidden = true;
+    }
+    /* Trang không ép thu gọn → tự thu gọn ở khổ 1024–1279 (CSS); dưới 1024 luôn là thanh icon */
+    shell.classList.toggle('adm--auto-collapse', !collapsed);
+    shell.querySelector('.adm-side-slot').outerHTML = `<div class="adm-side-slot" style="display:contents">${AdminSidebar({ active, collapsed, role: r })}</div>`;
+    shell.querySelector('.adm-tb-slot').innerHTML = AdminToolbar({ role: r, active });
+    return '';
+  }
+  /** Stage tag (73:1692) — trạng thái khoá. Status: draft | pending | rejected | published · Revision: pending | rejected | draft */
+  function StageTag(status, revision) {
+    const S = { draft: ['Nháp', 'draft'], pending: ['Chờ duyệt', 'pending'], rejected: ['Cần chỉnh sửa', 'rejected'], published: ['Đang chạy', 'published'] }[status] || [status, 'neutral'];
+    const R = { pending: ['Bản sửa chờ duyệt', 'pending'], rejected: ['Bản sửa cần chỉnh sửa', 'rejected'], draft: ['Bản sửa nháp', 'draft'] }[revision];
+    return `<span class="stage-wrap"><span class="stage-tag stage-tag--${S[1]}">${S[0]}</span>${R ? `<span class="stage-tag stage-tag--${R[1]}">${R[0]}</span>` : ''}</span>`;
+  }
+  /** Tag tuỳ ý cùng kiểu Stage tag — tone: pending | published | draft | rejected | info | neutral */
+  function Tag(label, tone = 'neutral') { return `<span class="stage-tag stage-tag--${tone}">${esc(label)}</span>`; }
+  /** Admin / Table — cols: [[label, cls]] ; body: html các <tr> */
+  function AdminTable(cols, body, attrs = '') {
+    return `<div class="adm-scroll"><table class="adm-table" ${attrs}><thead><tr>${cols.map((c) => { const [l, cls] = Array.isArray(c) ? c : [c, '']; return `<th class="${cls || ''}">${l}</th>`; }).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  /** Hover list (menu 3 chấm) — items: [{ label, icon, href, attrs, danger }] */
+  function RowMenu(items) {
+    if (!items.length) return '';
+    return `<span class="row-menu"><button type="button" data-rowmenu aria-label="Thao tác" aria-expanded="false">${ICON.ellipsisV}</button><span class="row-menu__list" hidden>${items.map((i) => i.href
+      ? `<a href="${i.href}" class="${i.danger ? 'is-danger' : ''}" ${i.attrs || ''}>${ICON[i.icon] || ''}${esc(i.label)}</a>`
+      : `<button type="button" class="${i.danger ? 'is-danger' : ''}" ${i.attrs || ''}>${ICON[i.icon] || ''}${esc(i.label)}</button>`).join('')}</span></span>`;
+  }
+  /** Đầu trang admin: eyebrow (dòng nhỏ gradient) + tiêu đề + mô tả + vùng nút bên phải */
+  function AdminHead({ eyebrow = '', title, desc = '', right = '', back = '', xl = false }) {
+    return `<div class="adm-head ${xl ? 'adm-head--xl' : ''}"><div class="adm-head__text">${back ? `<a class="adm-back" href="${back}">${ICON.undo}Quay lại</a>` : ''}${eyebrow ? `<span class="adm-head__eyebrow">${esc(eyebrow)}</span>` : ''}<h1>${title}</h1>${desc ? `<p>${desc}</p>` : ''}</div>${right}</div>`;
+  }
+  /** Admin / Empty state (1265:7417) — icon tròn + tiêu đề + mô tả + CTA (html nút). Dùng cho màn chưa có dữ liệu. */
+  function AdminEmpty({ icon = 'file', title = 'Chưa có dữ liệu', desc = '', cta = '', compact = false } = {}) {
+    return `<div class="adm-empty ${compact ? 'adm-empty--sm' : ''}"><span class="adm-empty__ic">${ICON[icon] || ICON.file}</span><b>${esc(title)}</b>${desc ? `<p>${desc}</p>` : ''}${cta ? `<div class="adm-empty__cta">${cta}</div>` : ''}</div>`;
+  }
+  /** Admin / Confirm popup (1273:8970 xoá · 1273:8997 xác nhận) — mở popup, bấm đồng ý gọi onOk(). */
+  function AdminConfirm({ title, text = '', ok = 'Xác nhận', cancel = 'Huỷ', danger = false, onOk } = {}) {
+    const el = document.createElement('div'); el.className = 'modal-backdrop';
+    el.innerHTML = `<div class="modal adm-popup adm-confirm" role="alertdialog" aria-modal="true">
+      <span class="adm-confirm__ic ${danger ? 'is-danger' : ''}">${danger ? ICON.trash : ICON.alert}</span>
+      <h3>${esc(title)}</h3>${text ? `<p>${text}</p>` : ''}
+      <div class="adm-confirm__foot"><button class="btn-cta btn-cta--line" data-close>${esc(cancel)}</button><button class="btn-cta ${danger ? 'btn-cta--danger' : ''}" data-ok>${esc(ok)}</button></div></div>`;
+    document.body.appendChild(el);
+    el.querySelector('[data-ok]').addEventListener('click', () => { el.remove(); if (onOk) onOk(); });
+    el.querySelector('[data-ok]').focus();
+    return el;
+  }
+  /** Content / Card có xu hướng (71:1346) — trend: số % (dương xanh, âm đỏ), tone: '' | success | warning | danger | pink */
+  function TrendKpi(label, value, trend, icon, tone = '', note = 'so với tháng trước') {
+    const up = trend >= 0;
+    return `<div class="kpi-card kpi-card--trend ${tone ? 'kpi-card--' + tone : ''}"><span class="kpi-card__ic">${ICON[icon] || ''}</span><span class="kpi-card__text"><span class="kpi-card__label" title="${esc(label)}">${esc(label)}</span><span class="kpi-card__value">${value}</span>
+      ${trend == null ? '' : `<span class="kpi-card__trend ${up ? 'is-up' : 'is-down'}"><i>${up ? '↑' : '↓'} ${Math.abs(trend)}%</i>${esc(note)}</span>`}</span></div>`;
+  }
+  document.addEventListener('click', (e) => {
+    const out = e.target.closest('[data-out]'); if (out) { e.preventDefault(); toast(out.dataset.out + ': ' + OUT); return; }
+    const tg = e.target.closest('[data-adm-toggle]'); if (tg) { tg.classList.toggle('is-open'); const s = tg.nextElementSibling; if (s) s.hidden = !s.hidden; return; }
+    const ub = e.target.closest('[data-adm-user]');
+    const um = document.querySelector('.adm-user__menu');
+    if (ub) { um.hidden = !um.hidden; ub.setAttribute('aria-expanded', !um.hidden); return; }
+    const rb = e.target.closest('[data-adm-role]');
+    if (rb) { sessionStorage.setItem('lhRole', rb.dataset.admRole); location.href = 'admin-courses.html?r=' + rb.dataset.admRole; return; }
+    if (um && !e.target.closest('.adm-user')) um.hidden = true;
+    const mb = e.target.closest('[data-rowmenu]');
+    document.querySelectorAll('.row-menu__list').forEach((l) => { if (!mb || l !== mb.nextElementSibling) l.hidden = true; });
+    if (mb) { const l = mb.nextElementSibling; l.hidden = !l.hidden; mb.setAttribute('aria-expanded', !l.hidden); }
+  });
+
   window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
+    AdminLayout, AdminSidebar, AdminToolbar, AdminHead, AdminTable, StageTag, Tag, RowMenu, AdminEmpty, AdminConfirm, TrendKpi,
     ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
     QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary };

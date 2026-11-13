@@ -4,70 +4,286 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Soạn khoá học · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
 <style>
-  .ed-grid { display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: start; }
-  .cover-box { aspect-ratio: 16/9; border-radius: var(--radius); background: linear-gradient(135deg,#5163ff,#9396ff); display: grid; place-items: center; color: #fff; font-size: var(--fs-xs); }
-  .cover-box.is-empty { background: var(--bg-subtle); border: 1px dashed var(--border-control); color: var(--text-subtle); }
-  fieldset { border: 0; padding: 0; margin: 0; }
+  /* Create new course 956:3211 / 958:4086 · Upload Lessons 967:5185 / 967:5544 · Quiz 1249:5427 — sidebar thu gọn */
+  .ed-info { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 1023px) { .ed-info { grid-template-columns: minmax(0, 1fr); } .ed-info .cover-box { max-width: 360px; } }
+  .cover-box { aspect-ratio: 16/9; border-radius: 12px; background: linear-gradient(135deg,#4757ff,#9396ff); display: grid; place-items: center; color: #fff; font-size: 14px; }
+  .cover-box.is-empty { background: #fafafa; border: 1px dashed #d5d7da; color: var(--adm-sub); }
+  fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
   fieldset:disabled { opacity: .6; }
+  .sec-name { flex: 1; min-width: 0; font-size: 18px; font-weight: 700; color: var(--adm-body); border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; background: none; font-family: inherit; }
+  .sec-name:hover { border-color: var(--adm-stroke); } .sec-name:focus { outline: 0; border-color: var(--adm-primary); background: #fff; }
+  .sec-name.is-error { border-color: #f04438; }
+  .adm-lesson { cursor: grab; border: 1px solid transparent; }
+  .adm-lesson.is-drag { opacity: .4; } .adm-lesson.is-over { border-color: var(--adm-primary); border-style: dashed; }
+  .adm-lesson .grip { color: #c0c4cc; width: 16px; height: 16px; }
+  .adm-lesson--quiz { background: var(--adm-primary-50); }
+  .adm-lesson__tags { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+  .sec-add { align-self: flex-start; }
+  .sec-empty { padding: 12px 16px; border: 1px dashed var(--adm-stroke); border-radius: 8px; font-size: 14px; color: var(--adm-sub); }
+  .type-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .type-card { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border: 1px solid var(--adm-stroke); border-radius: 12px; background: #fff; cursor: pointer; text-align: left; font: inherit; }
+  .type-card:hover, .type-card.is-on { border-color: var(--adm-primary); background: var(--adm-primary-50); }
+  .type-card svg { width: 24px; height: 24px; color: var(--adm-primary); flex: none; }
+  .type-card b { display: block; color: var(--adm-text); } .type-card span { font-size: 13px; color: var(--adm-sub); }
+  @media (max-width: 767px) { .type-grid { grid-template-columns: minmax(0, 1fr); } }
+  #banner:empty { display: none; }
+  /* Thông tin chung thu gọn được — khoá đã đủ thông tin thì mặc định thu gọn, nhường chỗ cho Nội dung khoá */
+  /* Hàng 1: tiêu đề + nút icon (▾ thu gọn · ✎ đang mở để sửa). Hàng 2 khi thu gọn: ảnh bìa + tên / danh mục · thời lượng */
+  .info-head { display: flex; align-items: center; gap: 12px; }
+  .info-head .adm-card__title { margin: 0; flex: 1; min-width: 0; }
+  .info-toggle { flex: none; width: 36px; height: 36px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: #fff; color: var(--adm-sub); display: inline-grid; place-items: center; cursor: pointer; }
+  .info-toggle:hover { border-color: var(--adm-primary); color: var(--adm-primary); }
+  .info-toggle svg { width: 20px; height: 20px; flex: none; }
+  #sec-info.is-open .info-toggle { border-color: var(--adm-primary); background: var(--adm-primary-50); color: var(--adm-primary); }
+  .info-sum { display: flex; align-items: center; gap: 16px; margin-top: 16px; min-width: 0; }
+  .info-sum__cover { width: 96px; height: 54px; border-radius: 8px; flex: none; background: linear-gradient(135deg,#4757ff,#9396ff); }
+  .info-sum__cover.is-empty { background: #fafafa; border: 1px dashed #d5d7da; }
+  .info-sum__txt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .info-sum__txt b { font-size: 16px; font-weight: 600; color: var(--adm-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .info-sum__txt span { font-size: 14px; color: var(--adm-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #sec-info.is-open .info-head { margin-bottom: 20px; }
+  #sec-info:not(.is-open) .ed-info, #sec-info.is-open .info-sum { display: none; }
 </style>
 </head>
 <body>
 <div id="header"></div>
-<main class="container screen stack gap-24" style="max-width:960px">
-  <div class="row gap-16"><a class="icon-btn" href="admin-courses.html?r=creator" aria-label="Quay lại"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
-    <h1 class="page-title grow" id="title"></h1><span id="status"></span></div>
+<main>
+  <div id="head"></div>
   <div id="banner"></div>
-  <fieldset id="form" class="stack gap-24">
-    <section class="panel" id="sec-info"><div class="panel__head"><b class="t-sm">Thông tin khoá</b></div><div class="panel__body ed-grid">
-      <div class="stack gap-4"><div class="cover-box" id="cover">Ảnh bìa</div><span class="t-xs muted">Ảnh bìa *</span></div>
-      <div class="stack gap-16"><div class="field"><label class="field__label">Tên khoá<span class="req">*</span></label><input class="input" id="f-title"></div>
-        <div class="field"><label class="field__label">Mô tả<span class="req">*</span></label><textarea class="input" id="f-desc"></textarea></div></div>
-    </div></section>
-    <section class="panel" id="sec-content"><div class="panel__head"><b class="t-sm grow">Nội dung</b><button class="btn btn--ghost btn--sm" type="button">+ Session</button></div><div class="panel__body"><div class="syllabus" id="syllabus"></div></div></section>
+  <fieldset id="form" style="display:flex;flex-direction:column;gap:32px">
+    <section class="adm-card" id="sec-info"><div class="info-head"><h2 class="adm-card__title">Thông tin chung</h2><button type="button" class="info-toggle" data-info-toggle aria-expanded="false" aria-controls="sec-info"></button></div><div class="info-sum" id="info-sum"></div>
+      <div class="ed-info">
+        <div class="adm-field"><span class="adm-label">Ảnh bìa <span class="req">*</span></span><div class="cover-box" id="cover">Ảnh bìa</div><span class="adm-hint">JPG/PNG, tỉ lệ 16:9</span></div>
+        <div class="adm-form">
+          <div class="adm-field full"><label for="f-title">Tên khoá <span class="req">*</span></label><input class="adm-input" id="f-title" placeholder="Nhập tên khoá học"></div>
+          <div class="adm-field"><label for="f-cat">Danh mục <span class="req">*</span></label><select class="adm-input" id="f-cat"></select></div>
+          <div class="adm-field"><label for="f-sub">Danh mục con <span class="req">*</span></label><select class="adm-input" id="f-sub"></select></div>
+          <div class="adm-field"><label for="f-dur">Thời lượng (giờ)</label><input class="adm-input" id="f-dur" type="number" min="0" step="0.5" value="12"></div>
+          <div class="adm-field"><label>Người phụ trách</label><input class="adm-input" id="f-owner" readonly></div>
+          <div class="adm-field full"><label for="f-desc">Mô tả <span class="req">*</span></label><textarea class="adm-input" id="f-desc" placeholder="Mô tả ngắn nội dung khoá"></textarea><span class="adm-hint">Hiện ở trang khoá cho học viên.</span></div>
+          <div class="adm-field"><label>Khoá này dành cho ai</label><textarea class="adm-input" placeholder="Mỗi dòng 1 ý"></textarea></div>
+          <div class="adm-field"><label>Bạn sẽ học được gì</label><textarea class="adm-input" placeholder="Mỗi dòng 1 ý"></textarea></div>
+        </div>
+      </div></section>
+    <div class="adm-grid-2">
+      <section class="adm-card" id="sec-content"><div class="adm-box__head" style="margin-bottom:20px"><h2 class="adm-box__title" style="flex:1">Nội dung khoá</h2><button class="btn-cta btn-cta--soft btn-cta--sm" type="button" data-sec-add>+ Thêm section</button></div>
+        <div style="display:flex;flex-direction:column;gap:16px" id="syllabus"></div></section>
+      <aside style="display:flex;flex-direction:column;gap:24px">
+        <section class="adm-card"><h2 class="adm-card__title">Thứ tự bài</h2><div class="adm-order"><b id="order-n"></b><span class="adm-hint">Học viên học theo thứ tự section → bài. Kéo thả bài để đổi thứ tự.</span></div></section>
+        <section class="adm-card"><h2 class="adm-card__title">Mẹo nhanh</h2><div id="tips"></div></section>
+        <section class="adm-card"><h2 class="adm-card__title">Đối tượng học viên</h2><p class="adm-hint" style="margin:0 0 16px">Phòng QA + 3 cá nhân</p><a class="btn-cta btn-cta--line btn-cta--sm" id="aud-link" href="admin-audience.html?role=Creator">Sửa đối tượng</a></section>
+      </aside>
+    </div>
   </fieldset>
-  <section class="panel"><div class="panel__head"><b class="t-sm grow">Đối tượng học viên</b></div>
-    <div class="panel__body t-sm row gap-16"><span class="grow">Phòng QA + 3 cá nhân</span><a class="btn btn--outline btn--sm" href="admin-audience.html">Sửa đối tượng</a></div></section>
+  <div class="adm-btn-combo" id="actions"></div>
 </main>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/data.js"></script>
-<script src="../assets/js/approval.js"></script>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/approval.js?v=1113c"></script>
+<script src="../assets/js/quiz-editor.js?v=1113c"></script>
 <script>
-const { ICON, AppHeader, ApprovalBanner, CourseStatus, esc, toast } = LH; const D = LHData;
-document.getElementById('header').innerHTML = AppHeader({ role: 'Course Creator', user: 'Phạm Thanh Long' });
-const CMT = { rejected: 'Session 2 thiếu bài thực hành MCP. Ngưỡng Pass của Test Domain 2 đang để 0%, cần đặt lại (gợi ý 70%).' };
-let st, missing;
-// st: draft | pending | rejected | published | rev-draft | rev-pending | rev-rejected
+const { ICON, ApprovalBanner, StageTag, Tag, RowMenu, esc, toast, AdminLayout, AdminHead, AdminConfirm } = LH; const D = LHData;
+const SUBS = { 'Data & AI': ['AI Agent', 'Machine Learning'], 'Software Development': ['Testing', 'Web', 'DevOps', 'Programming Fundamentals'], Language: ['English', 'Japanese'] };
+const TYPES = { video: ['Video', 'tvPlay', 'MP4, MOV · tối đa 1,5 GB. Tính xong khi xem thực ≥ 90%.'], article: ['Bài viết', 'file', 'Soạn văn bản trực tiếp, chèn ảnh.'], file: ['Tài liệu', 'sheet', 'PDF, DOCX, PPTX · tối đa 50 MB.'], quiz: ['Quiz', 'quiz', 'Bài kiểm tra Exam 3 lượt, có thể bật Practice.'] };
+const CMT = { rejected: 'Session 2 thiếu bài thực hành MCP. Điểm đạt của Test Domain 2 đang để 0%, cần đặt lại (gợi ý 70%).' };
+const sc = (list) => JSON.parse(JSON.stringify(list)).map((q) => ({ explain: '', score: 1, ...q }));
+const mkQuiz = (title, o = {}) => ({ title, desc: '', minutes: 60, noLimit: false, pass: 70, shuffle: true, practice: true, exam: sc(D.examQuestions), practice_q: sc(D.practiceQuestions), version: 1, ...o });
+let role, st, missing, sections, inProgress = 0;
+function seed(variant) {
+  sections = D.course.sessions.slice(0, 3).map((s, i) => ({ name: s.name, lessons: s.lessons.map(([k, n]) => (k === 'quiz'
+    ? { type: 'quiz', name: n, quiz: mkQuiz(n, variant === 'legacy' && i === 0 ? { practice: false, practice_q: [] } : variant === 'empty' && i === 0 ? { exam: [], practice: false, practice_q: [] } : {}) }
+    : { type: k === 'video' ? 'video' : 'file', name: n, meta: k === 'video' ? '12 phút' : 'PDF · 2,4 MB' })) }));
+  if (variant === 'dup') sections[0].lessons[1].quiz.practice_q.splice(1, 0, { ...sc([D.examQuestions[2]])[0], text: '  khi nào nên chọn WORKFLOW cố định thay vì agent tự chủ? ' });
+  if (missing) sections[2].lessons = [];
+}
+</script>
+<script>
+/* ---------- Vẽ màn ---------- */
 function render() {
+  const admin = role === 'admin';
+  AdminLayout({ active: 'courses', collapsed: true, role });
   const rev = st.startsWith('rev-'), base = rev ? st.slice(4) : st;
   const title = rev || st === 'published' ? 'Claude Certified Architect – Foundations' : 'Kiểm thử tự động với Playwright';
-  document.getElementById('title').textContent = title;
-  document.getElementById('status').innerHTML = rev ? CourseStatus('published', base) : CourseStatus(st);
-  const bannerState = { draft: 'draft', pending: 'pending', rejected: 'rejected', published: 'approved' }[base];
-  document.getElementById('banner').innerHTML = ApprovalBanner({ state: bannerState, revision: rev,
-    comment: base === 'rejected' ? CMT.rejected : '', at: base === 'pending' ? '10:24 · 09/11/2026' : '09:10 · 09/11/2026' })
-    .replace('Admin L&D yêu cầu chỉnh sửa', rev && base === 'rejected' ? 'Admin L&D yêu cầu chỉnh sửa bản sửa' : 'Admin L&D yêu cầu chỉnh sửa')
-    .replace('Đang chờ Admin L&D duyệt', rev && base === 'pending' ? 'Bản sửa đang chờ Admin L&D duyệt' : 'Đang chờ Admin L&D duyệt');
-  // Pending + Published (chưa mở bản sửa) → khoá form (BR-CRS-03, BR-CRS-06)
-  document.getElementById('form').disabled = base === 'pending' || st === 'published';
+  const q = '?r=' + role;
+  document.getElementById('head').innerHTML = AdminHead({ back: 'admin-courses.html' + q, title: esc(title) + ' ' + (rev ? StageTag('published', base) : StageTag(st)),
+    desc: rev ? 'Ver 2.0 — bản sửa. Học viên vẫn học Ver 1.0 tới khi Admin L&D duyệt.' : 'Tạo và quản lý nội dung bài học. Hỗ trợ Video, Bài viết, Tài liệu (PDF, Slide) và Quiz.' });
+  /* Banner chỉ hiện khi Admin trả về kèm nhận xét. Trạng thái khác: tag cạnh tiêu đề là đủ, nút nằm ở chân trang. */
+  document.getElementById('banner').innerHTML = base === 'rejected' && !admin
+    ? ApprovalBanner({ title: rev ? 'Admin L&D yêu cầu chỉnh sửa bản sửa' : 'Admin L&D yêu cầu chỉnh sửa', comment: CMT.rejected, at: '09:10 · 09/11/2026' }) : '';
+  /* Creator: Pending + Published (chưa mở bản sửa) → khoá form (BR-CRS-03, BR-CRS-06). Admin sửa trực tiếp. */
+  const locked = !admin && (base === 'pending' || st === 'published');
+  document.getElementById('form').disabled = locked;
   document.getElementById('f-title').value = missing ? '' : title;
   document.getElementById('f-desc').value = missing ? '' : 'Nắm vững kiến trúc agent, tool design, MCP và context management.';
+  document.getElementById('f-owner').value = admin ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long';
   document.getElementById('cover').className = 'cover-box' + (missing ? ' is-empty' : '');
-  document.getElementById('syllabus').innerHTML = D.course.sessions.slice(0, 3).map((s, i) => `<div class="syllabus__session">${esc(s.name)}</div>` +
-    (missing && i === 2 ? '<div class="syllabus__lesson muted">Chưa có bài học</div>' : s.lessons.map(([k, n]) => `<div class="syllabus__lesson">${ICON[k]}<span>${esc(n)}</span></div>`).join(''))).join('');
+  const cat = document.getElementById('f-cat'); if (!cat.options.length) { cat.innerHTML = D.categories.map((c) => `<option ${c === 'Data & AI' ? 'selected' : ''}>${esc(c)}</option>`).join(''); drawSub(); }
+  setInfoOpen(missing); // thiếu thông tin → mở sẵn để điền; đủ → thu gọn
+  document.getElementById('aud-link').href = 'admin-audience.html?role=' + (admin ? 'Admin' : 'Creator');
+  document.getElementById('tips').innerHTML = ['Mỗi bài nên dưới 15 phút để học viên dễ theo.', 'Đặt tên bài rõ ràng, dễ tìm.', 'Quiz cần ít nhất 1 câu Exam và tổng điểm > 0 trước khi publish.'].map((t) => `<div class="adm-tip">${ICON.circleCheck}${t}</div>`).join('');
+  drawSyllabus();
+  const canSubmit = base === 'draft' || base === 'rejected';
+  document.getElementById('actions').innerHTML = `<a class="btn-cta btn-cta--line" href="admin-courses.html${q}">Huỷ</a>`
+    + (locked ? '' : `<button class="btn-cta btn-cta--soft" data-save>Lưu nháp</button>`)
+    + (admin ? `<button class="btn-cta" data-publish>${ICON.check}${rev || st === 'published' ? 'Cập nhật khoá' : 'Publish'}</button>`
+      : st === 'published' ? `<button class="btn-cta" data-edit>${ICON.edit}Sửa nội dung (tạo bản sửa)</button>`
+      : canSubmit ? `<button class="btn-cta" data-submit>${ICON.send}${base === 'rejected' ? 'Gửi duyệt lại' : 'Gửi duyệt'}</button>` : '');
+}
+/* Thông tin chung: thu gọn còn 1 dòng tóm tắt (ảnh bìa · tên · danh mục · thời lượng) */
+function drawInfoSum() {
+  const v = (id) => document.getElementById(id).value;
+  const t = v('f-title').trim(), dur = v('f-dur');
+  const meta = [`${v('f-cat')} / ${v('f-sub')}`, dur ? `${dur} giờ` : ''].filter(Boolean).join(' · ');
+  document.getElementById('info-sum').innerHTML = `<i class="info-sum__cover${missing ? ' is-empty' : ''}"></i><div class="info-sum__txt"><b>${t ? esc(t) : 'Chưa có tên khoá'}</b><span>${esc(meta)}</span></div>`;
+}
+function setInfoOpen(open) {
+  const sec = document.getElementById('sec-info'), btn = sec.querySelector('[data-info-toggle]');
+  sec.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', open);
+  btn.innerHTML = open ? ICON.edit : ICON.chevronD; // mở = đang sửa · thu gọn = xổ ra
+  btn.setAttribute('aria-label', open ? 'Thu gọn thông tin chung' : 'Xổ thông tin chung để sửa'); btn.title = open ? 'Thu gọn' : 'Xem / sửa';
+  if (!open) drawInfoSum();
 }
 document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-info-toggle]')) { setInfoOpen(!document.getElementById('sec-info').classList.contains('is-open')); return; }
+  if (e.target.closest('a[href="#sec-info"]')) setInfoOpen(true); // bấm lỗi "Thiếu tên khoá…" → mở ra để sửa
+});
+function drawSub() { const c = document.getElementById('f-cat').value; document.getElementById('f-sub').innerHTML = (SUBS[c] || ['Chung']).map((s) => `<option>${esc(s)}</option>`).join(''); }
+
+/* Section + bài học — [KT] Thêm / đổi tên / xoá section (≤ 60 ký tự, không trùng), thêm bài theo loại, kéo thả, xoá có xác nhận */
+function drawSyllabus() {
+  const errs = quizErrors();
+  document.getElementById('syllabus').innerHTML = sections.map((s, si) => `<div class="adm-section" data-sec="${si}">
+    <div class="adm-section__head"><input class="sec-name" data-sec-name="${si}" value="${esc(s.name)}" maxlength="60" aria-label="Tên section ${si + 1}"><span class="adm-hint">${s.lessons.length} bài</span>
+      ${RowMenu([{ label: 'Thêm bài', icon: 'plus', attrs: `data-les-add="${si}"` }, { label: 'Xoá section', icon: 'trash', danger: true, attrs: `data-sec-del="${si}"` }])}</div>
+    ${s.lessons.length ? s.lessons.map((l, li) => lessonRow(l, si, li, errs)).join('') : `<div class="sec-empty" data-drop="${si}">Chưa có bài học — bấm "Thêm bài" hoặc kéo bài vào đây.</div>`}
+    <button type="button" class="btn-cta btn-cta--line btn-cta--sm sec-add" data-les-add="${si}">${ICON.plus}Thêm bài</button></div>`).join('');
+  const n = sections.reduce((a, s) => a + s.lessons.length, 0), nq = sections.reduce((a, s) => a + s.lessons.filter((l) => l.type === 'quiz').length, 0);
+  document.getElementById('order-n').textContent = `${sections.length} section · ${n} bài (${nq} quiz)`;
+}
+function lessonRow(l, si, li, errs) {
+  const T = TYPES[l.type];
+  if (l.type !== 'quiz') return `<div class="adm-lesson" draggable="true" data-les="${si}:${li}"><svg class="ic grip" width="16" height="16" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>${ICON[T[1]]}<b>${esc(l.name)}</b><span>${T[0]}${l.meta ? ' · ' + l.meta : ''}</span>
+    ${RowMenu([{ label: 'Đổi tên', icon: 'edit', attrs: `data-les-ren="${si}:${li}"` }, { label: 'Xoá bài', icon: 'trash', danger: true, attrs: `data-les-del="${si}:${li}"` }])}</div>`;
+  const z = l.quiz, e = errs[`${si}:${li}`];
+  return `<div class="adm-lesson adm-lesson--quiz" draggable="true" data-les="${si}:${li}"><svg class="ic grip" width="16" height="16" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>${ICON.quiz}
+    <b>${esc(z.title)}<span class="adm-lesson__tags" style="margin-left:8px">${Tag(`Exam ${z.exam.length} câu · ${LHQuizCore.total(z.exam)} điểm`, z.exam.length ? 'info' : 'pending')}${z.practice ? Tag(`Practice ${z.practice_q.length}`, 'published') : Tag('Practice tắt')}${z.version > 1 ? Tag('Đề v' + z.version, 'neutral') : ''}${e ? Tag(e, 'pending') : ''}</span></b>
+    <button type="button" class="btn-cta btn-cta--soft btn-cta--sm" data-qz-mgr="${si}:${li}">Quản lý câu hỏi</button>
+    ${RowMenu([{ label: 'Quản lý câu hỏi', icon: 'list', attrs: `data-qz-mgr="${si}:${li}"` }, { label: 'Sửa quiz', icon: 'edit', attrs: `data-qz-edit="${si}:${li}"` }, { label: 'Xoá quiz', icon: 'trash', danger: true, attrs: `data-les-del="${si}:${li}"` }])}</div>`;
+}
+/* Lỗi chặn publish/gửi duyệt của từng quiz */
+function quizErrors() {
+  const out = {};
+  sections.forEach((s, si) => s.lessons.forEach((l, li) => { if (l.type !== 'quiz') return; const z = l.quiz;
+    const B = { exam: z.exam, practice: z.practice_q };
+    if (!z.exam.length || !LHQuizCore.total(z.exam)) out[`${si}:${li}`] = 'Chưa có câu Exam';
+    else if (z.practice && !z.practice_q.length) out[`${si}:${li}`] = 'Practice bật nhưng chưa có câu';
+    else if (z.practice_q.some((q, k) => LHQuizCore.check(q, 'practice', B, k).length) || z.exam.some((q, k) => LHQuizCore.check(q, 'exam', B, k).length)) out[`${si}:${li}`] = 'Có câu lỗi / trùng'; }));
+  return out;
+}
+const at = (key) => { const [si, li] = key.split(':').map(Number); return { si, li, l: sections[si].lessons[li] }; };
+const ctxOf = () => ({ inProgress, creatorLive: role === 'creator' && st.startsWith('rev-') });
+/* Tên bài khác trong khoá (chặn trùng tên quiz) */
+const titlesExcept = (self) => sections.flatMap((s) => s.lessons).filter((l) => l !== self).map((l) => (l.type === 'quiz' ? l.quiz.title : l.name));
+/* Wizard quiz (D-70): Quản lý câu hỏi → mở B2 (hoặc B3 Practice); Sửa quiz → B1 */
+function openMgr(key, extra = {}) { const { l } = at(key); LHQuiz.openWizard({ quiz: l.quiz, step: extra.tab === 'practice' ? 3 : extra.step || 2, ctx: { ...ctxOf(), titles: titlesExcept(l), ...extra }, onSave: (z) => { l.quiz = z; l.name = z.title; drawSyllabus(); } }); }
+function openNewQuiz(si, preset, step = 1, open) {
+  LHQuiz.openWizard({ preset, step, ctx: { ...ctxOf(), titles: titlesExcept(null), open }, onSave: (z) => { sections[si].lessons.push({ type: 'quiz', name: z.title, quiz: z }); drawSyllabus(); } });
+}
+</script>
+<script>
+/* ---------- Thêm bài: chọn loại (967:5544) ---------- */
+function openAddLesson(si) {
+  let type = 'video';
+  const el = LHQuiz.modal('les-add', 'md', `Thêm bài · ${esc(sections[si].name)}`, 'Chọn loại bài học.',
+    `<div class="type-grid">${Object.entries(TYPES).map(([k, [t, ic, d]]) => `<button type="button" class="type-card ${k === type ? 'is-on' : ''}" data-ty="${k}">${ICON[ic]}<span><b>${t}</b><span>${d}</span></span></button>`).join('')}</div>
+     <div class="adm-field" id="les-name-f"><label>Tên bài <span class="req">*</span></label><input class="adm-input" id="les-name" maxlength="120" placeholder="Nhập tên bài"><span class="adm-hint is-error" id="les-err" hidden>Nhập tên bài.</span></div>
+     <label class="drop" id="les-file">${ICON.upload}<b>Chọn file tải lên</b><span class="adm-hint" id="les-limit"></span></label>`,
+    '<button class="btn-cta btn-cta--line" data-qz-x="les-add">Huỷ</button><button class="btn-cta" id="les-ok">Tiếp tục</button>');
+  el.addEventListener('qz-close', () => el.remove());
+  const sync = () => { el.querySelectorAll('[data-ty]').forEach((b) => b.classList.toggle('is-on', b.dataset.ty === type));
+    el.querySelector('#les-name-f').hidden = type === 'quiz'; el.querySelector('#les-file').hidden = type === 'quiz' || type === 'article';
+    el.querySelector('#les-limit').textContent = type === 'video' ? 'MP4, MOV · tối đa 1,5 GB' : 'PDF, DOCX, PPTX · tối đa 50 MB';
+    el.querySelector('#les-ok').textContent = type === 'quiz' ? 'Tiếp tục: Tạo quiz' : 'Thêm bài'; };
+  el.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-ty]'); if (t) { type = t.dataset.ty; sync(); return; }
+    if (!e.target.closest('#les-ok')) return;
+    if (type === 'quiz') { el.remove(); openNewQuiz(si); return; }
+    const n = el.querySelector('#les-name').value.trim(); el.querySelector('#les-err').hidden = !!n; if (!n) return;
+    sections[si].lessons.push({ type, name: n, meta: type === 'video' ? '0 phút' : type === 'file' ? 'PDF' : '' }); el.remove(); drawSyllabus(); toast('Đã thêm bài ' + TYPES[type][0].toLowerCase());
+  });
+  sync();
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-sec-add]')) { let i = sections.length + 1; while (sections.some((s) => s.name === 'Section ' + i)) i++; sections.push({ name: 'Section ' + i, lessons: [] }); drawSyllabus(); document.querySelector(`[data-sec-name="${sections.length - 1}"]`).select(); return; }
+  const la = e.target.closest('[data-les-add]'); if (la) { openAddLesson(+la.dataset.lesAdd); return; }
+  const sd = e.target.closest('[data-sec-del]'); if (sd) { const si = +sd.dataset.secDel; const s = sections[si];
+    AdminConfirm({ danger: true, title: 'Xoá section này?', text: `<b>${esc(s.name)}</b> và ${s.lessons.length} bài bên trong sẽ bị xoá.`, ok: 'Xoá', onOk: () => { sections.splice(si, 1); drawSyllabus(); toast('Đã xoá section'); } }); return; }
+  const ld = e.target.closest('[data-les-del]'); if (ld) { const { si, li, l } = at(ld.dataset.lesDel);
+    const del = () => { sections[si].lessons.splice(li, 1); drawSyllabus(); toast(l.type === 'quiz' ? 'Đã xoá quiz' : 'Đã xoá bài'); };
+    if (l.type === 'quiz') LHQuiz.confirmDelete(l.quiz, del); else AdminConfirm({ danger: true, title: 'Bạn chắc chắn muốn xoá bài này?', text: esc(l.name), ok: 'Xoá', onOk: del }); return; }
+  const lr = e.target.closest('[data-les-ren]'); if (lr) { const { l } = at(lr.dataset.lesRen); const n = prompt('Tên bài', l.name); if (n && n.trim()) { l.name = n.trim(); drawSyllabus(); } return; }
+  const qm = e.target.closest('[data-qz-mgr]'); if (qm) { openMgr(qm.dataset.qzMgr); return; }
+  const qe = e.target.closest('[data-qz-edit]'); if (qe) { openMgr(qe.dataset.qzEdit, { step: 1 }); return; }
+  const blockers = () => { const E = quizErrors(); return Object.entries(E).map(([k, v]) => [`${at(k).l.quiz.title}: ${v}`, '#sec-content']); };
   if (e.target.closest('[data-submit]')) {
-    if (missing) return LHApproval.submitErrors([['Thiếu ảnh bìa', '#sec-info'], ['Thiếu tên khoá', '#sec-info'], ['Thiếu mô tả', '#sec-info'], ['Session 3 chưa có bài học', '#sec-content'], ['Test Domain 2: chưa đặt ngưỡng Pass', '#sec-content']]);
-    st = st.startsWith('rev-') ? 'rev-pending' : 'pending'; render(); toast('Đã gửi duyệt. Admin L&D đã nhận thông báo.');
+    const B = [...(missing ? [['Thiếu ảnh bìa', '#sec-info'], ['Thiếu tên khoá', '#sec-info'], ['Thiếu mô tả', '#sec-info'], ['Section 3 chưa có bài học', '#sec-content']] : []), ...blockers()];
+    if (B.length) return LHApproval.submitErrors(B);
+    st = st.startsWith('rev-') ? 'rev-pending' : 'pending'; render(); toast('Đã gửi duyệt. Email đã gửi tới Admin L&D.');
   }
+  if (e.target.closest('[data-publish]')) { const B = blockers(); if (B.length) return LHApproval.submitErrors(B); st = 'published'; render(); toast('Đã publish khoá học'); }
+  if (e.target.closest('[data-save]')) toast('Đã lưu nháp.');
   if (e.target.closest('[data-edit]')) { st = 'rev-draft'; render(); toast('Đã mở bản sửa. Học viên vẫn học nội dung đang chạy.'); }
 });
-LH.DemoBar('#3 — Soạn khoá (Course Creator)', [
-  { label: 'Trạng thái', key: 'st', options: [['draft', 'Nháp'], ['pending', 'Chờ duyệt'], ['rejected', 'Cần chỉnh sửa'], ['published', 'Đang chạy'], ['rev-draft', 'Bản sửa nháp'], ['rev-pending', 'Bản sửa chờ duyệt'], ['rev-rejected', 'Bản sửa cần chỉnh sửa']] },
-  { label: 'Dữ liệu', key: 'm', options: [['ok', 'Đủ điều kiện'], ['missing', 'Thiếu (BR-CRS-11)']] },
-], (s) => { st = s.st; missing = s.m === 'missing'; render(); });
+/* Đổi tên section: ≤ 60 ký tự, không trống, không trùng */
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'f-cat') { drawSub(); return; }
+  const sn = e.target.dataset.secName; if (sn == null) return; const i = +sn, v = e.target.value.trim();
+  const bad = !v ? 'Tên section không được trống.' : sections.some((s, k) => k !== i && LHQuizCore.nq(s.name) === LHQuizCore.nq(v)) ? 'Tên section đã tồn tại.' : '';
+  if (bad) { e.target.classList.add('is-error'); toast(bad); e.target.value = sections[i].name; setTimeout(() => e.target.classList.remove('is-error'), 1500); return; }
+  sections[i].name = v; toast('Đã đổi tên section');
+});
+/* Kéo thả bài (cùng section hoặc sang section khác) */
+let dragKey = null;
+document.addEventListener('dragstart', (e) => { const r = e.target.closest?.('[data-les]'); if (!r) return; dragKey = r.dataset.les; r.classList.add('is-drag'); e.dataTransfer.effectAllowed = 'move'; });
+document.addEventListener('dragend', () => { dragKey = null; document.querySelectorAll('.is-drag,.is-over').forEach((x) => x.classList.remove('is-drag', 'is-over')); });
+document.addEventListener('dragover', (e) => { const t = e.target.closest('[data-les],[data-drop]'); if (!dragKey || !t) return; e.preventDefault(); document.querySelectorAll('.is-over').forEach((x) => x.classList.remove('is-over')); t.classList.add('is-over'); });
+document.addEventListener('drop', (e) => {
+  const t = e.target.closest('[data-les],[data-drop]'); if (!dragKey || !t) return; e.preventDefault();
+  const from = at(dragKey); const [l] = sections[from.si].lessons.splice(from.li, 1);
+  if (t.dataset.drop != null) sections[+t.dataset.drop].lessons.push(l);
+  else { const [si, li] = t.dataset.les.split(':').map(Number); sections[si].lessons.splice(li, 0, l); } // kéo xuống: nằm sau bài đích · kéo lên: nằm trước
+  drawSyllabus(); toast('Đã đổi thứ tự bài');
+});
+
+const params = new URLSearchParams(location.search);
+LH.DemoBar('Soạn khoá + Quiz Exam / Practice', [
+  { label: 'Vai trò', key: 'r', options: [['creator', 'Course Creator'], ['admin', 'Admin L&D']] },
+  { label: 'Trạng thái', key: 'st', options: [['draft', 'Nháp'], ['pending', 'Chờ duyệt'], ['rejected', 'Cần chỉnh sửa'], ['published', 'Đang chạy'], ['rev-draft', 'Bản sửa nháp'], ['rev-pending', 'Bản sửa chờ duyệt']] },
+  { label: 'Quiz', key: 'qz', options: [['ok', 'Hợp lệ'], ['legacy', 'Bài cũ (Practice tắt)'], ['empty', 'Quiz chưa có câu'], ['dup', 'Câu Practice trùng Exam'], ['busy', 'Đang có người làm (D-59)']] },
+  { label: 'Mở sẵn', key: 'open', options: [['none', 'Không'], ['new', 'Thêm bài'], ['w1', 'Wizard B1'], ['w2', 'B2 Chọn cách'], ['w2add', 'B2 Soạn tay'], ['w2imp', 'B2 Nhập file'], ['w3', 'B3 Practice'], ['w3pdf', 'B3 Nhập PDF'], ['pdfscan', 'PDF scan lỗi'], ['mgr', 'Sửa quiz có sẵn']] },
+  { label: 'Dữ liệu', key: 'm', options: [['ok', 'Đủ'], ['missing', 'Thiếu (BR-CRS-11)']] },
+], (s) => {
+  document.querySelectorAll('.qz-modal').forEach((x) => x.remove());
+  role = s.r === 'admin' ? 'admin' : 'creator'; st = s.st; missing = s.m === 'missing'; inProgress = s.qz === 'busy' ? 4 : 0;
+  seed(s.qz); render();
+  const k = '0:1';
+  const P2 = { title: 'Test Domain 3 — MCP & Tool Design', minutes: 45, pass: 80, practice: true };
+  const P3 = { ...P2, exam: sc(D.examQuestions) };
+  if (s.open === 'mgr' || params.get('quiz')) openMgr(k);
+  if (s.open === 'new') openAddLesson(2);
+  if (s.open === 'w1') openNewQuiz(2);
+  if (s.open === 'w2') openNewQuiz(2, P2, 2);
+  if (s.open === 'w2add') openNewQuiz(2, P2, 2, 'add');
+  if (s.open === 'w2imp') openNewQuiz(2, P2, 2, 'importdemo');
+  if (s.open === 'w3') openNewQuiz(2, P3, 3);
+  if (s.open === 'w3pdf') openNewQuiz(2, P3, 3, 'importpdf');
+  if (s.open === 'pdfscan') openNewQuiz(2, P3, 3, 'pdfscan');
+});
 </script>
 </body>
 </html>

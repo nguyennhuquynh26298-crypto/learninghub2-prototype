@@ -26,7 +26,7 @@
     open(Modal({ id: 'm-approve', icon: 'check', iconTone: 'success',
       title: revision ? 'Thay nội dung đang chạy bằng bản sửa?' : `Publish ${esc(course)}?`,
       desc: revision ? 'Tiến độ học viên được tính lại theo bài mới.' : 'Học viên trong đối tượng sẽ thấy khoá ngay.',
-      foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Approve', attrs: 'id="ap-ok"' }) }));
+      foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Duyệt', attrs: 'id="ap-ok"' }) }));
     document.getElementById('ap-ok').onclick = () => { document.getElementById('m-approve').remove(); onOk(); };
   }
 

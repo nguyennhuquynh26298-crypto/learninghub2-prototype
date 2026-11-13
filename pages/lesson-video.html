@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CCAR-F Claude Certified Architect – Foundations · Learn</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
 <style>
   .learn-stage .player { position: absolute; inset: 0; border-radius: 0; aspect-ratio: auto; }
   .player__seg { position: absolute; top: 0; bottom: 0; background: rgba(147,150,255,.55); }
@@ -17,8 +17,8 @@
 <!-- Chép bố cục /course/<id>/learn: stage 16:9 = trình phát video; drawer Course content 400.
      LH2 #8: video chỉ hoàn thành khi xem thật ≥ 90% (đoạn tua qua không tính). -->
 <div id="app"></div>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/data.js"></script>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
 <script>
 const { ICON, LearnShell, CourseContent, ProgressBreakdown, Progress, Gauge, toast, esc } = LH; const D = LHData; const C = D.course;
 document.getElementById('app').innerHTML = LearnShell({ course: C.title, pct: D.myResult.pct, stage: '<div class="player" id="player"></div>',

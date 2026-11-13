@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My courses · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
 </head>
 <body class="page">
 <div id="header"></div>
@@ -14,7 +14,7 @@
   <!-- #6 §3.2 — Trạng thái thay 2 tab cũ; có số đếm -->
   <div class="tabs" id="tabs"></div>
   <div class="toolbar">
-    <label class="input-wrap" style="width:320px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" id="q" placeholder="Tìm trong khoá của tôi"></label>
+    <label class="input-wrap" style="width:320px"><svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" id="q" placeholder="Tìm trong khoá của tôi"></label>
     <label class="row gap-8 t-sm" title="Ngày đăng ký, hoặc ngày hoàn thành nếu đã xong">Thời gian<select class="input select" id="ld" style="width:150px"></select></label>
     <span class="grow"></span>
     <label class="row gap-8 t-sm">Sắp xếp<select class="input select" id="sort" style="width:190px"><option value="last">Học gần nhất</option><option value="pg">Tiến độ cao → thấp</option><option value="az">Tên A–Z</option></select></label>
@@ -22,10 +22,10 @@
   <div class="course-grid" id="grid"></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/data.js"></script>
-<script src="../assets/js/enroll-limit.js"></script>
-<script src="../assets/js/search.js"></script>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/enroll-limit.js?v=1113c"></script>
+<script src="../assets/js/search.js?v=1113c"></script>
 <script>
 const { ICON, AppHeader, AppFooter, BackLink, CourseCard, SlotMeter, Alert, esc } = LH; const D = LHData; const S = LHSearch;
 document.getElementById('header').innerHTML = AppHeader();

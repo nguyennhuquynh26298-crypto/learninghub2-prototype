@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nhân viên · LearningHub Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+</head>
+<body>
+<div id="header"></div>
+<!-- Figma: Employee/ List 457:2164 · Edit Employees 457:2523. Nghiệp vụ gốc (Notion Sync Data / Role): nhân viên lấy từ HRM, chỉ sửa vai trò. LH2 không đổi module này. -->
+<main></main>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/admin-frame.js?v=1113c"></script>
+<script>
+const { Avatar, esc, Tag } = LH;
+const ROLES = ['Admin', 'Instruction', 'Editor', 'Manager', 'Learner'];
+LHFrame.list({
+  active: 'employees', eyebrow: 'Tổng quan', title: 'Nhân viên',
+  desc: 'Xem thông tin khoá học của toàn bộ nhân viên. Danh sách đồng bộ từ HRM (Cài đặt › Đồng bộ dữ liệu).',
+  search: 'Tìm nhân viên tại đây',
+  filters: [['Vai trò', ROLES], ['Phòng ban', LHData.hr.departments]],
+  cols: ['Tên nhân viên', 'Email', 'Phòng ban', 'Vai trò', ['Thao tác', 't-act']],
+  rows: [
+    { name: 'Alice Nguyen', email: 'alice.nguyen@tvf.com.vn', dept: 'ITS', roles: ['Learner'] },
+    { name: 'Celine Tran', email: 'celinetran@tvf.com.vn', dept: 'Management', roles: ['Manager', 'Learner', 'Editor'] },
+    { name: 'Mina Nguyen', email: 'minanguyen@tvf.com.vn', dept: 'UIUX Design', roles: ['Admin', 'Learner'] },
+  ],
+  cell: (r) => `<td class="t-name"><span class="adm-meta">${Avatar(r.name, 'sm')}<b>${esc(r.name)}</b></span></td><td>${esc(r.email)}</td><td>${esc(r.dept)}</td>
+    <td><span class="stage-wrap">${r.roles.slice(0, 1).map((x) => Tag(x, 'info')).join('')}${r.roles.length > 1 ? Tag('+' + (r.roles.length - 1)) : ''}</span></td>`,
+  menu: (r, i) => [{ label: 'Sửa', icon: 'edit', attrs: `data-frm-edit="${i}"` }, { label: 'Xoá', icon: 'trash', danger: true, attrs: `data-frm-del="${i}"` }],
+  empty: { icon: 'usersRound', title: 'Chưa có dữ liệu', desc: 'Chưa có nhân viên nào. Chạy Đồng bộ dữ liệu để lấy danh sách từ HRM.', cta: '<a class="btn-cta btn-cta--soft" href="admin-sync.html?r=admin">Đi tới Đồng bộ dữ liệu</a>' },
+  delTitle: 'Bạn chắc chắn muốn xoá nhân viên này?', delText: (r) => `${esc(r.name)} sẽ không đăng nhập được LearningHub. Tiến độ học vẫn được giữ.`,
+  form: {
+    editTitle: 'Sửa nhân viên', desc: 'Tên, phòng ban, email lấy từ HRM — chỉ đổi được vai trò.',
+    fields: [
+      { key: 'name', label: 'Tên nhân viên', ro: true },
+      { key: 'dept', label: 'Phòng ban', ro: true },
+      { key: 'email', label: 'Email', req: true, ro: true, full: true },
+      { key: 'roles', label: 'Vai trò', type: 'checks', options: ROLES, req: true, full: true,
+        hint: 'LH2 (D-53): Admin / Editor hiện có đều thành <b>Admin L&amp;D</b>. Quyền Course Creator cấp ở Cài đặt › Phân quyền Course Creator.' },
+    ],
+  },
+  note: '[KT] Khung đúng Figma 457:2164 / 457:2523 — LearningHub 2 không đổi module Nhân viên.',
+});
+</script>
+</body>
+</html>

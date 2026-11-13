@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Danh mục khoá học · Cài đặt · LearningHub Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+</head>
+<body>
+<div id="header"></div>
+<!-- Figma chưa có frame — dùng bố cục danh sách của Setting 421:6741. Nghiệp vụ: Notion Features checklist / Admin / Category
+     (tên không trùng, có danh mục con, không cho xoá khi đang có khoá dùng). -->
+<main></main>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/admin-frame.js?v=1113c"></script>
+<script>
+const { esc, Tag } = LH;
+const SUBS = { 'Software Development': ['Programming Fundamentals', 'Web', 'DevOps'], 'Data & AI': ['Machine Learning', 'AI Agent'], Language: ['English', 'Japanese'] };
+const COUNT = { 'Software Development': 12, 'Data & AI': 5, Language: 3, 'Corporate & Mandatory Training': 4 };
+const rows = LHData.categories.map((name) => ({ name, parent: '', subs: (SUBS[name] || []).join(', '), courses: COUNT[name] || 0, desc: '' }));
+LHFrame.list({
+  active: 'categories', eyebrow: 'Cài đặt', title: 'Danh mục khoá học',
+  desc: 'Nhóm khoá học theo danh mục và danh mục con. Học viên lọc khoá theo danh mục ở trang Home.',
+  cta: 'Tạo danh mục', search: 'Tìm danh mục',
+  cols: ['Tên danh mục', 'Danh mục con', ['Số khoá', 'num'], ['Thao tác', 't-act']],
+  rows, blank: { subs: '', courses: 0 },
+  cell: (r) => `<td class="t-name"><b>${esc(r.name)}</b>${r.parent ? `<div class="adm-hint">Thuộc ${esc(r.parent)}</div>` : ''}</td>
+    <td>${r.subs ? `<span class="stage-wrap">${r.subs.split(', ').map((s) => Tag(s, 'neutral')).join('')}</span>` : '<span class="adm-hint">—</span>'}</td><td class="num">${r.courses}</td>`,
+  menu: (r, i) => [{ label: 'Sửa', icon: 'edit', attrs: `data-frm-edit="${i}"` }, { label: 'Xoá', icon: 'trash', danger: true, attrs: `data-frm-del="${i}"` }],
+  canDelete: (r) => (r.courses ? `Không xoá được: ${r.name} đang có ${r.courses} khoá học. Chuyển khoá sang danh mục khác trước.` : ''),
+  empty: { icon: 'list', title: 'Chưa có dữ liệu', desc: 'Chưa có danh mục nào. Tạo danh mục để gắn cho khoá học.', cta: '<button class="btn-cta" data-frm-new>Tạo danh mục</button>' },
+  delTitle: 'Bạn chắc chắn muốn xoá danh mục này?', delText: (r) => `Các danh mục con của <b>${esc(r.name)}</b> cũng bị xoá.`,
+  form: {
+    newTitle: 'Tạo danh mục', editTitle: 'Sửa danh mục',
+    fields: [
+      { key: 'name', label: 'Tên danh mục', req: true, unique: true, ph: 'Nhập tên danh mục', max: 60, hint: 'Tối đa 60 ký tự, không trùng danh mục đã có.' },
+      { key: 'parent', label: 'Danh mục cha', type: 'select', options: LHData.categories, ph: 'Không có (danh mục gốc)', hint: 'Chọn danh mục cha nếu đây là danh mục con.' },
+      { key: 'desc', label: 'Mô tả', type: 'textarea', ph: 'Nhập mô tả...', full: true },
+    ],
+  },
+  note: '[KT] Theo Notion (Category) — Figma chưa có frame, dùng bố cục danh sách của Cài đặt. LH2 không đổi.',
+});
+</script>
+</body>
+</html>

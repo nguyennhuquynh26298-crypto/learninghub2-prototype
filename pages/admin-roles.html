@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vai trò · Cài đặt · LearningHub Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+</head>
+<body>
+<div id="header"></div>
+<!-- Figma: Setting 421:6741 (danh sách vai trò) · Setting/ Create 435:2604 (Tạo vai trò). Notion Features checklist / Admin / Role: CRUD vai trò, quyền Admin | User, tên không trùng. -->
+<main></main>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/admin-frame.js?v=1113c"></script>
+<script>
+const { esc, Tag } = LH;
+LHFrame.list({
+  active: 'roles', eyebrow: 'Cài đặt', title: 'Vai trò',
+  desc: 'Tạo và quản lý vai trò dùng để phân quyền nhân viên.',
+  cta: 'Tạo vai trò', search: 'Tìm kiếm tại đây',
+  cols: ['Tên vai trò', 'Mã', 'Mô tả', 'Quyền', ['Thao tác', 't-act']],
+  rows: [
+    { name: 'PM', code: 'T001-26', desc: 'Project Management', perm: 'User' },
+    { name: 'BA', code: 'T003-12', desc: 'Bussiness Analyst', perm: 'User' },
+    { name: 'CEO/Admin', code: 'T002-01', desc: 'Chief Executive Officer / Administrator', perm: 'Admin' },
+  ],
+  blank: { code: '—' },
+  cell: (r) => `<td class="t-name"><b>${esc(r.name)}</b></td><td>${esc(r.code)}</td><td>${esc(r.desc)}</td><td>${Tag(r.perm, r.perm === 'Admin' ? 'info' : 'neutral')}</td>`,
+  menu: (r, i) => [{ label: 'Chi tiết', icon: 'eye', attrs: `data-frm-detail="${i}"` }, { label: 'Sửa', icon: 'edit', attrs: `data-frm-edit="${i}"` }, { label: 'Xoá', icon: 'trash', danger: true, attrs: `data-frm-del="${i}"` }],
+  empty: { icon: 'shield', title: 'Chưa có dữ liệu', desc: 'Chưa có vai trò nào. Bấm "Tạo vai trò" để thêm vai trò đầu tiên.', cta: '<button class="btn-cta" data-frm-new>Tạo vai trò</button>' },
+  delTitle: 'Bạn chắc chắn muốn xoá vai trò này?', delText: (r) => `Nhân viên đang có vai trò <b>${esc(r.name)}</b> sẽ bị gỡ vai trò.`,
+  form: {
+    newTitle: 'Tạo vai trò', editTitle: 'Sửa vai trò', detailTitle: 'Chi tiết vai trò',
+    fields: [
+      { key: 'name', label: 'Tên vai trò', req: true, unique: true, ph: 'Nhập tên vai trò', max: 60, hint: 'Tối đa 60 ký tự, không trùng vai trò đã có.' },
+      { key: 'perm', label: 'Quyền', type: 'select', options: ['Admin', 'User'], req: true, ph: 'Chọn quyền' },
+      { key: 'desc', label: 'Mô tả', type: 'textarea', ph: 'Nhập mô tả...', full: true },
+    ],
+  },
+  note: '[KT] Khung đúng Figma 421:6741 / 435:2604. [SỬA] LH2 (D-53): tài khoản Admin / Editor hiện có đều thành Admin L&amp;D.',
+});
+</script>
+</body>
+</html>

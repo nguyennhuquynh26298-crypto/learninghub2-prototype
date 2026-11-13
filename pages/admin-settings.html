@@ -4,55 +4,66 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cài đặt hệ thống · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
 </head>
 <body>
 <div id="header"></div>
-<main class="container screen stack gap-24" style="max-width:800px">
-  <h1 class="page-title">Phân quyền</h1>
+<!-- Setting 421:6741 (danh sách) · Setting Create 435:2604 (form thêm) — sidebar mở rộng, mục Cài đặt > Phân quyền -->
+<main>
+  <div id="head"></div>
   <!-- #3 §3.1 — Phân quyền Course Creator -->
-  <section class="panel">
-    <div class="panel__head"><b class="t-sm grow">Course Creator</b><button class="btn btn--outline btn--sm" id="add-cr">+ Thêm Course Creator</button></div>
-    <table class="table" id="creators"></table>
+  <section class="adm-box" id="list-view">
+    <div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Course Creator</h2><button class="btn-cta" id="add-cr">+ Thêm Course Creator</button></div>
+    <div class="adm-card" id="creators"></div>
   </section>
+  <section class="adm-card" id="m-cr" hidden></section>
 </main>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/data.js"></script>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
 <script>
-const { ICON, AppHeader, toast, Avatar, Modal, Button, esc } = LH;
+const { ICON, toast, Avatar, Modal, Button, esc } = LH;
 const creators = LHData.creators.map((c) => ({ ...c }));
 const pool = [['Đỗ Minh Quân', 'QA'], ['Vũ Thị Lan', 'Development'], ['Hoàng Anh Tuấn', 'BA'], ['Ngô Bảo Châu', 'Design']];
 function renderCreators() {
-  document.getElementById('creators').innerHTML = `<thead><tr><th>Nhân viên</th><th>Phòng ban</th><th>Khoá phụ trách</th><th>Ngày cấp</th><th></th></tr></thead><tbody>` +
-    creators.map((c, i) => `<tr><td><span class="row gap-8">${Avatar(c.name, 'sm')}<span class="stack"><b>${esc(c.name)}</b><span class="t-xs muted">${esc(c.email)}</span></span></span></td><td>${c.dept}</td><td>${c.courses}</td><td>${c.since}</td>
-      <td style="text-align:right">${Button({ label: 'Gỡ quyền', variant: 'danger-ghost', size: 'sm', attrs: `data-rmcr="${i}"` })}</td></tr>`).join('') + '</tbody>';
+  document.getElementById('creators').innerHTML = LH.AdminTable(['Tên', 'Email', 'Phòng ban', 'Khoá phụ trách', 'Ngày cấp', ['Thao tác', 't-act']],
+    creators.map((c, i) => `<tr><td><span class="adm-meta">${Avatar(c.name, 'sm')}<b>${esc(c.name)}</b></span></td><td>${esc(c.email)}</td><td>${c.dept}</td><td>${c.courses}</td><td>${c.since}</td>
+      <td class="t-act">${LH.RowMenu([{ label: 'Gỡ quyền', icon: 'trash', danger: true, attrs: `data-rmcr="${i}"` }])}</td></tr>`).join(''));
 }
-renderCreators();
+function showForm(on) {
+  document.getElementById('list-view').hidden = on; const f = document.getElementById('m-cr'); f.hidden = !on;
+  document.getElementById('head').innerHTML = LH.AdminHead(on
+    ? { back: '#', eyebrow: 'Cài đặt · Phân quyền', title: 'Thêm Course Creator', desc: 'Chọn nhân viên được tạo và quản lý khoá học. Người đã là Course Creator / Admin L&D không hiện.' }
+    : { eyebrow: 'Cài đặt', title: 'Phân quyền Course Creator', desc: 'Course Creator tạo khoá, gửi Admin L&D duyệt và theo dõi khoá mình phụ trách.' });
+  const back = document.querySelector('.adm-back'); if (back) back.addEventListener('click', (e) => { e.preventDefault(); showForm(false); });
+  if (!on) return;
+  const left = pool.filter(([n]) => !creators.some((c) => c.name === n)); // người đã là Creator / Admin không hiện
+  f.innerHTML = `<h2 class="adm-card__title">Thông tin chung</h2>
+    <div class="adm-form"><div class="adm-field full"><label>Nhân viên <span class="req">*</span></label><label class="adm-inline-search" style="width:100%"><input style="width:100%" placeholder="Tìm theo tên, email, mã NV"><span>${ICON.search}</span></label></div>
+      <div class="adm-field full"><div class="radio-list">${left.map(([n, d]) => `<label><input type="checkbox" value="${n}" data-dept="${d}">${Avatar(n, 'sm')}${n}<span class="count">${d}</span></label>`).join('') || '<span class="adm-hint">Không còn nhân viên để thêm.</span>'}</div>
+        <span class="adm-hint is-error" id="cr-err" hidden>Chọn ít nhất 1 nhân viên.</span></div>
+      <div class="adm-field full"><label class="check"><input type="checkbox" checked disabled><span>Gửi email báo cấp quyền</span></label></div></div>
+    <div class="adm-btn-combo"><button class="btn-cta btn-cta--line" id="cr-cancel">Huỷ</button><button class="btn-cta" id="cr-save">Lưu</button></div>`;
+}
+renderCreators(); showForm(false);
+LH.AdminLayout({ active: 'settings', role: 'admin' });
 document.addEventListener('click', (e) => {
-  if (e.target.closest('#add-cr')) {
-    const left = pool.filter(([n]) => !creators.some((c) => c.name === n)); // người đã là Creator / Admin không hiện
-    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-cr', icon: 'users', title: 'Thêm Course Creator', 
-      body: `<div class="stack gap-8"><label class="input-wrap">${ICON.search}<input class="input" placeholder="Tìm theo tên, email, mã NV"></label>
-        <div class="radio-list">${left.map(([n, d]) => `<label><input type="checkbox" value="${n}" data-dept="${d}">${Avatar(n, 'sm')}${n}<span class="count">${d}</span></label>`).join('')}</div>
-        <span class="field__error hidden" id="cr-err">${ICON.alert}Chọn ít nhất 1 nhân viên.</span></div>`,
-      foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Lưu', attrs: 'id="cr-save"' }) }));
-  }
+  if (e.target.closest('#add-cr')) { showForm(true); return; }
+  if (e.target.closest('#cr-cancel')) { showForm(false); return; }
   if (e.target.closest('#cr-save')) {
-    const sel = [...document.querySelectorAll('#m-cr input[type=checkbox]:checked')];
-    document.getElementById('cr-err').classList.toggle('hidden', sel.length > 0); if (!sel.length) return;
+    const sel = [...document.querySelectorAll('#m-cr input[type=checkbox][value]:checked')];
+    document.getElementById('cr-err').hidden = sel.length > 0; if (!sel.length) return;
     sel.forEach((x) => creators.push({ name: x.value, email: '—', dept: x.dataset.dept, courses: 0, since: '09/11/2026' }));
-    document.getElementById('m-cr').remove(); renderCreators(); toast(`Đã cấp quyền cho ${sel.length} người`);
+    showForm(false); renderCreators(); toast(`Đã cấp quyền cho ${sel.length} người · đã gửi email báo`);
   }
   const rm = e.target.closest('[data-rmcr]');
   if (rm) {
     const c = creators[+rm.dataset.rmcr];
-    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-rm', icon: 'alert', iconTone: 'danger', title: `Gỡ quyền Course Creator của ${esc(c.name)}?`, desc: `Người này không còn quản lý ${c.courses} khoá đang phụ trách; các khoá chuyển cho Admin L&D.`,
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-rm', size: 'sm', icon: 'alert', iconTone: 'danger', title: `Gỡ quyền Course Creator của ${esc(c.name)}?`, desc: `Người này không còn quản lý ${c.courses} khoá đang phụ trách; các khoá chuyển cho Admin L&D.`,
       foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Gỡ quyền', variant: 'danger', attrs: `data-rmok="${rm.dataset.rmcr}"` }) }));
   }
   const ok = e.target.closest('[data-rmok]');
   if (ok) { const c = creators.splice(+ok.dataset.rmok, 1)[0]; document.getElementById('m-rm').remove(); renderCreators(); toast(`Đã gỡ quyền của ${c.name}`); }
 });
-document.getElementById('header').innerHTML = AppHeader({ role: 'Admin', user: 'Lê Thị Mai' });
 </script>
 </body>
 </html>

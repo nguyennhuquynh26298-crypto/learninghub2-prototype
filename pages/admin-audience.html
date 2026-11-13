@@ -4,9 +4,13 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quản lý khoá — Đối tượng · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
 <style>
-  .wrap { max-width: 1080px; }
+  /* Course Assignment — Figma 179:2227: Chi tiết gán khoá (trái) · Xem trước học viên (phải) · Danh sách học viên (dưới) */
+  .aud-card { display: flex; flex-direction: column; gap: 24px; }
+  .aud-card .panel { border: 1px solid var(--adm-stroke) !important; border-radius: 12px !important; }
+  .pv-stat { display: flex; align-items: baseline; gap: 8px; } .pv-stat b { font-size: 32px; font-weight: 600; color: var(--adm-text); }
+  .pv-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--adm-stroke); font-size: 15px; }
   .rule-grid { display: grid; grid-template-columns: 140px 1fr; gap: 14px 16px; align-items: start; }
   .rule-grid > .lbl { display: flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 500; height: 36px; }
   .rule-grid > .lbl svg { width: 16px; height: 16px; color: var(--text-subtle); }
@@ -14,44 +18,45 @@
   details.excl summary svg { width: 16px; height: 16px; transition: transform .15s; }
   details.excl[open] summary svg { transform: rotate(180deg); }
   .src { display: flex; flex-wrap: wrap; gap: 4px; }
+  .rule-grid > :not(.lbl) { min-width: 0; }
+  .aud-dates { display: flex; flex-wrap: wrap; gap: 16px; }
+  .aud-dates > .field { flex: 1 1 180px; max-width: 240px; }
+  @media (max-width: 1023px) { .rule-grid { grid-template-columns: minmax(0, 1fr); gap: 6px; } .rule-grid > .lbl { height: auto; margin-top: 8px; } }
 </style>
 </head>
 <body>
 <div id="header"></div>
-<div class="admin-bar"><div class="container stack gap-12">
-  <nav class="breadcrumb"><a href="admin-courses.html">Quản lý khoá học</a><span class="chev"></span><span data-ctitle>Claude Certified Architect – Foundations</span></nav>
-  <div class="row gap-12"><h1 class="page-title grow" data-ctitle>Claude Certified Architect – Foundations</h1><span class="badge badge--success">Published</span><span id="export-slot"></span></div>
-  <div class="tabs" style="border:0"><button class="tab">Thông tin</button><a class="tab" href="admin-test-practice.html?st=ok" style="text-decoration:none">Nội dung</a><button class="tab is-active">Đối tượng</button><button class="tab">Học viên</button></div>
-</div></div>
+<main>
+  <div class="adm-head"><div class="adm-head__text"><a class="adm-back" href="admin-courses.html" id="back">Quay lại</a><span class="adm-head__eyebrow">Course Assignment</span>
+    <h1><span data-ctitle>Claude Certified Architect – Foundations</span> <span class="stage-tag stage-tag--published">Đang chạy</span></h1>
+    <p>Gán khoá cho học viên và phòng ban, đặt lịch học, gửi email thông báo.</p></div><span id="export-slot"></span></div>
+  <div class="combo"><button>Thông tin</button><button onclick="location.href='admin-test-practice.html?st=ok'">Nội dung</button><button class="is-active">Đối tượng</button><button>Học viên</button></div>
+  <div class="adm-grid-2">
+    <section class="adm-card aud-card"><h2 class="adm-card__title" style="margin:0">Chi tiết gán khoá</h2>
+      <div class="adm-field"><span class="adm-label">Phạm vi <span class="req">*</span></span>
+        <div class="choice-cards" id="scope">
+          <label class="choice-card" data-v="all"><input type="radio" name="scope" value="all"><div><b>Mọi người</b><div class="adm-hint">Toàn công ty</div></div></label>
+          <label class="choice-card" data-v="limited"><input type="radio" name="scope" value="limited"><div><b>Giới hạn</b><div class="adm-hint">Phòng ban, vị trí, cá nhân</div></div></label>
+        </div></div>
+      <div id="rules"></div>
+      <section class="panel" id="extra-panel"></section>
+      <section class="panel" id="paid-panel"></section>
+      <div class="adm-btn-combo" style="align-items:center;padding-top:0"><label class="check" style="flex:1"><input type="checkbox" id="mail"><span>Gửi email thông báo cho học viên mới</span></label>
+        <a class="btn-cta btn-cta--line" href="admin-courses.html">Huỷ</a><button class="btn-cta" id="save">Lưu</button></div>
+    </section>
+    <aside class="adm-card" id="preview"></aside>
+  </div>
+  <section class="adm-card" id="members"></section>
+</main>
 
-<main class="container screen"><div class="wrap stack gap-24">
-  <section class="panel"><div class="panel__body stack gap-16">
-    <div class="field"><span class="field__label">Phạm vi<span class="req">*</span></span>
-      <div class="choice-cards" id="scope">
-        <label class="choice-card" data-v="all"><input type="radio" name="scope" value="all"><div><b>Toàn công ty</b></div></label>
-        <label class="choice-card" data-v="limited"><input type="radio" name="scope" value="limited"><div><b>Giới hạn</b></div></label>
-      </div></div>
-    <div id="rules"></div>
-  </div></section>
-
-  <section class="panel" id="extra-panel"></section>
-  <section class="panel" id="paid-panel"></section>
-
-  <section class="panel" id="members"></section>
-</div></main>
-
-<div style="position:sticky;bottom:64px;background:#fff;border-top:1px solid var(--border-default)"><div class="container row gap-16" style="height:64px">
-  <label class="check grow"><input type="checkbox" id="mail"><span>Gửi email mời học</span></label>
-  <button class="btn btn--secondary">Huỷ</button><button class="btn btn--primary" id="save">Lưu</button>
-</div></div>
-
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/data.js"></script>
-<script src="../assets/js/export-modal.js"></script>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/export-modal.js?v=1113c"></script>
 <script>
 /* Tên khoá theo dòng đã bấm ở Quản lý khoá học */
 (() => { const t = new URLSearchParams(location.search).get('t') || sessionStorage.getItem('lhAdminCourse'); if (!t) return; sessionStorage.setItem('lhAdminCourse', t); document.querySelectorAll('[data-ctitle]').forEach((el) => { el.textContent = t; }); })();
-const { ICON, AppHeader, Alert, Badge, Avatar, Modal, Button, toast, esc } = LH; const D = LHData;
+const { ICON, Alert, Badge, Avatar, Modal, Button, toast, esc, AdminLayout, Tag } = LH;
+document.getElementById('back').insertAdjacentHTML('afterbegin', ICON.undo); const D = LHData;
 let role = 'Admin';
 const base = { scope: 'limited', depts: 'QA|QC Automation', pos: 'Automation Tester' };
 const groupChanged = () => st.scope !== base.scope || st.depts.join('|') !== base.depts || st.pos.join('|') !== base.pos;
@@ -61,8 +66,8 @@ document.querySelectorAll('.chev').forEach((c) => c.innerHTML = ICON.chevronR);
 
 const tagInput = (key, list, ph) => `<div class="tag-input" data-key="${key}">${list.map((v) => `<span class="tag">${esc(v)}<button data-rm="${key}" data-v="${esc(v)}" aria-label="Bỏ ${esc(v)}">${ICON.x}</button></span>`).join('')}<input placeholder="${ph}"></div>`;
 function render() {
-  document.getElementById('header').innerHTML = AppHeader({ role: role === 'Admin' ? 'Admin' : 'Course Creator', user: role === 'Admin' ? 'Lê Thị Mai' : 'Phạm Thanh Long' });
-  document.getElementById('export-slot').innerHTML = Button({ label: 'Xuất dữ liệu', variant: 'outline', icon: 'download', attrs: 'id="open-export"' });
+  AdminLayout({ active: 'courses', collapsed: true, role });
+  document.getElementById('export-slot').innerHTML = `<button class="btn-cta btn-cta--line" id="open-export">${ICON.download}Xuất dữ liệu</button>`;
   document.querySelectorAll('#scope .choice-card').forEach((c) => { c.classList.toggle('is-selected', c.dataset.v === st.scope); c.querySelector('input').checked = c.dataset.v === st.scope; });
   const limited = st.scope === 'limited';
   document.getElementById('rules').innerHTML = !limited ? '' :
@@ -77,9 +82,9 @@ function render() {
   const changed = st.start !== st.saved.start || st.end !== st.saved.end;
   document.getElementById('extra-panel').innerHTML = `<div class="panel__head"><b class="t-sm grow">Lịch học</b>${isAdmin ? '' : Badge('Chỉ xem', 'neutral', 'lock')}</div>
     <div class="panel__body stack gap-16">
-      <div class="row gap-16" style="align-items:flex-end">
-        <div class="field" style="width:200px"><span class="field__label">Ngày bắt đầu</span><input class="input" type="date" id="d-start" value="${st.start}" ${isAdmin ? '' : 'disabled'}></div>
-        <div class="field" style="width:200px"><span class="field__label">Ngày kết thúc</span><input class="input ${st.schedErr ? 'is-error' : ''}" type="date" id="d-end" value="${st.end}" ${isAdmin ? '' : 'disabled'}></div>
+      <div class="aud-dates" style="align-items:flex-end">
+        <div class="field"><span class="field__label">Ngày bắt đầu</span><input class="input" type="date" id="d-start" value="${st.start}" ${isAdmin ? '' : 'disabled'}></div>
+        <div class="field"><span class="field__label">Ngày kết thúc</span><input class="input ${st.schedErr ? 'is-error' : ''}" type="date" id="d-end" value="${st.end}" ${isAdmin ? '' : 'disabled'}></div>
         ${isAdmin && changed && st.saved.start ? `<label class="check"><input type="checkbox" id="mail-sched"><span>Gửi email báo đổi lịch</span></label>` : ''}</div>
       ${st.schedErr ? `<div class="field__error" style="margin-top:-8px">${ICON.alert}${st.schedErr}</div>` : ''}
     </div>`;
@@ -92,17 +97,23 @@ function render() {
   const sv = document.getElementById('save'); sv.textContent = toRevision() ? 'Lưu vào bản sửa' : 'Lưu';
   document.getElementById('export-slot').classList.toggle('hidden', role !== 'Admin' && !st.wave2);
   const rows = limited ? st.members : [];
-  document.getElementById('members').innerHTML = `<div class="panel__head"><b class="t-sm">Danh sách học viên</b><span class="badge badge--info">${limited ? rows.length : 'Toàn công ty'}${limited ? ' học viên' : ''}</span><span class="grow"></span>
-      <label class="input-wrap" style="width:260px">${ICON.search}<input class="input" placeholder="Tìm học viên…"></label></div>
-    ${limited ? `<table class="table"><tr><th>Họ tên</th><th>Phòng ban</th><th>Vị trí</th><th>Nguồn</th><th>Trạng thái học</th><th></th></tr>
+  const byDept = {}; rows.forEach((m) => { byDept[m.dept] = (byDept[m.dept] || 0) + 1; });
+  document.getElementById('preview').innerHTML = `<h2 class="adm-card__title">Xem trước học viên</h2>
+    ${limited ? `<div class="pv-stat"><b>${rows.length}</b><span class="adm-hint">học viên được học</span></div>
+      <div style="margin-top:16px">${Object.entries(byDept).map(([d, n]) => `<div class="pv-row"><span class="adm-meta">${ICON.building}${esc(d)}</span><b>${n}</b></div>`).join('')}
+      <div class="pv-row"><span class="adm-meta">${ICON.lock}Đã loại trừ</span><b>${st.excluded.length}</b></div></div>`
+    : `<div class="pv-stat"><b>Toàn công ty</b></div><p class="adm-hint">Mọi nhân viên đang làm việc đều thấy và học được khoá.</p>`}`;
+  document.getElementById('members').innerHTML = `<div class="adm-box__head" style="margin-bottom:20px"><h2 class="adm-box__title">Danh sách học viên</h2>${Tag(limited ? rows.length + ' học viên' : 'Toàn công ty', 'info')}<span style="flex:1"></span>
+      <label class="adm-inline-search"><input placeholder="Tìm học viên…"><span>${ICON.search}</span></label></div>
+    ${limited ? `<div class="adm-scroll"><table class="adm-table"><tr><th>Họ tên</th><th>Phòng ban</th><th>Vị trí</th><th>Nguồn</th><th>Trạng thái học</th><th></th></tr>
     ${rows.map((m, k) => `<tr><td><div class="person">${Avatar(m.name, 'sm')}<div><div class="fw-500">${esc(m.name)}</div><div class="t-xs muted">${esc(m.email)}</div></div></div></td>
       <td>${esc(m.dept)}</td><td>${esc(m.pos)}</td><td><div class="src">${m.src.map((s) => Badge(s, s === 'Cá nhân' ? 'violet' : 'info')).join('')}</div></td>
-      <td>${Badge(m.status, m.status === 'Hoàn thành' ? 'success' : m.status === 'Đang học' ? 'warning' : 'neutral')}</td>
-      <td style="text-align:right"><button class="btn btn--danger-ghost btn--sm" data-remove="${k}">Remove</button></td></tr>`).join('')}</table>
-    <div class="panel__body" style="border-top:0"><details class="excl" ${st.excluded.length ? '' : ''}><summary>Đã loại trừ (${st.excluded.length}) ${ICON.chevronD}</summary>
-      ${st.excluded.length ? `<table class="table">${st.excluded.map((m, k) => `<tr><td><div class="person">${Avatar(m.name, 'sm')}<div><div class="fw-500">${esc(m.name)}</div><div class="t-xs muted">${esc(m.email)}</div></div></div></td><td>${esc(m.dept)}</td><td>${Badge('Mất quyền', 'neutral', 'lock')}</td><td style="text-align:right"><button class="btn btn--outline btn--sm" data-readd="${k}">${ICON.undo}Thêm lại</button></td></tr>`).join('')}</table>` : '<p class="t-sm muted">Chưa có ai.</p>'}
+      <td>${Tag(m.status, m.status === 'Hoàn thành' ? 'published' : m.status === 'Đang học' ? 'rejected' : 'neutral')}</td>
+      <td style="text-align:right"><button class="btn-cta btn-cta--line btn-cta--sm" style="color:#f04438" data-remove="${k}">Gỡ khỏi khoá</button></td></tr>`).join('')}</table></div>
+    <div style="padding-top:16px"><details class="excl" ${st.excluded.length ? '' : ''}><summary>Đã loại trừ (${st.excluded.length}) ${ICON.chevronD}</summary>
+      ${st.excluded.length ? `<div class="adm-scroll" style="margin-top:12px"><table class="adm-table">${st.excluded.map((m, k) => `<tr><td><div class="person">${Avatar(m.name, 'sm')}<div><div class="fw-500">${esc(m.name)}</div><div class="t-xs muted">${esc(m.email)}</div></div></div></td><td>${esc(m.dept)}</td><td>${Badge('Mất quyền', 'neutral', 'lock')}</td><td style="text-align:right"><button class="btn btn--outline btn--sm" data-readd="${k}">${ICON.undo}Thêm lại</button></td></tr>`).join('')}</table></div>` : '<p class="t-sm muted">Chưa có ai.</p>'}
     </details></div>`
-    : `<div class="panel__body t-sm muted">Toàn công ty</div>`}`;
+    : `<p class="adm-hint">Phạm vi Mọi người — không có danh sách riêng.</p>`}`;
 }
 
 document.addEventListener('click', (e) => {
@@ -116,12 +127,12 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('#ok-all')) { st.scope = 'all'; st.paid = false; document.getElementById('m-all').remove(); render(); return; }
   const r = e.target.closest('[data-remove]'); if (r) {
     const m = st.members[+r.dataset.remove];
-    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-rm', size: 'sm', icon: 'alert', iconTone: 'danger', title: `Gỡ ${esc(m.name)} khỏi khoá học?`, body: '<p class="t-sm">Người này mất quyền vào nội dung ngay, tiến độ được giữ.</p>', foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Remove', variant: 'danger', attrs: `data-confirm-rm="${r.dataset.remove}"` }) }));
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-rm', size: 'sm', icon: 'alert', iconTone: 'danger', title: `Gỡ ${esc(m.name)} khỏi khoá học?`, body: '<p class="t-sm">Người này mất quyền vào nội dung ngay, tiến độ được giữ.</p>', foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Gỡ', variant: 'danger', attrs: `data-confirm-rm="${r.dataset.remove}"` }) }));
     return;
   }
   const c = e.target.closest('[data-confirm-rm]'); if (c) { const [m] = st.members.splice(+c.dataset.confirmRm, 1); st.excluded.push(m); document.getElementById('m-rm').remove(); render(); document.querySelector('details.excl').open = true; toast(`Đã gỡ ${m.name} — tiến độ được giữ`); return; }
   const ra = e.target.closest('[data-readd]'); if (ra) { const [m] = st.excluded.splice(+ra.dataset.readd, 1); st.members.push({ ...m, status: 'Đang học' }); render(); toast(`Đã thêm lại ${m.name}`); return; }
-  if (e.target.closest('#open-export')) { LHExport.open({ role }); return; }
+  if (e.target.closest('#open-export')) { LHExport.open({ role, limited: st.scope === 'limited' }); return; }
 });
 document.addEventListener('change', (e) => {
   if (e.target.id === 'paid') { if (st.scope !== 'limited') { st.paidTry = true; e.target.checked = false; render(); return; } st.paid = e.target.checked; render(); }

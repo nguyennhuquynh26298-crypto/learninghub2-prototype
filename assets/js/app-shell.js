@@ -31,14 +31,14 @@
     frame.src = MODE === 'admin' && roleOf() === 'creator' ? 'pages/admin-courses.html?r=creator' : HOME;
   });
 
-  /* Admin: menu trái + đổi vai trò */
+  /* Admin: menu trái + đổi vai trò đã chuyển vào trong trang (LH.AdminLayout). Giữ code để tương thích nếu còn #nav. */
   const nav = document.getElementById('nav');
   function drawNav() {
     if (!nav) return;
     const r = roleOf();
     const items = r === 'admin'
-      ? [['admin-courses.html', 'pages/admin-courses.html', 'Quản lý khoá học', ''], ['admin-settings.html', 'pages/admin-settings.html', 'Phân quyền Course Creator', 'Đợt 2']]
-      : [['admin-courses.html', 'pages/admin-courses.html?r=creator', 'Khoá học của tôi', '']];
+      ? [['admin-dashboard.html', 'pages/admin-dashboard.html?r=admin', 'Dashboard', ''], ['admin-courses.html', 'pages/admin-courses.html', 'Quản lý khoá học', ''], ['admin-reports.html', 'pages/admin-reports.html?r=admin', 'Báo cáo', 'Đợt 2'], ['admin-settings.html', 'pages/admin-settings.html', 'Phân quyền Course Creator', 'Đợt 2']]
+      : [['admin-dashboard.html', 'pages/admin-dashboard.html?r=creator', 'Dashboard', ''], ['admin-courses.html', 'pages/admin-courses.html?r=creator', 'Khoá học của tôi', ''], ['admin-reports.html', 'pages/admin-reports.html?r=creator', 'Báo cáo', 'Đợt 2']];
     nav.innerHTML = `<div class="sh-role"><span>Đăng nhập với vai trò</span>
         <button data-role="admin" class="${r === 'admin' ? 'on' : ''}">Admin L&amp;D</button>
         <button data-role="creator" class="${r === 'creator' ? 'on' : ''}">Course Creator <i>Đợt 2</i></button></div>

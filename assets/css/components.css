@@ -25,7 +25,7 @@
 
 /* ===== Badge ===== */
 .badge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: var(--radius-full); font-size: var(--fs-xs); line-height: 16px; font-weight: 600; white-space: nowrap; }
-.badge svg { width: 12px; height: 12px; }
+.badge svg { width: 16px; height: 16px; flex: none; }
 .badge--success { background: var(--green-100); color: var(--success-text); }
 .badge--danger { background: var(--red-100); color: var(--danger-text); }
 .badge--warning { background: var(--amber-100); color: var(--warning-text); }
@@ -40,6 +40,7 @@
 .field__label .req { color: var(--danger-icon); margin-left: 2px; }
 .field__help { font-size: var(--fs-xs); line-height: 16px; color: var(--text-subtle); }
 .field__error { font-size: var(--fs-xs); line-height: 16px; color: var(--danger-text); display: flex; gap: 4px; align-items: center; }
+.field__error svg { width: 16px; height: 16px; flex: none; }
 .input { height: var(--control-md); border: 1px solid var(--border-control); border-radius: var(--radius-md); padding: 0 12px; font: inherit; font-size: var(--fs-sm); color: var(--text-strong); background: #fff; width: 100%; }
 .input:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--primary-200); }
 .input.is-error { border-color: var(--red-600); }
@@ -72,7 +73,7 @@
 .tag { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 4px 0 10px; border-radius: var(--radius-full); background: var(--primary-100); color: var(--primary-800); font-size: 13px; font-weight: 500; }
 .tag button { border: 0; background: transparent; color: inherit; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; cursor: pointer; padding: 0; }
 .tag button:hover { background: var(--primary-200); }
-.tag svg { width: 12px; height: 12px; }
+.tag svg { width: 16px; height: 16px; flex: none; }
 .tag-input { min-height: var(--control-md); border: 1px solid var(--border-control); border-radius: var(--radius-md); padding: 4px 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: #fff; }
 .tag-input input { border: 0; outline: 0; font: inherit; font-size: var(--fs-sm); flex: 1; min-width: 160px; height: 26px; padding: 0 6px; }
 
@@ -210,7 +211,7 @@
 .admin-bar__in { display: flex; align-items: center; gap: 16px; padding-top: 16px; }
 .breadcrumb { font-size: var(--fs-sm); color: var(--text-subtle); display: flex; gap: 6px; align-items: center; }
 .breadcrumb a { color: var(--text-subtle); }
-.breadcrumb svg { width: 14px; height: 14px; }
+.breadcrumb svg { width: 16px; height: 16px; flex: none; }
 
 /* ===== Course / Card (đo từ web: 336 rộng, bo 14, ảnh 170) ===== */
 /* flex-wrap gap-8 mb-16, card cố định 336 */
@@ -218,8 +219,11 @@
 .course-card { width: var(--card-w); background: #fff; border-radius: var(--card-radius); box-shadow: var(--shadow-course); overflow: hidden; display: flex; flex-direction: column; }
 .course-card__cover { height: 170px; position: relative; background: var(--neutral-100); }
 .course-card__cover img { width: 100%; height: 100%; object-fit: cover; }
-.cc-tag { position: absolute; top: 12px; left: 12px; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 999px; background: rgba(15,23,42,.75); color: #fff; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); }
-.cc-tag svg { width: 12px; height: 12px; }
+.cc-tag { position: absolute; top: 12px; left: 12px; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 999px; background: var(--neutral-900); color: #fff; font-size: 12px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.24), 0 0 0 1px rgba(255,255,255,.12); }
+/* 13/11: nhãn bìa nền đặc theo ý nghĩa — không dùng nền trong suốt (bị chìm trên bìa tối) */
+.cc-tag--restricted { background: var(--amber-200); color: var(--amber-800); }
+.cc-tag--upcoming { background: #fff; color: var(--primary-900); }
+.cc-tag svg { width: 16px; height: 16px; flex: none; }
 .cc-tag--lime { background: var(--lime-500); color: var(--neutral-900); }
 .cc-tag--ok { background: var(--green-600); }
 .cc-tag--fail { background: var(--red-600); }
@@ -370,16 +374,16 @@
 .slot-empty__ic { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-50, #eef0ff); color: var(--primary-900); flex: none; }
 .slot-empty__ic svg { width: 20px; height: 20px; }
 .slot-empty__go { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 500; color: var(--primary-900); }
-.slot-empty__go svg { width: 14px; height: 14px; }
+.slot-empty__go svg { width: 16px; height: 16px; flex: none; }
 .slot-empty:hover { border-color: var(--primary-900); background: var(--primary-50, #eef0ff); }
 /* Course / CTA card — khung phải trang khoá */
-.ic { display: inline-grid; place-items: center; width: 16px; height: 16px; flex: none; }
-.ic svg { width: 100%; height: 100%; }
+.ic-box { display: inline-grid; place-items: center; width: 16px; height: 16px; flex: none; }
+.ic-box svg { width: 100%; height: 100%; }
 .aside-card svg { max-width: 20px; max-height: 20px; }
 .cta-card { display: flex; flex-direction: column; gap: 12px; }
 .cta-card__tags { display: flex; align-items: center; gap: 6px; }
 .cta-card__meta { display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; color: var(--neutral-600); }
-.cta-card__meta .ic { width: 14px; height: 14px; color: var(--neutral-500); }
+.cta-card__meta .ic-box { width: 16px; height: 16px; color: var(--neutral-500); }
 .cta-card__meta b { color: var(--neutral-900); font-weight: 600; }
 .cta-card__pg { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
 .cta-card__pg .wp__row { margin-bottom: 0; }
@@ -467,7 +471,6 @@ hr.sep { border: 0; border-top: 1px solid var(--border-default); margin: 0; }
 
 /* ===== Đợt 2 · #3 Duyệt khoá ===== */
 .ab { align-items: flex-start; }
-.ab__act { flex: none; }
 .ab__quote { margin: 6px 0 0; padding: 8px 12px; background: rgba(255,255,255,.7); border-radius: 6px; color: var(--text-strong); font-style: normal; }
 .ab__quote cite { display: block; font-style: normal; font-size: var(--fs-xs); color: var(--text-subtle); margin-top: 4px; }
 .chg { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 4px; margin-left: auto; }
@@ -572,7 +575,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .cc-lesson.is-current { background: rgba(55,75,250,.1); color: var(--primary-900); }
 .cc-lesson__t { font-size: 14px; line-height: 20px; display: block; }
 .cc-lesson__m { margin-top: 4px; display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-fg-muted); }
-.cc-lesson__m svg { width: 14px; height: 14px; }
+.cc-lesson__m svg { width: 16px; height: 16px; flex: none; }
 .cc-ic { width: 16px; height: 16px; flex: none; margin-top: 2px; color: var(--text-fg-muted); display: grid; }
 .cc-ic svg { width: 16px; height: 16px; }
 .cc-ic--done { color: var(--primary-900); }
@@ -622,7 +625,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .wq-dot.is-on { border-color: var(--primary-700); }
 .wq-dot i { width: 8px; height: 8px; border-radius: 50%; background: var(--primary-700); }
 .wq-dot--box.is-on { background: var(--primary-700); color: #fff; }
-.wq-dot svg { width: 14px; height: 14px; }
+.wq-dot svg { width: 12px; height: 12px; flex: none; }
 .wq-opt.is-right { border-color: var(--green-500); background: var(--green-50); }
 .wq-opt.is-wrong { border-color: var(--red-500); background: var(--red-50); }
 .wq-opt.is-chosen { border-color: var(--primary-500); background: var(--primary-50); }
@@ -658,7 +661,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .qbar__l { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
 .qbar__t { font-size: 14px; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .qbar__c { flex: 0 0 280px; }
-.qbar__c .dash { margin: 0; } .qbar__c .dash__row { margin-bottom: 6px; font-size: 12px; } .qbar__c .dash__row svg { width: 14px; height: 14px; }
+.qbar__c .dash { margin: 0; } .qbar__c .dash__row { margin-bottom: 6px; font-size: 12px; } .qbar__c .dash__row svg { width: 16px; height: 16px; flex: none; }
 .qbar__r { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
 .qbar__count { font-size: 14px; color: var(--gray-600); } .qbar__count b { color: var(--gray-800); }
 /* Timer */
@@ -676,7 +679,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .wq-text { font-size: 20px; line-height: 28px; font-weight: 700; color: var(--gray-800); margin: 0; white-space: pre-line; }
 .wq-hint { font-size: 13px; color: var(--gray-500); margin: 6px 0 0; }
 .wq-res { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-.wq-res svg { width: 12px; height: 12px; }
+.wq-res svg { width: 16px; height: 16px; flex: none; }
 .wq-res--correct { background: var(--green-100); color: var(--green-700); }
 .wq-res--incorrect, .wq-res--blank { background: var(--red-100); color: var(--red-700); }
 .wq-opt.is-mine { border-color: var(--gray-500); background: #fff; }
@@ -684,7 +687,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .wq-opt.is-mine .wq-dot--box.is-on { background: var(--gray-600); }
 .wq-tag--mine { color: var(--gray-600); }
 .wq-flag { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px; border: 1px solid var(--border-shell); border-radius: 6px; background: #fff; font-size: 12px; color: var(--gray-600); cursor: pointer; }
-.wq-flag svg { width: 14px; height: 14px; }
+.wq-flag svg { width: 16px; height: 16px; flex: none; }
 .wq-flag.is-on { background: var(--amber-50); border-color: var(--amber-200); color: var(--amber-800); }
 .wq-flag.is-on svg { fill: currentColor; }
 .wq.is-flagged { box-shadow: inset 3px 0 0 var(--amber-600); padding-left: 16px; }
@@ -772,7 +775,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .app-header { position: relative; z-index: 50; }
 .search-pill__x { width: 28px; height: 28px; border: 0; border-radius: 50%; background: none; color: var(--neutral-500); display: grid; place-items: center; cursor: pointer; flex: none; }
 .search-pill__x:hover { background: var(--neutral-200); }
-.search-pill__x svg { width: 14px; height: 14px; }
+.search-pill__x svg { width: 16px; height: 16px; flex: none; }
 .search-pill input::-webkit-search-cancel-button { display: none; }
 .explore { position: relative; }
 .explore__menu { position: absolute; top: 48px; left: 0; width: 280px; background: #fff; border: 1px solid var(--border-default); border-radius: 12px; box-shadow: var(--shadow-pop); padding: 8px; z-index: 60; display: flex; flex-direction: column; }
@@ -824,7 +827,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .sp-rec span { flex: 1; }
 .sp-rec__x { width: 28px; height: 28px; border: 0; border-radius: 50%; background: none; color: var(--neutral-400); display: grid; place-items: center; cursor: pointer; }
 .sp-rec__x:hover { background: var(--neutral-200); color: var(--neutral-700); }
-.sp-rec__x svg { width: 14px; height: 14px; }
+.sp-rec__x svg { width: 16px; height: 16px; flex: none; }
 .sp-item img { width: 56px; height: 36px; border-radius: 6px; object-fit: cover; flex: none; background: var(--neutral-100); }
 .sp-item__b { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
 .sp-item__b b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -837,7 +840,7 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .sp-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid var(--neutral-200); border-radius: 999px; background: #fff; font: inherit; font-size: 13px; color: var(--neutral-700); cursor: pointer; }
 .sp-chip:hover { border-color: var(--primary-300, #a5b0fd); }
 .sp-chip i { font-style: normal; font-size: 12px; color: var(--neutral-500); }
-.sp-chip svg { width: 14px; height: 14px; }
+.sp-chip svg { width: 16px; height: 16px; flex: none; }
 .sp-chip.is-on { background: var(--primary-50); border-color: var(--primary-200); color: var(--primary-900); font-weight: 600; }
 .sp-chip.is-on i { color: var(--primary-900); }
 .sp-chip[data-zero] { color: var(--neutral-400); }

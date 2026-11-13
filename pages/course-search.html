@@ -4,11 +4,11 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>All courses · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
 </head>
 <body class="page">
 <!-- Chép bố cục /course/search?ct=…: header → category 60 → container py-13 → Back + tiêu đề → dòng tóm tắt → lưới card 336 → footer.
-     LH2 #6 — phương án A (10/11): bộ lọc Trạng thái / Thời gian (ngày đăng ký hoặc hoàn thành của tôi) nằm trong bảng xổ dưới ô search (LH.SearchPanel).
+     LH2 #6 — D-72 (13/11): gõ ở ô search header là lưới khoá lọc ngay (search:live), không còn bảng gợi ý khi đang gõ; bảng xổ chỉ còn "Tìm gần đây" khi ô trống.
      · Trang này bỏ thanh lọc. Còn 1 dòng: "N khoá học" + chip Trạng thái / Thời gian (✕ để bỏ) + Xoá tất cả + Sắp xếp bên phải.
      · Không chip từ khoá (đã ở ô search), không chip danh mục (thanh danh mục đã gạch chân).
      · Thanh danh mục + menu Explore lọc tại chỗ. Bảng xổ phát 'search:apply' → trang lọc tại chỗ, không tải lại. -->
@@ -20,9 +20,9 @@
   <div class="course-grid" id="grid"></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/data.js"></script>
-<script src="../assets/js/search.js"></script>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/search.js?v=1113c"></script>
 <script>
 const { AppHeader, CategoryNav, AppFooter, BackLink, CourseCard, FilterDropdown, Button, ICON, esc } = LH; const D = LHData; const S = LHSearch;
 const p = new URLSearchParams(location.search);
@@ -78,6 +78,12 @@ function apply(patch) {
 document.addEventListener('search:apply', (e) => {
   e.preventDefault(); const d = e.detail;
   apply({ q: d.q, st: d.st, pd: d.pd, ...(d.q !== f.q ? { sort: '' } : {}) });
+});
+/* Gõ trong ô tìm (D-72) → lưới khoá lọc ngay, không cần chọn trong bảng xổ */
+document.addEventListener('search:live', (e) => {
+  const q = e.detail.q; if (q === f.q) return;
+  if (lat === 'slow') { apply({ q, sort: '' }); return; } // mạng chậm: skeleton, chỉ nhận lần gõ mới nhất (BR-LRN-18)
+  ++reqId; mode = 'ok'; Object.assign(f, { q, sort: '' }); syncUrl(); render(); // nhanh: lọc thẳng, không nháy skeleton mỗi phím
 });
 document.addEventListener('fdd:change', (e) => apply({ [e.detail.key]: e.detail.value }));
 document.addEventListener('click', (e) => {

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đồng bộ dữ liệu · Cài đặt · LearningHub Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+</head>
+<body>
+<div id="header"></div>
+<!-- Figma: Setting/ sync data 464:3450 (chọn mục → Sync) · Setting/ Details 461:4285 (lịch sử). Notion Sync Data: lấy phòng ban, nhân viên, dự án từ HRM. -->
+<main>
+  <div id="head"></div>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Dữ liệu từ HRM</h2><span class="adm-hint" id="sel-hint"></span><button class="btn-cta" id="do-sync" disabled>Đồng bộ</button></div>
+    <div class="adm-card" id="items"></div></section>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title">Lịch sử đồng bộ</h2></div><div class="adm-card" id="history"></div>
+    <p class="adm-hint frm-note">[KT] Khung đúng Figma 464:3450 / 461:4285 — LearningHub 2 không đổi module này. Nhóm động theo Phòng ban / Vị trí ở Quản lý đối tượng dùng dữ liệu đồng bộ tại đây.</p></section>
+</main>
+<script src="../assets/js/components.js?v=1113c"></script>
+<script src="../assets/js/data.js?v=1113c"></script>
+<script>
+const { ICON, esc, Tag, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, AdminConfirm } = LH;
+const ITEMS = [['emp', 'Nhân viên (Employee)', 'Họ tên, email, phòng ban, vị trí'], ['ent', 'Phòng ban (Entity)', 'Cây phòng ban / đơn vị'], ['prj', 'Dự án (Project)', 'Danh sách dự án đang chạy']];
+const SAMPLE = [{ item: 'Nhân viên (Employee)', date: '02/10/2025 4:40 PM', ok: true, by: 'System' }, { item: 'Phòng ban (Entity)', date: '02/10/2025 4:40 PM', ok: true, by: 'System' }, { item: 'Dự án (Project)', date: '02/10/2025 4:41 PM', ok: false, by: 'System' }];
+let hist = []; const sel = new Set();
+const now = () => { const d = new Date(); return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }); };
+function render() {
+  document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Cài đặt', title: 'Đồng bộ dữ liệu', desc: 'Chọn loại dữ liệu cần lấy từ HRM rồi bấm Đồng bộ. Dữ liệu trên LearningHub được ghi đè theo HRM.' });
+  const last = (name) => hist.find((h) => h.item === name);
+  document.getElementById('items').innerHTML = AdminTable([['<input type="checkbox" id="all" aria-label="Chọn tất cả">', 't-chk'], 'Mục', 'Lần gần nhất', 'Trạng thái'],
+    ITEMS.map(([k, n, d]) => { const h = last(n); return `<tr><td class="t-chk"><input type="checkbox" data-it="${k}" ${sel.has(k) ? 'checked' : ''} aria-label="${esc(n)}"></td><td><b>${esc(n)}</b><div class="adm-hint">${esc(d)}</div></td>
+      <td>${h ? h.date : '<span class="adm-hint">Chưa đồng bộ</span>'}</td><td>${h ? Tag(h.ok ? 'Thành công' : 'Thất bại', h.ok ? 'published' : 'pending') : Tag('Chưa có dữ liệu')}</td></tr>`; }).join(''));
+  document.getElementById('all').checked = sel.size === ITEMS.length;
+  const b = document.getElementById('do-sync'); b.disabled = !sel.size; b.innerHTML = `${ICON.repeat}Đồng bộ${sel.size ? ` (${sel.size})` : ''}`;
+  document.getElementById('sel-hint').textContent = sel.size ? '' : 'Chọn ít nhất 1 mục';
+  document.getElementById('history').innerHTML = hist.length
+    ? AdminTable(['Mục', 'Thời gian', 'Trạng thái', 'Người chạy', ['Thao tác', 't-act']], hist.map((h, i) => `<tr><td><b>${esc(h.item)}</b></td><td>${h.date}</td><td>${Tag(h.ok ? 'Thành công' : 'Thất bại', h.ok ? 'published' : 'pending')}</td><td>${esc(h.by)}</td>
+      <td class="t-act">${h.ok ? '' : `<button class="btn-cta btn-cta--soft btn-cta--sm" data-retry="${i}">${ICON.repeat}Chạy lại</button>`}</td></tr>`).join(''))
+    : AdminEmpty({ icon: 'repeat', title: 'Chưa có dữ liệu', desc: 'Chưa đồng bộ lần nào. Chọn mục ở trên rồi bấm Đồng bộ.', compact: true });
+}
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'all') { ITEMS.forEach(([k]) => (e.target.checked ? sel.add(k) : sel.delete(k))); render(); return; }
+  const it = e.target.dataset.it; if (it) { e.target.checked ? sel.add(it) : sel.delete(it); render(); }
+});
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#do-sync')) {
+    AdminConfirm({ title: `Đồng bộ ${sel.size} mục từ HRM?`, text: 'Dữ liệu hiện có sẽ được cập nhật theo HRM. Thao tác mất vài phút.', ok: 'Đồng bộ', onOk: () => {
+      const names = ITEMS.filter(([k]) => sel.has(k)).map(([, n]) => n);
+      hist = [...names.map((n) => ({ item: n, date: now(), ok: true, by: 'Lê Thị Mai' })), ...hist]; sel.clear(); render(); toast(`Đã đồng bộ ${names.length} mục`);
+    } });
+    return;
+  }
+  const r = e.target.closest('[data-retry]'); if (r) { const h = hist[+r.dataset.retry]; hist.unshift({ ...h, date: now(), ok: true, by: 'Lê Thị Mai' }); render(); toast('Đã chạy lại: ' + h.item); }
+});
+AdminLayout({ active: 'sync', role: 'admin' });
+LH.DemoBar('Đồng bộ dữ liệu — khung Figma (không đổi ở LH2)', [{ label: 'Dữ liệu', key: 'data', options: [['empty', 'Chưa có dữ liệu'], ['sample', 'Dữ liệu mẫu (Figma)']] }], (s) => { hist = s.data === 'sample' ? SAMPLE.map((x) => ({ ...x })) : []; sel.clear(); render(); });
+</script>
+</body>
+</html>
