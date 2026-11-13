@@ -753,7 +753,7 @@ var LH_V = '1113c';
       </div></aside>`;
   }
   function AdminToolbar({ role = 'admin', active = '' } = {}) {
-    const [name, title] = ADM_USER[role];
+    const [name] = ADM_USER[role];
     const q = `?r=${role}`;
     return `<div class="adm-toolbar">
       <form class="adm-search" action="admin-courses.html" role="search"><input type="hidden" name="r" value="${role}"><input name="q" placeholder="Tìm kiếm khoá học tại đây" autocomplete="off"><button aria-label="Tìm">${ICON.search}</button></form>
@@ -762,7 +762,7 @@ var LH_V = '1113c';
         <button class="adm-round" aria-label="Thông báo" title="Chuông thông báo: làm Sau Đợt 2 (Đợt 2 chỉ gửi email)" data-out="Chuông thông báo — làm Sau Đợt 2">${ICON.bell2}</button>
         <button class="adm-round adm-round--opt" aria-label="Ứng dụng" data-out="Ứng dụng">${ICON.grid}</button>
         <button class="adm-round adm-round--opt" aria-label="Ngôn ngữ" data-out="Đổi ngôn ngữ">VI</button>
-        <div class="adm-user"><button type="button" data-adm-user aria-expanded="false" title="${esc(name)} · ${esc(title)}"><span class="adm-user__av">${initials(name)}</span><span class="adm-user__name"><b>${esc(name)}</b><small>${esc(title)}</small></span>${ICON.chevronD}</button>
+        <div class="adm-user"><button type="button" data-adm-user aria-expanded="false" title="${esc(name)}"><span class="adm-user__av">${initials(name)}</span><span class="adm-user__name"><b>${esc(name)}</b></span>${ICON.chevronD}</button>
           <div class="adm-user__menu" hidden><span>Đổi vai trò (demo)</span>
             <button data-adm-role="admin" class="${role === 'admin' ? 'is-on' : ''}">${ICON.shieldCheck}Admin L&amp;D</button>
             <button data-adm-role="creator" class="${role === 'creator' ? 'is-on' : ''}">${ICON.edit}Course Creator <small class="muted">Đợt 2</small></button>
