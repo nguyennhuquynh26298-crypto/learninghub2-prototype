@@ -1,79 +1,68 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My courses · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1118w"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
 </head>
 <body class="page">
+<!-- Learner Experience 2.2 + 3.2 · BR-MC-01, 03, 04 (Notion LH2 Product Docs No 9, Đợt 2 · Gói 5).
+     Một danh sách (không tab) + Status có số đếm · Time · Search my courses · Sort by. -->
 <div id="header"></div>
 <main class="container page__in stack gap-24">
-  <div class="row gap-16" style="align-items:flex-end"><div class="grow" id="back"></div><span id="slot" style="margin-bottom:32px"></span></div>
-  <div id="note"></div>
-  <!-- #6 §3.2 — Trạng thái thay 2 tab cũ; có số đếm -->
-  <div class="tabs" id="tabs"></div>
-  <div class="toolbar">
-    <label class="input-wrap" style="width:320px"><svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" id="q" placeholder="Tìm trong khoá của tôi"></label>
-    <label class="row gap-8 t-sm" title="Ngày đăng ký, hoặc ngày hoàn thành nếu đã xong">Thời gian<select class="input select" id="ld" style="width:150px"></select></label>
-    <span class="grow"></span>
-    <label class="row gap-8 t-sm">Sắp xếp<select class="input select" id="sort" style="width:190px"><option value="last">Học gần nhất</option><option value="pg">Tiến độ cao → thấp</option><option value="az">Tên A–Z</option></select></label>
-  </div>
+  <div class="row gap-16" style="align-items:flex-end"><div class="grow" id="back"></div><span id="slot" class="t-sm" style="margin-bottom:32px"></span></div>
+  <div class="toolbar" id="bar"></div>
   <div class="course-grid" id="grid"></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1113c"></script>
-<script src="../assets/js/data.js?v=1113c"></script>
-<script src="../assets/js/enroll-limit.js?v=1113c"></script>
-<script src="../assets/js/search.js?v=1113c"></script>
+<script src="../assets/js/components.js?v=1118w"></script>
+<script src="../assets/js/data.js?v=1118w"></script>
+<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
 <script>
-const { ICON, AppHeader, AppFooter, BackLink, CourseCard, SlotMeter, Alert, esc } = LH; const D = LHData; const S = LHSearch;
+const { ICON, AppHeader, AppFooter, BackLink, FilterDropdown, Button, esc } = LH; const D = LHData;
 document.getElementById('header').innerHTML = AppHeader();
 document.getElementById('back').innerHTML = BackLink('My courses', { href: 'home.html' });
 document.getElementById('footer').innerHTML = AppFooter();
-const covers = ['', 'background:linear-gradient(135deg,#0f172a,#334155)', 'background:linear-gradient(135deg,#15803d,#4ade80)', 'background:linear-gradient(135deg,#5163ff,#9396ff)', 'background:linear-gradient(135deg,#b45309,#f59e0b)'];
-const f = { st: 'all', ld: 'all', q: '', sort: 'last' };
-document.getElementById('ld').innerHTML = S.DAY_OPTS.map(([v, t]) => `<option value="${v}">${t}</option>`).join('');
-let courses;
-const lastLabel = (d) => d == null ? '' : d === 0 ? 'Hôm nay' : d === 1 ? 'Hôm qua' : d < 7 ? `${d} ngày trước` : d < 30 ? `${Math.round(d / 7)} tuần trước` : `${Math.round(d / 30)} tháng trước`;
-
-function filtered(st) {
-  return courses
-    .filter((c) => S.rank(c, f.q) > 0)
-    .filter((c) => st === 'all' || S.myStatus(c) === st)
-    .filter((c) => f.ld === 'all' || (c.my != null && c.my <= +f.ld)); // BR-LRN-16: ngày đăng ký / hoàn thành của tôi
-}
+const TIME = [['all', 'All time'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days']];
+const SORT = [['last', 'Recently Accessed'], ['pg', 'Progress: High to Low'], ['az', 'Name A–Z']];
+const f = { st: 'all', pd: 'all', q: '', sort: 'last' };
+let courses = [];
+const base = () => D.catalog.filter((c) => ['learning', 'done', 'fail'].includes(c.st)).map((c) => ({ ...c, sub: c.tags && c.tags[0],
+  ...(c.title.startsWith('QA AUTOMATION _ MODULE 2') ? { mand: true, sched: '01/11 – 15/11/2026', overdue: true } : {}),
+  ...(c.title.startsWith('CCAR-F') ? { sched: '10/11 – 10/12/2026' } : {}) }));
+const extra = [
+  { title: 'HARNESS IS AL YOU NEED', cat: 'Data & AI', sub: 'AI', cover: '../assets/img/covers/harness.png', lessons: 4, hours: '5h 0m', st: 'closed', my: 50, progress: 40, video: [2, 5], test: [0, 1], lastDays: 20, pub: 60 },
+  { title: 'PROMPTS ENGINEERING', cat: 'Data & AI', sub: 'Prompting', lessons: 3, hours: '3h 0m', st: 'removed', my: 70, progress: 66, video: [2, 3], test: [0, 0], lastDays: 40, pub: 120 },
+];
+const filtered = (st) => courses.filter((c) => LHW2.rank(c, f.q) > 0)
+  .filter((c) => st === 'all' || c.st === st)          // BR-MC-01: Closed, Access Removed chỉ ở All
+  .filter((c) => f.pd === 'all' || (c.my != null && c.my <= +f.pd));
 function render() {
-  const learning = courses.filter((c) => c.st === 'learning').length; // BR-LRN-01: Hoàn thành, Không đạt không tính
-  document.getElementById('slot').innerHTML = SlotMeter(learning, LHEnroll.LIMIT);
-  document.getElementById('note').innerHTML = learning > LHEnroll.LIMIT ? Alert({ tone: 'warning', icon: 'info', title: `Bạn đang học ${learning} khoá, nhiều hơn giới hạn ${LHEnroll.LIMIT} khoá`, text: 'Hoàn thành bớt khoá để đăng ký khoá mới.' }) : '';
-  document.getElementById('tabs').innerHTML = S.MY_STATUS_OPTS.map(([v, t]) => `<button class="tab ${f.st === v ? 'is-active' : ''}" data-st="${v}">${t} <span class="badge badge--neutral">${filtered(v).length}</span></button>`).join('');
+  const elective = courses.filter((c) => c.st === 'learning' && !c.mand).length;
+  document.getElementById('slot').innerHTML = `In progress: <b>${elective}/3</b> elective courses`;
+  const counts = ['all', 'learning', 'done', 'fail'].map((k) => filtered(k).length);
+  const STATUS = [['all', `All (${counts[0]})`], ['learning', `In Progress (${counts[1]})`], ['done', `Completed (${counts[2]})`], ['fail', `Failed (${counts[3]})`]];
+  if (!document.getElementById('mq')) document.getElementById('bar').innerHTML = `<div id="fd" class="row gap-8"></div>
+    <label class="input-wrap" style="width:300px">${ICON.search}<input class="input" id="mq" placeholder="Search my courses"></label><span class="grow"></span><div id="fs"></div>`;
+  document.getElementById('fd').innerHTML = FilterDropdown({ key: 'st', label: 'Status:', value: f.st, options: STATUS }) + FilterDropdown({ key: 'pd', label: 'Time:', value: f.pd, options: TIME });
+  document.getElementById('fs').innerHTML = FilterDropdown({ key: 'sort', label: 'Sort by:', value: f.sort, def: f.sort, options: SORT, align: 'right' });
   const list = filtered(f.st);
-  if (f.sort === 'pg') list.sort((a, b) => (b.progress || 0) - (a.progress || 0));
-  else if (f.sort === 'az') list.sort((a, b) => a.title.localeCompare(b.title, 'vi'));
-  else list.sort((a, b) => (a.lastDays ?? 1e9) - (b.lastDays ?? 1e9));
+  list.sort(f.sort === 'pg' ? (a, b) => (b.progress || 0) - (a.progress || 0) : f.sort === 'az' ? (a, b) => a.title.localeCompare(b.title) : (a, b) => (a.lastDays ?? 1e9) - (b.lastDays ?? 1e9));
   const grid = document.getElementById('grid');
-  if (!list.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${ICON.book}<b>Không có khoá học nào khớp bộ lọc</b></div>`; return; }
-  grid.innerHTML = list.map((c) => CourseCard({
-    title: c.title, desc: c.desc, lessons: c.lessons, hours: c.hours, q: f.q, cover: c.cover, progress: c.progress, video: c.video, test: c.test, done: c.done,
-    state: c.st === 'done' ? 'completed' : c.st === 'fail' ? 'failed' : 'in-progress', failScore: c.failScore, sched: c.sched, last: c.lastDays != null ? lastLabel(c.lastDays) : 'Chưa mở bài nào',
-  }).replace('<article', `<article data-idx="${courses.indexOf(c)}"`)).join('');
+  if (!courses.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${ICON.book}<b>You haven't enrolled in any courses yet.</b><a class="wbtn" href="course-search.html">Browse Courses</a></div>`; return; }
+  if (!list.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${ICON.book}<b>No courses match your filters.</b>${Button({ label: 'Clear Filters', variant: 'outline', attrs: 'data-clear' })}</div>`; return; }
+  grid.innerHTML = list.map((c) => LHW2.card(c, { q: f.q, mine: true })).join('');
 }
-document.getElementById('tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-st]'); if (b) { f.st = b.dataset.st; render(); } });
-document.getElementById('q').addEventListener('input', (e) => { f.q = S.clean(e.target.value); render(); });
-document.getElementById('ld').addEventListener('change', (e) => { f.ld = e.target.value; render(); });
-document.getElementById('sort').addEventListener('change', (e) => { f.sort = e.target.value; render(); });
-document.addEventListener('click', (e) => {
-});
-LH.DemoBar('#6 #8 #9 — Khoá học của tôi', [
-  { label: 'Kịch bản', key: 'k', options: [['full', '2 đang học + 1 không đạt + 2 hoàn thành'], ['over', 'Đang quá giới hạn (lên bản)']] },
-  { label: 'Lọc nhanh', key: 'pre', options: [['none', 'Không'], ['done', 'Hoàn thành'], ['d30', 'Đăng ký / hoàn thành 30 ngày']] },
+document.addEventListener('fdd:change', (e) => { f[e.detail.key] = e.detail.value; render(); });
+document.addEventListener('input', (e) => { if (e.target.id === 'mq') { f.q = e.target.value; render(); } });
+document.addEventListener('click', (e) => { if (e.target.closest('[data-clear]')) { Object.assign(f, { st: 'all', pd: 'all' }); render(); } });
+LH.DemoBar('LH2 · My courses (Đợt 2 · Gói 5)', [
+  { label: 'Data', key: 'k', options: [['full', 'In Progress + Completed + Failed + Closed + Access Removed'], ['empty', 'Not enrolled yet']] },
+  { label: 'Quick filter', key: 'pre', options: [['none', 'None'], ['done', 'Completed'], ['d30', 'Last 30 days']] },
 ], (s) => {
-  // My Courses = khoá đã đăng ký: Đang học, Hoàn thành, Không đạt
-  courses = D.catalog.filter((c) => ['learning', 'done', 'fail'].includes(c.st)).map((c) => ({ ...c }));
-  if (s.k === 'over') courses.push({ title: 'QA IN THE AGE OF AI AGENTS: RETHINKING SOFTWARE QUALITY', cover: '../assets/img/covers/qa-ai-agents.png', lessons: 5, hours: '6h 0m', desc: 'Chất lượng phần mềm khi làm việc cùng AI agent.', tags: ['AI'], st: 'learning', my: 40, progress: 10, video: [1, 6], test: [0, 2], lastDays: 14 }, { title: 'HARNESS IS AL YOU NEED', cover: '../assets/img/covers/harness.png', lessons: 4, hours: '5h 0m', desc: 'Thiết kế harness cho agent.', tags: ['AI'], st: 'learning', my: 50, progress: 75, video: [6, 8], test: [1, 2], lastDays: 0 });
-  Object.assign(f, { st: s.pre === 'done' ? 'done' : 'all', ld: s.pre === 'd30' ? '30' : 'all' });
-  document.getElementById('ld').value = f.ld;
+  courses = s.k === 'empty' ? [] : [...base(), ...extra];
+  Object.assign(f, { st: s.pre === 'done' ? 'done' : 'all', pd: s.pre === 'd30' ? '30' : 'all' });
   render();
 });
 </script>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify certificate · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1117a"><link rel="stylesheet" href="../assets/css/base.css?v=1117a"><link rel="stylesheet" href="../assets/css/components.css?v=1117a"><link rel="stylesheet" href="../assets/css/certificate.css?v=1117a">
+</head>
+<body class="page bg-white">
+<!-- LH1 GET /certificate/[token] — public, không cần đăng nhập -->
+<main class="container cert-page cert-public">
+  <a class="logo" href="home.html" style="display:inline-block;margin-bottom:24px">Learning<b>Hub</b><i></i></a>
+  <div id="banner"></div>
+  <div id="wrap" hidden>
+    <p class="t-sm muted">Chứng chỉ được xác minh qua share token (UUID, idempotent).</p>
+    <div class="cert-scale" style="margin-top:24px"><div class="cert-scale__in" id="sheet"></div></div>
+  </div>
+  <div id="empty" class="empty" hidden></div>
+</main>
+<script src="../assets/js/components.js?v=1117a"></script>
+<script src="../assets/js/data.js?v=1117a"></script>
+<script>
+const { CertificateSheet, Alert, Badge, esc } = LH;
+const token = new URLSearchParams(location.search).get('token') || '';
+function render() {
+  const cert = token ? LHCert.byToken(token) : null;
+  document.getElementById('wrap').hidden = !cert;
+  document.getElementById('empty').hidden = !!cert;
+  if (!cert) {
+    document.getElementById('empty').innerHTML = Alert({ tone: 'danger', icon: 'x', title: 'Không tìm thấy chứng chỉ', text: 'Token không hợp lệ hoặc đã bị xoá khỏi bộ nhớ demo (localStorage).' });
+    return;
+  }
+  document.title = 'Verified · ' + cert.courseTitle;
+  document.getElementById('banner').innerHTML = Alert({ tone: 'success', icon: 'check', title: 'Chứng chỉ hợp lệ', text: `Học viên <b>${esc(cert.learnerName)}</b> · ${Badge('Đã xác minh', 'success')}` });
+  document.getElementById('sheet').innerHTML = CertificateSheet({ ...cert, showMascot: true });
+}
+LH.DemoBar('LH1 · Certificate public', [
+  { label: 'Token', key: 't', options: [['demo', 'Token demo QA M1'], ['bad', 'Token sai']] },
+], (s) => {
+  const q = new URLSearchParams(location.search);
+  if (s.t === 'demo') q.set('token', LHCert.DEMO_TOKEN);
+  else q.set('token', '00000000-0000-0000-0000-000000000099');
+  location.search = '?' + q.toString();
+});
+render();
+</script>
+</body>
+</html>

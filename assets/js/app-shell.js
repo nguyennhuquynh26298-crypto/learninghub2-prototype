@@ -26,33 +26,52 @@
   });
 
   document.getElementById('reset').addEventListener('click', () => {
-    ['lhL', 'lhCur', 'lhAdminCourse'].forEach((k) => sessionStorage.removeItem(k));
+    ['lhL', 'lhCur', 'lhAdminCourse', 'lhNewCourse'].forEach((k) => sessionStorage.removeItem(k));
     ['lhExamAttempts', 'lhExamRunning', 'lhRecentSearch'].forEach((k) => localStorage.removeItem(k));
-    frame.src = MODE === 'admin' && roleOf() === 'creator' ? 'pages/admin-courses.html?r=creator' : HOME;
+    const r = roleOf();
+    const map = { creator: 'editor', cr: 'editor' };
+    const rr = map[r] || r;
+    frame.src = MODE === 'admin' ? `pages/admin-courses.html?r=${rr === 'employee' ? 'admin' : rr}` : HOME;
   });
 
   /* Admin: menu trái + đổi vai trò đã chuyển vào trong trang (LH.AdminLayout). Giữ code để tương thích nếu còn #nav. */
   const nav = document.getElementById('nav');
+  function normRole(r) {
+    const v = String(r || 'admin').toLowerCase();
+    if (v.startsWith('ed') || v.startsWith('cr')) return 'editor';
+    if (v.startsWith('em')) return 'employee';
+    return 'admin';
+  }
   function drawNav() {
     if (!nav) return;
-    const r = roleOf();
-    const items = r === 'admin'
-      ? [['admin-dashboard.html', 'pages/admin-dashboard.html?r=admin', 'Dashboard', ''], ['admin-courses.html', 'pages/admin-courses.html', 'Quản lý khoá học', ''], ['admin-reports.html', 'pages/admin-reports.html?r=admin', 'Báo cáo', 'Đợt 2'], ['admin-settings.html', 'pages/admin-settings.html', 'Phân quyền Course Creator', 'Đợt 2']]
-      : [['admin-dashboard.html', 'pages/admin-dashboard.html?r=creator', 'Dashboard', ''], ['admin-courses.html', 'pages/admin-courses.html?r=creator', 'Khoá học của tôi', ''], ['admin-reports.html', 'pages/admin-reports.html?r=creator', 'Báo cáo', 'Đợt 2']];
-    nav.innerHTML = `<div class="sh-role"><span>Đăng nhập với vai trò</span>
-        <button data-role="admin" class="${r === 'admin' ? 'on' : ''}">Admin L&amp;D</button>
-        <button data-role="creator" class="${r === 'creator' ? 'on' : ''}">Course Creator <i>Đợt 2</i></button></div>
+    const r = normRole(roleOf());
+    const items = [
+      ['admin-courses.html', `pages/admin-courses.html?r=${r}`, 'Course Management', ''],
+      ['admin-categories.html', `pages/admin-categories.html?r=${r}`, 'Category', ''],
+      ...(r === 'admin' ? [
+        ['admin-employees.html', 'pages/admin-employees.html?r=admin', 'Employees', ''],
+        ['admin-entities.html', 'pages/admin-entities.html?r=admin', 'Entity', ''],
+        ['admin-roles.html', 'pages/admin-roles.html?r=admin', 'Roles', ''],
+        ['admin-sync.html', 'pages/admin-sync.html?r=admin', 'Sync', ''],
+      ] : []),
+      ['admin-reports.html', `pages/admin-reports.html?r=${r}`, 'Learning Dashboard', 'LH2'],
+    ];
+    nav.innerHTML = `<div class="sh-role"><span>Switch role</span>
+        <button data-role="admin" class="${r === 'admin' ? 'on' : ''}">Admin</button>
+        <button data-role="editor" class="${r === 'editor' ? 'on' : ''}">Editor</button>
+        <button data-role="employee" class="${r === 'employee' ? 'on' : ''}">Employee</button></div>
       <div class="sh-menu">${items.map(([f, href, t, w]) => `<a href="${href}" target="frame" data-f="${f}">${t}${w ? `<i>${w}</i>` : ''}</a>`).join('')}</div>`;
   }
   function markNav(file) {
     if (!nav) return;
-    nav.querySelectorAll('[data-f]').forEach((a) => a.classList.toggle('on', a.dataset.f === file || (a.dataset.f === 'admin-courses.html' && /admin-audience|admin-test-practice|course-editor|course-approval/.test(file))));
+    nav.querySelectorAll('[data-f]').forEach((a) => a.classList.toggle('on', a.dataset.f === file || (a.dataset.f === 'admin-courses.html' && /admin-audience|admin-test-practice|course-editor|course-create|admin-course-learners|course-approval/.test(file))));
   }
   if (nav) {
     nav.addEventListener('click', (e) => {
       const b = e.target.closest('[data-role]'); if (!b) return;
       sessionStorage.setItem('lhRole', b.dataset.role); drawNav();
-      frame.src = 'pages/admin-courses.html' + (b.dataset.role === 'creator' ? '?r=creator' : '?r=admin');
+      const rr = normRole(b.dataset.role);
+      frame.src = rr === 'employee' ? 'pages/home.html' : `pages/admin-courses.html?r=${rr}`;
     });
     drawNav();
   }

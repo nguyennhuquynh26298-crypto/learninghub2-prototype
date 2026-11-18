@@ -2,7 +2,7 @@
  * Mỗi hàm = 1 component Figma cùng tên. Trạng thái = tham số (variant), chữ = tham số (text property).
  * Dùng: <script src="../assets/js/components.js"></script> → window.LH.* */
 /* Số phiên bản tài nguyên — tăng cùng ?v= trong pages/*.html mỗi lần sửa JS/CSS để trình duyệt không dùng bản cũ */
-var LH_V = '1113c';
+var LH_V = '1118d';
 (function () {
   const P = (d) => `<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const ICON = {
@@ -30,6 +30,7 @@ var LH_V = '1113c';
     sheet: P('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M8 13h8M8 17h8M10 9H8"/>'),
     plus: P('<path d="M12 5v14M5 12h14"/>'),
     edit: P('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+    copy: P('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'),
     upload: P('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>'),
     trash: P('<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
     more: P('<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>'),
@@ -48,6 +49,20 @@ var LH_V = '1113c';
     shield: P('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>'),
     settings: P('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
     undo: P('<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>'),
+    redo: P('<path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>'),
+    listOrdered: P('<path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>'),
+    alignLeft: P('<path d="M21 6H3M15 12H3M17 18H3"/>'),
+    alignCenter: P('<path d="M21 6H3M17 12H7M19 18H5"/>'),
+    alignRight: P('<path d="M21 6H3M21 12H9M21 18H7"/>'),
+    alignJustify: P('<path d="M3 6h18M3 12h18M3 18h18"/>'),
+    pilcrow: P('<path d="M13 4v16M17 4v16M13 4a4 4 0 0 0-4 4 4 4 0 0 0 4 4"/><path d="M9 12H4"/>'),
+    palette: P('<circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.7 1.7-1.7 0-.4-.2-.9-.4-1.2-.3-.3-.4-.7-.4-1.1 0-.9.7-1.7 1.7-1.7H16c3.3 0 6-2.7 6-6 0-5.5-4.5-8.3-10-8.3z"/>'),
+    highlighter: P('<path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>'),
+    maximize: P('<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
+    minimize: P('<path d="M8 3v3a2 2 0 0 1-2 2H3M16 3v3a2 2 0 0 0 2 2h3M8 21v-3a2 2 0 0 0-2-2H3M16 21v-3a2 2 0 0 1 2-2h3"/>'),
+    bold: P('<path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>'),
+    italic: P('<path d="M19 4h-9M14 20H5M15 4 9 20"/>'),
+    underline: P('<path d="M6 4v6a6 6 0 0 0 12 0V4M4 20h16"/>'),
     trophy: P('<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>'),
     circle: P('<circle cx="12" cy="12" r="10"/>'),
     circleCheck: P('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'),
@@ -197,46 +212,53 @@ var LH_V = '1113c';
    * State: default | in-progress | completed | failed | restricted | limit-reached
    * Phần LH2 thêm: nhãn trên bìa, dòng breakdown Video/Bài test (#8), Học gần nhất (#6), nhãn Không đạt (#9, BR-LRN-32).
    */
-  function CourseCard({ title, desc = '', cover = '', state = 'default', progress = 0, lessons = 2, hours = '14h 0m', last = '', menu = false, video, test, q = '', done = '', failScore = null, href = 'course-detail.html', sched = null }) {
+  function CourseCard({ title, desc = '', cover = '', state = 'default', progress = 0, lessons = 2, hours = '14h 0m', last = '', menu = false, video, test, q = '', done = '', failScore = null, href = 'course-detail.html', sched = null, mandatory = false }) {
+    /* LH2 Đợt 1 · nhãn bìa (Course Audience 3.2, 3.5 · Enrollment 3.1) — chữ UI tiếng Anh */
     const badge = {
-      restricted: `<span class="cc-tag cc-tag--restricted">${ICON.lock}Dành cho nhóm chỉ định</span>`,
-      failed: `<span class="cc-tag cc-tag--fail">${ICON.x}Không đạt</span>`,
-      completed: `<span class="cc-tag cc-tag--ok">${ICON.check}Hoàn thành</span>`,
+      restricted: `<span class="cc-tag cc-tag--restricted">${ICON.lock}Restricted</span>`,
+      failed: `<span class="cc-tag cc-tag--fail">${ICON.x}Failed</span>`,
+      completed: `<span class="cc-tag cc-tag--ok">${ICON.check}Completed</span>`,
     }[state] || '';
-    // #4 §3.4 Lịch học (BR-AUD-12): chưa tới ngày bắt đầu → nút tắt; quá hạn chưa xong → nhãn đỏ
     if (APP && href === 'course-detail.html') href = App.courseHref(title);
     const upcoming = sched && sched.start && state !== 'restricted';
-    const schedTag = upcoming ? `<span class="cc-tag cc-tag--upcoming">${ICON.clock}Bắt đầu ${esc(sched.start)}</span>` : sched && sched.overdue && state === 'in-progress' ? `<span class="cc-tag cc-tag--fail">${ICON.clock}Quá hạn</span>` : '';
-    const label = state === 'restricted' ? 'Xem giới thiệu' : (state === 'completed' || state === 'failed') ? 'Xem lại khoá học' : state === 'in-progress' ? 'Continue Learning' : 'Start Courses';
+    const schedTag = upcoming ? `<span class="cc-tag cc-tag--upcoming">${ICON.clock}Starts ${esc(sched.start)}</span>` : sched && sched.overdue && state === 'in-progress' ? `<span class="cc-tag cc-tag--fail">${ICON.clock}Overdue</span>` : '';
+    const label = state === 'restricted' ? 'View Details' : (state === 'completed' || state === 'failed') ? 'Review Course' : state === 'in-progress' ? 'Continue Learning' : 'Start Course';
     const btnCls = state === 'restricted' || state === 'completed' || state === 'failed' ? 'cc-btn cc-btn--outline' : 'cc-btn';
     const attrs = state === 'default' || state === 'limit-reached' ? 'data-start' : '';
-    const parts = [video && video[1] ? `Video ${video[0]}/${video[1]}` : '', test && test[1] ? `Bài test ${test[0]}/${test[1]}` : ''].filter(Boolean).join(' · ');
-    const sub = state === 'completed' && done ? `Hoàn thành: ${esc(done)}` : state === 'failed' ? `Trượt bài thi sau 3 lượt${failScore != null ? ` · điểm chính thức ${failScore}` : ''}` : last ? `Học gần nhất: ${esc(last)}` : '';
+    const parts = [video && video[1] ? `Videos ${video[0]}/${video[1]}` : '', test && test[1] ? `Quizzes ${test[0]}/${test[1]}` : ''].filter(Boolean).join(' · ');
+    const sub = state === 'completed' && done ? `Completed: ${esc(done)}` : state === 'failed' ? `Failed after 3 attempts${failScore != null ? ` · Final Score ${failScore}` : ''}` : last ? `Last accessed: ${esc(last)}` : '';
     const extra = (parts || sub) && state !== 'default' && state !== 'restricted' && state !== 'limit-reached' ? `<div class="cc-sub">${parts ? `<span class="pg__split">${parts}</span>` : ''}${sub ? `<span>${sub}</span>` : ''}</div>` : '';
+    const mand = mandatory && state !== 'restricted' ? `<span class="cc-mand">${ICON.shield}Mandatory</span>` : '';
     return `<article class="course-card" data-state="${state}">
       <div class="course-card__cover">${cover ? `<img src="${cover}" alt="${esc(title)}">` : ''}${schedTag || badge}</div>
       <div class="course-card__body">
+        ${mand}
         <h3 class="course-card__title">${APP ? `<a href="${href}" style="color:inherit;text-decoration:none">` : ''}${q ? highlight(title, q) : esc(title)}${APP ? '</a>' : ''}</h3>
         <div class="course-card__desc">${esc(desc)}</div>
         <div class="course-card__meta"><span>${ICON.lessons2}lessons: ${lessons}</span><span>${ICON.clock2}${esc(hours)}</span></div>
         <div class="course-card__progress">${WebProgress(progress)}${extra}</div>
-        <div class="course-card__foot"><a href="${href}" class="grow" ${attrs && !APP ? 'onclick="return false"' : ''}><button class="${btnCls}" ${upcoming ? `disabled title="Khoá học mở từ ${esc(sched.start)}." style="opacity:.5;cursor:not-allowed"` : attrs}>${label}</button></a>${menu ? `<div class="course-card__menu"><button class="cc-more" data-menu aria-label="Thêm">${ICON.more}</button></div>` : ''}</div>
+        <div class="course-card__foot"><a href="${href}" class="grow" ${attrs && !APP ? 'onclick="return false"' : ''}><button class="${btnCls}" ${upcoming ? `disabled title="This course opens on ${esc(sched.start)}." style="opacity:.5;cursor:not-allowed"` : attrs}>${label}</button></a>${menu ? `<div class="course-card__menu"><button class="cc-more" data-menu aria-label="More">${ICON.more}</button></div>` : ''}</div>
       </div></article>`;
   }
-
-  /** Course / Access notice — State: restricted | removed */
+  /** Course / Access notice — State: restricted | removed (Course Audience 3.5, BR-AUD-04, 05) */
   function AccessNotice({ state = 'restricted', owner = { name: 'Nguyễn Thu Hà', email: 'ha.nguyenthu@techvify.com.vn' }, progress = 45 }) {
     const removed = state === 'removed';
     return `<div class="access-box ${removed ? 'access-box--removed' : ''}">
       <span class="access-box__icon">${ICON.lock}</span>
-      <div class="stack gap-4"><div class="fw-600">${removed ? 'Bạn không còn trong đối tượng của khoá học' : 'Khoá học dành cho đối tượng được chỉ định'}</div>
-      <div class="t-sm muted">${removed ? `Tiến độ của bạn (${progress}%) vẫn được lưu và sẽ tiếp tục nếu bạn được thêm lại.` : `Bạn chưa thuộc đối tượng của khoá học này. Liên hệ ${esc(owner.name)} nếu bạn cần tham gia.`}</div></div>
-      ${removed ? `<div class="stack gap-4"><div class="row t-xs muted" style="justify-content:space-between"><span>Tiến độ đã lưu</span><b>${progress}%</b></div>${Progress(progress)}</div>` : ''}
-      <div class="contact">${Avatar(owner.name, 'sm')}<div class="grow"><div class="t-sm fw-600">${esc(owner.name)}</div><div class="t-xs muted">Người phụ trách · ${esc(owner.email)}</div></div></div>
-      <a class="btn btn--outline btn--block" href="mailto:${esc(owner.email)}">${ICON.mail}Gửi email cho người phụ trách</a>
+      <div class="stack gap-4"><div class="fw-600">${removed ? 'Access removed' : 'Restricted course'}</div>
+      <div class="t-sm muted">${removed ? `You no longer have access to this course. Your progress (${progress}%) has been saved.` : `This course is available to selected learners only. Contact ${esc(owner.name)} if you need access.`}</div></div>
+      ${removed ? `<div class="stack gap-4"><div class="row t-xs muted" style="justify-content:space-between"><span>Saved progress</span><b>${progress}%</b></div>${Progress(progress)}</div>` : ''}
+      <div class="contact">${Avatar(owner.name, 'sm')}<div class="grow"><div class="t-sm fw-600">${esc(owner.name)}</div><div class="t-xs muted">Course owner · ${esc(owner.email)}</div></div></div>
+      <a class="btn btn--outline btn--block" href="mailto:${esc(owner.email)}">${ICON.mail}Email course owner</a>
     </div>`;
   }
 
+  /** Course / Practice entry — mục Practice trên trang khoá (Practice · Learner 3.1, BR-PR-01, 02) */
+  function PracticeEntry({ questions = 40, href = 'practice.html' } = {}) {
+    return `<div class="pr-entry"><span class="pr-entry__ic">${ICON.dumbbell}</span>
+      <div class="grow"><b>Practice</b><p>${questions} questions · See answers right after each question · Does not count toward exam attempts or progress</p></div>
+      <a class="wbtn wbtn--outline" href="${url(href)}" data-practice>Practice</a></div>`;
+  }
   /* ---------- Assessment ---------- */
   /** Assessment / Mode card — Mode: practice | exam */
   function ModeCard({ mode, questions, minutes, attemptsLeft }) {
@@ -297,19 +319,23 @@ var LH_V = '1113c';
         <div class="acc__body"><div class="acc__box">${rows}</div></div></div>`;
     }).join('');
   }
-  /** Learn / Course content drawer (cột phải 400). marks[i] = 'done' | 'part:<p>' | 'fail' | 'none' */
+  /** Learn / Course content drawer (cột phải 400). marks[i] = 'done' | 'part:<p>' | 'fail' | 'none'
+   *  Learning Progress 3.1: Not Started · In Progress · Completed; mọi bài mở được (BR-LP-04); "Section n" thay "Session n". */
   function CourseContent(sessions, { current = 0, marks = [], open, meta = {} } = {}) {
     let li = 0;
     const html = sessions.map((s, si) => {
       const start = li; const items = s.lessons.map(([k, n], j) => {
         const i = li++; const m = marks[i] || 'none'; const cur = i === current;
-        const ic = m === 'done' ? `<span class="cc-ic cc-ic--done">${ICON.circleCheck}</span>` : m.startsWith('part') ? `<span class="ls ls--part" style="--p:${m.split(':')[1]}" title="Đã xem ${m.split(':')[1]}% · cần 90%"></span>` : m === 'fail' ? `<span class="ls ls--part" style="--p:50" title="Đã làm, chưa đạt"></span>` : `<span class="cc-ic">${ICON.circle}</span>`;
-        const sub = meta[i] || (k === 'quiz' ? `${ICON.fileQ}<span>32 Questions</span>` : k === 'video' ? `${ICON.tvPlay}<span>10 min</span>` : '');
-        return `<a class="cc-lesson ${cur ? 'is-current' : ''}" href="${k === 'video' ? 'lesson-video.html' : k === 'quiz' ? url('test-start.html') : '#'}">${ic}<div class="grow"><span class="cc-lesson__t">${j + 1}. ${esc(n)}</span>${cur || meta[i] ? `<div class="cc-lesson__m">${sub}</div>` : ''}</div></a>`;
+        const pct = m.startsWith('part') ? m.split(':')[1] : null;
+        const ic = m === 'done' ? `<span class="cc-ic cc-ic--done" title="Completed">${ICON.circleCheck}</span>` : pct ? `<span class="ls ls--part" style="--p:${pct}" title="In Progress · Watched ${pct}%"></span>` : m === 'fail' ? `<span class="ls ls--part" style="--p:50" title="In Progress · not passed yet"></span>` : `<span class="cc-ic" title="Not Started">${ICON.circle}</span>`;
+        const base = k === 'quiz' ? `${ICON.fileQ}<span>32 Questions</span>` : k === 'video' ? `${ICON.tvPlay}<span>10 min</span>` : `${ICON.file}<span>Document</span>`;
+        const note = pct ? `<span class="cc-lesson__st">Watched ${pct}%</span>` : m === 'fail' ? '<span class="cc-lesson__st">Not passed yet</span>' : '';
+        const href = k === 'quiz' ? url('test-start.html') : url(`lesson-learn.html?i=${i}`);
+        return `<a class="cc-lesson ${cur ? 'is-current' : ''}" href="${href}" data-i="${i}">${ic}<div class="grow"><span class="cc-lesson__t">${j + 1}. ${esc(n)}</span><div class="cc-lesson__m">${meta[i] || base}${note}</div></div></a>`;
       }).join('');
       const doneN = marks.slice(start, li).filter((m) => m === 'done').length;
       const isOpen = open ? open.includes(si) : (current >= start && current < li);
-      return `<div class="cc-sec ${isOpen ? 'is-open' : ''}"><button class="cc-sec__head" data-sec>${isOpen ? ICON.chevronU : ICON.chevronD}<span class="grow">Session ${si + 1}: ${esc(s.name)}</span><span class="cc-sec__n">${doneN}/${s.lessons.length}</span></button><div class="cc-sec__body">${items}</div></div>`;
+      return `<div class="cc-sec ${isOpen ? 'is-open' : ''}"><button class="cc-sec__head" data-sec>${isOpen ? ICON.chevronU : ICON.chevronD}<span class="grow">Section ${si + 1}: ${esc(s.name)}</span><span class="cc-sec__n">${doneN}/${s.lessons.length}</span></button><div class="cc-sec__body">${items}</div></div>`;
     }).join('');
     return `<div class="drawer__head"><h2>Course content</h2><button class="hd-icon" aria-label="Close">${ICON.x}</button></div><div class="drawer__body">${html}</div>`;
   }
@@ -335,55 +361,63 @@ var LH_V = '1113c';
   ICON.timer = P('<path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/>');
   ICON.target = P('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>');
 
-  /** Assessment / Mode select — State: default | in-progress | passed | out · Practice: on | off */
-  function ModeSelect({ title, questions, minutes, attempts = 'Còn 2/3 lượt', passMark = 70, practice = true, practiceQ, state = 'default', best, last, remain = '41:20', wrong }) {
-    const meta = [[ICON.list, `${questions} câu`], [ICON.clock, `${minutes} phút`], [ICON.repeat, attempts], [ICON.target, `Đạt từ ${passMark} điểm`]]
+  /** Assessment / Exam intro (màn bắt đầu bài thi) — Exam 3.1, Practice · Learner 3.2.
+   *  Chỉ còn Exam (Practice là mục riêng trên trang khoá, BR-PR-01). State: default | in-progress | passed | out */
+  function ModeSelect({ title, questions, minutes, passMark = 80, totalPts, maxAttempts = 3, attemptsLeft = 3, best = null, state = 'default', remain = '', retake = false, desc = '' }) {
+    const need = totalPts ? Math.ceil(passMark * totalPts / 100) : null;
+    const meta = [[ICON.list, `${questions} Questions`], [ICON.clock, minutes ? `${minutes} Minutes` : 'No time limit']]
       .map(([i, t]) => `<span>${i}${esc(t)}</span>`).join('');
-    const exam = {
-      default: [wrong ? `Làm lại ${wrong} câu sai` : 'Exam Mode', 'data-go="exam"', '', ''],
-      'in-progress': [`Tiếp tục bài thi · còn ${remain}`, 'data-go="exam"', '', 'is-warn'],
-      passed: ['Xem kết quả', 'data-go="result"', '', ''],
-      out: ['Xem kết quả', 'data-go="result"', '', ''],
+    const lines = [`Passing Score: <b>${passMark}%${need ? ` (${need}/${totalPts})` : ''}</b>`, `Attempts: <b>${attemptsLeft}/${maxAttempts} left</b>`]
+      .concat(best != null ? [`Highest Score: <b>${best}</b>`] : []);
+    const btn = {
+      default: [retake ? 'Retake Exam' : 'Start Exam', 'data-go="exam"', ''],
+      'in-progress': [`Resume Exam${remain ? ` · ${remain} left` : ''}`, 'data-go="exam"', 'wbtn--warn'],
+      passed: ['View Result', 'data-go="result"', 'wbtn--outline'],
+      out: ['View Result', 'data-go="result"', 'wbtn--outline'],
     }[state];
-    const badge = state === 'passed' ? `<span class="badge badge--success">${ICON.check}Đã đạt</span>` : state === 'out' ? `<span class="badge badge--danger">Không đạt · hết lượt</span>` : state === 'in-progress' ? `<span class="badge badge--warning">${ICON.timer}Đang làm dở</span>` : '';
-    const showP = practice;
+    const badge = state === 'passed' ? `<span class="badge badge--success">${ICON.check}Passed</span>` : state === 'out' ? `<span class="badge badge--danger">${ICON.x}Failed · no attempts left</span>` : state === 'in-progress' ? `<span class="badge badge--warning">${ICON.timer}In progress</span>` : '';
     return `<div class="stage-card stage-card--center"><div class="mode-sel" data-state="${state}">
       ${badge ? `<div class="mode-sel__badge">${badge}</div>` : ''}
       <h1>${esc(title)}</h1>
+      ${desc ? `<p class="mode-sel__sub">${esc(desc)}</p>` : ''}
       <div class="mode-sel__meta">${meta}</div>
-      <div class="mode-sel__btns ${showP ? '' : 'is-single'}">
-        ${showP ? `<div class="mode-sel__opt"><button class="wbtn wbtn--outline wbtn--lg" data-go="practice">Practice Mode</button>${practiceQ ? `<p>${practiceQ} câu</p>` : ''}</div>` : ''}
-        <div class="mode-sel__opt"><button class="wbtn wbtn--lg ${exam[3] === 'is-warn' ? 'wbtn--warn' : state === 'out' ? 'wbtn--outline-dark' : ''}" ${exam[1]}>${esc(exam[0])}</button>${exam[2] ? `<p>${exam[2]}</p>` : ''}</div>
-      </div>
-      ${best != null ? `<a class="mode-sel__best" href="#result" data-go="result">${state === 'out' || state === 'passed' ? 'Điểm chính thức' : 'Điểm cao nhất'} <b>${best}</b>${ICON.chevronR}</a>` : ''}
+      <div class="exam-intro"><span class="exam-intro__h">${ICON.award}Exam Mode</span>${lines.map((l) => `<span>${l}</span>`).join('')}</div>
+      <div class="mode-sel__btns is-single"><div class="mode-sel__opt"><button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button></div></div>
     </div></div>`;
   }
 
   /**
-   * Assessment / Question (web)
-   * state: answering (practice) | checked (practice sau Check) | exam (đang thi, có cờ) | review-hidden | review-revealed
+   * Assessment / Question (web) — Exam 3.1, 3.4 · Practice · Learner 3.3
+   * state: answering (practice) | checked (practice sau Check Answer) | exam (đang thi) | review-hidden | review-revealed
+   * prior: { chosen, result: 'correct'|'incorrect'|'blank' } — lượt 2, 3 (BR-EX-03): câu Correct giữ sẵn lựa chọn và vẫn sửa được,
+   *        câu Incorrect (gồm bỏ trống) xoá trắng để chọn lại. Không hiện đáp án đúng.
    */
-  function WebQuestion({ n, text, options, type = 'single', chosen = [], correct = [], explain = '', state = 'answering', showCheck = false, flagged = false }) {
+  const TYPE_UI = { single: 'Single choice', multi: 'Multiple choice', tf: 'True / False' };
+  function WebQuestion({ n, text, options, type = 'single', chosen = [], correct = [], explain = '', state = 'answering', showCheck = false, flagged = false, prior = null, points = 1 }) {
     const multi = type === 'multi'; const reveal = state === 'checked' || state === 'review-revealed';
     const live = state === 'answering' || state === 'exam';
     const blank = chosen.length === 0;
     const ok = !blank && chosen.length === correct.length && chosen.every((c) => correct.includes(c));
     const result = live ? '' : blank ? 'blank' : ok ? 'correct' : 'incorrect';
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+    const changed = state === 'exam' && prior && prior.result === 'correct' && !same(prior.chosen || [], chosen);
     const opts = options.map((o, i) => {
       const isC = chosen.includes(i), isR = correct.includes(i);
       let cls = 'wq-opt', tag = '';
-      if (reveal) { if (isR) { cls += ' is-right'; tag = `<span class="wq-tag wq-tag--ok">${isC ? 'Lựa chọn của bạn · Đáp án đúng' : 'Đáp án đúng'}</span>`; } else if (isC) { cls += ' is-wrong'; tag = '<span class="wq-tag wq-tag--bad">Lựa chọn của bạn</span>'; } }
-      else if (state === 'review-hidden' && isC) { cls += ' is-mine'; tag = '<span class="wq-tag wq-tag--mine">Lựa chọn của bạn</span>'; }
+      if (reveal) { if (isR) { cls += ' is-right'; tag = `<span class="wq-tag wq-tag--ok">${isC ? 'Your answer · Correct answer' : 'Correct answer'}</span>`; } else if (isC) { cls += ' is-wrong'; tag = '<span class="wq-tag wq-tag--bad">Your answer</span>'; } }
+      else if (state === 'review-hidden' && isC) { cls += ' is-mine'; tag = '<span class="wq-tag wq-tag--mine">Your answer</span>'; }
       else if (isC) cls += ' is-chosen';
       return `<button class="${cls}" data-k="${i}" ${live ? '' : 'disabled'}><span class="wq-dot ${multi ? 'wq-dot--box' : ''} ${isC ? 'is-on' : ''}">${isC ? (multi ? ICON.check : '<i></i>') : ''}</span><span class="wq-opt__t">${esc(o)}</span>${tag}</button>`;
     }).join('');
-    const verdict = !result ? '' : `<span class="wq-res wq-res--${result}">${result === 'correct' ? ICON.check + 'Đúng' : result === 'blank' ? 'Chưa trả lời' : ICON.x + 'Sai'}</span>`;
-    const foot = reveal && explain ? `<div class="wq-foot"><div class="wq-explain"><p>Giải thích</p><div>${esc(explain)}</div></div></div>`
-      : state === 'review-hidden' && blank ? '' : showCheck && state === 'answering' ? `<button class="wbtn wbtn--outline wq-check" data-check ${blank ? 'disabled' : ''}>Check answer</button>` : '';
-    const flag = state === 'exam' ? `<button class="wq-flag ${flagged ? 'is-on' : ''}" data-flag title="Đánh dấu để xem lại">${ICON.flag}${flagged ? 'Đã đánh dấu' : 'Đánh dấu'}</button>` : '';
-    return `<div class="wq ${flagged ? 'is-flagged' : ''}" id="q${n}" data-n="${n}" data-state="${state}" data-result="${result}">
-      <div class="wq-head"><div class="wq-head__l"><span class="wq-num">Câu ${n}</span>${verdict}</div><div class="wq-badges"><span class="wq-type">${multi ? 'Multiple Choice' : 'Single Choice'}</span><span class="wq-pt">1 point</span>${flag}</div></div>
-      <h2 class="wq-text">${esc(text)}</h2>${multi && live ? '<p class="wq-hint">Chọn tất cả đáp án đúng</p>' : ''}
+    const livePrior = state === 'exam' && prior ? `<span class="wq-res wq-res--${prior.result === 'correct' ? 'correct' : 'incorrect'}">${prior.result === 'correct' ? ICON.check + 'Correct' : ICON.x + 'Incorrect'}<span class="wq-prev">· previous attempt</span></span>` : '';
+    const verdict = livePrior || (!result ? '' : `<span class="wq-res wq-res--${result}">${result === 'correct' ? ICON.check + 'Correct' : result === 'blank' ? 'Unanswered' : ICON.x + 'Incorrect'}</span>`);
+    const foot = reveal && explain ? `<div class="wq-foot"><div class="wq-explain"><p>Explanation</p><div>${esc(explain)}</div></div></div>`
+      : changed ? `<div class="wq-changed">${ICON.alert}You changed this answer. It was correct in the previous attempt.</div>`
+      : showCheck && state === 'answering' ? `<button class="wbtn wbtn--outline wq-check" data-check ${blank ? 'disabled' : ''}>Check Answer</button>` : '';
+    const flag = state === 'exam' ? `<button class="wq-flag ${flagged ? 'is-on' : ''}" data-flag title="Mark for review">${ICON.flag}${flagged ? 'Marked for review' : 'Mark for review'}</button>` : '';
+    return `<div class="wq ${flagged ? 'is-flagged' : ''} ${changed ? 'is-changed' : ''}" id="q${n}" data-n="${n}" data-state="${state}" data-result="${result || (prior && prior.result) || ''}">
+      <div class="wq-head"><div class="wq-head__l"><span class="wq-num">Question ${n}</span>${verdict}</div><div class="wq-badges"><span class="wq-type">${TYPE_UI[type] || TYPE_UI.single}</span><span class="wq-pt">${points} point${points > 1 ? 's' : ''}</span>${flag}</div></div>
+      <h2 class="wq-text">${esc(text)}</h2>${multi && live ? '<p class="wq-hint">Select all correct answers</p>' : ''}
       <div class="wq-opts">${opts}</div>${foot}</div>`;
   }
   /** Assessment / Dash meter — "x / N" + vạch 3px */
@@ -392,7 +426,7 @@ var LH_V = '1113c';
   }
   /** Assessment / Quiz top bar — Mode: practice | exam | review. Dính trên cùng màn quiz */
   function QuizTopBar({ mode = 'practice', title, center = '', right = '' }) {
-    const lbl = { practice: ['Practice', ''], exam: ['Exam', 'quiz-badge--exam'], review: ['Kết quả', 'quiz-badge--exam'] }[mode];
+    const lbl = { practice: ['Practice', ''], exam: ['Exam', 'quiz-badge--exam'], review: ['Result', 'quiz-badge--exam'] }[mode];
     return `<div class="qbar qbar--${mode}"><div class="qbar__in">
       <div class="qbar__l"><span class="quiz-badge ${lbl[1]}">${lbl[0]}</span><b class="qbar__t">${esc(title)}</b></div>
       <div class="qbar__c">${center}</div><div class="qbar__r">${right}</div></div></div>`;
@@ -401,114 +435,119 @@ var LH_V = '1113c';
   function ExamTimer(sec) {
     const st = sec <= 0 ? 'expired' : sec <= 300 ? 'warning' : 'normal';
     const t = `${String(Math.floor(Math.max(sec, 0) / 60)).padStart(2, '0')}:${String(Math.max(sec, 0) % 60).padStart(2, '0')}`;
-    return `<span class="timer timer--${st}" role="timer" aria-label="Thời gian còn lại">${ICON.timer}${t}</span>`;
+    return `<span class="timer timer--${st}" role="timer" aria-label="Time left">${ICON.timer}${t}</span>`;
   }
-  /** Assessment / Question nav — item: empty | answered | flagged | current */
-  function QuestionNav(items, { current, timer = '', nums } = {}) {
+  /** Assessment / Question nav — Exam 3.1 Lưới câu hỏi.
+   *  item: string cũ ('empty' | 'answered' | 'flagged' | 'flagged-answered') hoặc { st, flag }.
+   *  Lượt 2, 3: st = kept (Correct giữ nguyên) | changed (Correct đã đổi) | redo (Incorrect chưa chọn lại) | redone (Incorrect đã chọn lại) */
+  function QuestionNav(items, { current, timer = '', nums, retake = false } = {}) {
     const no = (i) => (nums ? nums[i] : i + 1);
-    const n = (k) => items.filter((x) => x === k).length;
-    return `<div class="qnav">${timer ? `<div class="qnav__timer"><span>Thời gian còn lại</span>${timer}</div>` : ''}<div class="qnav__h">Danh sách câu</div>
-      <div class="qnav__grid">${items.map((st, i) => `<a href="#q${no(i)}" class="qnav__i qnav__i--${st} ${current === i ? 'is-cur' : ''}" data-jump="${no(i)}">${no(i)}${st === 'flagged' ? '<i></i>' : ''}</a>`).join('')}</div>
-      <div class="qnav__lg"><span><i class="qnav__sw qnav__sw--answered"></i>Đã trả lời ${n('answered') + n('flagged-answered')}</span><span><i class="qnav__sw qnav__sw--empty"></i>Chưa làm ${n('empty') + n('flagged')}</span><span><i class="qnav__sw qnav__sw--flag"></i>Đánh dấu ${n('flagged') + n('flagged-answered')}</span></div></div>`;
+    const list = items.map((x) => (typeof x === 'string' ? { st: x.endsWith('answered') ? 'answered' : 'empty', flag: x.startsWith('flagged') } : x));
+    const n = (k) => list.filter((x) => x.st === k).length;
+    const lg = (retake ? [['kept', 'Correct · kept'], ['changed', 'Correct · changed'], ['redo', 'Incorrect · to redo'], ['redone', 'Incorrect · redone']] : [['answered', 'Answered'], ['empty', 'Not answered']])
+      .map(([k, t]) => `<span><i class="qnav__sw qnav__sw--${k}"></i>${t} ${n(k)}</span>`).join('') + `<span><i class="qnav__sw qnav__sw--flag"></i>Marked for review ${list.filter((x) => x.flag).length}</span>`;
+    return `<div class="qnav">${timer ? `<div class="qnav__timer"><span>Time left</span>${timer}</div>` : ''}<div class="qnav__h">Questions</div>
+      <div class="qnav__grid">${list.map((x, i) => `<a href="#q${no(i)}" class="qnav__i qnav__i--${x.st} ${x.flag ? 'is-flag' : ''} ${current === i ? 'is-cur' : ''}" data-jump="${no(i)}">${no(i)}</a>`).join('')}</div>
+      <div class="qnav__lg">${lg}</div></div>`;
   }
-  /** Assessment / Submit confirm — nội dung modal Nộp bài */
-  function SubmitConfirm({ unanswered = 0, flagged = 0, attempts = 'còn 2/3' }) {
-    const warn = unanswered || flagged;
-    return Modal({ id: 'submit-modal', size: 'sm', icon: warn ? 'alert' : 'info', iconTone: warn ? 'warning' : 'info', title: 'Nộp bài thi?',
-      body: `<div class="stack gap-8 t-sm">${unanswered ? `<div class="sc-line sc-line--warn"><b>${unanswered}</b> câu chưa trả lời — sẽ tính là Sai.</div>` : ''}${flagged ? `<div class="sc-line"><b>${flagged}</b> câu đang đánh dấu xem lại.</div>` : ''}${!warn ? '<div class="sc-line">Bạn đã trả lời tất cả câu hỏi.</div>' : ''}<div class="muted">Nộp bài sẽ dùng 1 lượt (${esc(attempts)}). Không sửa được sau khi nộp.</div></div>`,
-      foot: `${warn ? '<button class="wbtn wbtn--outline" data-close data-review-empty>Xem lại câu chưa làm</button>' : '<button class="wbtn wbtn--outline" data-close>Huỷ</button>'}<button class="wbtn" data-submit-now>Nộp bài</button>` });
+  /** Assessment / Submit confirm — Exam 3.2 */
+  function SubmitConfirm({ unanswered = 0, flagged = 0, left = 3, max = 3, changed = 0 }) {
+    const warn = unanswered || flagged || changed;
+    return Modal({ id: 'submit-modal', size: 'sm', icon: warn ? 'alert' : 'info', iconTone: warn ? 'warning' : 'info', title: 'Submit exam?',
+      body: `<div class="stack gap-8 t-sm"><div class="sc-line ${unanswered ? 'sc-line--warn' : ''}"><b>${unanswered}</b> unanswered · <b>${flagged}</b> marked for review. Submitting uses 1 attempt (${left}/${max} left).</div>
+        ${changed ? `<div class="sc-line sc-line--warn">You changed <b>${changed}</b> answer${changed > 1 ? 's' : ''} that ${changed > 1 ? 'were' : 'was'} correct in the previous attempt.</div>` : ''}
+        ${unanswered ? '<div class="muted">Unanswered questions count as Incorrect.</div>' : ''}</div>`,
+      foot: `${warn ? '<button class="wbtn wbtn--outline" data-close data-review-empty>Review Questions</button>' : '<button class="wbtn wbtn--outline" data-close>Cancel</button>'}<button class="wbtn" data-submit-now>Submit</button>` });
   }
-  /** Assessment / Result summary — Result: pass | fail. Chốt 11/11: lượt sau chỉ làm lại câu sai; điểm chính thức = điểm cao nhất; khoá khi Đạt hoặc hết lượt */
-  function ResultSummary({ score, passMark = 70, right, wrong, blank = 0, total, minutes, attemptNo, maxAttempts = 3, used, result, canRetry, isLatest = true, best = score }) {
+  /** Assessment / Result summary — Exam 3.3. Passed / Not Passed theo lượt; Failed khi hết 3 lượt; Final Score = điểm cao nhất */
+  function ResultSummary({ score, passMark = 80, totalPts, right, wrong, blank = 0, total, minutes, attemptNo, maxAttempts = 3, used, result, canRetry, isLatest = true, best = score }) {
     const pass = result === 'pass'; const done = best >= passMark; const final = used >= maxAttempts || done; const left = maxAttempts - used;
+    const need = totalPts ? Math.ceil(passMark * totalPts / 100) : null;
+    const failed = isLatest && final && !done;
     const c = pass ? 'var(--green-600)' : 'var(--red-600)';
     const r = 50, C = 2 * Math.PI * r;
-    const title = !isLatest ? `Lượt ${attemptNo}` : done ? 'Bạn đã đạt bài thi' : final ? 'Kết quả chính thức: Không đạt' : 'Bạn chưa đạt bài thi';
-    const note = !isLatest ? `Điểm chính thức: ${best}`
-      : done ? `Điểm chính thức: ${best}`
-      : final ? `Hết ${maxAttempts} lượt · Điểm chính thức: ${best}`
-      : `Còn ${left}/${maxAttempts} lượt`;
+    const title = failed ? 'Failed' : pass ? 'Passed' : 'Not Passed';
     return `<div class="rsum rsum--${pass ? 'pass' : 'fail'}">
       <div class="rsum__ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--neutral-100)" stroke-width="10"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${c}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - score / 100)}" transform="rotate(-90 60 60)"/></svg><div><b style="color:${c}">${score}</b><span>/ 100</span></div></div>
       <div class="rsum__body">
-        <div class="rsum__t"><h1>${title}</h1>${pass ? `<span class="badge badge--success">${ICON.check}Đạt</span>` : `<span class="badge badge--danger">${ICON.x}Chưa đạt</span>`}</div>
-        <div class="rsum__stats"><div class="is-ok"><b>${right}</b><span>Đúng</span></div><div class="is-bad"><b>${wrong}</b><span>Sai</span></div><div><b>${blank}</b><span>Bỏ trống</span></div><div><b>${total}</b><span>Tổng số câu</span></div></div>
-        <div class="rsum__meta"><span>Lượt ${attemptNo}/${maxAttempts}</span><span>${minutes} phút</span><span>Đạt từ ${passMark}</span></div>
-        <div class="rsum__note">${note}</div>
-        <div class="rsum__act">${canRetry ? `<button class="wbtn" data-retry>Làm lại ${wrong + blank} câu sai (còn ${maxAttempts - used} lượt)</button>` : ''}<a class="wbtn wbtn--outline" href="course-detail.html">Quay lại khoá học</a></div>
+        <div class="rsum__t"><h1>${isLatest ? title : `Attempt ${attemptNo}: ${pass ? 'Passed' : 'Not Passed'}`}</h1></div>
+        <div class="rsum__stats"><div class="is-ok"><b>${right}</b><span>Correct</span></div><div class="is-bad"><b>${wrong}</b><span>Incorrect</span></div><div><b>${blank}</b><span>Unanswered</span></div><div><b>${total}</b><span>Total</span></div></div>
+        <div class="rsum__meta"><span>Attempt ${attemptNo}/${maxAttempts}</span>${minutes ? `<span>${minutes} min</span>` : ''}<span>Passing Score: ${passMark}%${need ? ` (${need}/${totalPts})` : ''}</span>${final ? `<span>Final Score: <b>${best}</b></span>` : ''}</div>
+        <div class="rsum__act">${canRetry ? `<button class="wbtn" data-retry>Retake Exam (${left} attempt${left > 1 ? 's' : ''} left)</button>` : ''}<button class="wbtn wbtn--outline" data-review>Review Answers</button><a class="wbtn wbtn--outline" href="course-detail.html" data-back-course>Back to Course</a></div>
       </div></div>`;
   }
-  /** Assessment / Review filter — tab gạch chân. Active: all | correct | incorrect */
+  /** Assessment / Answer note — Exam 3.3 Dòng thông báo đáp án. State: hidden | passed | out */
+  function AnswerNote({ state, left = 0, best }) {
+    if (state === 'passed') return Alert({ tone: 'success', icon: 'check', text: 'You passed! Correct answers and explanations are now available. This exam is complete.' });
+    if (state === 'out') return Alert({ tone: 'neutral', icon: 'eye', text: `You have used all 3 attempts. Correct answers and explanations are now available. Final Score (highest): ${best}.` });
+    return Alert({ tone: 'info', icon: 'eyeOff', text: `Correct answers and explanations will be shown once you pass or use all 3 attempts (${left} attempt${left > 1 ? 's' : ''} left).` });
+  }
+  /** Assessment / Review filter — Exam 3.4. Active: all | correct | incorrect */
   function ReviewFilter(active, counts) {
-    return `<div class="rfilter" role="tablist">${[['all', 'Tất cả'], ['correct', 'Đúng'], ['incorrect', 'Sai']].map(([k, t]) => `<button role="tab" class="${active === k ? 'is-active' : ''}" data-f="${k}">${t}<span>${counts[k]}</span></button>`).join('')}</div>`;
+    return `<div class="rfilter" role="tablist">${[['all', 'All'], ['correct', 'Correct'], ['incorrect', 'Incorrect']].map(([k, t]) => `<button role="tab" class="${active === k ? 'is-active' : ''}" data-f="${k}">${t}<span>${counts[k]}</span></button>`).join('')}</div>`;
   }
-  /** Assessment / Practice summary */
+  /** Assessment / Practice summary — Practice · Learner 3.3 Tổng kết */
   function PracticeSummary({ right, total, wrong = [] }) {
-    const pct = Math.round(right / total * 100);
-    return `<div class="psum"><div class="psum__head"><span class="psum__ic">${ICON.trophy}</span><div><h2>Hoàn thành luyện tập</h2><p>Đúng <b>${right} / ${total}</b> câu (${pct}%)</p></div></div>
-      <div class="psum__note">${ICON.info}Kết quả luyện tập không lưu vào tiến độ khoá học và không tính lượt thi.</div>
-      ${wrong.length ? `<div class="psum__wrong"><b>Câu cần ôn lại</b><div>${wrong.map((n) => `<a href="#q${n}" data-jump="${n}">Câu ${n}</a>`).join('')}</div></div>` : '<div class="psum__wrong"><b>Bạn trả lời đúng tất cả các câu.</b></div>'}
-      <div class="psum__act">${wrong.length ? `<button class="wbtn" data-retry-wrong>Luyện lại ${wrong.length} câu sai</button>` : ''}<button class="wbtn wbtn--outline" data-restart>Làm lại từ đầu</button><a class="wbtn wbtn--outline" href="test-start.html">Quay lại bài học</a></div></div>`;
+    return `<div class="psum"><div class="psum__head"><span class="psum__ic">${ICON.trophy}</span><div><h2>Practice complete</h2><p><b>${right} / ${total}</b> correct</p></div></div>
+      <div class="psum__note">${ICON.info}Practice does not count toward exam attempts or progress, and results are not saved.</div>
+      ${wrong.length ? `<div class="psum__wrong"><b>Questions to review</b><div>${wrong.map((n) => `<a href="#q${n}" data-jump="${n}">Question ${n}</a>`).join('')}</div></div>` : '<div class="psum__wrong"><b>All answers are correct.</b></div>'}
+      <div class="psum__act">${wrong.length ? `<button class="wbtn" data-retry-wrong>Practice ${wrong.length} Incorrect</button>` : ''}<button class="wbtn wbtn--outline" data-restart>Restart</button><button class="wbtn wbtn--outline" data-exit-practice>Exit</button></div></div>`;
   }
-
-  /* ---------- Enroll ---------- */
-  /**
-   * Learner / Enroll slot panel — khung "Suất học" cạnh My Courses (Home). State: Available | Full.
-   * BR-LRN-01: chỉ khoá Đang học tính giới hạn (tối đa 2) · Hoàn thành, Không đạt (BR-LRN-32) không tính.
-   */
-  function EnrollSlotPanel({ used = 0, limit = 2 }) {
-    // Thông tin phụ: chip nhỏ cạnh tiêu đề My Courses (thay khung lớn). Chi tiết Không đạt / Hoàn thành xem ở My Courses.
+  /* ---------- Enroll — Enrollment 3.1, 3.2 (BR-ENR-01, 10) ---------- */
+  /** Learner / Slot indicator — "In progress: x/3 elective courses · y mandatory". State: Available | Full */
+  function EnrollSlotPanel({ used = 0, limit = 3, mandatory = 0 }) {
     const full = used >= limit;
     const dots = Array.from({ length: Math.max(limit, used) }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('');
-    return `<span class="slot-chip ${full ? 'slot-chip--full' : ''}" title="${full ? 'Hoàn thành 1 khoá đang học để đăng ký khoá mới.' : 'Khoá Hoàn thành và Không đạt không tính suất.'}"><span class="slot-chip__dots">${dots}</span>Suất học <b>${used}/${limit}</b>${full ? ' · Đạt giới hạn' : ''}</span>`;
+    return `<span class="slot-chip ${full ? 'slot-chip--full' : ''}" title="${full ? 'Complete a course to enroll in a new one. Mandatory courses don\'t count toward this limit.' : 'Mandatory courses don\'t count toward this limit.'}"><span class="slot-chip__dots">${dots}</span>In progress: <b>${used}/${limit}</b> elective courses${mandatory ? ` · ${mandatory} mandatory` : ''}</span>`;
   }
-  /** Learner / Empty slot — khung nét đứt cùng cỡ thẻ khoá (336 × cao thẻ), nội dung gọn ở giữa */
+  /** Learner / Empty slot — khung nét đứt cùng cỡ thẻ khoá */
   function EmptySlotCard(n = 1) {
-    return `<a class="slot-empty" href="course-search.html"><span class="slot-empty__ic">${ICON.plus}</span><b>Còn ${n} suất</b><span class="grow"></span><span class="slot-empty__go">Khám phá khoá học${ICON.chevronR}</span></a>`;
+    return `<a class="slot-empty" href="course-search.html"><span class="slot-empty__ic">${ICON.plus}</span><b>${n} slot${n > 1 ? 's' : ''} left</b><span class="grow"></span><span class="slot-empty__go">Explore courses${ICON.chevronR}</span></a>`;
   }
 
   /**
    * Course / CTA card — khung bên phải trang khoá. State: all | limit | upcoming | learning | overdue | completed | failed.
-   * sched: { label, range, overdue } · slots: số khoá đang học · result: { pct, video, test } (khi đã đăng ký)
+   * sched: { label, range } · result: { pct, video, test } (khi đã đăng ký) · mandatory: khoá bắt buộc với học viên đang xem
    */
-  function CourseCta({ state = 'all', sched, slots = 1, limit = 2, result, startDate = '' }) {
+  function CourseCta({ state = 'all', sched, slots = 1, limit = 3, result, startDate = '', certHref = '', mandatory = false, mandatoryN = 0 }) {
     const tags = {
-      learning: Badge('Đang học', 'info'), overdue: Badge('Đang học', 'info'),
-      completed: Badge('Hoàn thành', 'success', 'check'), failed: Badge('Không đạt', 'danger'),
+      learning: Badge('In Progress', 'info'), overdue: Badge('In Progress', 'info'),
+      completed: Badge('Completed', 'success', 'check'), failed: Badge('Failed', 'danger'),
     }[state] || '';
-    const right = state === 'overdue' ? Badge('Quá hạn', 'danger') : '';
+    const right = (state === 'overdue' ? Badge('Overdue', 'danger') : '') + (mandatory ? Badge('Mandatory', 'warning', 'shield') : '');
     const head = tags || right ? `<div class="cta-card__tags">${tags}${right ? `<span class="grow"></span>${right}` : ''}</div>` : '';
-    const meta = sched ? `<div class="cta-card__meta"><span class="ic-box">${ICON.clock}</span><span>${esc(sched.label)} <b>${esc(sched.range)}</b></span></div>` : '';
+    const meta = sched ? `<div class="cta-card__meta"><span class="ic-box">${ICON.calendar}</span><span>${esc(sched.label)} <b>${esc(sched.range)}</b></span></div>` : '';
     let body = '', btn = '';
     if (result) {
       const review = state === 'completed' || state === 'failed';
-      body = `<button class="cta-card__pg" data-pop>${WebProgress(result.pct, 'Tiến độ')}<span class="cta-card__sub">Video ${result.video[0]}/${result.video[1]} · Bài test ${result.test[0]}/${result.test[1]}</span></button>`;
-      btn = `<button class="aside-btn ${review ? 'aside-btn--outline' : ''}" data-continue>${review ? 'Xem lại khoá học' : 'Continue Learning'}</button>`;
+      body = `<button class="cta-card__pg" data-pop>${WebProgress(result.pct, 'Progress')}<span class="cta-card__sub">Videos ${result.video[0]}/${result.video[1]} · Quizzes ${result.test[0]}/${result.test[1]}</span></button>`;
+      const cert = state === 'completed' && certHref ? `<a class="aside-btn" href="${esc(certHref)}" style="margin-bottom:8px">${ICON.award}View Certificate</a>` : '';
+      btn = `${cert}<button class="aside-btn ${review ? 'aside-btn--outline' : ''}" data-continue>${review ? 'Review Course' : 'Continue Learning'}</button>`;
     } else {
-      body = `<div>${EnrollSlotPanel({ used: slots, limit })}</div>`;
+      body = mandatory ? '<span class="cta-card__sub">This mandatory course doesn\'t count toward your 3 elective courses.</span>' : `<div>${EnrollSlotPanel({ used: slots, limit, mandatory: mandatoryN })}</div>`;
       btn = state === 'upcoming'
-        ? `<button class="aside-btn" disabled>Start Courses</button><span class="cta-card__sub" style="text-align:center">Mở từ ${esc(startDate)}</span>`
-        : `<button class="aside-btn" id="start">Start Courses</button>`;
+        ? `<button class="aside-btn" disabled>Start Course</button><span class="cta-card__sub" style="text-align:center">This course opens on ${esc(startDate)}.</span>`
+        : `<button class="aside-btn" id="start">Start Course</button>`;
     }
     return `<div class="cta-card" data-state="${state}">${head}${meta}${body}${btn}</div>`;
   }
-  function SlotMeter(used, limit) {
+  function SlotMeter(used, limit, mandatory = 0) {
     const full = used >= limit;
     const dots = Array.from({ length: Math.max(limit, used) }, (_, i) => `<i class="${i < used ? 'on' : ''}"></i>`).join('');
-    return `<span class="slot-meter ${full ? 'slot-meter--full' : ''}"><span class="slot-meter__dots">${dots}</span>Đang học ${used}/${limit} khoá${full ? ' · Đạt giới hạn' : ''}</span>`;
+    return `<span class="slot-meter ${full ? 'slot-meter--full' : ''}"><span class="slot-meter__dots">${dots}</span>In progress: ${used}/${limit} elective courses${mandatory ? ` · ${mandatory} mandatory` : ''}</span>`;
   }
-
   /* ---------- Đợt 2 · #8 Tiến độ · #7 Kết quả ---------- */
   /** Course / Progress breakdown — Mode: compact (card) | full (popover). BR-LRN-21, 26 */
   function ProgressBreakdown({ pct, video, test, doc, mode = 'compact', practice = false }) {
-    const parts = [video && video[1] ? `Video ${video[0]}/${video[1]}` : '', test && test[1] ? `Bài test ${test[0]}/${test[1]}` : ''].filter(Boolean).join(' · ');
-    if (mode === 'compact') return `<div class="pg pg--compact"><div class="row"><span>Tiến độ</span><b>${pct}%</b></div>${Progress(pct)}${parts ? `<span class="pg__split">${parts}</span>` : ''}</div>`;
+    /* Learning Progress 3.2 — popover Your progress */
+    const parts = [video && video[1] ? `Videos ${video[0]}/${video[1]}` : '', test && test[1] ? `Quizzes ${test[0]}/${test[1]}` : ''].filter(Boolean).join(' · ');
+    if (mode === 'compact') return `<div class="pg pg--compact"><div class="row"><span>Progress</span><b>${pct}%</b></div>${Progress(pct)}${parts ? `<span class="pg__split">${parts}</span>` : ''}</div>`;
     const done = [video, test, doc].filter(Boolean).reduce((a, x) => a + x[0], 0), all = [video, test, doc].filter(Boolean).reduce((a, x) => a + x[1], 0);
     const line = (ic, lbl, v, unit) => v && v[1] ? `<div class="pg__line">${ICON[ic]}<span class="grow">${lbl}</span><b>${v[0]}/${v[1]}</b><span class="muted">${unit}</span></div>` : '';
-    return `<div class="pg pg--full"><div class="row"><span class="fw-600">Tỷ lệ hoàn thành</span><span class="grow"></span><b class="t-xl">${pct}%</b></div>${Progress(pct)}
-      <span class="t-xs muted">${done}/${all} bài đã hoàn thành</span>
-      <div class="pg__lines">${line('video', 'Video', video, 'đã xem')}${line('quiz', 'Bài test', test, 'đã đạt')}${line('file', 'Tài liệu', doc, 'đã mở')}</div>
-      ${practice ? '<span class="t-xs muted">Luyện tập không tính vào tiến độ.</span>' : ''}</div>`;
+    return `<div class="pg pg--full"><div class="row"><span class="fw-600">Completion Rate</span><span class="grow"></span><b class="t-xl">${pct}%</b></div>${Progress(pct)}
+      <span class="t-xs muted">${done}/${all} lessons completed</span>
+      <div class="pg__lines">${line('video', 'Videos', video, 'watched')}${line('quiz', 'Quizzes', test, 'passed')}${line('file', 'Documents', doc, 'opened')}</div>
+      ${practice ? '<span class="t-xs muted">Practice does not count toward progress.</span>' : ''}</div>`;
   }
   /** Learner / Completion ring — vòng Tỷ lệ hoàn thành (#7) */
   function CompletionRing(pct, size = 120) {
@@ -541,6 +580,28 @@ var LH_V = '1113c';
     let out = '', on = false;
     [...text].forEach((ch, i) => { if (mark[i] !== on) { out += mark[i] ? '<mark>' : '</mark>'; on = mark[i]; } out += esc(ch); });
     return out + (on ? '</mark>' : '');
+  }
+
+  /** Certificate / Sheet — khớp CertificateSheet LH1 (scale trong .cert-scale) */
+  function CertificateSheet({ learnerName, courseTitle, completedAt, certificateNumber, showMascot = true }) {
+    const date = typeof completedAt === 'string' ? (window.LHCert ? LHCert.fmtDate(completedAt) : completedAt) : '';
+    return `<section class="cert-sheet" aria-label="Certificate of Completion">
+      <div class="cert-sheet__frame"></div>
+      <div class="cert-sheet__banner"><span class="cert-sheet__brand">TECHVIFY</span></div>
+      <div class="cert-sheet__badge"><span class="cert-sheet__badge-t">Certificate of Completion</span></div>
+      ${showMascot ? '<div class="cert-sheet__mascot" aria-hidden="true"></div>' : ''}
+      <div class="cert-sheet__body">
+        <p class="cert-sheet__lead">This is to certify that</p>
+        <h1 class="cert-sheet__name">${esc(learnerName)}</h1>
+        <p class="cert-sheet__lead">has successfully completed the course</p>
+        <h2 class="cert-sheet__course">${esc(courseTitle)}</h2>
+      </div>
+      <div class="cert-sheet__facts">
+        <div class="cert-sheet__fact">${ICON.clock}<div><b>${esc(date)}</b><span>Date of completion</span></div></div>
+        <i class="cert-sheet__sep"></i>
+        <div class="cert-sheet__fact">${ICON.award}<div><b>${esc(certificateNumber)}</b><span>Certificate number</span></div></div>
+      </div>
+    </section>`;
   }
 
   /* ---------- Demo bar helper ---------- */
@@ -700,9 +761,9 @@ var LH_V = '1113c';
     if (s) { const box = s.parentElement; box.classList.toggle('is-open'); s.querySelector('svg').outerHTML = box.classList.contains('is-open') ? ICON.chevronU : ICON.chevronD; }
   });
 
-  /* ================= ADMIN — khớp Figma section Admin (32:1096) · CSS: assets/css/admin.css =================
-   * Admin / Sidebar (Mode Expanded 300 | Collapsed 102) + Admin / Toolbar (421:7216) bọc quanh <main> của trang.
-   * Gọi LH.AdminLayout({ active, collapsed, role }) thay cho AppHeader ở mọi màn admin; gọi lại được (đổi vai trò). */
+  /* ================= ADMIN — DNA Figma section Admin (32:1096) · docs/design-system/modules/admin-shell.md =================
+   * Sidebar 300/102 · Toolbar 421:7216 · Page head eyebrow = paint Main item (--grad-main-*).
+   * Gọi LH.AdminLayout({ active, collapsed, role }); CSS: assets/css/admin.css */
   Object.assign(ICON, {
     dash: P('<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>'),
     bookOpen: P('<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>'),
@@ -718,55 +779,62 @@ var LH_V = '1113c';
     shieldCheck: P('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>'),
     network: P('<rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/>'),
   });
-  const ADM_USER = { admin: ['Lê Thị Mai', 'Admin L&D'], creator: ['Phạm Thanh Long', 'Course Creator'] };
+  /* Role web GitLab LH1: admin | editor | employee — map docs LH2: Admin L&D / Course Creator / Learner */
+  const ADM_USER = {
+    admin: ['Lê Thị Mai', 'Admin'],
+    editor: ['Phạm Thanh Long', 'Editor'],
+    creator: ['Phạm Thanh Long', 'Editor'], /* alias cũ → editor */
+    employee: ['Trần Minh Anh', 'Employee'],
+  };
   const OUT = 'Ngoài phạm vi LearningHub 2';
-  function admRole(r) { const v = String(r || App.role() || 'admin').toLowerCase(); return v.startsWith('cr') ? 'creator' : 'admin'; }
+  function admRole(r) {
+    const v = String(r || App.role() || 'admin').toLowerCase();
+    if (v.startsWith('ed') || v.startsWith('cr')) return 'editor';
+    if (v.startsWith('em') || v.startsWith('le')) return 'employee';
+    return 'admin';
+  }
   function AdminSidebar({ active = 'courses', collapsed = false, role = 'admin' } = {}) {
-    const q = `?r=${role}`;
+    const r = admRole(role);
+    const q = `?r=${r}`;
     const it = (key, icon, label, href, extra = '') => href
       ? `<a class="adm-item ${active === key ? 'is-active' : ''}" href="${href}" title="${esc(label)}">${ICON[icon]}<span>${esc(label)}</span>${extra}</a>`
       : `<button type="button" class="adm-item" data-out="${esc(label)}" title="${esc(label)}">${ICON[icon]}<span>${esc(label)}</span></button>`;
-    /* Cài đặt (Figma 421:6741 · 464:3450): Vai trò · Đồng bộ dữ liệu · Danh mục khoá học + LH2: Phân quyền Course Creator */
-    const SUB = ['roles', 'sync', 'categories', 'settings'];
-    const settingsOpen = SUB.includes(active);
+    /* LH1 Settings: Course · Category · (admin) Employees · Entity · Role · Sync · LH2: Báo cáo ngoài nhóm + ACL Creator */
+    const SUB = ['courses', 'categories', 'employees', 'entities', 'roles', 'sync', 'settings'];
+    const settingsOpen = SUB.includes(active) || active === 'courses';
     return `<aside class="adm-side ${collapsed ? 'adm-side--collapsed' : ''}" aria-label="Menu Admin">
-      <a class="adm-side__logo" href="admin-dashboard.html${q}"><img src="${LOGO}" alt=""><span>Learning Hub</span></a>
+      <a class="adm-side__logo" href="admin-courses.html${q}"><img src="${LOGO}" alt=""><span>Learning Hub</span></a>
       <div class="adm-side__groups">
-        <div class="adm-side__group"><div class="adm-side__title">Tổng quan</div><div class="adm-side__items">
-          ${it('dashboard', 'dash', 'Dashboard', 'admin-dashboard.html' + q)}
-          ${it('courses', 'bookOpen', role === 'admin' ? 'Khoá học' : 'Khoá học của tôi', 'admin-courses.html' + q)}
-          ${role === 'admin' ? it('employees', 'usersRound', 'Nhân viên', 'admin-employees.html' + q) : ''}
-          ${it('reports', 'chart', 'Báo cáo', 'admin-reports.html' + q, '<i>LH2</i>')}
+        <div class="adm-side__group"><div class="adm-side__title">Settings</div><div class="adm-side__items">
+          ${it('courses', 'bookOpen', 'Course Management', 'admin-courses.html' + q)}
+          ${it('categories', 'list', 'Category Management', 'admin-categories.html' + q)}
+          ${r === 'admin' ? it('employees', 'usersRound', 'Employee Management', 'admin-employees.html' + q) : ''}
+          ${r === 'admin' ? it('entities', 'building', 'Entity Management', 'admin-entities.html' + q) : ''}
+          ${r === 'admin' ? it('roles', 'shield', 'Role Management', 'admin-roles.html' + q) : ''}
+          ${r === 'admin' ? it('sync', 'repeat', 'Sync Data', 'admin-sync.html' + q) : ''}
+          ${r === 'admin' ? it('settings', 'shieldCheck', 'Creator ACL', 'admin-settings.html' + q, '<i>LH2</i>') : ''}
         </div></div>
-        <div class="adm-side__group"><div class="adm-side__title">Cài đặt</div><div class="adm-side__items">
-          ${role === 'admin'
-            ? `<button type="button" class="adm-item ${settingsOpen ? 'is-open' : ''}" data-adm-toggle title="Cài đặt">${ICON.settings}<span>Cài đặt</span><svg class="ic adm-item__chev" width="16" height="16" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
-               <div class="adm-sub" ${settingsOpen ? '' : 'hidden'}>
-                 ${it('roles', 'shield', 'Vai trò', 'admin-roles.html' + q)}
-                 ${it('sync', 'repeat', 'Đồng bộ dữ liệu', 'admin-sync.html' + q)}
-                 ${it('categories', 'list', 'Danh mục khoá học', 'admin-categories.html' + q)}
-                 ${it('settings', 'shieldCheck', 'Phân quyền Course Creator', 'admin-settings.html' + q, '<i>LH2</i>')}
-               </div>`
-            : it('settings-x', 'settings', 'Cài đặt')}
-          ${it('logout', 'logout', 'Đăng xuất')}
+        <div class="adm-side__group"><div class="adm-side__title">Reports</div><div class="adm-side__items">
+          ${it('reports', 'chart', 'Learning Dashboard', 'admin-reports.html' + q, '<i>LH2</i>')}
+          ${it('logout', 'logout', 'Logout')}
         </div></div>
       </div></aside>`;
   }
   function AdminToolbar({ role = 'admin', active = '' } = {}) {
-    const [name] = ADM_USER[role];
-    const q = `?r=${role}`;
+    const r = admRole(role);
+    const [name] = ADM_USER[r] || ADM_USER.admin;
     return `<div class="adm-toolbar">
-      <form class="adm-search" action="admin-courses.html" role="search"><input type="hidden" name="r" value="${role}"><input name="q" placeholder="Tìm kiếm khoá học tại đây" autocomplete="off"><button aria-label="Tìm">${ICON.search}</button></form>
-      <nav class="adm-tnav"><a href="admin-dashboard.html${q}" class="${active === 'dashboard' ? 'is-active' : ''}">Dashboard</a><a href="admin-courses.html${q}" class="${active === 'courses' ? 'is-active' : ''}">Khoá học</a>${role === 'admin' ? `<a href="admin-employees.html${q}" class="${active === 'employees' ? 'is-active' : ''}">Nhân viên</a>` : `<a href="admin-reports.html${q}" class="${active === 'reports' ? 'is-active' : ''}">Báo cáo</a>`}</nav>
+      <form class="adm-search" action="admin-courses.html" role="search"><input type="hidden" name="r" value="${r}"><input name="q" placeholder="Search courses" autocomplete="off"><button type="submit" aria-label="Search">${ICON.search}</button></form>
       <div class="adm-actions">
-        <button class="adm-round" aria-label="Thông báo" title="Chuông thông báo: làm Sau Đợt 2 (Đợt 2 chỉ gửi email)" data-out="Chuông thông báo — làm Sau Đợt 2">${ICON.bell2}</button>
-        <button class="adm-round adm-round--opt" aria-label="Ứng dụng" data-out="Ứng dụng">${ICON.grid}</button>
-        <button class="adm-round adm-round--opt" aria-label="Ngôn ngữ" data-out="Đổi ngôn ngữ">VI</button>
+        <a class="adm-learn" href="home.html">Let's start learning</a>
+        <button type="button" class="adm-round" aria-label="Notifications" data-out="Notifications">${ICON.bell2}</button>
+        <button type="button" class="adm-round adm-round--opt" aria-label="Apps" data-out="Apps">${ICON.grid}</button>
         <div class="adm-user"><button type="button" data-adm-user aria-expanded="false" title="${esc(name)}"><span class="adm-user__av">${initials(name)}</span><span class="adm-user__name"><b>${esc(name)}</b></span>${ICON.chevronD}</button>
-          <div class="adm-user__menu" hidden><span>Đổi vai trò (demo)</span>
-            <button data-adm-role="admin" class="${role === 'admin' ? 'is-on' : ''}">${ICON.shieldCheck}Admin L&amp;D</button>
-            <button data-adm-role="creator" class="${role === 'creator' ? 'is-on' : ''}">${ICON.edit}Course Creator <small class="muted">Đợt 2</small></button>
-            <button data-out="Đăng xuất">${ICON.logout}Đăng xuất</button></div></div>
+          <div class="adm-user__menu" hidden><span>Switch role (demo)</span>
+            <button type="button" data-adm-role="admin" class="${r === 'admin' ? 'is-on' : ''}">${ICON.shieldCheck}Admin</button>
+            <button type="button" data-adm-role="editor" class="${r === 'editor' ? 'is-on' : ''}">${ICON.edit}Editor</button>
+            <button type="button" data-adm-role="employee" class="${r === 'employee' ? 'is-on' : ''}">${ICON.user}Employee</button>
+            <button type="button" data-out="Logout">${ICON.logout}Logout</button></div></div>
       </div></div>`;
   }
   function AdminLayout({ active = 'courses', collapsed = false, role } = {}) {
@@ -809,14 +877,228 @@ var LH_V = '1113c';
   }
   /** Đầu trang admin: eyebrow (dòng nhỏ gradient) + tiêu đề + mô tả + vùng nút bên phải */
   function AdminHead({ eyebrow = '', title, desc = '', right = '', back = '', xl = false }) {
-    return `<div class="adm-head ${xl ? 'adm-head--xl' : ''}"><div class="adm-head__text">${back ? `<a class="adm-back" href="${back}">${ICON.undo}Quay lại</a>` : ''}${eyebrow ? `<span class="adm-head__eyebrow">${esc(eyebrow)}</span>` : ''}<h1>${title}</h1>${desc ? `<p>${desc}</p>` : ''}</div>${right}</div>`;
+    return `<div class="adm-head ${xl ? 'adm-head--xl' : ''}"><div class="adm-head__text">${back ? `<a class="adm-back" href="${back}">${ICON.undo}Back</a>` : ''}${eyebrow ? `<span class="adm-head__eyebrow">${esc(eyebrow)}</span>` : ''}<h1>${title}</h1>${desc ? `<p>${desc}</p>` : ''}</div>${right}</div>`;
   }
+
+  /* Admin / Filter chip — ghost trigger + popover trắng (Airtable-style, màu LH)
+   * items: [{ key, label, mode: 'single'|'multi'|'date', display, hasValue,
+   *   options?: [[value, text]], value?: string|string[],
+   *   from?: '', to?: '', err?: '' }]
+   * Sự kiện: ff:apply { key, value | from,to } · ff:clear { key } · ff:clear-all
+   */
+  function AdminFilter(items = []) {
+    const any = items.some((it) => it.hasValue);
+    const chip = (it) => {
+      const openId = `ff-pop-${esc(it.key)}`;
+      let body = '';
+      if (it.mode === 'date') {
+        body = `<div class="ff__dates">
+          <label>Từ<span class="ff__date-field"><input type="date" data-ff-from value="${esc(it.from || '')}"></span></label>
+          <label>Đến<span class="ff__date-field"><input type="date" data-ff-to value="${esc(it.to || '')}"></span></label>
+        </div>${it.err ? `<p class="ff__err">${esc(it.err)}</p>` : ''}`;
+      } else {
+        const opts = (it.options || []).map(([v, t]) => {
+          const sel = it.mode === 'multi' ? (it.value || []).includes(v) : it.value === v;
+          if (it.mode === 'multi') {
+            return `<label class="ff__option ${sel ? 'is-selected' : ''}" data-ff-opt data-v="${esc(v)}"><input type="checkbox" ${sel ? 'checked' : ''}><span>${esc(t)}</span></label>`;
+          }
+          return `<button type="button" class="ff__option ${sel ? 'is-selected' : ''}" role="option" data-ff-opt data-v="${esc(v)}" aria-selected="${sel}"><span>${esc(t)}</span>${sel ? ICON.check.replace('class="ic"', 'class="ic ff__check"') : ''}</button>`;
+        }).join('');
+        body = `<div class="ff__search">${ICON.search}<input type="search" data-ff-search placeholder="${esc(it.searchPh || 'Tìm…')}" autocomplete="off"></div>
+          <div class="ff__list" role="listbox">${opts || '<div class="ff__empty">Không có lựa chọn.</div>'}</div>`;
+      }
+      return `<div class="ff ${it.hasValue ? 'has-value' : ''}" data-ff="${esc(it.key)}" data-ff-mode="${esc(it.mode)}">
+        <button type="button" class="ff__trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="${openId}">
+          <span class="ff__label"><em>${esc(it.label)}:</em> ${esc(it.display)}</span>
+          <span class="ff__caret" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="ff__clear" data-ff-clear aria-label="Xoá ${esc(it.label)}">${ICON.x}</button>
+        <div class="ff__popover ${it.mode === 'date' ? 'ff__popover--date' : ''}" id="${openId}" role="dialog" hidden>
+          <div class="ff__card">${body}
+            <div class="ff__footer"><button type="button" data-ff-cancel>Huỷ</button><button type="button" class="ff__apply" data-ff-apply>Áp dụng</button></div>
+          </div>
+        </div>
+      </div>`;
+    };
+    return `<div class="ff-bar">${items.map(chip).join('')}${any ? `<button type="button" class="ff-clear-all" data-ff-clear-all>Xoá lọc</button>` : ''}</div>`;
+  }
+  function closeAdminFilters(except) {
+    document.querySelectorAll('.ff.is-open').forEach((el) => {
+      if (el === except) return;
+      el.classList.remove('is-open');
+      const pop = el.querySelector('.ff__popover'); if (pop) pop.hidden = true;
+      el.querySelector('.ff__trigger')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+  function bindAdminFilters() {
+    if (bindAdminFilters._on) return;
+    bindAdminFilters._on = true;
+    document.addEventListener('click', (e) => {
+      const clearAll = e.target.closest('[data-ff-clear-all]');
+      if (clearAll) { closeAdminFilters(); document.dispatchEvent(new CustomEvent('ff:clear-all')); return; }
+      const clearOne = e.target.closest('[data-ff-clear]');
+      if (clearOne) { e.stopPropagation(); const box = clearOne.closest('.ff'); closeAdminFilters(); document.dispatchEvent(new CustomEvent('ff:clear', { detail: { key: box.dataset.ff } })); return; }
+      const cancel = e.target.closest('[data-ff-cancel]');
+      if (cancel) { closeAdminFilters(); return; }
+      const apply = e.target.closest('[data-ff-apply]');
+      if (apply) {
+        const box = apply.closest('.ff'); const mode = box.dataset.ffMode; const key = box.dataset.ff;
+        let detail = { key };
+        if (mode === 'date') {
+          detail.from = box.querySelector('[data-ff-from]')?.value || '';
+          detail.to = box.querySelector('[data-ff-to]')?.value || '';
+        } else if (mode === 'multi') {
+          detail.value = [...box.querySelectorAll('[data-ff-opt] input:checked')].map((i) => i.closest('[data-ff-opt]').dataset.v);
+        } else {
+          const sel = box.querySelector('.ff__option.is-selected');
+          detail.value = sel ? sel.dataset.v : '';
+        }
+        closeAdminFilters();
+        document.dispatchEvent(new CustomEvent('ff:apply', { detail }));
+        return;
+      }
+      const opt = e.target.closest('[data-ff-opt]');
+      if (opt) {
+        const box = opt.closest('.ff');
+        if (box.dataset.ffMode === 'multi') {
+          const cb = opt.querySelector('input[type="checkbox"]');
+          if (e.target !== cb) cb.checked = !cb.checked;
+          opt.classList.toggle('is-selected', cb.checked);
+          return;
+        }
+        box.querySelectorAll('.ff__option').forEach((o) => { o.classList.remove('is-selected'); o.setAttribute('aria-selected', 'false'); const ck = o.querySelector('.ff__check'); if (ck) ck.remove(); });
+        opt.classList.add('is-selected'); opt.setAttribute('aria-selected', 'true');
+        if (!opt.querySelector('.ff__check')) opt.insertAdjacentHTML('beforeend', ICON.check.replace('class="ic"', 'class="ic ff__check"'));
+        return;
+      }
+      const trig = e.target.closest('.ff__trigger');
+      if (trig) {
+        const box = trig.closest('.ff'); const open = !box.classList.contains('is-open');
+        closeAdminFilters(box);
+        box.classList.toggle('is-open', open);
+        const pop = box.querySelector('.ff__popover'); if (pop) pop.hidden = !open;
+        trig.setAttribute('aria-expanded', open);
+        if (open) box.querySelector('[data-ff-search]')?.focus();
+        return;
+      }
+      if (!e.target.closest('.ff')) closeAdminFilters();
+    });
+    document.addEventListener('input', (e) => {
+      const s = e.target.closest('[data-ff-search]'); if (!s) return;
+      const q = s.value.trim().toLowerCase();
+      s.closest('.ff').querySelectorAll('[data-ff-opt]').forEach((o) => {
+        const t = (o.textContent || '').toLowerCase();
+        o.hidden = q && !t.includes(q);
+      });
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAdminFilters(); });
+  }
+  bindAdminFilters();
   /** Admin / Empty state (1265:7417) — icon tròn + tiêu đề + mô tả + CTA (html nút). Dùng cho màn chưa có dữ liệu. */
   function AdminEmpty({ icon = 'file', title = 'Chưa có dữ liệu', desc = '', cta = '', compact = false } = {}) {
     return `<div class="adm-empty ${compact ? 'adm-empty--sm' : ''}"><span class="adm-empty__ic">${ICON[icon] || ICON.file}</span><b>${esc(title)}</b>${desc ? `<p>${desc}</p>` : ''}${cta ? `<div class="adm-empty__cta">${cta}</div>` : ''}</div>`;
   }
   /** Admin / Confirm popup (1273:8970 xoá · 1273:8997 xác nhận) — mở popup, bấm đồng ý gọi onOk(). */
-  function AdminConfirm({ title, text = '', ok = 'Xác nhận', cancel = 'Huỷ', danger = false, onOk } = {}) {
+  /* ---------- Richbox (LH1 TipTap toolbar) ----------
+   * Undo/Redo | ¶▼ List Ordered | B I U | Palette Highlighter | Align×4 | Fullscreen */
+  const RTE_TEXT_COLORS = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#800000', '#008000', '#000080', '#808000', '#800080', '#008080', '#C0C0C0', '#808080', '#4757FF'];
+  const RTE_HL_COLORS = ['transparent', '#FFFF00', '#00FF00', '#00FFFF', '#FF00FF', '#FF0000', '#0000FF', '#4757FF'];
+  const RTE_STYLES = [['p', 'Normal'], ['h1', 'Heading 1'], ['h2', 'Heading 2'], ['h3', 'Heading 3'], ['h4', 'Heading 4']];
+  function RichboxBar() {
+    return `<div class="rte__bar" role="toolbar" aria-label="Formatting">
+      <button type="button" data-rte-cmd="undo" title="Undo">${ICON.undo}</button>
+      <button type="button" data-rte-cmd="redo" title="Redo">${ICON.redo}</button>
+      <span class="rte__sep" aria-hidden="true"></span>
+      <span class="rte__dd">
+        <button type="button" data-rte-dd="style" title="Text style" aria-haspopup="listbox">${ICON.pilcrow}${ICON.chevronD}</button>
+        <span class="rte__menu" hidden role="listbox">${RTE_STYLES.map(([v, t]) => `<button type="button" role="option" data-rte-style="${v}">${esc(t)}</button>`).join('')}</span>
+      </span>
+      <button type="button" data-rte-cmd="insertUnorderedList" title="Bulleted list">${ICON.list}</button>
+      <button type="button" data-rte-cmd="insertOrderedList" title="Numbered list">${ICON.listOrdered}</button>
+      <span class="rte__sep" aria-hidden="true"></span>
+      <button type="button" data-rte-cmd="bold" title="Bold">${ICON.bold}</button>
+      <button type="button" data-rte-cmd="italic" title="Italic">${ICON.italic}</button>
+      <button type="button" data-rte-cmd="underline" title="Underline">${ICON.underline}</button>
+      <span class="rte__sep" aria-hidden="true"></span>
+      <span class="rte__dd">
+        <button type="button" data-rte-dd="color" title="Text color" aria-haspopup="dialog">${ICON.palette}</button>
+        <span class="rte__swatches" hidden role="dialog" aria-label="Text color">${RTE_TEXT_COLORS.map((c) => `<button type="button" data-rte-color="${c}" style="background:${c}" title="${c}"></button>`).join('')}</span>
+      </span>
+      <span class="rte__dd">
+        <button type="button" data-rte-dd="hl" title="Highlight" aria-haspopup="dialog">${ICON.highlighter}</button>
+        <span class="rte__swatches" hidden role="dialog" aria-label="Highlight">${RTE_HL_COLORS.map((c) => `<button type="button" data-rte-hl="${c}" class="${c === 'transparent' ? 'is-clear' : ''}" style="${c === 'transparent' ? '' : `background:${c}`}" title="${c === 'transparent' ? 'Clear' : c}"></button>`).join('')}</span>
+      </span>
+      <span class="rte__sep" aria-hidden="true"></span>
+      <button type="button" data-rte-cmd="justifyLeft" title="Align left">${ICON.alignLeft}</button>
+      <button type="button" data-rte-cmd="justifyCenter" title="Align center">${ICON.alignCenter}</button>
+      <button type="button" data-rte-cmd="justifyRight" title="Align right">${ICON.alignRight}</button>
+      <button type="button" data-rte-cmd="justifyFull" title="Justify">${ICON.alignJustify}</button>
+      <span class="rte__sep" aria-hidden="true"></span>
+      <button type="button" data-rte-fs title="Fullscreen">${ICON.maximize}</button>
+    </div>`;
+  }
+  function Richbox({ id = '', ph = '', html = '', bodyAttrs = '' } = {}) {
+    return `<div class="rte"${id ? ` id="${esc(id)}"` : ''}>${RichboxBar()}<div class="rte__body" contenteditable="true" role="textbox" aria-multiline="true" data-ph="${esc(ph)}" ${bodyAttrs}>${html}</div></div>`;
+  }
+  let rteWired = false;
+  function wireRichbox() {
+    if (rteWired) return; rteWired = true;
+    const closeMenus = (except) => {
+      document.querySelectorAll('.rte__menu, .rte__swatches').forEach((m) => { if (m !== except) m.hidden = true; });
+    };
+    document.addEventListener('mousedown', (e) => {
+      const btn = e.target.closest('[data-rte-cmd], [data-rte-dd], [data-rte-style], [data-rte-color], [data-rte-hl], [data-rte-fs]');
+      if (!btn) { closeMenus(); return; }
+      e.preventDefault();
+      const rte = btn.closest('.rte');
+      const body = rte?.querySelector('.rte__body');
+      if (btn.hasAttribute('data-rte-fs')) {
+        if (!rte) return;
+        const on = rte.classList.toggle('is-fs');
+        btn.innerHTML = on ? ICON.minimize : ICON.maximize;
+        btn.title = on ? 'Exit fullscreen' : 'Fullscreen';
+        document.body.classList.toggle('rte-fs-lock', on);
+        return;
+      }
+      if (btn.dataset.rteDd) {
+        const panel = btn.parentElement.querySelector('.rte__menu, .rte__swatches');
+        const open = panel && panel.hidden;
+        closeMenus();
+        if (panel) panel.hidden = !open;
+        return;
+      }
+      if (btn.dataset.rteStyle) {
+        document.execCommand('formatBlock', false, btn.dataset.rteStyle);
+        closeMenus(); return;
+      }
+      if (btn.dataset.rteColor) {
+        document.execCommand('foreColor', false, btn.dataset.rteColor);
+        closeMenus(); return;
+      }
+      if (btn.dataset.rteHl !== undefined) {
+        if (btn.dataset.rteHl === 'transparent') document.execCommand('removeFormat');
+        else document.execCommand('hiliteColor', false, btn.dataset.rteHl);
+        closeMenus(); return;
+      }
+      if (btn.dataset.rteCmd) {
+        document.execCommand(btn.dataset.rteCmd);
+        body?.focus();
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const fs = document.querySelector('.rte.is-fs');
+        if (fs) {
+          fs.classList.remove('is-fs');
+          document.body.classList.remove('rte-fs-lock');
+          const b = fs.querySelector('[data-rte-fs]'); if (b) { b.innerHTML = ICON.maximize; b.title = 'Fullscreen'; }
+        }
+        closeMenus();
+      }
+    });
+  }
+
+  function AdminConfirm({ title, text = '', ok = 'Confirm', cancel = 'Cancel', danger = false, onOk } = {}) {
     const el = document.createElement('div'); el.className = 'modal-backdrop';
     el.innerHTML = `<div class="modal adm-popup adm-confirm" role="alertdialog" aria-modal="true">
       <span class="adm-confirm__ic ${danger ? 'is-danger' : ''}">${danger ? ICON.trash : ICON.alert}</span>
@@ -830,8 +1112,9 @@ var LH_V = '1113c';
   /** Content / Card có xu hướng (71:1346) — trend: số % (dương xanh, âm đỏ), tone: '' | success | warning | danger | pink */
   function TrendKpi(label, value, trend, icon, tone = '', note = 'so với tháng trước') {
     const up = trend >= 0;
-    return `<div class="kpi-card kpi-card--trend ${tone ? 'kpi-card--' + tone : ''}"><span class="kpi-card__ic">${ICON[icon] || ''}</span><span class="kpi-card__text"><span class="kpi-card__label" title="${esc(label)}">${esc(label)}</span><span class="kpi-card__value">${value}</span>
-      ${trend == null ? '' : `<span class="kpi-card__trend ${up ? 'is-up' : 'is-down'}"><i>${up ? '↑' : '↓'} ${Math.abs(trend)}%</i>${esc(note)}</span>`}</span></div>`;
+    /* 13/11: số là trọng tâm — số lớn trên cùng, nhãn dưới (CSS order, DOM giữ nhãn trước cho trình đọc màn hình), icon nhỏ góc phải */
+    return `<div class="kpi-card kpi-card--trend ${tone ? 'kpi-card--' + tone : ''}"><span class="kpi-card__text"><span class="kpi-card__label" title="${esc(label)}">${esc(label)}</span><span class="kpi-card__value">${value}</span>
+      ${trend == null ? '' : `<span class="kpi-card__trend ${up ? 'is-up' : 'is-down'}"><i>${up ? '↑' : '↓'} ${Math.abs(trend)}%</i>${esc(note)}</span>`}</span><span class="kpi-card__ic">${ICON[icon] || ''}</span></div>`;
   }
   document.addEventListener('click', (e) => {
     const out = e.target.closest('[data-out]'); if (out) { e.preventDefault(); toast(out.dataset.out + ': ' + OUT); return; }
@@ -848,8 +1131,9 @@ var LH_V = '1113c';
   });
 
   window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
-    AdminLayout, AdminSidebar, AdminToolbar, AdminHead, AdminTable, StageTag, Tag, RowMenu, AdminEmpty, AdminConfirm, TrendKpi,
+    RichboxBar, Richbox, wireRichbox,
+    admRole, ADM_USER, AdminLayout, AdminSidebar, AdminToolbar, AdminHead, AdminFilter, AdminTable, StageTag, Tag, RowMenu, AdminEmpty, AdminConfirm, TrendKpi,
     ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
-    QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary };
+    QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary, CertificateSheet, AnswerNote, PracticeEntry };
 })();

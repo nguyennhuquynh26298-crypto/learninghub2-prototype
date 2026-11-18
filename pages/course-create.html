@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create new Course · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1118p">
+<style>
+  /* LH1 + DNA — form card pad 20 · field gap 16 · sticky CTA */
+  .cc-card { display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+  .cc-form { display: flex; flex-direction: column; gap: 16px; }
+  .cc-form .adm-field { gap: 8px; }
+  .cc-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+  @media (max-width: 720px) { .cc-row { grid-template-columns: 1fr; } }
+  .adm-err { font-size: 13px; line-height: 18px; color: #f04438; margin: 0; }
+  .adm-err:empty { display: none; }
+  .dur { display: inline-flex; align-items: center; gap: 6px; height: 44px; border: 1px solid var(--adm-field-stroke); border-radius: 8px; padding: 0 12px; background: #fff; width: fit-content; box-sizing: border-box; box-shadow: 0 1px 2px rgba(10,13,18,.05); }
+  .dur:focus-within { border-color: var(--adm-primary); box-shadow: 0 0 0 4px #e3e9ff; }
+  .dur.is-error { border-color: #fb5252; }
+  .dur label { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+  .dur input { width: 2.75ch; border: 0; outline: 0; font: 400 16px Inter, sans-serif; color: var(--adm-text); text-align: center; background: none; }
+  .dur span, .dur b { color: var(--adm-sub); font-size: 14px; flex: none; }
+  .adm-input:disabled { background: #fafafa; color: #a4a7ae; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div id="header"></div>
+<main>
+  <div id="head"></div>
+  <section class="adm-card cc-card">
+    <form class="cc-form" id="form" novalidate>
+      <div class="adm-field"><label for="f-title">Course Title <span class="req">*</span></label>
+        <input class="adm-input" id="f-title" placeholder="Enter course title" autocomplete="off"><p class="adm-err" data-err="title"></p></div>
+      <div class="adm-field"><span class="adm-label">Description <span class="req">*</span></span><div data-rte="description" data-ph="Course description..."></div><p class="adm-err" data-err="description"></p></div>
+      <div class="adm-field"><span class="adm-label">Who is this course for <span class="req">*</span></span><div data-rte="who" data-ph="Who is this course for..."></div><p class="adm-err" data-err="who"></p></div>
+      <div class="adm-field"><span class="adm-label">What will you learn <span class="req">*</span></span><div data-rte="learn" data-ph="What will you learn..."></div><p class="adm-err" data-err="learn"></p></div>
+      <div class="adm-field"><label for="f-cat">Category <span class="req">*</span></label><select class="adm-input" id="f-cat"></select><p class="adm-err" data-err="cat"></p></div>
+      <div class="cc-row">
+        <div class="adm-field"><label for="f-sub">Sub Category <span class="req">*</span></label><select class="adm-input" id="f-sub" disabled></select><p class="adm-err" data-err="sub"></p></div>
+        <div class="adm-field"><span class="adm-label">Duration <span class="req">*</span></span>
+          <div class="dur" id="dur"><label><input id="f-h" inputmode="numeric" maxlength="2" value="0" aria-label="Hours"><span>h</span></label><b>:</b><label><input id="f-m" inputmode="numeric" maxlength="2" value="0" aria-label="Minutes"><span>m</span></label></div><p class="adm-err" data-err="dur"></p></div>
+      </div>
+    </form>
+  </section>
+  <div class="adm-btn-combo" id="actions"></div>
+</main>
+<script src="../assets/js/components.js?v=1118p"></script>
+<script src="../assets/js/data.js?v=1118c"></script>
+<script>
+const { ICON, esc, toast, AdminLayout, AdminHead, AdminConfirm, Richbox, wireRichbox } = LH; const D = LHData;
+const SUBS = { 'Data & AI': ['AI Agent', 'Machine Learning', 'Applied & Advanced'], 'Software Development': ['Testing', 'Web', 'DevOps'], Language: ['English', 'Japanese'], 'Corporate & Mandatory Training': ['Role-based Training', 'Onboarding', 'Security & Compliance'] };
+const $ = (id) => document.getElementById(id);
+let role, dirty = false, tried = false;
+const DUP_TITLES = ['AI Agent Engineering', 'ADLC Guideline: Techvify SpecKit'];
+
+document.querySelectorAll('[data-rte]').forEach((el) => {
+  const k = el.dataset.rte;
+  el.outerHTML = Richbox({ id: 'rte-' + k, ph: el.dataset.ph || '', bodyAttrs: `data-k="${k}"` });
+});
+wireRichbox();
+document.addEventListener('input', (e) => { if (e.target.closest('.rte__body')) mark(); });
+const rteVal = (k) => { const b = document.querySelector(`.rte__body[data-k="${k}"]`); const t = b.textContent.trim(); if (!t) b.innerHTML = ''; return t; };
+
+$('f-cat').innerHTML = '<option value="">Select Category</option>' + D.categories.map((c) => `<option>${esc(c)}</option>`).join('');
+function drawSub() {
+  const list = SUBS[$('f-cat').value] || [];
+  $('f-sub').disabled = !list.length;
+  $('f-sub').innerHTML = `<option value="">${list.length ? 'Select Sub Category' : 'Select Category first'}</option>` + list.map((s) => `<option>${esc(s)}</option>`).join('');
+}
+drawSub();
+
+function check() {
+  const t = $('f-title').value.trim(), h = +$('f-h').value || 0, m = +$('f-m').value || 0;
+  return {
+    title: !t ? 'Please enter Title' : t.length > 60 ? 'Title no more than 60 characters' : DUP_TITLES.some((x) => LH.norm(x) === LH.norm(t)) ? 'This title already exists' : '',
+    description: rteVal('description') ? '' : 'Please enter Description',
+    who: rteVal('who') ? '' : 'Please enter Who is this course for',
+    learn: rteVal('learn') ? '' : 'Please enter What will you learn',
+    cat: $('f-cat').value ? '' : 'Please select Category',
+    sub: $('f-sub').value ? '' : 'Please select Sub Category',
+    dur: h > 0 || m > 0 ? (m > 59 ? 'Minutes must be 0–59' : '') : 'Please enter Hours or Minutes',
+  };
+}
+function showErr() {
+  const E = check();
+  document.querySelectorAll('[data-err]').forEach((p) => { p.textContent = tried ? (E[p.dataset.err] || '') : ''; });
+  $('f-title').classList.toggle('is-error', tried && !!E.title);
+  ['description', 'who', 'learn'].forEach((k) => $('rte-' + k).classList.toggle('is-error', tried && !!E[k]));
+  $('f-cat').classList.toggle('is-error', tried && !!E.cat); $('f-sub').classList.toggle('is-error', tried && !!E.sub);
+  $('dur').classList.toggle('is-error', tried && !!E.dur);
+  return Object.values(E).every((x) => !x);
+}
+function mark() { dirty = true; showErr(); }
+document.addEventListener('input', (e) => {
+  if (e.target.matches('#f-h, #f-m')) e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
+  if (e.target.closest('#form')) mark();
+});
+document.addEventListener('change', (e) => { if (e.target.id === 'f-cat') drawSub(); if (e.target.closest('#form')) mark(); });
+
+function payload() {
+  const title = $('f-title').value.trim();
+  const h = +$('f-h').value || 0, m = +$('f-m').value || 0;
+  const durParts = []; if (h) durParts.push(h + (h === 1 ? ' hour' : ' hours')); if (m) durParts.push(m + (m === 1 ? ' minute' : ' minutes'));
+  return { title, cat: $('f-cat').value, sub: $('f-sub').value, dur: durParts.join(' ') || '0 minutes', status: 'DRAFT' };
+}
+/* Course Information 2.2 (BR-CI-05): Save as Draft chỉ cần Course Title; thiếu trường → nhãn Incomplete, mở lại ở form này (BR-CI-07).
+ * Continue vẫn bắt đủ 7 trường như web. */
+function submit(kind) {
+  tried = true;
+  if (kind === 'draft') {
+    const E = check(); showErr();
+    document.querySelectorAll('[data-err]').forEach((p) => { if (p.dataset.err !== 'title') p.textContent = ''; });
+    document.querySelectorAll('.is-error').forEach((x) => { if (x.id !== 'f-title') x.classList.remove('is-error'); });
+    if (E.title) { $('f-title').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    const data = { ...payload(), incomplete: Object.values(E).some(Boolean) };
+    if (!$('f-cat').value) data.cat = ''; if (!$('f-sub').value) data.sub = ''; if (!(+$('f-h').value || +$('f-m').value)) data.dur = '';
+    sessionStorage.setItem('lhNewCourse', JSON.stringify(data));
+    toast('Saved as draft');
+    setTimeout(() => { location.href = 'admin-courses.html?r=' + role + '&t=draft'; }, 400);
+    return;
+  }
+  if (!showErr()) {
+    toast('Please fill in all required fields');
+    document.querySelector('.is-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  const data = payload();
+  sessionStorage.setItem('lhNewCourse', JSON.stringify(data));
+  {
+    toast('Create successfully');
+    location.href = `course-editor.html?st=draft&r=${role}&t=${encodeURIComponent(data.title)}&tab=details`;
+  }
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-save]')) return submit('draft');
+  if (e.target.closest('[data-next]')) return submit('next');
+  const c = e.target.closest('[data-cancel]');
+  if (c) { e.preventDefault(); if (!dirty) { location.href = c.href; return; }
+    AdminConfirm({ title: 'Cancel?', text: 'Your changes will not be saved.', ok: 'Discard', cancel: 'Stay', danger: true, onOk: () => { location.href = c.href; } }); }
+});
+
+function render() {
+  AdminLayout({ active: 'courses', collapsed: false, role });
+  const q = '?r=' + role;
+  $('head').innerHTML = AdminHead({
+    back: 'admin-courses.html' + q,
+    title: 'Create new Course',
+  });
+  $('actions').innerHTML = `<a class="btn-cta btn-cta--line" href="admin-courses.html${q}" data-cancel>Cancel</a><button type="button" class="btn-cta btn-cta--soft" data-save>Save as Draft</button><button type="button" class="btn-cta" data-next>Continue</button>`;
+}
+LH.DemoBar('Create new Course · LH1 + Save as Draft (Course Information 2.2)', [
+  { label: 'Role', key: 'r', options: [['admin', 'Admin'], ['editor', 'Editor']] },
+  { label: 'State', key: 'sc', options: [['new', 'Empty'], ['err', 'Validate empty'], ['dup', 'Duplicate title']] },
+], (s) => {
+  role = LH.admRole(s.r);
+  tried = s.sc === 'err' || s.sc === 'dup';
+  if (s.sc === 'dup') $('f-title').value = 'AI Agent Engineering';
+  /* Mở lại bản nháp Incomplete từ dòng Draft (BR-CI-07) */
+  const ed = new URLSearchParams(location.search).get('edit');
+  if (ed) { let nc = null; try { nc = JSON.parse(sessionStorage.getItem('lhNewCourse')); } catch (e) { /* */ } $('f-title').value = ed; if (nc && nc.title === ed && nc.cat) { $('f-cat').value = nc.cat; drawSub(); $('f-sub').value = nc.sub || ''; } }
+  render(); if (ed) $('head').querySelector('h1') && ($('head').querySelector('h1').textContent = 'Continue draft course');
+  showErr();
+});
+</script>
+</body>
+</html>

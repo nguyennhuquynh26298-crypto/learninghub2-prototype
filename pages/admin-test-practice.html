@@ -9,8 +9,8 @@
 (function () {
   const p = new URLSearchParams(location.search);
   const QZ = { ok: 'ok', dup: 'dup', legacy: 'legacy', empty: 'empty' };
-  const OPEN = { add: 'add', edit: 'practice', import: 'importdemo', importdemo: 'importdemo' };
-  const q = new URLSearchParams({ r: 'admin', st: 'published', qz: QZ[p.get('st')] || 'ok', open: OPEN[p.get('open')] || 'practice' });
+  const PQ = { ok: 'on', dup: 'dup', legacy: 'empty', empty: 'empty' };
+  const q = new URLSearchParams({ r: 'admin', st: 'published', tab: 'practice', pq: PQ[p.get('st')] || 'on' });
   location.replace('course-editor.html?' + q);
 })();
 </script>

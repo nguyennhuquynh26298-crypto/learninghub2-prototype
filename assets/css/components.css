@@ -686,6 +686,8 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .wq-opt.is-mine .wq-dot.is-on { border-color: var(--gray-600); } .wq-opt.is-mine .wq-dot i { background: var(--gray-600); }
 .wq-opt.is-mine .wq-dot--box.is-on { background: var(--gray-600); }
 .wq-tag--mine { color: var(--gray-600); }
+.wq-tag--prior { color: var(--gray-600); }
+.wq-opt.is-prior { border-color: var(--neutral-300); background: var(--neutral-50); }
 .wq-flag { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px; border: 1px solid var(--border-shell); border-radius: 6px; background: #fff; font-size: 12px; color: var(--gray-600); cursor: pointer; }
 .wq-flag svg { width: 16px; height: 16px; flex: none; }
 .wq-flag.is-on { background: var(--amber-50); border-color: var(--amber-200); color: var(--amber-800); }
@@ -851,3 +853,40 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .sp-empty svg { width: 28px; height: 28px; color: var(--neutral-400); margin-bottom: 4px; }
 .sp-empty span { font-size: 13px; color: var(--neutral-500); }
 .search-sum__n { font-size: 14px; font-weight: 600; color: var(--neutral-900); margin-right: 4px; }
+
+/* ---------- LH2 Đợt 1 · 18/11 (docs Notion 18/11) ---------- */
+/* Exam intro — Passing Score · Attempts · Highest Score (Exam 3.1) */
+.exam-intro { margin-top: 20px; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 14px 24px; border: 1px solid var(--primary-200); background: var(--primary-50); border-radius: 12px; font-size: 14px; color: var(--gray-600); min-width: 280px; }
+.exam-intro__h { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--primary-900); margin-bottom: 2px; }
+.exam-intro__h svg { width: 16px; height: 16px; }
+.exam-intro b { color: var(--gray-800); }
+/* Question — lượt 2, 3 (BR-EX-03) */
+.wq-prev { font-weight: 500; opacity: .8; margin-left: 2px; white-space: nowrap; }
+.wq-changed { margin-top: 12px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: var(--amber-50, #fffbeb); color: var(--amber-700, #b45309); font-size: 13px; }
+.wq-changed svg { width: 16px; height: 16px; flex: none; }
+.wq.is-changed { border-color: var(--amber-400, #fbbf24); }
+/* Question nav — lưới câu lượt 2, 3 (Exam 3.1) */
+.qnav__i.is-flag::after { content: ''; position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--amber-600); border: 2px solid #fff; }
+.qnav__i--kept { background: var(--green-100); border-color: var(--green-600); color: var(--green-700); }
+.qnav__i--changed { background: #fffbeb; border-color: var(--amber-600); color: var(--amber-700, #b45309); }
+.qnav__i--redo { background: #fff; border: 1.5px dashed var(--red-600); color: var(--red-700); }
+.qnav__i--redone { background: var(--primary-900); border-color: var(--primary-900); color: #fff; }
+.qnav__sw--kept { background: var(--green-100); border-color: var(--green-600); }
+.qnav__sw--changed { background: #fffbeb; border-color: var(--amber-600); }
+.qnav__sw--redo { background: #fff; border: 1.5px dashed var(--red-600); }
+.qnav__sw--redone { background: var(--primary-900); border-color: var(--primary-900); }
+/* Course card — nhãn Mandatory (Enrollment 3.1) */
+.cc-mand { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; height: 22px; padding: 0 8px; border-radius: 999px; background: #fef3c7; color: #92400e; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.cc-mand svg { width: 14px; height: 14px; }
+/* Practice entry — trang khoá (Practice · Learner 3.1) */
+.pr-entry { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border: 1px solid var(--primary-200); background: var(--primary-50); border-radius: 14px; }
+.pr-entry__ic { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-900); color: #fff; display: grid; place-items: center; flex: none; }
+.pr-entry__ic svg { width: 22px; height: 22px; }
+.pr-entry b { font-size: 16px; color: var(--gray-800); }
+.pr-entry p { margin: 4px 0 0; font-size: 13px; color: var(--gray-500); }
+/* Course content — chú thích trạng thái bài (Learning Progress 3.1) */
+.cc-lesson__st { margin-left: 8px; font-size: 12px; color: var(--amber-700, #b45309); }
+/* Attempt history — nhãn Before reopen / Final Score */
+.att-table td .badge { margin-left: 4px; }
+/* Export Data — Learning Data Export 3.1 */
+.ex-multi { display: flex; flex-wrap: wrap; gap: 8px 16px; max-height: 150px; overflow: auto; border: 1px solid var(--border-default); border-radius: 8px; padding: 10px 12px; }

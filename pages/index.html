@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LearningHub 2 — Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1113e"><link rel="stylesheet" href="../assets/css/base.css?v=1113e"><link rel="stylesheet" href="../assets/css/components.css?v=1113e">
 <style>
   .idx { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
   .idx h2 { margin: 32px 0 12px; font-size: 16px; }
@@ -35,17 +35,24 @@
   <a class="item" href="admin-audience.html"><b>Course Audience + Lịch học · Learning Data Export</b> phạm vi, quy tắc, loại trừ, email mời học, Xuất dữ liệu<span class="badge badge--violet">Admin L&amp;D</span><code>04 · 05</code></a>
   <a class="item" href="course-detail.html?s=restricted"><b>Course Audience · trang khoá</b> ngoài đối tượng / bị gỡ / chưa tới ngày bắt đầu / quá hạn<span class="badge badge--info">Learner</span><code>04 §3.2–3.4</code></a>
   <a class="item" href="home.html"><b>Enrollment · trang chủ</b> card Giới hạn, Bắt đầu, Quá hạn, Không đạt<span class="badge badge--info">Learner</span><code>04 §3.3 · 09</code></a>
-  <a class="item" href="course-detail.html?s=limit"><b>Enrollment · giới hạn 2 khoá</b> đạt giới hạn, popup giới hạn<span class="badge badge--info">Learner</span><code>09 §3.1</code></a>
-  <a class="item" href="lesson-video.html"><b>Learning Progress · Progress Tracking</b> video xem thực ≥ 90% (luật tính làm Đợt 1)<span class="badge badge--info">Learner</span><code>08</code></a>
+  <a class="item" href="course-detail.html?s=limit"><b>Enrollment · giới hạn 3 khoá</b> đạt giới hạn, popup giới hạn<span class="badge badge--info">Learner</span><code>Enrollment BR-ENR-01</code></a>
+  <a class="item" href="lesson-learn.html?i=6"><b>LH1 · Learn shell</b> video / PDF / article / quiz intro<span class="badge badge--info">Learner</span><code>LH1 learn</code></a>
+  <a class="item" href="lesson-video.html"><b>Learning Progress · redirect</b> chuyển tới lesson-learn (giữ link cũ)<span class="badge badge--info">Learner</span><code>08</code></a>
+  <a class="item" href="certificate.html"><b>LH1 · Certificate</b> chứng chỉ cá nhân + chia sẻ token<span class="badge badge--info">Learner</span><code>LH1 cert</code></a>
+  <a class="item" href="certificate-public.html?token=a1b2c3d4-e5f6-7890-abcd-ef1234567890"><b>LH1 · Certificate public</b> xác minh qua token<span class="badge badge--neutral">Public</span><code>LH1 verify</code></a>
 
   <h2>Đợt 2<small>23–27/11/2026 · 12 feature</small></h2>
-  <a class="item" href="admin-reports.html"><b>Báo cáo · Learning Dashboard</b> thẻ tổng, theo khoá, theo phòng ban, học chậm / quá hạn, mở Xuất dữ liệu<span class="badge badge--violet">Admin · Creator</span><code>10 · D-66…69</code></a>
-  <a class="item" href="admin-settings.html"><b>Role &amp; Permission</b> cấp quyền Course Creator<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.1</code></a>
+  <a class="item" href="admin-reports.html"><b>Gói 4 · Learning Report</b> 10 chỉ số L&amp;D, Week / Month, bảng theo khoá, Export Excel<span class="badge badge--violet">Admin · Creator</span><code>Learning Report · 18/11</code></a>
+  <a class="item" href="admin-settings.html"><b>Gói 6 · Settings › Permissions</b> Add Course Creator, Revoke<span class="badge badge--violet">Admin L&amp;D</span><code>Creator &amp; Approval 3.6 · 18/11</code></a>
   <a class="item" href="admin-courses.html?r=admin&amp;t=pending"><b>Course List</b> Chờ duyệt / Nháp / Cần chỉnh sửa / Đang chạy<span class="badge badge--violet">Admin · Creator</span><code>03 §3.2</code></a>
+  <a class="item" href="course-create.html?r=admin"><b>Course · Tạo khoá học mới</b> bước 1: thông tin, danh mục, thời lượng → Lưu nháp / Tiếp tục<span class="badge badge--violet">Admin · Creator</span><code>web thật /create</code></a>
+  <a class="item" href="admin-course-learners.html?t=AI+Agent+Engineering"><b>Course · Học viên của khoá</b> thẻ tổng, lọc trạng thái, tiến độ, kết quả Quiz từng người<span class="badge badge--violet">Admin · Creator</span><code>web thật /learners</code></a>
   <a class="item" href="course-editor.html"><b>Course Approval · Submit</b> trạng thái duyệt, lỗi gửi duyệt (thông báo qua email)<span class="badge badge--violet">Creator</span><code>03 §3.3</code></a>
-  <a class="item" href="course-approval.html?k=rev"><b>Course Approval · Review</b> khoá mới / bản sửa<span class="badge badge--violet">Admin L&amp;D</span><code>03 §3.4–3.5</code></a>
-  <a class="item" href="course-search.html?q=kiem+thu"><b>Course Search</b> gõ không dấu, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>06</code></a>
-  <a class="item" href="my-courses.html"><b>My Courses</b> chỉ báo suất, lọc trạng thái và thời gian<span class="badge badge--info">Learner</span><code>09 §3.2 · 06</code></a>
+  <a class="item" href="course-approval.html?w=admin&amp;k=new"><b>Gói 6 · Course Review / Course Setup</b> Approve, Request Changes, Reject, bản sửa New / Edited / Deleted, banner trạng thái của Creator, Cannot submit yet<span class="badge badge--violet">Admin · Creator</span><code>Creator &amp; Approval · 18/11</code></a>
+  <a class="item" href="course-search.html?q=qa+automation"><b>Gói 5 · Search Courses</b> Category, My Status, Time, Sort by, 12 khoá / trang<span class="badge badge--info">Learner</span><code>Learner Experience 3.1 · 18/11</code></a>
+  <a class="item" href="my-courses.html"><b>Gói 5 · My courses</b> Status có số đếm, Time, Search, Sort by, Schedule / Overdue<span class="badge badge--info">Learner</span><code>Learner Experience 3.2 · 18/11</code></a>
+  <a class="item" href="course-results.html"><b>Gói 5 · My Results + Rate this course + tab Reviews</b><span class="badge badge--info">Learner</span><code>Learner Experience 3.5–3.6 · 18/11</code></a>
+  <a class="item" href="celebrate.html"><b>Chúc mừng · pháo hoa + Techter cử nhân</b> bài thi Passed, hoàn thành khoá + chứng chỉ<span class="badge badge--info">Learner</span><code>BR-EX-19 · BR-LP-13 · 18/11</code></a>
   <a class="item" href="course-detail.html?s=learning"><b>Learning Progress · Display / My Learning Result</b> kết quả của tôi<span class="badge badge--info">Learner</span><code>07 · 08</code></a>
 
   <h2>Khung Admin theo Figma<small>LH2 không đổi · mở ra hiện Chưa có dữ liệu</small></h2>
@@ -53,6 +60,7 @@
   <a class="item" href="admin-employees.html"><b>Nhân viên</b> danh sách, sửa vai trò<span class="badge badge--neutral">Khung</span><code>457:2164</code></a>
   <a class="item" href="admin-roles.html"><b>Cài đặt · Vai trò</b> danh sách, tạo / sửa / chi tiết<span class="badge badge--neutral">Khung</span><code>421:6741</code></a>
   <a class="item" href="admin-sync.html"><b>Cài đặt · Đồng bộ dữ liệu</b> chọn mục → Đồng bộ, lịch sử<span class="badge badge--neutral">Khung</span><code>464:3450</code></a>
+  <a class="item" href="admin-sync-detail.html?m=emp"><b>LH1 · Sync detail</b> lịch sử theo module (Employee / Entity / Project)<span class="badge badge--neutral">Admin</span><code>LH1 sync/[id]</code></a>
   <a class="item" href="admin-categories.html"><b>Cài đặt · Danh mục khoá học</b> danh mục + danh mục con<span class="badge badge--neutral">Khung</span><code>Notion</code></a>
 
   <h2>Sau Đợt 1 · Sau Đợt 2<small>đợt kế tiếp</small></h2>

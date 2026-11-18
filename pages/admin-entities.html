@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entity Management · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1117a"><link rel="stylesheet" href="../assets/css/base.css?v=1117a"><link rel="stylesheet" href="../assets/css/components.css?v=1117a">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1117a">
+</head>
+<body>
+<div id="header"></div>
+<main>
+  <div id="head"></div>
+  <section class="adm-box">
+    <div class="adm-box__head adm-box__head--tools"><h2 class="adm-box__title" style="flex:1">Entities</h2>
+      <label class="adm-inline-search"><input id="q" placeholder="Search entities"><span></span></label>
+      <button class="btn-cta" id="btn-new" type="button"></button></div>
+    <div class="adm-card" id="tbl"></div>
+    <p class="adm-hint frm-note">Org units sync from HRM. Sample rows mirror Techvify delivery structure.</p>
+  </section>
+</main>
+<script src="../assets/js/components.js?v=1117a"></script>
+<script src="../assets/js/data.js?v=1117a"></script>
+<script>
+const { ICON, esc, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, Tag, RowMenu, Modal, Button } = LH;
+const SAMPLE = [
+  { name: 'Techvify HQ', code: 'TVF-HQ', parent: '—', status: 'Active', updated: '15/11/2026' },
+  { name: 'Delivery Centers', code: 'TVF-DC', parent: 'Techvify HQ', status: 'Active', updated: '14/11/2026' },
+  { name: 'Delivery Center — Hanoi', code: 'DC-HN', parent: 'Delivery Centers', status: 'Active', updated: '13/11/2026' },
+  { name: 'Delivery Center — Ho Chi Minh', code: 'DC-HCM', parent: 'Delivery Centers', status: 'Active', updated: '13/11/2026' },
+  { name: 'Engineering Guild', code: 'TVF-ENG', parent: 'Techvify HQ', status: 'Active', updated: '10/11/2026' },
+  { name: 'L&D', code: 'TVF-LND', parent: 'Techvify HQ', status: 'Active', updated: '09/11/2026' },
+  { name: 'Archived — Beta Lab', code: 'LAB-OLD', parent: 'Engineering Guild', status: 'Inactive', updated: '01/08/2026' },
+];
+let role, rows = [], q = '';
+document.querySelector('.adm-inline-search span').innerHTML = ICON.search;
+document.getElementById('btn-new').innerHTML = ICON.plus + 'Create';
+function openModal(row) {
+  const isNew = !row;
+  document.body.insertAdjacentHTML('beforeend', Modal({
+    id: 'm-ent', size: 'md', icon: 'building', title: isNew ? 'Create entity' : 'Edit entity',
+    body: `<div class="adm-form">
+      <div class="adm-field"><label>Entity name <span class="req">*</span></label><input class="adm-input" value="${esc(row?.name || '')}" placeholder="Name"></div>
+      <div class="adm-field"><label>Code</label><input class="adm-input" value="${esc(row?.code || '')}" placeholder="TVF-XXX"></div>
+      <div class="adm-field"><label>Parent</label><select class="adm-input"><option>—</option>${rows.map((x) => `<option ${row?.parent === x.name ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>
+      <div class="adm-field"><label>Status</label><select class="adm-input"><option ${row?.status !== 'Inactive' ? 'selected' : ''}>Active</option><option ${row?.status === 'Inactive' ? 'selected' : ''}>Inactive</option></select></div>
+    </div>`,
+    foot: Button({ label: 'Cancel', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Save', variant: 'primary', attrs: 'id="m-ok"' }),
+  }));
+  document.getElementById('m-ok').onclick = () => { document.getElementById('m-ent').remove(); toast(isNew ? 'Entity saved (stub)' : 'Changes saved (stub)'); };
+}
+function render() {
+  AdminLayout({ active: 'entities', collapsed: true, role });
+  document.getElementById('head').innerHTML = AdminHead({
+    eyebrow: 'Settings · Entity Management',
+    title: 'Entity Management',
+    desc: 'Department and org units from HRM. Used for reporting and audience scope.',
+  });
+  const nq = LH.norm(q.trim());
+  const list = rows.filter((r) => !nq || LH.norm(r.name + r.code + r.parent).includes(nq));
+  const cols = ['Entity name', 'Code', 'Parent', 'Status', 'Updated', ['Actions', 't-act']];
+  document.getElementById('tbl').innerHTML = list.length
+    ? AdminTable(cols, list.map((r, i) => `<tr>
+      <td class="t-name"><b>${esc(r.name)}</b></td><td>${esc(r.code)}</td><td>${esc(r.parent)}</td>
+      <td>${Tag(r.status, r.status === 'Active' ? 'published' : 'neutral')}</td><td>${esc(r.updated)}</td>
+      <td class="t-act">${RowMenu([{ label: 'Edit', icon: 'edit', attrs: `data-ed="${i}"` }])}</td></tr>`).join(''))
+    : AdminEmpty({ icon: 'building', title: 'No entities', desc: 'Switch Demo to sample data or run Sync Data.', compact: true });
+}
+document.getElementById('btn-new').onclick = () => openModal(null);
+document.addEventListener('click', (e) => {
+  const ed = e.target.closest('[data-ed]'); if (ed) { openModal(rows[+ed.dataset.ed]); return; }
+  if (e.target.closest('[data-close]')) { const m = e.target.closest('.modal-backdrop'); if (m) m.remove(); }
+});
+document.addEventListener('input', (e) => { if (e.target.id === 'q') { q = e.target.value; render(); document.getElementById('q').focus(); } });
+LH.DemoBar('Entity Management · LH1', [
+  { label: 'Role', key: 'r', options: [['admin', 'Admin']] },
+  { label: 'Data', key: 'data', options: [['empty', 'Empty'], ['sample', 'Sample (Techvify)']] },
+], (s) => {
+  role = LH.admRole(s.r);
+  rows = s.data === 'sample' ? SAMPLE.map((x) => ({ ...x })) : [];
+  render();
+});
+</script>
+</body>
+</html>

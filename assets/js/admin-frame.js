@@ -21,10 +21,12 @@
 
   function list(cfg) {
     const S = { mode: 'list', data: 'empty', rows: cfg.rows.map((r) => ({ ...r })), editing: -1, q: '' };
+    let role = LH.admRole(LH.App.role());
     const main = document.querySelector('main');
     main.innerHTML = '<div id="frm-head"></div><div id="frm-body"></div>';
 
     function renderList() {
+      AdminLayout({ active: cfg.active, role });
       document.getElementById('frm-head').innerHTML = AdminHead({ eyebrow: cfg.eyebrow, title: cfg.title, desc: cfg.desc,
         right: cfg.cta ? `<button class="btn-cta" data-frm-new>${ICON.plus}${esc(cfg.cta)}</button>` : '' });
       const rows = S.data === 'empty' ? [] : S.rows.filter((r) => !S.q || JSON.stringify(r).toLowerCase().includes(S.q.toLowerCase()));
@@ -40,6 +42,7 @@
     }
 
     function renderForm(idx, ro) {
+      AdminLayout({ active: cfg.active, role });
       const r = idx >= 0 ? S.rows[idx] : {};
       const t = ro ? cfg.form.detailTitle || 'Chi tiết' : idx >= 0 ? cfg.form.editTitle : cfg.form.newTitle;
       document.getElementById('frm-head').innerHTML = AdminHead({ back: '#', eyebrow: cfg.eyebrow, title: t, desc: cfg.form.desc || '' });
@@ -85,8 +88,14 @@
     });
     document.addEventListener('input', (e) => { if (e.target.matches('[data-frm-q]')) { S.q = e.target.value; const p = e.target.selectionStart; renderList(); const n = document.querySelector('[data-frm-q]'); n.focus(); n.setSelectionRange(p, p); } });
 
-    AdminLayout({ active: cfg.active, role: 'admin' });
-    DemoBar(cfg.title + ' — khung Figma (không đổi ở LH2)', [{ label: 'Dữ liệu', key: 'data', options: [['empty', 'Chưa có dữ liệu'], ['sample', 'Dữ liệu mẫu (Figma)']] }], (s) => { S.data = s.data; S.mode = 'list'; renderList(); });
+    const dataGroup = [{ label: 'Dữ liệu', key: 'data', options: [['empty', 'Chưa có dữ liệu'], ['sample', 'Dữ liệu mẫu']] }];
+    const groups = [...(cfg.demoRole ? [{ label: 'Role', key: 'r', options: cfg.demoRole }] : []), ...(cfg.demoGroups || dataGroup)];
+    DemoBar(cfg.demoTitle || cfg.title + ' · LH1', groups, (s) => {
+      if (s.r != null) role = LH.admRole(s.r);
+      if (s.data != null) { S.data = s.data; S.mode = 'list'; }
+      if (S.mode === 'form') renderForm(S.editing, false);
+      else renderList();
+    });
     return S;
   }
 

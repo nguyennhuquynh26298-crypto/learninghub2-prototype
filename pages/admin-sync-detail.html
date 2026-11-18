@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sync Data detail · LearningHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1117a"><link rel="stylesheet" href="../assets/css/base.css?v=1117a"><link rel="stylesheet" href="../assets/css/components.css?v=1117a">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1117a">
+</head>
+<body>
+<div id="header"></div>
+<!-- LH1 /dashboard/settings/sync-data/[id] — Module · Status · Created By · Created At -->
+<main>
+  <div id="head"></div>
+  <section class="adm-box">
+    <div class="adm-box__head adm-box__head--tools"><h2 class="adm-box__title" style="flex:1">Run history</h2>
+      <label class="adm-inline-search"><input id="q" placeholder="Search module"><span></span></label></div>
+    <div class="adm-card" id="tbl"></div>
+  </section>
+</main>
+<script src="../assets/js/components.js?v=1117a"></script>
+<script src="../assets/js/data.js?v=1117a"></script>
+<script>
+const { ICON, esc, Tag, AdminLayout, AdminHead, AdminTable, AdminEmpty } = LH;
+const P = new URLSearchParams(location.search);
+const MOD = P.get('m') || 'emp';
+const META = {
+  emp: ['Employee', 'Nhân viên (Employee)'],
+  ent: ['Entity', 'Phòng ban (Entity)'],
+  prj: ['Project', 'Dự án (Project)'],
+};
+const label = (META[MOD] || META.emp)[1];
+const SEED = {
+  emp: [
+    { name: 'Employee sync batch', status: 'Success', by: 'System', at: '02/10/2025 16:40' },
+    { name: 'Employee sync batch', status: 'Success', by: 'Lê Thị Mai', at: '15/11/2026 09:12' },
+    { name: 'Employee sync batch', status: 'Failed', by: 'System', at: '01/09/2025 08:00' },
+  ],
+  ent: [
+    { name: 'Entity tree sync', status: 'Success', by: 'System', at: '02/10/2025 16:40' },
+    { name: 'Entity tree sync', status: 'Success', by: 'Lê Thị Mai', at: '14/11/2026 11:05' },
+  ],
+  prj: [
+    { name: 'Project list sync', status: 'Failed', by: 'System', at: '02/10/2025 16:41' },
+    { name: 'Project list sync', status: 'Success', by: 'Lê Thị Mai', at: '10/11/2026 14:22' },
+  ],
+};
+let rows = (SEED[MOD] || SEED.emp).map((r) => ({ ...r }));
+let q = '';
+document.querySelector('.adm-inline-search span').innerHTML = ICON.search;
+function render() {
+  AdminLayout({ active: 'sync', collapsed: true, role: 'admin' });
+  document.getElementById('head').innerHTML = AdminHead({
+    back: 'admin-sync.html?r=admin',
+    eyebrow: 'Settings · Sync Data',
+    title: `Sync detail · ${esc(label)}`,
+    desc: 'Per-module run log (GitLab sync-data/[id]).',
+  });
+  const nq = LH.norm(q.trim());
+  const list = rows.filter((r) => !nq || LH.norm(r.name + ' ' + r.by).includes(nq));
+  document.getElementById('tbl').innerHTML = list.length
+    ? AdminTable(['Module', 'Status', 'Created By', 'Created At'],
+      list.map((r) => `<tr><td><b>${esc(r.name)}</b></td><td>${Tag(r.status === 'Success' ? 'Success' : 'Failed', r.status === 'Success' ? 'published' : 'pending')}</td><td>${esc(r.by)}</td><td>${esc(r.at)}</td></tr>`).join(''))
+    : AdminEmpty({ icon: 'repeat', title: 'No runs', desc: 'No history for this module.', compact: true });
+}
+document.addEventListener('input', (e) => { if (e.target.id === 'q') { q = e.target.value; render(); } });
+LH.DemoBar('Sync detail · LH1', [
+  { label: 'Module', key: 'm', options: [['emp', 'Employee'], ['ent', 'Entity'], ['prj', 'Project']] },
+  { label: 'Data', key: 'd', options: [['full', 'Has runs'], ['empty', 'Empty']] },
+], (s) => {
+  const m = s.m;
+  if (m !== MOD) { location.replace('admin-sync-detail.html?m=' + m); return; }
+  rows = s.d === 'empty' ? [] : (SEED[MOD] || SEED.emp).map((r) => ({ ...r }));
+  render();
+});
+</script>
+</body>
+</html>

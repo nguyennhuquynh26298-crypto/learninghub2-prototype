@@ -1,150 +1,146 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Duyệt khoá học · LearningHub</title>
+<title>Course Review · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1118w">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1118w"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
 <style>
-  /* Duyệt khoá — bố cục Create new course ở dạng chỉ đọc; cột phải: Thông tin gửi duyệt + Lịch sử duyệt */
-  .rv-meta { display: flex; gap: 20px; font-size: 16px; color: var(--adm-sub); flex-wrap: wrap; margin-top: 8px; }
-  .rv-meta span { display: inline-flex; gap: 6px; align-items: center; }
-  .rv-meta svg { width: 18px; height: 18px; }
-  .preview-hero { border-radius: 20px; background: linear-gradient(135deg, #4757ff, #2a37c4); color: #fff; padding: 28px; display: flex; flex-direction: column; gap: 8px; }
-  .preview-hero h2 { font-size: 24px; line-height: 32px; font-weight: 700; margin: 0; }
-  .preview-hero p { color: #dce2ff; font-size: 15px; margin: 0; }
-  .legend { display: flex; gap: 12px; align-items: center; font-size: 13px; color: var(--adm-sub); }
-  .kv { display: flex; gap: 12px; font-size: 15px; } .kv span { flex: 1; color: var(--adm-sub); }
-  .adm-lesson.is-deleted b { text-decoration: line-through; color: var(--adm-sub); }
-  /* Quiz trong màn duyệt: tóm tắt + popup so sánh câu hỏi Exam | Practice (chỉ đọc) */
-  .rq-sum { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-  .rq-row { display: flex; gap: 12px; padding: 12px 14px; border: 1px solid var(--adm-stroke); border-radius: 10px; align-items: flex-start; }
-  .rq-row.is-del { background: #fafafa; } .rq-row.is-del .rq-text { text-decoration: line-through; color: var(--adm-sub); }
-  .rq-num { width: 28px; height: 28px; border-radius: 50%; background: var(--adm-side); display: grid; place-items: center; font-size: 13px; font-weight: 600; flex: none; }
-  .rq-text { font-weight: 500; } .rq-meta { font-size: 13px; color: var(--adm-sub); margin-top: 4px; }
-  .rq-old { font-size: 13px; color: var(--adm-sub); margin-top: 4px; text-decoration: line-through; }
-  .rq-set { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px 16px; padding: 12px 14px; border-radius: 10px; background: var(--adm-side); font-size: 14px; }
-  .rq-set span { color: var(--adm-sub); display: block; font-size: 12px; }
+  .rv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+  @media (max-width: 1100px) { .rv-grid { grid-template-columns: 1fr; } }
+  .rv-hero { border-radius: 20px; background: linear-gradient(135deg, #4757ff, #2a37c4); color: #fff; padding: 24px 28px; }
+  .rv-hero h2 { margin: 6px 0; font-size: 22px; } .rv-hero p { margin: 0; color: #dce2ff; }
+  .rv-sec { border: 1px solid var(--adm-stroke); border-radius: 12px; margin-top: 12px; overflow: hidden; }
+  .rv-sec > b { display: block; padding: 10px 14px; background: var(--adm-side, #f5f6ff); }
+  .rv-sec div { padding: 10px 14px; border-top: 1px solid var(--adm-stroke); font-size: 14px; }
+  .kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px 12px; font-size: 14px; } .kv span { color: var(--adm-sub); }
+  .aud { background: #fffaeb; border: 1px solid #fedf89; border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+  .bn { border-radius: 12px; padding: 12px 16px; font-size: 14px; margin-bottom: 16px; border: 1px solid; }
+  .bn--draft { background: #f9fafb; border-color: #eaecf0; } .bn--pending { background: #eff8ff; border-color: #b2ddff; }
+  .bn--changes { background: #fffaeb; border-color: #fedf89; } .bn--rejected { background: #fef3f2; border-color: #fecdca; }
+  .bn q { display: block; quotes: none; margin-top: 6px; color: #344054; } .bn small { display: block; color: #667085; margin-top: 4px; }
+  .miss { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  .miss a { display: flex; gap: 8px; padding: 10px 12px; border: 1px solid #fecdca; border-radius: 10px; color: #b42318; text-decoration: none; font-size: 14px; }
+  .miss a:hover { background: #fef3f2; }
 </style>
 </head>
 <body>
+<!-- Course Creator & Approval 2.1–2.3, 3.1–3.4, 3.8 · BR-CA-01…13 (Notion LH2 Product Docs No 10, Đợt 2 · Gói 6).
+     View = Admin L&D (Course Review) | Course Creator (banner trạng thái + Submit for Approval). Email chỉ minh hoạ bằng toast. -->
 <div id="header"></div>
 <main>
-  <div class="adm-head"><div class="adm-head__text"><a class="adm-back" id="back" href="admin-courses.html?r=admin&t=pending">Quay lại</a><span class="adm-head__eyebrow">Duyệt khoá học</span>
-    <h1><span id="h-title"></span> <span id="h-status"></span></h1><div class="rv-meta" id="h-meta"></div></div>
-    <div style="display:flex;gap:12px" id="h-act"></div></div>
+  <div id="head"></div>
   <div id="banner"></div>
-  <div class="adm-grid-2">
-    <div style="display:flex;flex-direction:column;gap:24px">
-      <div class="preview-hero"><span style="color:#c3cbff;font-size:13px">5 session · 12 bài</span><h2 id="p-title"></h2><p>Nắm vững kiến trúc agent, tool design, MCP và context management để thiết kế giải pháp Claude ở môi trường production.</p></div>
-      <section class="adm-card"><div class="adm-box__head" style="margin-bottom:20px"><h2 class="adm-box__title" style="flex:1">Nội dung khoá — như học viên thấy</h2><span class="legend" id="legend"></span></div>
-        <div style="display:flex;flex-direction:column;gap:16px" id="syllabus"></div></section>
+  <div class="rv-grid">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="rv-hero"><span style="font-size:13px;color:#c3cbff" id="h-count"></span><h2 id="h-title"></h2><p>Architecture, tool design, MCP and context management for production Claude solutions.</p></div>
+      <section class="adm-card"><h2 class="adm-card__title">Preview — as learners will see it</h2><div id="aud"></div><div id="syl"></div></section>
     </div>
-    <aside style="display:flex;flex-direction:column;gap:24px">
-      <section class="adm-card"><h2 class="adm-card__title">Thông tin gửi duyệt</h2><div style="display:flex;flex-direction:column;gap:12px" id="info"></div></section>
-      <section class="adm-card"><h2 class="adm-card__title">Lịch sử duyệt</h2><div class="timeline" id="history"></div></section>
+    <aside style="display:flex;flex-direction:column;gap:20px">
+      <section class="adm-card"><h2 class="adm-card__title">Submission</h2><div class="kv" id="info"></div></section>
+      <section class="adm-card"><h2 class="adm-card__title">Approval History</h2><ul class="w2-hist" id="hist"></ul></section>
     </aside>
   </div>
 </main>
-<script src="../assets/js/components.js?v=1113c"></script>
-<script src="../assets/js/data.js?v=1113c"></script>
-<script src="../assets/js/approval.js?v=1113c"></script>
+<script src="../assets/js/components.js?v=1118w"></script>
+<script src="../assets/js/data.js?v=1118w"></script>
+<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
 <script>
-const { ICON, Avatar, Alert, esc, toast, AdminLayout, StageTag } = LH; const D = LHData; const C = D.course;
-AdminLayout({ active: 'courses', collapsed: true, role: 'admin' });
-document.getElementById('back').insertAdjacentHTML('afterbegin', ICON.undo);
-const CourseStatus = StageTag;
-// Nhãn thay đổi của bản sửa: [session, lesson] → new | edit | del ; bài xoá được chèn vào mục lục
-const CHG = { '1:1': 'edit', '2:0': 'edit', '4:1': 'new' };
-const DELETED = { 1: [['video', 'MCP transport cũ (SSE)']] };
-const ADDED = { 4: [['video', 'Prompt caching thực chiến']] };
-/* Câu hỏi quiz trong gói duyệt. chg: new | edit | del (chỉ bản sửa) · old: nội dung trước khi sửa */
-const Q = (text, type, n, ans, score, chg, old) => ({ text, type, n, ans, score, chg, old });
-const QUIZ = {
-  base: { pass: 80, minutes: 30, shuffle: true, practice: true,
-    exam: [Q('MCP server giao tiếp với client qua giao thức nào?', 'Một đáp án', 4, 'B', 2), Q('Tool description nên chứa gì để model chọn đúng tool?', 'Nhiều đáp án', 4, 'A, C', 3), Q('Một tool có thể trả về nhiều content block.', 'Đúng / Sai', 2, 'Đúng', 1), Q('Khi nào nên tách một tool lớn thành nhiều tool nhỏ?', 'Một đáp án', 4, 'D', 2)],
-    practice: [Q('Resource khác Tool ở điểm nào?', 'Một đáp án', 3, 'A', 1), Q('Prompt template của MCP dùng để làm gì?', 'Một đáp án', 4, 'C', 1), Q('Tool name nên viết theo snake_case.', 'Đúng / Sai', 2, 'Đúng', 1)] },
-  rev: { pass: 80, oldPass: 70, minutes: 30, shuffle: true, practice: true, oldPractice: false,
-    exam: [Q('MCP server giao tiếp với client qua giao thức nào?', 'Một đáp án', 4, 'B', 2), Q('Tool description nên chứa gì để model chọn đúng tool?', 'Nhiều đáp án', 4, 'A, C', 3, 'edit', 'Đáp án cũ: A · 2 điểm'), Q('Transport SSE là lựa chọn mặc định cho server mới.', 'Đúng / Sai', 2, 'Sai', 1, 'del'), Q('Khi nào nên tách một tool lớn thành nhiều tool nhỏ?', 'Một đáp án', 4, 'D', 2), Q('Streamable HTTP thay thế transport nào?', 'Một đáp án', 4, 'A', 2, 'new')],
-    practice: [Q('Resource khác Tool ở điểm nào?', 'Một đáp án', 3, 'A', 1, 'new'), Q('Prompt template của MCP dùng để làm gì?', 'Một đáp án', 4, 'C', 1, 'new'), Q('Tool name nên viết theo snake_case.', 'Đúng / Sai', 2, 'Đúng', 1, 'new')] },
+const { ICON, esc, toast, AdminLayout, AdminHead, Tag } = LH;
+const TITLE = 'CCAR-F Claude Certified Architect – Foundations', OWNER = 'Phạm Thanh Long';
+const SYL = [
+  ['Section 1 · Getting started', [['Lesson 1 · Course overview', ''], ['Lesson 2 · Claude model family', 'edit']]],
+  ['Section 2 · Tools & MCP', [['Lesson 1 · Tool design principles', ''], ['Lesson 2 · MCP transport (SSE, old)', 'del'], ['Lesson 3 · MCP transport (Streamable HTTP)', 'new'], ['Lesson 4 · Quiz · Tools & MCP', 'edit']]],
+  ['Section 3 · Context management', [['Lesson 1 · Context windows', ''], ['Lesson 2 · Final Test', '']]],
+];
+const TAGS = { new: ['New', 'new'], edit: ['Edited', 'edit'], del: ['Deleted', 'del'] };
+let v; // { view, type, status, hist, processed }
+const HIST = {
+  base: [['Submitted', OWNER, '09:12 · 24/11/2026']],
+  changes: [['Submitted', OWNER, '09:12 · 24/11/2026'], ['Changes Requested', 'Lê Thị Mai', '14:30 · 24/11/2026', 'Please add a summary lesson at the end of Section 3 and fix the quiz Time Limit.']],
+  rejected: [['Submitted', OWNER, '09:12 · 24/11/2026'], ['Rejected', 'Lê Thị Mai', '15:02 · 24/11/2026', 'This topic is already covered by the official CCAR course. Please join that course instead.']],
 };
-const CHG_TXT = { new: 'Mới', edit: 'Đã sửa', del: 'Đã xoá' };
-const live = (L) => L.filter((q) => q.chg !== 'del');
-const pts = (L) => live(L).reduce((a, q) => a + q.score, 0);
-/* Quiz đang xem: bản sửa → bài '1:1' có thay đổi câu hỏi; còn lại dùng bộ câu gốc */
-const quizOf = (key) => (K === 'rev' && key === '1:1' ? QUIZ.rev : QUIZ.base);
-function quizSum(key) {
-  const z = quizOf(key), n = (L) => L.filter((q) => q.chg).length;
-  return `<span class="rq-sum"><span class="adm-hint">Exam ${live(z.exam).length} câu · ${pts(z.exam)} điểm · Practice ${z.practice ? live(z.practice).length : 'tắt'}</span>${K === 'rev' && (n(z.exam) + n(z.practice)) ? `<span class="chg chg--edit">${n(z.exam) + n(z.practice)} câu thay đổi</span>` : ''}<button class="btn-cta btn-cta--soft btn-cta--sm" data-rq="${key}">Xem câu hỏi</button></span>`;
-}
-function openQuiz(key, name, tab = 'exam') {
-  const z = quizOf(key), rev = K === 'rev';
-  // Kiểm tra chặn trùng 2 chiều (BR-ASM-03/07) ngay trên gói duyệt
-  const norm = (t) => LH.norm(t).replace(/\s+/g, ' ').trim();
-  const ex = new Set(live(z.exam).map((q) => norm(q.text)));
-  const dup = live(z.practice).filter((q) => ex.has(norm(q.text))).length;
-  const L = tab === 'exam' ? z.exam : z.practice;
-  const set = `<div class="rq-set"><div><span>Điểm đạt</span><b>${rev && z.oldPass ? `<s class="muted">${z.oldPass}%</s> → ` : ''}${z.pass}%</b></div><div><span>Thời gian</span><b>${z.minutes} phút</b></div><div><span>Số lượt Exam</span><b>3 lượt (cố định)</b></div><div><span>Trộn câu (Exam)</span><b>${z.shuffle ? 'Bật' : 'Tắt'}</b></div><div><span>Cho phép luyện tập</span><b>${rev && z.oldPractice === false ? '<s class="muted">Tắt</s> → ' : ''}${z.practice ? 'Bật' : 'Tắt'}</b></div></div>`;
-  const rows = L.length ? L.map((q, i) => `<div class="rq-row ${q.chg === 'del' ? 'is-del' : ''}"><span class="rq-num">${i + 1}</span><div class="grow"><div class="rq-text">${esc(q.text)}</div>
-      <div class="rq-meta">${q.type} · ${q.n} lựa chọn · Đáp án: <b>${q.ans}</b> · ${q.score} điểm</div>${q.old ? `<div class="rq-old">${esc(q.old)}</div>` : ''}</div>${rev && q.chg ? `<span class="chg chg--${q.chg}">${CHG_TXT[q.chg]}</span>` : ''}</div>`).join('')
-    : LH.AdminEmpty({ icon: 'quiz', title: 'Chưa có câu hỏi', desc: 'Quiz chưa có câu ở mục này.', compact: true });
-  document.querySelectorAll('#m-rq').forEach((m) => m.remove());
-  document.body.insertAdjacentHTML('beforeend', LH.Modal({ id: 'm-rq', size: 'xl', title: `Câu hỏi · ${esc(name)}`, desc: rev ? 'So sánh với bản đang chạy · chỉ đọc' : 'Chỉ đọc',
-    body: `<div class="qm">${set}
-      <div class="qm-top"><div class="combo qm-tabs"><button data-rq-tab="exam" class="${tab === 'exam' ? 'is-active' : ''}">${ICON.quiz}Đề thi (Exam) · ${live(z.exam).length}</button><button data-rq-tab="practice" class="${tab === 'practice' ? 'is-active' : ''}">${ICON.dumbbell}Luyện tập (Practice) · ${z.practice ? live(z.practice).length : 'Tắt'}</button></div>
-        <span class="qm-total">Tổng điểm: <b>${pts(L)}</b> điểm</span></div>
-      ${dup ? `<div class="qm-flag qm-flag--warn">${ICON.alert}<span><b>${dup} câu Practice trùng Exam.</b> Yêu cầu Creator sửa trước khi duyệt (BR-ASM-03/07).</span></div>` : `<div class="qm-flag">${ICON.check}<span>Không có câu trùng giữa Exam và Practice.</span></div>`}
-      ${rev && tab === 'exam' && L.some((q) => q.chg) ? `<div class="qm-flag qm-flag--warn">${ICON.alert}<span>Duyệt sẽ tạo đề phiên bản v2. Học viên đang làm dở tiếp tục đề v1 (D-59).</span></div>` : ''}
-      <div class="qm-list">${rows}</div></div>`,
-    foot: LH.Button({ label: 'Đóng', variant: 'secondary', attrs: 'data-close' }) }));
-  document.querySelector('#m-rq').dataset.key = key; document.querySelector('#m-rq').dataset.name = name;
-}
-let K, state, history;
+const histHtml = (h) => h.map(([a, who, at, cm]) => `<li><div><b>${a}</b><small>${esc(who)} · ${at}</small>${cm ? `<q>${esc(cm)}</q>` : ''}</div></li>`).join('');
+
 function render() {
-  const rev = K === 'rev';
-  const title = rev ? C.title : 'Kiểm thử tự động với Playwright';
-  const owner = rev ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long';
-  document.getElementById('h-title').textContent = title;
-  document.getElementById('p-title').textContent = title;
-  document.getElementById('h-status').innerHTML = state === 'approved' ? CourseStatus('published') : state === 'rejected' ? (rev ? CourseStatus('published', 'rejected') : CourseStatus('rejected')) : rev ? CourseStatus('published', 'pending') : CourseStatus('pending');
-  document.getElementById('h-meta').innerHTML = `<span>${ICON.user}${owner}</span><span>${ICON.file}${rev ? 'Bản sửa của khoá đang chạy · Ver 2.0' : 'Khoá mới · Ver 1.0'}</span><span>${ICON.clock}Gửi lúc ${rev ? '16:02 · 08/11/2026' : '10:24 · 09/11/2026'}</span>`;
-  document.getElementById('h-act').innerHTML = state === 'pending'
-    ? `<button class="btn-cta btn-cta--line" data-edit>${ICON.edit}Sửa</button><button class="btn-cta btn-cta--soft" data-reject>Yêu cầu chỉnh sửa</button><button class="btn-cta" data-approve>${ICON.check}Duyệt</button>`
-    : `<a class="btn-cta btn-cta--line" href="admin-courses.html?r=admin">Về danh sách</a>`;
-  document.getElementById('banner').innerHTML = state === 'approved'
-    ? Alert({ tone: 'success', icon: 'check', title: rev ? 'Đã thay nội dung đang chạy bằng bản sửa' : 'Khoá đã Publish', })
-    : state === 'rejected' ? Alert({ tone: 'danger', icon: 'alert', title: 'Đã gửi yêu cầu chỉnh sửa', })
-    : '';
-  document.getElementById('legend').innerHTML = rev ? `<span class="chg chg--new">Mới</span><span class="chg chg--edit">Đã sửa</span><span class="chg chg--del">Đã xoá</span>` : '';
-  document.getElementById('syllabus').innerHTML = C.sessions.map((s, si) => {
-    const items = s.lessons.map((l, li) => [l, rev ? CHG[`${si}:${li}`] : null]);
-    if (rev) (DELETED[si] || []).forEach((l) => items.push([l, 'del'])), (ADDED[si] || []).forEach((l) => items.push([l, 'new']));
-    return `<div class="adm-section"><div class="adm-section__head"><b>${esc(s.name)}</b></div>` + items.map(([[k, n], c], li) =>
-      `<div class="adm-lesson ${c === 'del' ? 'is-deleted' : ''}">${ICON[k]}<b>${esc(n)}</b>${c ? `<span class="chg chg--${c}">${CHG_TXT[c]}</span>` : ''}${k === 'quiz' && c !== 'del' ? quizSum(`${si}:${li}`).replace('data-rq=', `data-rq-name="${esc(n)}" data-rq=`) : ''}</div>`).join('') + '</div>';
-  }).join('');
-  document.getElementById('info').innerHTML = `<div class="adm-meta">${Avatar(owner, 'sm')}<div style="display:flex;flex-direction:column"><b>${owner}</b><span class="adm-hint">Course Creator · ${rev ? 'L&D' : 'QA'}</span></div></div>
-    ${rev ? `<div class="kv"><span>Phòng ban</span><b>QA → QA, <span class="chg chg--new">BA</span></b></div><div class="kv"><span>Dự kiến học viên</span><b>48 → 64</b></div>` : `<div class="kv"><span>Đối tượng</span><b>Phòng QA + 3 cá nhân</b></div>`}
-    <div class="kv"><span>Email mời học</span><b>${rev ? '—' : 'Gửi khi Publish'}</b></div>
-    ${rev ? `<div class="kv"><span>Thay đổi bài</span><b>1 mới · 2 sửa · 1 xoá</b></div><div class="kv"><span>Câu hỏi quiz</span><b>Exam +1 · 1 sửa · −1 · Practice +3</b></div><div class="kv"><span>Học viên đang học</span><b>48</b></div>` : ''}`;
-  document.getElementById('history').innerHTML = history.map(([tone, t, who, at, cmt]) => `<div class="timeline__it"><span class="timeline__dot timeline__dot--${tone}"></span><div class="stack gap-4"><b>${t}</b><span class="t-xs muted">${who} · ${at}</span>${cmt ? `<span class="ab__quote" style="background:var(--bg-subtle)">“${esc(cmt)}”</span>` : ''}</div></div>`).join('');
+  const admin = v.view === 'admin';
+  AdminLayout({ active: 'courses', role: admin ? 'admin' : 'editor' });
+  const edit = v.type === 'edit';
+  const statusTag = { draft: Tag('Draft', 'draft'), pending: Tag(edit ? 'Published · Edit Pending Approval' : 'Pending Approval', 'pending'), changes: Tag(edit ? 'Published · Edit Changes Requested' : 'Changes Requested', 'rejected'), rejected: Tag('Rejected', 'rejected'), published: Tag('Published', 'published') }[v.status];
+  const busy = admin && v.processed;
+  const actions = admin
+    ? (v.status === 'pending' && !busy ? `<button class="btn-cta btn-cta--line" data-a="edit">${ICON.edit}Edit</button><button class="btn-cta btn-cta--line" data-a="reject">Reject</button><button class="btn-cta btn-cta--line" data-a="changes">Request Changes</button><button class="btn-cta" data-a="approve">Approve</button>` : '')
+    : ({ draft: `${edit ? '<button class="btn-cta btn-cta--line" data-a="discard">Discard Draft</button>' : ''}<button class="btn-cta" data-a="submit">Submit for Approval</button>`,
+        changes: `${edit ? '<button class="btn-cta btn-cta--line" data-a="discard">Discard Draft</button>' : ''}<button class="btn-cta" data-a="submit">Resubmit</button>`,
+        published: '<button class="btn-cta" data-a="newedit">Edit</button>' }[v.status] || '');
+  document.getElementById('head').innerHTML = AdminHead({ back: 'admin-courses.html', eyebrow: admin ? 'Course Review' : 'Course Setup', title: `${esc(TITLE)} ${statusTag}`, right: `<div style="display:flex;gap:10px;flex-wrap:wrap">${actions}</div>` });
+
+  /* Banner trạng thái (Creator) · BR-CA-09 người duyệt sau (Admin) */
+  const last = (v.hist[v.hist.length - 1] || []);
+  document.getElementById('banner').innerHTML = busy ? `<div class="bn bn--pending">This course has already been processed by <b>Nguyễn Thu Hà</b>.</div>`
+    : admin ? '' : {
+      draft: '<div class="bn bn--draft">Draft — only you and L&amp;D Admins can see this course.</div>',
+      pending: '<div class="bn bn--pending">Submitted for approval at 09:12, 24/11/2026. You can\'t edit while L&amp;D is reviewing.</div>',
+      changes: `<div class="bn bn--changes"><b>L&amp;D requested changes</b><q>${esc(last[3] || '')}</q><small>${esc(last[1] || '')} · ${last[2] || ''}</small></div>`,
+      rejected: `<div class="bn bn--rejected"><b>This course was rejected</b><q>${esc(last[3] || '')}</q><small>${esc(last[1] || '')} · ${last[2] || ''} · You can view it but can't edit or resubmit. Create a new course to try again.</small></div>`,
+      published: '<div class="bn bn--draft">Published. Click Edit to create a draft version; learners keep the published version until L&amp;D approves your changes.</div>',
+    }[v.status];
+
+  const n = SYL.reduce((a, s) => a + s[1].filter((l) => l[1] !== 'del').length, 0);
+  document.getElementById('h-count').textContent = `${SYL.length} sections · ${n} lessons`;
+  document.getElementById('h-title').textContent = TITLE;
+  document.getElementById('aud').innerHTML = edit ? '<div class="aud"><b>Audience Changes</b><br>Scope: All Company → Restricted · Departments: +QA, −BA · Estimated 20 learners (was 350)</div>' : '';
+  document.getElementById('syl').innerHTML = SYL.map(([s, ls]) => `<div class="rv-sec"><b>${s}</b>${ls.map(([l, t]) => `<div class="${edit && t === 'del' ? 'lesson-del' : ''}">${edit || t !== 'del' ? l : ''}${edit && t ? `<span class="diff-tag diff-tag--${TAGS[t][1]}">${TAGS[t][0]}</span>` : ''}</div>`).filter((h) => !h.includes('<div class=""></div>')).join('')}</div>`).join('');
+  document.getElementById('info').innerHTML = `<span>Course Title</span><b>${esc(TITLE)}</b><span>Owner</span><b>${OWNER}</b><span>Type</span><b>${edit ? 'Edit of Published Course' : 'New Course'}</b><span>Submitted At</span><b>${v.status === 'draft' ? '—' : '09:12 · 24/11/2026'}</b>`;
+  document.getElementById('hist').innerHTML = v.hist.length ? histHtml(v.hist) : '<li><div><small>No history yet.</small></div></li>';
 }
-const now = () => new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' · 09/11/2026';
+
+function commentPopup(kind) {
+  const reject = kind === 'reject';
+  LHW2.pop({ title: reject ? 'Reject' : 'Request Changes', danger: reject, ok: reject ? 'Reject' : 'Request Changes',
+    desc: reject ? (v.type === 'edit' ? 'The draft version is discarded; the published version stays.' : 'The Creator can view the course but can\'t edit or resubmit it.') : 'The Creator edits and resubmits.',
+    body: '<label class="w2-field"><span>Comment <span class="req">*</span></span><textarea data-c maxlength="1200"></textarea><span class="w2-err" data-e hidden>Comment must be 10–1,000 characters.</span></label>',
+    onOk: (p) => { const t = p.querySelector('[data-c]').value.trim(); if (t.length < 10 || t.length > 1000) { p.querySelector('[data-e]').hidden = false; return false; }
+      v.hist.push([reject ? 'Rejected' : 'Changes Requested', 'Lê Thị Mai', '10:05 · 25/11/2026', t]);
+      v.status = reject ? (v.type === 'edit' ? 'published' : 'rejected') : 'changes'; render(); toast(`Email sent to ${OWNER}: ${reject ? `“${TITLE} has been rejected”` : `“Changes requested for ${TITLE}”`}`); } });
+}
+/* BR-CA-01 = điều kiện Publish chung (Course Information BR-CI-08) */
+const MISSING = [['Section 3 · Context management', 'Lesson 2 · Final Test has no questions. Add at least 1 question.'], ['Course Information', 'Short Description is empty.']];
+function submit() {
+  if (v.incomplete) {
+    LHW2.pop({ title: 'Cannot submit yet', cancel: '', ok: 'OK', desc: 'Fix these items, then submit again:',
+      body: `<ul class="miss">${MISSING.map(([w, t]) => `<li><a href="course-editor.html">${ICON.alert}<span><b>${w}</b><br>${t}</span></a></li>`).join('')}</ul>` });
+    return;
+  }
+  v.hist.push(['Submitted', OWNER, '09:12 · 24/11/2026']); v.status = 'pending'; render();
+  toast(`Email to all L&D Admins: “${OWNER} submitted ${v.type === 'edit' ? 'changes to' : 'new course'} ${TITLE} for approval”`);
+}
 document.addEventListener('click', (e) => {
-  const rev = K === 'rev', title = rev ? C.title : 'Kiểm thử tự động với Playwright';
-  if (e.target.closest('[data-approve]')) LHApproval.approve({ course: title, revision: rev, onOk: () => { state = 'approved'; history.unshift(['ok', 'Duyệt', 'Lê Thị Mai', now()]); render(); toast((rev ? 'Đã duyệt bản sửa' : 'Đã Publish khoá học') + ' · đã email cho Creator'); } });
-  if (e.target.closest('[data-reject]')) LHApproval.comment({ kind: 'reject', course: title, onSend: (c) => { state = 'rejected'; history.unshift(['bad', 'Yêu cầu chỉnh sửa', 'Lê Thị Mai', now(), c]); render(); toast('Đã gửi yêu cầu chỉnh sửa · đã email cho Creator'); } });
-  const rq = e.target.closest('[data-rq]'); if (rq) { openQuiz(rq.dataset.rq, rq.dataset.rqName); return; }
-  const rt = e.target.closest('[data-rq-tab]'); if (rt) { const m = document.getElementById('m-rq'); openQuiz(m.dataset.key, m.dataset.name, rt.dataset.rqTab); return; }
-  if (e.target.closest('[data-edit]')) { history.unshift(['', 'Admin đã sửa', 'Lê Thị Mai', now()]); render(); toast('Đã lưu'); }
+  const a = e.target.closest('[data-a]'); if (!a) return;
+  const k = a.dataset.a;
+  if (k === 'approve') {
+    LHW2.pop({ title: 'Approve', ok: 'Approve',
+      desc: v.type === 'edit' ? 'Replace the published content with this version? Learner progress will be recalculated.' : 'Scope: <b>All Company</b> · <b>350</b> learners can access this course after it is published.',
+      onOk: () => { v.hist.push(['Approved', 'Lê Thị Mai', '10:05 · 25/11/2026']); v.status = 'published'; render(); toast(`Email sent to ${OWNER}: “${TITLE} has been approved and published”`); } });
+  }
+  if (k === 'changes' || k === 'reject') commentPopup(k);
+  if (k === 'edit') { v.hist.push(['Edited by Admin', 'Lê Thị Mai', '10:01 · 25/11/2026']); render(); toast('Saved. Approval History: Edited by Admin'); }
+  if (k === 'submit') submit();
+  if (k === 'discard') LHW2.pop({ title: 'Discard Draft', danger: true, ok: 'Discard', desc: 'Delete this draft version? The published version stays unchanged.', onOk: () => { v.status = 'published'; v.hist = []; render(); toast('Draft discarded'); } });
+  if (k === 'newedit') { v.type = 'edit'; v.status = 'draft'; v.hist = []; v.incomplete = false; render(); toast('Draft version created. Learners keep the published version.'); }
 });
-LH.DemoBar('#3 — Màn duyệt khoá (Admin)', [
-  { label: 'Loại', key: 'k', options: [['new', 'Khoá mới'], ['rev', 'Bản sửa khoá đang chạy']] },
-  { label: 'Lần gửi', key: 'n', options: [['1', 'Lần đầu'], ['2', 'Gửi lại sau chỉnh sửa']] },
+LH.DemoBar('LH2 · Course Creator & Approval (Đợt 2 · Gói 6)', [
+  { label: 'View', key: 'w', options: [['admin', 'Admin L&D · Course Review'], ['creator', 'Course Creator']] },
+  { label: 'Case', key: 'k', options: [['new', 'New course'], ['edit', 'Edit of published course'], ['changes', 'Changes Requested'], ['rejected', 'Rejected'], ['incomplete', 'Draft missing items (Creator)'], ['processed', 'Already processed (2 Admins)']] },
 ], (s) => {
-  K = s.k; state = 'pending';
-  history = [['warn', s.k === 'rev' ? 'Gửi duyệt bản sửa' : 'Gửi duyệt', s.k === 'rev' ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long', s.k === 'rev' ? '16:02 · 08/11/2026' : '10:24 · 09/11/2026']];
-  if (s.n === '2') history.push(['bad', 'Yêu cầu chỉnh sửa', 'Lê Thị Mai', '09:10 · 07/11/2026', 'Session 2 thiếu bài thực hành MCP. Ngưỡng Pass Test Domain 2 đang để 0%.'], ['warn', 'Gửi duyệt', s.k === 'rev' ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long', '17:45 · 06/11/2026']);
+  const k = s.k;
+  v = { view: s.w, type: k === 'edit' ? 'edit' : 'new', status: 'pending', hist: HIST.base.map((x) => x.slice()), incomplete: false, processed: k === 'processed' };
+  if (k === 'changes') { v.status = 'changes'; v.hist = HIST.changes.map((x) => x.slice()); }
+  if (k === 'rejected') { v.status = 'rejected'; v.hist = HIST.rejected.map((x) => x.slice()); }
+  if (k === 'incomplete') { v.status = 'draft'; v.hist = []; v.incomplete = true; v.view = 'creator'; }
+  if (s.w === 'creator' && (k === 'new' || k === 'edit')) { v.status = 'draft'; v.hist = []; }
+  document.querySelectorAll('.w2-pop').forEach((p) => p.remove());
   render();
 });
 </script>

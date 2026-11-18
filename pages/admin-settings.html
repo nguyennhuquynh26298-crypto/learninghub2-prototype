@@ -1,69 +1,79 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cài đặt hệ thống · LearningHub</title>
+<title>Permissions · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1118w"><link rel="stylesheet" href="../assets/css/admin.css?v=1118w"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
 </head>
 <body>
+<!-- Course Creator & Approval 2.4 + 3.6 · BR-RP-01…07, BR-CA-11 (Notion LH2 Product Docs No 10, Đợt 2 · Gói 6).
+     Settings › Permissions: cấp / gỡ quyền Course Creator. Giới hạn 3 khoá là cố định (doc Enrollment), không còn ô cài đặt. -->
 <div id="header"></div>
-<!-- Setting 421:6741 (danh sách) · Setting Create 435:2604 (form thêm) — sidebar mở rộng, mục Cài đặt > Phân quyền -->
 <main>
   <div id="head"></div>
-  <!-- #3 §3.1 — Phân quyền Course Creator -->
-  <section class="adm-box" id="list-view">
-    <div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Course Creator</h2><button class="btn-cta" id="add-cr">+ Thêm Course Creator</button></div>
-    <div class="adm-card" id="creators"></div>
-  </section>
-  <section class="adm-card" id="m-cr" hidden></section>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Course Creators</h2><button class="btn-cta" id="add" type="button">+ Add Course Creator</button></div>
+    <div class="adm-card" id="list"></div></section>
 </main>
-<script src="../assets/js/components.js?v=1113c"></script>
-<script src="../assets/js/data.js?v=1113c"></script>
+<script src="../assets/js/components.js?v=1118w"></script>
+<script src="../assets/js/data.js?v=1118w"></script>
+<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
 <script>
-const { ICON, toast, Avatar, Modal, Button, esc } = LH;
-const creators = LHData.creators.map((c) => ({ ...c }));
-const pool = [['Đỗ Minh Quân', 'QA'], ['Vũ Thị Lan', 'Development'], ['Hoàng Anh Tuấn', 'BA'], ['Ngô Bảo Châu', 'Design']];
-function renderCreators() {
-  document.getElementById('creators').innerHTML = LH.AdminTable(['Tên', 'Email', 'Phòng ban', 'Khoá phụ trách', 'Ngày cấp', ['Thao tác', 't-act']],
-    creators.map((c, i) => `<tr><td><span class="adm-meta">${Avatar(c.name, 'sm')}<b>${esc(c.name)}</b></span></td><td>${esc(c.email)}</td><td>${c.dept}</td><td>${c.courses}</td><td>${c.since}</td>
-      <td class="t-act">${LH.RowMenu([{ label: 'Gỡ quyền', icon: 'trash', danger: true, attrs: `data-rmcr="${i}"` }])}</td></tr>`).join(''));
+const { Avatar, esc, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, RowMenu } = LH;
+const START = [
+  { name: 'Phạm Thanh Long', email: 'long.pham@techvify.com.vn', dept: 'QA', code: 'TVF0412', courses: 3, since: '24/11/2026' },
+  { name: 'Trần Minh', email: 'minh.tran@techvify.com.vn', dept: 'QA', code: 'TVF0388', courses: 2, since: '24/11/2026' },
+  { name: 'Nguyễn Hải Đăng', email: 'dang.nguyen@techvify.com.vn', dept: 'QC Automation', code: 'TVF0521', courses: 0, since: '25/11/2026' },
+];
+/* Nhân viên đang làm việc (THRM). Admin L&D (Lê Thị Mai) và người đã là Creator không có trong danh sách */
+const EMP = [
+  ['Đỗ Minh Quân', 'quan.do@techvify.com.vn', 'QA', 'TVF0602'], ['Vũ Thị Lan', 'lan.vu@techvify.com.vn', 'Development', 'TVF0233'],
+  ['Hoàng Anh Tuấn', 'tuan.hoang@techvify.com.vn', 'BA', 'TVF0719'], ['Ngô Bảo Châu', 'chau.ngo@techvify.com.vn', 'Design', 'TVF0150'],
+  ['Lê Thị Mai', 'mai.le@techvify.com.vn', 'L&D', 'TVF0007', 'admin'], ...START.map((c) => [c.name, c.email, c.dept, c.code]),
+];
+let creators = START.map((c) => ({ ...c }));
+
+function render() {
+  AdminLayout({ active: 'settings', role: 'admin' });
+  document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Settings', title: 'Permissions', desc: 'Course Creators build and manage their own courses. Their courses and changes to running courses need L&D Admin approval.' });
+  document.getElementById('list').innerHTML = creators.length
+    ? AdminTable(['Name', 'Email', 'Department', ['Courses Owned', 'num'], 'Granted On', ['', 't-act']],
+      creators.map((c, i) => `<tr><td><span class="adm-meta">${Avatar(c.name, 'sm')}<b>${esc(c.name)}</b></span></td><td>${esc(c.email)}</td><td>${esc(c.dept)}</td><td class="num">${c.courses}</td><td>${c.since}</td>
+        <td class="t-act">${RowMenu([{ label: 'Revoke', icon: 'trash', danger: true, attrs: `data-rv="${i}"` }])}</td></tr>`).join(''))
+    : AdminEmpty({ icon: 'users', title: 'No Course Creators yet.', compact: true });
 }
-function showForm(on) {
-  document.getElementById('list-view').hidden = on; const f = document.getElementById('m-cr'); f.hidden = !on;
-  document.getElementById('head').innerHTML = LH.AdminHead(on
-    ? { back: '#', eyebrow: 'Cài đặt · Phân quyền', title: 'Thêm Course Creator', desc: 'Chọn nhân viên được tạo và quản lý khoá học. Người đã là Course Creator / Admin L&D không hiện.' }
-    : { eyebrow: 'Cài đặt', title: 'Phân quyền Course Creator', desc: 'Course Creator tạo khoá, gửi Admin L&D duyệt và theo dõi khoá mình phụ trách.' });
-  const back = document.querySelector('.adm-back'); if (back) back.addEventListener('click', (e) => { e.preventDefault(); showForm(false); });
-  if (!on) return;
-  const left = pool.filter(([n]) => !creators.some((c) => c.name === n)); // người đã là Creator / Admin không hiện
-  f.innerHTML = `<h2 class="adm-card__title">Thông tin chung</h2>
-    <div class="adm-form"><div class="adm-field full"><label>Nhân viên <span class="req">*</span></label><label class="adm-inline-search" style="width:100%"><input style="width:100%" placeholder="Tìm theo tên, email, mã NV"><span>${ICON.search}</span></label></div>
-      <div class="adm-field full"><div class="radio-list">${left.map(([n, d]) => `<label><input type="checkbox" value="${n}" data-dept="${d}">${Avatar(n, 'sm')}${n}<span class="count">${d}</span></label>`).join('') || '<span class="adm-hint">Không còn nhân viên để thêm.</span>'}</div>
-        <span class="adm-hint is-error" id="cr-err" hidden>Chọn ít nhất 1 nhân viên.</span></div>
-      <div class="adm-field full"><label class="check"><input type="checkbox" checked disabled><span>Gửi email báo cấp quyền</span></label></div></div>
-    <div class="adm-btn-combo"><button class="btn-cta btn-cta--line" id="cr-cancel">Huỷ</button><button class="btn-cta" id="cr-save">Lưu</button></div>`;
+
+function addPopup() {
+  const taken = new Set(creators.map((c) => c.name));
+  const pool = EMP.filter((e) => !taken.has(e[0]) && e[4] !== 'admin');
+  const picked = new Set();
+  const list = (q) => { const n = LH.norm(q); return pool.filter((e) => !n || LH.norm(e.slice(0, 4).join(' ')).includes(n))
+    .map((e) => `<label><input type="checkbox" value="${esc(e[0])}" ${picked.has(e[0]) ? 'checked' : ''}>${Avatar(e[0], 'sm')}<span>${esc(e[0])}<br><small>${esc(e[1])} · ${esc(e[2])} · ${e[3]}</small></span></label>`).join('') || '<p class="adm-hint" style="padding:12px">No matching employees.</p>'; };
+  const el = LHW2.pop({ title: 'Add Course Creator', desc: 'Select employees by name, email or employee code. They will receive an email and see Create new course in Course Management.',
+    body: `<div class="w2-field"><span>Employees <span class="req">*</span></span><input data-q placeholder="Search name, email, employee code"><div class="w2-list" data-l>${list('')}</div><div class="w2-err" data-err hidden>Please select at least 1 employee.</div></div>`,
+    ok: 'Save', onOk: (p) => {
+      if (!picked.size) { p.querySelector('[data-err]').hidden = false; return false; }
+      [...picked].forEach((n) => { const e = EMP.find((x) => x[0] === n); creators.push({ name: e[0], email: e[1], dept: e[2], code: e[3], courses: 0, since: '20/11/2026' }); });
+      render(); toast(`Course Creator access granted to ${picked.size} ${picked.size > 1 ? 'people' : 'person'}`);
+    } });
+  el.addEventListener('input', (e) => { if (e.target.matches('[data-q]')) el.querySelector('[data-l]').innerHTML = list(e.target.value); });
+  el.addEventListener('change', (e) => { const cb = e.target.closest('input[type=checkbox]'); if (!cb) return; cb.checked ? picked.add(cb.value) : picked.delete(cb.value); el.querySelector('[data-err]').hidden = true; });
 }
-renderCreators(); showForm(false);
-LH.AdminLayout({ active: 'settings', role: 'admin' });
+
 document.addEventListener('click', (e) => {
-  if (e.target.closest('#add-cr')) { showForm(true); return; }
-  if (e.target.closest('#cr-cancel')) { showForm(false); return; }
-  if (e.target.closest('#cr-save')) {
-    const sel = [...document.querySelectorAll('#m-cr input[type=checkbox][value]:checked')];
-    document.getElementById('cr-err').hidden = sel.length > 0; if (!sel.length) return;
-    sel.forEach((x) => creators.push({ name: x.value, email: '—', dept: x.dataset.dept, courses: 0, since: '09/11/2026' }));
-    showForm(false); renderCreators(); toast(`Đã cấp quyền cho ${sel.length} người · đã gửi email báo`);
+  if (e.target.closest('#add')) { addPopup(); return; }
+  const rv = e.target.closest('[data-rv]');
+  if (rv) {
+    const c = creators[+rv.dataset.rv];
+    LHW2.pop({ title: 'Revoke Course Creator access', danger: true, ok: 'Revoke',
+      desc: `Revoke Course Creator access for <b>${esc(c.name)}</b>? They will no longer manage ${c.courses} courses; these courses will be transferred to L&amp;D Admin.`
+        + (c.courses ? '<br><br><span class="adm-hint">Draft / Changes Requested edits are discarded. Edits Pending Approval stay for L&amp;D Admin to review (BR-CA-11).</span>' : ''),
+      onOk: () => { creators.splice(+rv.dataset.rv, 1); render(); toast(`Course Creator access revoked for ${c.name}`); } });
   }
-  const rm = e.target.closest('[data-rmcr]');
-  if (rm) {
-    const c = creators[+rm.dataset.rmcr];
-    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-rm', size: 'sm', icon: 'alert', iconTone: 'danger', title: `Gỡ quyền Course Creator của ${esc(c.name)}?`, desc: `Người này không còn quản lý ${c.courses} khoá đang phụ trách; các khoá chuyển cho Admin L&D.`,
-      foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Gỡ quyền', variant: 'danger', attrs: `data-rmok="${rm.dataset.rmcr}"` }) }));
-  }
-  const ok = e.target.closest('[data-rmok]');
-  if (ok) { const c = creators.splice(+ok.dataset.rmok, 1)[0]; document.getElementById('m-rm').remove(); renderCreators(); toast(`Đã gỡ quyền của ${c.name}`); }
 });
+LH.DemoBar('LH2 · Settings › Permissions (Đợt 2 · Gói 6)', [
+  { label: 'Data', key: 'd', options: [['list', '3 Course Creators'], ['empty', 'No Course Creators yet (at release)']] },
+], (s) => { creators = s.d === 'empty' ? [] : START.map((c) => ({ ...c })); render(); });
 </script>
 </body>
 </html>

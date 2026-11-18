@@ -19,7 +19,7 @@ window.LHData = {
     ],
   },
   /* Bài test đang mở ở màn học — "Practice: Agentic Architecture & Orchestration" trên web: 32 Questions | 65 Minutes */
-  test: { name: 'Practice: Agentic Architecture & Orchestration', sub: 'Đề luyện theo domain — 32 câu', questions: 32, minutes: 65, maxAttempts: 3, passMark: 70, practiceQuestions: 20 },
+  test: { name: 'Practice: Agentic Architecture & Orchestration', sub: 'Đề luyện theo domain — 32 câu', questions: 32, minutes: 65, maxAttempts: 3, passMark: 80, practiceQuestions: 20 },
   examQuestions: [
     { type: 'single', text: 'Trong mô hình orchestrator–worker, thành phần nào chịu trách nhiệm chia nhỏ nhiệm vụ và tổng hợp kết quả?',
       options: ['Worker agent', 'Orchestrator agent', 'Tool server (MCP)', 'Vector store'], correct: [1], chosen: [1],
@@ -114,13 +114,19 @@ window.LHData = {
   },
 
   /* Đợt 2 · #3 — danh sách quản lý khoá */
+  /* LH1 baseline: DRAFT | PUBLISHED. LH2 approval gắn thêm pending/rejected trên DemoBar. */
   adminCourses: [
-    { title: 'Kiểm thử tự động với Playwright', owner: 'Phạm Thanh Long', status: 'pending', kind: 'Khoá mới', sent: '09/11 · 10:24', updated: '09/11/2026' },
-    { title: 'Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', status: 'published', revision: 'pending', kind: 'Bản sửa', sent: '08/11 · 16:02', updated: '08/11/2026' },
-    { title: 'Kiểm thử API với Postman', owner: 'Phạm Thanh Long', status: 'rejected', updated: '07/11/2026' },
-    { title: 'Clean Code cho Frontend', owner: 'Trần Văn Bình', status: 'draft', updated: '06/11/2026' },
-    { title: 'AI Agent Engineering', owner: 'Lê Thị Mai', status: 'published', updated: '01/11/2026' },
-    { title: 'Docker cho người mới', owner: 'Phạm Thanh Long', status: 'published', revision: 'rejected', updated: '30/10/2026' },
+    { title: 'ADLC Guideline: Techvify SpecKit', owner: 'Phạm Thanh Long', status: 'published', updated: '16/11/2026', created: '16/11/2026', cat: 'Data & AI', sub: 'Applied & Advanced', dur: '7 minutes', ver: '2' },
+    { title: 'Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', status: 'published', updated: '08/11/2026', created: '01/11/2026', cat: 'Data & AI', sub: 'AI Agent', dur: '14 hours', ver: '4' },
+    { title: 'AI Agent Engineering', owner: 'Lê Thị Mai', status: 'published', updated: '01/11/2026', created: '20/10/2026', cat: 'Data & AI', sub: 'AI Agent', dur: '8 hours', ver: '1' },
+    { title: 'Corporate Onboarding 2026', owner: 'Lê Thị Mai', status: 'published', updated: '12/11/2026', created: '10/11/2026', cat: 'Corporate & Mandatory Training', sub: 'Role-based Training', dur: '2 hours', ver: '10' },
+    { title: 'Kiểm thử tự động với Playwright', owner: 'Phạm Thanh Long', status: 'draft', updated: '09/11/2026', created: '09/11/2026', cat: 'Software Development', sub: 'Testing', dur: '6 hours', ver: '1' },
+    { title: 'Clean Code cho Frontend', owner: 'Trần Văn Bình', status: 'draft', updated: '06/11/2026', created: '06/11/2026', cat: 'Software Development', sub: 'Web', dur: '5 hours', ver: '1' },
+  ],
+  /* LH2 DemoBar — khoá chờ duyệt (không nằm baseline list) */
+  adminCoursesLh2: [
+    { title: 'Kiểm thử tự động với Playwright', owner: 'Phạm Thanh Long', status: 'pending', kind: 'Khoá mới', sent: '09/11 · 10:24', updated: '09/11/2026', cat: 'Software Development', sub: 'Testing', dur: '6 giờ', ver: '1.0' },
+    { title: 'Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', status: 'published', revision: 'pending', kind: 'Bản sửa', sent: '08/11 · 16:02', updated: '08/11/2026', cat: 'Data & AI', sub: 'AI Agent', dur: '12 giờ', ver: '2.0' },
   ],
   creators: [
     { name: 'Phạm Thanh Long', email: 'long.phamthanh@techvify.com.vn', dept: 'QA', courses: 3, since: '01/11/2026' },
@@ -192,4 +198,58 @@ window.LHData.catalog.forEach((c) => { if (c.tags.includes('Testing') && !c.tags
     else if (att.length >= 3) Object.assign(ccar, { st: 'fail', failScore: best }); // BR-LRN-32: trượt sau 3 lượt → Không đạt, nhả suất
   }
   D.myCourses = D.catalog.filter((c) => c.st === 'learning').map((c) => ({ title: c.title, cover: c.cover, progress: c.progress || 0, last: c.lastDays ? `${c.lastDays} ngày trước` : 'Hôm nay' }));
+})();
+
+/* LH1 — chứng chỉ (mint một lần khi hoàn thành 100%, share token UUID, public GET by token) */
+(function () {
+  const DEMO = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+  window.LHCert = {
+    learnerName: 'Trần Minh Anh',
+    DEMO_TOKEN: DEMO,
+    all() { return JSON.parse(localStorage.getItem('lhCerts') || '{}'); },
+    get(title) { return LHCert.all()[title] || null; },
+    fmtDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+    },
+    mint({ courseTitle, completedAt }) {
+      const all = LHCert.all();
+      if (all[courseTitle]) return all[courseTitle];
+      const cert = {
+        courseTitle,
+        learnerName: LHCert.learnerName,
+        completedAt: completedAt || new Date().toISOString(),
+        certificateNumber: 'LH-' + Math.random().toString(36).slice(2, 10).toUpperCase(),
+        shareToken: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : DEMO,
+      };
+      all[courseTitle] = cert;
+      localStorage.setItem('lhCerts', JSON.stringify(all));
+      return cert;
+    },
+    byToken(token) {
+      const hit = Object.values(LHCert.all()).find((c) => c.shareToken === token);
+      if (hit) return hit;
+      if (token === DEMO) {
+        return {
+          courseTitle: 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION',
+          learnerName: LHCert.learnerName,
+          completedAt: '2026-09-12T00:00:00.000Z',
+          certificateNumber: 'LH-QA-M1-2026',
+          shareToken: DEMO,
+        };
+      }
+      return null;
+    },
+    ensureDemo() {
+      const title = 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION';
+      if (LHCert.get(title)) return;
+      const c = LHCert.mint({ courseTitle: title, completedAt: '2026-09-12T00:00:00.000Z' });
+      c.shareToken = DEMO;
+      c.certificateNumber = 'LH-QA-M1-2026';
+      const all = LHCert.all();
+      all[title] = c;
+      localStorage.setItem('lhCerts', JSON.stringify(all));
+    },
+  };
+  LHCert.ensureDemo();
 })();

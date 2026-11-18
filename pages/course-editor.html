@@ -1,288 +1,659 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Soạn khoá học · LearningHub</title>
+<title>Course setup · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1118p">
 <style>
-  /* Create new course 956:3211 / 958:4086 · Upload Lessons 967:5185 / 967:5544 · Quiz 1249:5427 — sidebar thu gọn */
-  .ed-info { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start; }
-  @media (max-width: 1023px) { .ed-info { grid-template-columns: minmax(0, 1fr); } .ed-info .cover-box { max-width: 360px; } }
-  .cover-box { aspect-ratio: 16/9; border-radius: 12px; background: linear-gradient(135deg,#4757ff,#9396ff); display: grid; place-items: center; color: #fff; font-size: 14px; }
-  .cover-box.is-empty { background: #fafafa; border: 1px dashed #d5d7da; color: var(--adm-sub); }
+  /* Details — Figma nested Section → Lesson → Content */
+  .su-panel { min-height: 200px; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+  .su-sec { border: 1px solid #e4e7ec; border-radius: 12px; padding: 16px 20px; background: #fafbff; display: flex; flex-direction: column; gap: 12px; }
+  .su-sec__head { display: flex; align-items: center; gap: 8px; }
+  .su-sec__name { flex: 1; font-size: 16px; font-weight: 700; color: var(--adm-text); }
+  .su-icon { width: 32px; height: 32px; border: 0; border-radius: 8px; background: none; cursor: pointer; display: grid; place-items: center; padding: 0; }
+  .su-icon svg { width: 18px; height: 18px; }
+  .su-icon--edit { color: var(--adm-primary); }
+  .su-icon--edit:hover { background: var(--adm-primary-50); }
+  .su-icon--del { color: #f04438; }
+  .su-icon--del:hover { background: #fef3f2; }
+  .su-icon--chev { color: var(--adm-sub); background: #fff; border: 1px solid var(--adm-stroke); border-radius: 999px; width: 28px; height: 28px; }
+  .su-les { background: #fff; border: 1px solid #eef0fe; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(16,24,40,.06); display: flex; flex-direction: column; gap: 12px; }
+  .su-les__row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .su-les__title { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--adm-text); flex: 1; min-width: 140px; }
+  .su-les__title svg { width: 18px; height: 18px; color: var(--adm-primary); flex: none; }
+  .su-les__acts { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
+  .btn-add-les { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--adm-primary); background: var(--adm-primary-soft); color: var(--adm-primary); font: 500 14px Inter, sans-serif; cursor: pointer; width: fit-content; }
+  .btn-add-les:hover { background: var(--adm-primary-50); }
+  .btn-outline-sm { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--adm-primary); background: #fff; color: var(--adm-primary); font: 500 14px Inter, sans-serif; cursor: pointer; }
+  .btn-outline-sm:hover { background: var(--adm-primary-50); }
+  .btn-link { border: 0; background: none; color: var(--adm-sub); font: 500 14px Inter, sans-serif; cursor: pointer; padding: 0 8px; }
+  .btn-link--blue { color: var(--adm-primary); }
+  .btn-link--danger { color: #f04438; }
+  .su-inline { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+  .su-inline__row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .su-inline .adm-field { gap: 6px; }
+  .ctype { border: 1.5px dashed #c7d2fe; border-radius: 12px; padding: 20px; background: #fff; display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center; }
+  .ctype p { margin: 0; font-size: 14px; color: var(--adm-sub); max-width: 420px; }
+  .ctype a { color: var(--adm-primary); text-decoration: none; font-weight: 500; }
+  .ctype__grid { display: flex; justify-content: center; align-items: flex-start; gap: 32px; width: 100%; flex-wrap: nowrap; }
+  .ctype__grid button { border: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; font: 500 13px Inter, sans-serif; color: var(--adm-body); padding: 8px 4px; border-radius: 8px; min-width: 0; }
+  .ctype__grid button:hover { background: var(--adm-primary-50); color: var(--adm-primary); }
+  .ctype__grid button span.ctype__label { white-space: nowrap; text-align: center; line-height: 1.3; }
+  .ctype__ic { width: 48px; height: 48px; border-radius: 12px; background: var(--adm-primary-soft); color: var(--adm-primary); display: grid; place-items: center; flex: none; }
+  .ctype__ic svg { width: 24px; height: 24px; }
+  .art-box { border: 1px solid #c7d2fe; border-radius: 12px; padding: 16px; background: #f8f9ff; display: flex; flex-direction: column; gap: 12px; }
+  .art-box .adm-btn-combo { padding-top: 0; }
+  .file-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: #fff; flex-wrap: wrap; }
+  .file-row__ic { width: 36px; height: 36px; border-radius: 8px; background: #fef7c3; color: #ca8a04; display: grid; place-items: center; flex: none; }
+  .file-row__ic svg { width: 18px; height: 18px; }
+  .file-row__meta { flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 2px; }
+  .file-row__meta b { font-size: 14px; color: var(--adm-text); }
+  .file-row__meta span { font-size: 12px; color: var(--adm-sub); }
+  .file-row__bar { width: 100%; height: 6px; border-radius: 999px; background: #fef7c3; overflow: hidden; margin-top: 4px; }
+  .file-row__bar i { display: block; height: 100%; background: #eab308; border-radius: 999px; }
+  .file-row__acts { display: inline-flex; gap: 4px; align-items: center; flex: none; }
+  .dropzone { display: flex; flex-direction: column; align-items: center; gap: 8px; border: 1.5px dashed #93c5fd; border-radius: 12px; padding: 28px 20px; text-align: center; background: #fff; cursor: pointer; color: var(--adm-sub); font-size: 14px; }
+  .dropzone__ic { width: 44px; height: 44px; border-radius: 999px; background: var(--adm-primary); color: #fff; display: grid; place-items: center; }
+  .dropzone__ic svg { width: 20px; height: 20px; }
+  .dropzone b { color: var(--adm-text); font-size: 15px; }
+  .thumb { aspect-ratio: 16/9; max-width: 360px; border-radius: 12px; border: 1.5px dashed var(--adm-field-stroke); background: var(--adm-side); display: grid; place-items: center; text-align: center; padding: 24px; color: var(--adm-sub); font-size: 14px; cursor: pointer; }
+  .thumb.is-ok { border-style: solid; background: linear-gradient(135deg, var(--adm-primary), #9396ff); color: #fff; border-color: transparent; }
+  .adm-err { font-size: 13px; color: #f04438; margin: 0; }
+  .adm-err:empty { display: none; }
+  .dur { display: inline-flex; align-items: center; gap: 6px; height: 44px; border: 1px solid var(--adm-field-stroke); border-radius: 8px; padding: 0 12px; width: fit-content; background: #fff; box-shadow: 0 1px 2px rgba(10,13,18,.05); }
+  .dur input { border: 0; outline: 0; width: 2.75ch; text-align: center; font: 400 16px Inter, sans-serif; background: none; }
+  .cc-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; }
+  @media (max-width: 720px) { .cc-row { grid-template-columns: 1fr; } .ctype__grid { flex-wrap: wrap; gap: 16px; } }
   fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
-  fieldset:disabled { opacity: .6; }
-  .sec-name { flex: 1; min-width: 0; font-size: 18px; font-weight: 700; color: var(--adm-body); border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; background: none; font-family: inherit; }
-  .sec-name:hover { border-color: var(--adm-stroke); } .sec-name:focus { outline: 0; border-color: var(--adm-primary); background: #fff; }
-  .sec-name.is-error { border-color: #f04438; }
-  .adm-lesson { cursor: grab; border: 1px solid transparent; }
-  .adm-lesson.is-drag { opacity: .4; } .adm-lesson.is-over { border-color: var(--adm-primary); border-style: dashed; }
-  .adm-lesson .grip { color: #c0c4cc; width: 16px; height: 16px; }
-  .adm-lesson--quiz { background: var(--adm-primary-50); }
-  .adm-lesson__tags { display: inline-flex; gap: 4px; flex-wrap: wrap; }
-  .sec-add { align-self: flex-start; }
-  .sec-empty { padding: 12px 16px; border: 1px dashed var(--adm-stroke); border-radius: 8px; font-size: 14px; color: var(--adm-sub); }
-  .type-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .type-card { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border: 1px solid var(--adm-stroke); border-radius: 12px; background: #fff; cursor: pointer; text-align: left; font: inherit; }
-  .type-card:hover, .type-card.is-on { border-color: var(--adm-primary); background: var(--adm-primary-50); }
-  .type-card svg { width: 24px; height: 24px; color: var(--adm-primary); flex: none; }
-  .type-card b { display: block; color: var(--adm-text); } .type-card span { font-size: 13px; color: var(--adm-sub); }
-  @media (max-width: 767px) { .type-grid { grid-template-columns: minmax(0, 1fr); } }
-  #banner:empty { display: none; }
-  /* Thông tin chung thu gọn được — khoá đã đủ thông tin thì mặc định thu gọn, nhường chỗ cho Nội dung khoá */
-  /* Hàng 1: tiêu đề + nút icon (▾ thu gọn · ✎ đang mở để sửa). Hàng 2 khi thu gọn: ảnh bìa + tên / danh mục · thời lượng */
-  .info-head { display: flex; align-items: center; gap: 12px; }
-  .info-head .adm-card__title { margin: 0; flex: 1; min-width: 0; }
-  .info-toggle { flex: none; width: 36px; height: 36px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: #fff; color: var(--adm-sub); display: inline-grid; place-items: center; cursor: pointer; }
-  .info-toggle:hover { border-color: var(--adm-primary); color: var(--adm-primary); }
-  .info-toggle svg { width: 20px; height: 20px; flex: none; }
-  #sec-info.is-open .info-toggle { border-color: var(--adm-primary); background: var(--adm-primary-50); color: var(--adm-primary); }
-  .info-sum { display: flex; align-items: center; gap: 16px; margin-top: 16px; min-width: 0; }
-  .info-sum__cover { width: 96px; height: 54px; border-radius: 8px; flex: none; background: linear-gradient(135deg,#4757ff,#9396ff); }
-  .info-sum__cover.is-empty { background: #fafafa; border: 1px dashed #d5d7da; }
-  .info-sum__txt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .info-sum__txt b { font-size: 16px; font-weight: 600; color: var(--adm-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .info-sum__txt span { font-size: 14px; color: var(--adm-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #sec-info.is-open .info-head { margin-bottom: 20px; }
-  #sec-info:not(.is-open) .ed-info, #sec-info.is-open .info-sum { display: none; }
+  fieldset:disabled { opacity: .65; pointer-events: none; }
+  .opt-row { display: grid; grid-template-columns: 28px 1fr 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .q-list { display: flex; flex-direction: column; gap: 8px; }
+  .q-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: #fff; }
+  .q-item b { flex: 1; font-size: 14px; }
+  .q-item .meta { font-size: 13px; color: var(--adm-sub); }
+  #basic { gap: 16px; }
+  .preview-box { border: 1px solid var(--adm-stroke); border-radius: 10px; padding: 14px 16px; background: #f8fafc; position: relative; text-align: left; }
+  .preview-box h4 { margin: 0 0 6px; font-size: 15px; color: var(--adm-text); }
+  .preview-box p { margin: 0; font-size: 13px; color: var(--adm-sub); line-height: 1.5; }
+  .preview-box .su-icon { position: absolute; top: 8px; right: 8px; }
 </style>
 </head>
 <body>
 <div id="header"></div>
 <main>
-  <div id="head"></div>
-  <div id="banner"></div>
-  <fieldset id="form" style="display:flex;flex-direction:column;gap:32px">
-    <section class="adm-card" id="sec-info"><div class="info-head"><h2 class="adm-card__title">Thông tin chung</h2><button type="button" class="info-toggle" data-info-toggle aria-expanded="false" aria-controls="sec-info"></button></div><div class="info-sum" id="info-sum"></div>
-      <div class="ed-info">
-        <div class="adm-field"><span class="adm-label">Ảnh bìa <span class="req">*</span></span><div class="cover-box" id="cover">Ảnh bìa</div><span class="adm-hint">JPG/PNG, tỉ lệ 16:9</span></div>
-        <div class="adm-form">
-          <div class="adm-field full"><label for="f-title">Tên khoá <span class="req">*</span></label><input class="adm-input" id="f-title" placeholder="Nhập tên khoá học"></div>
-          <div class="adm-field"><label for="f-cat">Danh mục <span class="req">*</span></label><select class="adm-input" id="f-cat"></select></div>
-          <div class="adm-field"><label for="f-sub">Danh mục con <span class="req">*</span></label><select class="adm-input" id="f-sub"></select></div>
-          <div class="adm-field"><label for="f-dur">Thời lượng (giờ)</label><input class="adm-input" id="f-dur" type="number" min="0" step="0.5" value="12"></div>
-          <div class="adm-field"><label>Người phụ trách</label><input class="adm-input" id="f-owner" readonly></div>
-          <div class="adm-field full"><label for="f-desc">Mô tả <span class="req">*</span></label><textarea class="adm-input" id="f-desc" placeholder="Mô tả ngắn nội dung khoá"></textarea><span class="adm-hint">Hiện ở trang khoá cho học viên.</span></div>
-          <div class="adm-field"><label>Khoá này dành cho ai</label><textarea class="adm-input" placeholder="Mỗi dòng 1 ý"></textarea></div>
-          <div class="adm-field"><label>Bạn sẽ học được gì</label><textarea class="adm-input" placeholder="Mỗi dòng 1 ý"></textarea></div>
-        </div>
-      </div></section>
-    <div class="adm-grid-2">
-      <section class="adm-card" id="sec-content"><div class="adm-box__head" style="margin-bottom:20px"><h2 class="adm-box__title" style="flex:1">Nội dung khoá</h2><button class="btn-cta btn-cta--soft btn-cta--sm" type="button" data-sec-add>+ Thêm section</button></div>
-        <div style="display:flex;flex-direction:column;gap:16px" id="syllabus"></div></section>
-      <aside style="display:flex;flex-direction:column;gap:24px">
-        <section class="adm-card"><h2 class="adm-card__title">Thứ tự bài</h2><div class="adm-order"><b id="order-n"></b><span class="adm-hint">Học viên học theo thứ tự section → bài. Kéo thả bài để đổi thứ tự.</span></div></section>
-        <section class="adm-card"><h2 class="adm-card__title">Mẹo nhanh</h2><div id="tips"></div></section>
-        <section class="adm-card"><h2 class="adm-card__title">Đối tượng học viên</h2><p class="adm-hint" style="margin:0 0 16px">Phòng QA + 3 cá nhân</p><a class="btn-cta btn-cta--line btn-cta--sm" id="aud-link" href="admin-audience.html?role=Creator">Sửa đối tượng</a></section>
-      </aside>
-    </div>
-  </fieldset>
-  <div class="adm-btn-combo" id="actions"></div>
+  <div id="top"></div>
+  <div class="adm-seg" id="tabs" role="tablist"></div>
+  <div id="panel"></div>
 </main>
-<script src="../assets/js/components.js?v=1113c"></script>
-<script src="../assets/js/data.js?v=1113c"></script>
-<script src="../assets/js/approval.js?v=1113c"></script>
-<script src="../assets/js/quiz-editor.js?v=1113c"></script>
+<script src="../assets/js/components.js?v=1118p"></script>
+<script src="../assets/js/data.js?v=1118g"></script>
+<script src="../assets/js/setup-lh2.js?v=1118p"></script>
 <script>
-const { ICON, ApprovalBanner, StageTag, Tag, RowMenu, esc, toast, AdminLayout, AdminHead, AdminConfirm } = LH; const D = LHData;
-const SUBS = { 'Data & AI': ['AI Agent', 'Machine Learning'], 'Software Development': ['Testing', 'Web', 'DevOps', 'Programming Fundamentals'], Language: ['English', 'Japanese'] };
-const TYPES = { video: ['Video', 'tvPlay', 'MP4, MOV · tối đa 1,5 GB. Tính xong khi xem thực ≥ 90%.'], article: ['Bài viết', 'file', 'Soạn văn bản trực tiếp, chèn ảnh.'], file: ['Tài liệu', 'sheet', 'PDF, DOCX, PPTX · tối đa 50 MB.'], quiz: ['Quiz', 'quiz', 'Bài kiểm tra Exam 3 lượt, có thể bật Practice.'] };
-const CMT = { rejected: 'Session 2 thiếu bài thực hành MCP. Điểm đạt của Test Domain 2 đang để 0%, cần đặt lại (gợi ý 70%).' };
-const sc = (list) => JSON.parse(JSON.stringify(list)).map((q) => ({ explain: '', score: 1, ...q }));
-const mkQuiz = (title, o = {}) => ({ title, desc: '', minutes: 60, noLimit: false, pass: 70, shuffle: true, practice: true, exam: sc(D.examQuestions), practice_q: sc(D.practiceQuestions), version: 1, ...o });
-let role, st, missing, sections, inProgress = 0;
-function seed(variant) {
-  sections = D.course.sessions.slice(0, 3).map((s, i) => ({ name: s.name, lessons: s.lessons.map(([k, n]) => (k === 'quiz'
-    ? { type: 'quiz', name: n, quiz: mkQuiz(n, variant === 'legacy' && i === 0 ? { practice: false, practice_q: [] } : variant === 'empty' && i === 0 ? { exam: [], practice: false, practice_q: [] } : {}) }
-    : { type: k === 'video' ? 'video' : 'file', name: n, meta: k === 'video' ? '12 phút' : 'PDF · 2,4 MB' })) }));
-  if (variant === 'dup') sections[0].lessons[1].quiz.practice_q.splice(1, 0, { ...sc([D.examQuestions[2]])[0], text: '  khi nào nên chọn WORKFLOW cố định thay vì agent tự chủ? ' });
-  if (missing) sections[2].lessons = [];
+const { ICON, esc, toast, AdminLayout, AdminHead, AdminConfirm, Modal, Richbox, wireRichbox } = LH; const D = LHData;
+wireRichbox();
+const P = new URLSearchParams(location.search);
+const SUBS = { 'Data & AI': ['AI Agent', 'Machine Learning', 'Applied & Advanced'], 'Software Development': ['Testing', 'Web', 'DevOps'], 'Corporate & Mandatory Training': ['Role-based Training', 'Onboarding'], Language: ['English', 'Japanese'] };
+const TIMES = [['', 'No limit'], ['5', '5 minutes'], ['10', '10 minutes'], ['15', '15 minutes'], ['30', '30 minutes'], ['45', '45 minutes'], ['60', '60 minutes'], ['90', '90 minutes'], ['120', '120 minutes']];
+let role = LH.admRole(P.get('r') || 'admin');
+let st = P.get('st') || 'draft';
+let tab = ['basic', 'audience', 'practice'].includes(P.get('tab')) ? P.get('tab') : 'details';
+let title = P.get('t') || (st === 'published' ? 'Claude Certified Architect – Foundations' : 'Abc');
+let editable = st === 'draft' || st === 'rev-draft';
+let hasThumb = !!P.get('thumb');
+let basicErr = false;
+let lessonSeq = 0;
+let creatingSection = false;
+let editingSec = null; /* si */
+let editingLes = null; /* 'si:li' */
+
+function mkLesson(partial) {
+  return {
+    id: nextLessonNo(), type: 'lecture', name: '', open: true, content: null, picking: false,
+    articleHtml: '', articleEditing: false, files: [], questions: null, quiz: null, ...partial,
+  };
 }
-</script>
-<script>
-/* ---------- Vẽ màn ---------- */
-function render() {
-  const admin = role === 'admin';
-  AdminLayout({ active: 'courses', collapsed: true, role });
-  const rev = st.startsWith('rev-'), base = rev ? st.slice(4) : st;
-  const title = rev || st === 'published' ? 'Claude Certified Architect – Foundations' : 'Kiểm thử tự động với Playwright';
+/* Đề thi mẫu cho Quiz có sẵn (để kiểm trùng đề luyện tập và điều kiện Publish) */
+const sampleQs = () => D.examQuestions.map((q) => ({ type: q.type, text: q.text, score: 1, options: [...q.options], correct: [...q.correct], explain: q.explain || '' }));
+function normalizeSections(raw) {
+  return raw.map((s) => ({
+    name: s.name, ui: 'idle', lessons: (s.lessons || []).map((l) => {
+      if (l.type === 'quiz' || l.content === 'quiz') {
+        return mkLesson({
+          id: l.id || nextLessonNo(), type: 'quiz', name: l.name, content: 'quiz',
+          questions: l.questions || sampleQs(), quiz: l.quiz || { time: '65', pass: 80, desc: '' },
+          open: true, picking: false,
+        });
+      }
+      const content = l.content === 'video' ? 'video' : l.content === 'mashup' ? 'mashup' : l.content === 'article' ? 'article' : (l.content === 'document' ? 'video' : null);
+      return mkLesson({
+        id: l.id || nextLessonNo(), type: 'lecture', name: l.name, content,
+        files: content && content !== 'article' ? [{ name: 'Design.mp4', size: '2mb', at: '11.12.2025, 8:34 AM', pct: 100 }] : [],
+        articleHtml: l.article || l.articleHtml || '', open: true, picking: !content,
+      });
+    }),
+  }));
+}
+
+let sections = [{ name: 'Introduction', ui: 'idle', lessons: [] }];
+if (st === 'published' || title.includes('Claude') || title.includes('Playwright')) {
+  sections = normalizeSections(D.course.sessions.slice(0, 2).map((s) => ({
+    name: s.name,
+    lessons: s.lessons.map(([k, n]) => {
+      lessonSeq++;
+      return { id: lessonSeq, type: k === 'quiz' ? 'quiz' : 'lecture', name: n, content: k === 'quiz' ? 'quiz' : (k === 'video' ? 'video' : 'article') };
+    }),
+  })));
+}
+
+const $ = (id) => document.getElementById(id);
+const closeModal = () => document.querySelectorAll('.modal-backdrop').forEach((m) => m.remove());
+const openModal = (html) => { closeModal(); document.body.insertAdjacentHTML('beforeend', html); };
+function nextLessonNo() { lessonSeq++; return lessonSeq; }
+/* BR-EX-17: "Lesson n" chung một dãy cho Lecture và Quiz, đánh lại từ 1 ở mỗi Section */
+function renumber() {
+  sections.forEach((s) => s.lessons.forEach((l, k) => { l.num = k + 1; }));
+}
+function iconBtn(kind, attrs) {
+  if (kind === 'edit') return `<button type="button" class="su-icon su-icon--edit" ${attrs} aria-label="Edit">${ICON.edit}</button>`;
+  if (kind === 'del') return `<button type="button" class="su-icon su-icon--del" ${attrs} aria-label="Delete">${ICON.trash}</button>`;
+  return `<button type="button" class="su-icon su-icon--chev" ${attrs} aria-label="Toggle">${ICON.chevronU}</button>`;
+}
+
+function renderTop() {
+  AdminLayout({ active: 'courses', collapsed: false, role });
   const q = '?r=' + role;
-  document.getElementById('head').innerHTML = AdminHead({ back: 'admin-courses.html' + q, title: esc(title) + ' ' + (rev ? StageTag('published', base) : StageTag(st)),
-    desc: rev ? 'Ver 2.0 — bản sửa. Học viên vẫn học Ver 1.0 tới khi Admin L&D duyệt.' : 'Tạo và quản lý nội dung bài học. Hỗ trợ Video, Bài viết, Tài liệu (PDF, Slide) và Quiz.' });
-  /* Banner chỉ hiện khi Admin trả về kèm nhận xét. Trạng thái khác: tag cạnh tiêu đề là đủ, nút nằm ở chân trang. */
-  document.getElementById('banner').innerHTML = base === 'rejected' && !admin
-    ? ApprovalBanner({ title: rev ? 'Admin L&D yêu cầu chỉnh sửa bản sửa' : 'Admin L&D yêu cầu chỉnh sửa', comment: CMT.rejected, at: '09:10 · 09/11/2026' }) : '';
-  /* Creator: Pending + Published (chưa mở bản sửa) → khoá form (BR-CRS-03, BR-CRS-06). Admin sửa trực tiếp. */
-  const locked = !admin && (base === 'pending' || st === 'published');
-  document.getElementById('form').disabled = locked;
-  document.getElementById('f-title').value = missing ? '' : title;
-  document.getElementById('f-desc').value = missing ? '' : 'Nắm vững kiến trúc agent, tool design, MCP và context management.';
-  document.getElementById('f-owner').value = admin ? 'Nguyễn Thu Hà' : 'Phạm Thanh Long';
-  document.getElementById('cover').className = 'cover-box' + (missing ? ' is-empty' : '');
-  const cat = document.getElementById('f-cat'); if (!cat.options.length) { cat.innerHTML = D.categories.map((c) => `<option ${c === 'Data & AI' ? 'selected' : ''}>${esc(c)}</option>`).join(''); drawSub(); }
-  setInfoOpen(missing); // thiếu thông tin → mở sẵn để điền; đủ → thu gọn
-  document.getElementById('aud-link').href = 'admin-audience.html?role=' + (admin ? 'Admin' : 'Creator');
-  document.getElementById('tips').innerHTML = ['Mỗi bài nên dưới 15 phút để học viên dễ theo.', 'Đặt tên bài rõ ràng, dễ tìm.', 'Quiz cần ít nhất 1 câu Exam và tổng điểm > 0 trước khi publish.'].map((t) => `<div class="adm-tip">${ICON.circleCheck}${t}</div>`).join('');
-  drawSyllabus();
-  const canSubmit = base === 'draft' || base === 'rejected';
-  document.getElementById('actions').innerHTML = `<a class="btn-cta btn-cta--line" href="admin-courses.html${q}">Huỷ</a>`
-    + (locked ? '' : `<button class="btn-cta btn-cta--soft" data-save>Lưu nháp</button>`)
-    + (admin ? `<button class="btn-cta" data-publish>${ICON.check}${rev || st === 'published' ? 'Cập nhật khoá' : 'Publish'}</button>`
-      : st === 'published' ? `<button class="btn-cta" data-edit>${ICON.edit}Sửa nội dung (tạo bản sửa)</button>`
-      : canSubmit ? `<button class="btn-cta" data-submit>${ICON.send}${base === 'rejected' ? 'Gửi duyệt lại' : 'Gửi duyệt'}</button>` : '');
-}
-/* Thông tin chung: thu gọn còn 1 dòng tóm tắt (ảnh bìa · tên · danh mục · thời lượng) */
-function drawInfoSum() {
-  const v = (id) => document.getElementById(id).value;
-  const t = v('f-title').trim(), dur = v('f-dur');
-  const meta = [`${v('f-cat')} / ${v('f-sub')}`, dur ? `${dur} giờ` : ''].filter(Boolean).join(' · ');
-  document.getElementById('info-sum').innerHTML = `<i class="info-sum__cover${missing ? ' is-empty' : ''}"></i><div class="info-sum__txt"><b>${t ? esc(t) : 'Chưa có tên khoá'}</b><span>${esc(meta)}</span></div>`;
-}
-function setInfoOpen(open) {
-  const sec = document.getElementById('sec-info'), btn = sec.querySelector('[data-info-toggle]');
-  sec.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', open);
-  btn.innerHTML = open ? ICON.edit : ICON.chevronD; // mở = đang sửa · thu gọn = xổ ra
-  btn.setAttribute('aria-label', open ? 'Thu gọn thông tin chung' : 'Xổ thông tin chung để sửa'); btn.title = open ? 'Thu gọn' : 'Xem / sửa';
-  if (!open) drawInfoSum();
-}
-document.addEventListener('click', (e) => {
-  if (e.target.closest('[data-info-toggle]')) { setInfoOpen(!document.getElementById('sec-info').classList.contains('is-open')); return; }
-  if (e.target.closest('a[href="#sec-info"]')) setInfoOpen(true); // bấm lỗi "Thiếu tên khoá…" → mở ra để sửa
-});
-function drawSub() { const c = document.getElementById('f-cat').value; document.getElementById('f-sub').innerHTML = (SUBS[c] || ['Chung']).map((s) => `<option>${esc(s)}</option>`).join(''); }
-
-/* Section + bài học — [KT] Thêm / đổi tên / xoá section (≤ 60 ký tự, không trùng), thêm bài theo loại, kéo thả, xoá có xác nhận */
-function drawSyllabus() {
-  const errs = quizErrors();
-  document.getElementById('syllabus').innerHTML = sections.map((s, si) => `<div class="adm-section" data-sec="${si}">
-    <div class="adm-section__head"><input class="sec-name" data-sec-name="${si}" value="${esc(s.name)}" maxlength="60" aria-label="Tên section ${si + 1}"><span class="adm-hint">${s.lessons.length} bài</span>
-      ${RowMenu([{ label: 'Thêm bài', icon: 'plus', attrs: `data-les-add="${si}"` }, { label: 'Xoá section', icon: 'trash', danger: true, attrs: `data-sec-del="${si}"` }])}</div>
-    ${s.lessons.length ? s.lessons.map((l, li) => lessonRow(l, si, li, errs)).join('') : `<div class="sec-empty" data-drop="${si}">Chưa có bài học — bấm "Thêm bài" hoặc kéo bài vào đây.</div>`}
-    <button type="button" class="btn-cta btn-cta--line btn-cta--sm sec-add" data-les-add="${si}">${ICON.plus}Thêm bài</button></div>`).join('');
-  const n = sections.reduce((a, s) => a + s.lessons.length, 0), nq = sections.reduce((a, s) => a + s.lessons.filter((l) => l.type === 'quiz').length, 0);
-  document.getElementById('order-n').textContent = `${sections.length} section · ${n} bài (${nq} quiz)`;
-}
-function lessonRow(l, si, li, errs) {
-  const T = TYPES[l.type];
-  if (l.type !== 'quiz') return `<div class="adm-lesson" draggable="true" data-les="${si}:${li}"><svg class="ic grip" width="16" height="16" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>${ICON[T[1]]}<b>${esc(l.name)}</b><span>${T[0]}${l.meta ? ' · ' + l.meta : ''}</span>
-    ${RowMenu([{ label: 'Đổi tên', icon: 'edit', attrs: `data-les-ren="${si}:${li}"` }, { label: 'Xoá bài', icon: 'trash', danger: true, attrs: `data-les-del="${si}:${li}"` }])}</div>`;
-  const z = l.quiz, e = errs[`${si}:${li}`];
-  return `<div class="adm-lesson adm-lesson--quiz" draggable="true" data-les="${si}:${li}"><svg class="ic grip" width="16" height="16" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>${ICON.quiz}
-    <b>${esc(z.title)}<span class="adm-lesson__tags" style="margin-left:8px">${Tag(`Exam ${z.exam.length} câu · ${LHQuizCore.total(z.exam)} điểm`, z.exam.length ? 'info' : 'pending')}${z.practice ? Tag(`Practice ${z.practice_q.length}`, 'published') : Tag('Practice tắt')}${z.version > 1 ? Tag('Đề v' + z.version, 'neutral') : ''}${e ? Tag(e, 'pending') : ''}</span></b>
-    <button type="button" class="btn-cta btn-cta--soft btn-cta--sm" data-qz-mgr="${si}:${li}">Quản lý câu hỏi</button>
-    ${RowMenu([{ label: 'Quản lý câu hỏi', icon: 'list', attrs: `data-qz-mgr="${si}:${li}"` }, { label: 'Sửa quiz', icon: 'edit', attrs: `data-qz-edit="${si}:${li}"` }, { label: 'Xoá quiz', icon: 'trash', danger: true, attrs: `data-les-del="${si}:${li}"` }])}</div>`;
-}
-/* Lỗi chặn publish/gửi duyệt của từng quiz */
-function quizErrors() {
-  const out = {};
-  sections.forEach((s, si) => s.lessons.forEach((l, li) => { if (l.type !== 'quiz') return; const z = l.quiz;
-    const B = { exam: z.exam, practice: z.practice_q };
-    if (!z.exam.length || !LHQuizCore.total(z.exam)) out[`${si}:${li}`] = 'Chưa có câu Exam';
-    else if (z.practice && !z.practice_q.length) out[`${si}:${li}`] = 'Practice bật nhưng chưa có câu';
-    else if (z.practice_q.some((q, k) => LHQuizCore.check(q, 'practice', B, k).length) || z.exam.some((q, k) => LHQuizCore.check(q, 'exam', B, k).length)) out[`${si}:${li}`] = 'Có câu lỗi / trùng'; }));
-  return out;
-}
-const at = (key) => { const [si, li] = key.split(':').map(Number); return { si, li, l: sections[si].lessons[li] }; };
-const ctxOf = () => ({ inProgress, creatorLive: role === 'creator' && st.startsWith('rev-') });
-/* Tên bài khác trong khoá (chặn trùng tên quiz) */
-const titlesExcept = (self) => sections.flatMap((s) => s.lessons).filter((l) => l !== self).map((l) => (l.type === 'quiz' ? l.quiz.title : l.name));
-/* Wizard quiz (D-70): Quản lý câu hỏi → mở B2 (hoặc B3 Practice); Sửa quiz → B1 */
-function openMgr(key, extra = {}) { const { l } = at(key); LHQuiz.openWizard({ quiz: l.quiz, step: extra.tab === 'practice' ? 3 : extra.step || 2, ctx: { ...ctxOf(), titles: titlesExcept(l), ...extra }, onSave: (z) => { l.quiz = z; l.name = z.title; drawSyllabus(); } }); }
-function openNewQuiz(si, preset, step = 1, open) {
-  LHQuiz.openWizard({ preset, step, ctx: { ...ctxOf(), titles: titlesExcept(null), open }, onSave: (z) => { sections[si].lessons.push({ type: 'quiz', name: z.title, quiz: z }); drawSyllabus(); } });
-}
-</script>
-<script>
-/* ---------- Thêm bài: chọn loại (967:5544) ---------- */
-function openAddLesson(si) {
-  let type = 'video';
-  const el = LHQuiz.modal('les-add', 'md', `Thêm bài · ${esc(sections[si].name)}`, 'Chọn loại bài học.',
-    `<div class="type-grid">${Object.entries(TYPES).map(([k, [t, ic, d]]) => `<button type="button" class="type-card ${k === type ? 'is-on' : ''}" data-ty="${k}">${ICON[ic]}<span><b>${t}</b><span>${d}</span></span></button>`).join('')}</div>
-     <div class="adm-field" id="les-name-f"><label>Tên bài <span class="req">*</span></label><input class="adm-input" id="les-name" maxlength="120" placeholder="Nhập tên bài"><span class="adm-hint is-error" id="les-err" hidden>Nhập tên bài.</span></div>
-     <label class="drop" id="les-file">${ICON.upload}<b>Chọn file tải lên</b><span class="adm-hint" id="les-limit"></span></label>`,
-    '<button class="btn-cta btn-cta--line" data-qz-x="les-add">Huỷ</button><button class="btn-cta" id="les-ok">Tiếp tục</button>');
-  el.addEventListener('qz-close', () => el.remove());
-  const sync = () => { el.querySelectorAll('[data-ty]').forEach((b) => b.classList.toggle('is-on', b.dataset.ty === type));
-    el.querySelector('#les-name-f').hidden = type === 'quiz'; el.querySelector('#les-file').hidden = type === 'quiz' || type === 'article';
-    el.querySelector('#les-limit').textContent = type === 'video' ? 'MP4, MOV · tối đa 1,5 GB' : 'PDF, DOCX, PPTX · tối đa 50 MB';
-    el.querySelector('#les-ok').textContent = type === 'quiz' ? 'Tiếp tục: Tạo quiz' : 'Thêm bài'; };
-  el.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-ty]'); if (t) { type = t.dataset.ty; sync(); return; }
-    if (!e.target.closest('#les-ok')) return;
-    if (type === 'quiz') { el.remove(); openNewQuiz(si); return; }
-    const n = el.querySelector('#les-name').value.trim(); el.querySelector('#les-err').hidden = !!n; if (!n) return;
-    sections[si].lessons.push({ type, name: n, meta: type === 'video' ? '0 phút' : type === 'file' ? 'PDF' : '' }); el.remove(); drawSyllabus(); toast('Đã thêm bài ' + TYPES[type][0].toLowerCase());
+  const actions = editable
+    ? `<button type="button" class="btn-cta" data-publish>Publish</button>`
+    : `<button type="button" class="btn-cta" data-edit>${ICON.edit}Edit</button>`;
+  $('top').innerHTML = AdminHead({
+    back: 'admin-courses.html' + q + (st === 'published' ? '&t=published' : '&t=draft'),
+    title: esc(title),
+    right: actions,
   });
-  sync();
+  /* Practice · Admin 3: tab Details · Basic Information · Audience · Practice (n) */
+  const T2 = LHSetup.tabs();
+  $('tabs').innerHTML = [['details', 'Details'], ['basic', 'Basic Information'], ['audience', T2.audience], ['practice', T2.practice]].map(([k, t]) =>
+    `<button type="button" role="tab" aria-selected="${tab === k}" class="${tab === k ? 'is-active' : ''} ${k === 'basic' && basicErr ? 'is-err' : ''}" data-tab="${k}">${esc(t)}</button>`).join('');
+}
+
+/* ---------- Lesson body (content / quiz) ---------- */
+function contentPicker(si, li) {
+  return `<div class="ctype">
+    <p>Select the main type of content. Files and links can be added as resources. <a href="#" data-learn-types>Learn about content types.</a></p>
+    <div class="ctype__grid">
+      <button type="button" data-set-content="${si}:${li}:video"><span class="ctype__ic">${ICON.file}</span><span class="ctype__label">Video</span></button>
+      <button type="button" data-set-content="${si}:${li}:mashup"><span class="ctype__ic">${ICON.video}</span><span class="ctype__label">Video &amp; Slide Mashup</span></button>
+      <button type="button" data-set-content="${si}:${li}:article"><span class="ctype__ic">${ICON.sheet}</span><span class="ctype__label">Article</span></button>
+    </div>
+  </div>`;
+}
+function fileRows(l, si, li) {
+  const rows = (l.files || []).map((f, fi) => `<div class="file-row">
+    <span class="file-row__ic">${ICON.file}</span>
+    <div class="file-row__meta">
+      <b>${esc(f.name)}${f.size ? ` (${esc(f.size)})` : ''}</b>
+      <span>${esc(f.at || '')}</span>
+      ${f.pct != null && f.pct < 100 ? `<div class="file-row__bar"><i style="width:${f.pct}%"></i></div><span>${f.pct}% done · ${esc(f.speed || '')}</span>` : (f.pct === 100 ? `<div class="file-row__bar"><i style="width:100%"></i></div><span>Completed</span>` : '')}
+    </div>
+    <span class="file-row__acts">
+      ${editable ? `<button type="button" class="su-icon su-icon--edit" data-add-res="${si}:${li}" title="Add resource" aria-label="Add resource">${ICON.plus}</button>
+      <button type="button" class="su-icon su-icon--del" data-file-del="${si}:${li}:${fi}" title="Delete" aria-label="Delete">${ICON.trash}</button>` : ''}
+    </span>
+  </div>`).join('');
+  const drop = editable ? `<label class="dropzone" data-drop="${si}:${li}">
+    <span class="dropzone__ic">${ICON.upload}</span>
+    <b>Drag &amp; Drop your files here</b>
+    <span>Or click to browse files</span>
+  </label>` : '';
+  return `${rows}${drop}`;
+}
+function articleBlock(l, si, li) {
+  if (l.articleEditing || !l.articleHtml) {
+    return `<div class="art-box">
+      <span class="adm-label">Article Description</span>
+      ${Richbox({ ph: 'Write article...', html: l.articleHtml || '', bodyAttrs: `id="art-${si}-${li}"` })}
+      ${editable ? `<div class="adm-btn-combo"><button type="button" class="btn-cta" data-art-save="${si}:${li}">Save</button></div>` : ''}
+    </div>`;
+  }
+  return `<div class="preview-box">
+    ${editable ? `<button type="button" class="su-icon su-icon--edit" data-art-edit="${si}:${li}" aria-label="Edit">${ICON.edit}</button>` : ''}
+    <h4>Title 1</h4>
+    <p>${esc(l.articleHtml.replace(/<[^>]+>/g, ' ').trim().slice(0, 160) || 'Article content')}</p>
+  </div>${editable ? fileRows({ files: l.files || [] }, si, li) : ''}`;
+}
+function lessonBody(l, si, li) {
+  if (!l.open) return '';
+  if (l.type === 'quiz') {
+    const TYPES = { single: 'Single choice', multi: 'Multiple choice', tf: 'True / False' };
+    const qs = (l.questions || []).map((q, qi) => { const dup = LHSetup.dupErr('exam', q.text, -1);
+      return `<div class="q-item" ${dup ? 'style="border-color:#f04438;background:#fef3f2"' : ''}><span class="meta">Q${qi + 1}</span><b>${esc(q.text)}${dup ? `<br><small style="color:#b42318;font-weight:500">${esc(dup)}</small>` : ''}</b><span class="meta">${TYPES[q.type] || q.type} · ${q.score} pt</span></div>`; }).join('');
+    const tot = (l.questions || []).reduce((a, q) => a + (+q.score || 0), 0), pass = (l.quiz && l.quiz.pass) || 80;
+    const need = `${tot ? `<p class="adm-hint">Passing Score ${pass}% · Learners need ${Math.ceil(pass * tot / 100)}/${tot} points to pass</p>` : ''}`;
+    return `<div class="q-list">${need}${qs}
+      ${editable ? `<div class="su-inline__row">
+        <button type="button" class="btn-outline-sm" data-q-import="${si}:${li}">Import Questions</button>
+        <button type="button" class="btn-cta btn-cta--soft btn-cta--sm" data-q-add="${si}:${li}">Add Question</button>
+      </div>` : ''}
+    </div>`;
+  }
+  if (l.picking) return contentPicker(si, li);
+  if (l.content === 'article') return articleBlock(l, si, li);
+  if (l.content === 'video' || l.content === 'mashup') return fileRows(l, si, li);
+  return '';
+}
+
+function lessonCard(l, si, li) {
+  const label = `Lesson ${l.num}`;
+  const qn = (l.questions || []).length, qp = (l.questions || []).reduce((a, q) => a + (+q.score || 0), 0);
+  const quizMeta = l.type === 'quiz' ? `<span class="quiz-meta">${qn} question${qn === 1 ? '' : 's'} · ${qp} point${qp === 1 ? '' : 's'}</span>` : '';
+  const ic = l.type === 'quiz' ? ICON.quiz : ICON.book;
+  const addContent = editable && l.type === 'lecture' && !l.content && !l.picking
+    ? `<button type="button" class="btn-outline-sm" data-content="${si}:${li}">${ICON.plus}Add Content</button>`
+    : (editable && l.type === 'lecture' && l.picking
+      ? `<span class="adm-hint" style="font-size:13px">Select content type</span><button type="button" class="su-icon" data-pick-clear="${si}:${li}" aria-label="Clear">${ICON.x}</button>`
+      : '');
+  return `<div class="su-les" data-les="${si}:${li}">
+    <div class="su-les__row">
+      <span class="su-les__title">${esc(label)} · ${ic}${editingLes === si + ':' + li
+        ? `<input class="adm-input" id="les-ren" value="${esc(l.name)}" style="max-width:240px;height:36px"><button type="button" class="btn-cta btn-cta--sm" data-les-ren-save="${si}:${li}">Save</button>`
+        : `<span>${esc(l.name)}</span>`}</span>
+      ${quizMeta}${addContent}
+      ${editable ? `<span class="su-les__acts">
+        ${iconBtn('edit', `data-les-edit="${si}:${li}"`)}
+        ${iconBtn('del', `data-les-del="${si}:${li}"`)}
+        <button type="button" class="su-icon su-icon--chev" data-les-tog="${si}:${li}" aria-label="Toggle">${l.open ? ICON.chevronU : ICON.chevronD}</button>
+      </span>` : ''}
+    </div>
+    ${lessonBody(l, si, li)}
+  </div>`;
+}
+
+function sectionUi(s, si) {
+  if (s.ui === 'addLesson') {
+    return `<div class="su-inline__row">
+      <button type="button" class="btn-add-les" data-new-lecture="${si}">${ICON.plus}Add Lecture</button>
+      <button type="button" class="btn-link" data-les-cancel="${si}">Cancel</button>
+      <button type="button" class="btn-link btn-link--blue" data-new-quiz="${si}">${ICON.plus}Quiz</button>
+    </div>`;
+  }
+  if (s.ui === 'newLecture') {
+    return `<div class="su-inline">
+      <div class="adm-field"><label>Lesson Title <span class="req">*</span></label>
+        <input class="adm-input" id="lec-name-${si}" placeholder="Enter lesson title" maxlength="60"><p class="adm-err" id="lec-err-${si}"></p></div>
+      <div class="su-inline__row">
+        <button type="button" class="btn-cta btn-cta--sm" data-lec-save="${si}">Save</button>
+        <button type="button" class="btn-link" data-les-cancel="${si}">Cancel</button>
+      </div>
+    </div>`;
+  }
+  if (s.ui === 'newQuiz') {
+    return `<div class="su-inline" style="background:#fff;border-radius:10px;padding:14px;border:1px solid var(--adm-stroke)">
+      <div class="adm-field"><label>Quiz Title <span class="req">*</span></label><input class="adm-input" id="qz-title-${si}" placeholder="Enter quiz title"><p class="adm-err" id="qz-err-${si}"></p></div>
+      <div class="adm-field"><span class="adm-label">Quiz Description</span><textarea class="adm-input" id="qz-desc-${si}" rows="2" placeholder="Optional"></textarea></div>
+      <div class="cc-row">
+        <div class="adm-field"><label>Time Limit</label><select class="adm-input" id="qz-time-${si}">${TIMES.map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select></div>
+        <div class="adm-field"><label>Passing Score (%) <span class="req">*</span></label><input class="adm-input" id="qz-pass-${si}" type="number" min="1" max="100" value="80"><p class="adm-err" id="qz-pass-err-${si}"></p></div>
+      </div>
+      <p class="quiz-note">Every exam has 3 attempts. Later attempts show the previous answers with Correct / Incorrect labels. Correct answers are revealed only after the learner passes or uses all attempts.</p>
+      <div class="su-inline__row">
+        <button type="button" class="btn-cta btn-cta--sm" data-quiz-save="${si}">Save</button>
+        <button type="button" class="btn-link" data-les-cancel="${si}">Cancel</button>
+      </div>
+    </div>`;
+  }
+  return editable ? `<button type="button" class="btn-add-les" data-les-pick="${si}">${ICON.plus}Add Lesson</button>` : '';
+}
+
+function sectionBlock(s, si) {
+  const head = editingSec === si
+    ? `<div class="su-sec__head"><span class="su-sec__name">Section ${si + 1}:</span>
+        <input class="adm-input" id="sec-ren" value="${esc(s.name)}" style="flex:1;height:36px;max-width:320px">
+        <button type="button" class="btn-cta btn-cta--sm" data-sec-ren-save="${si}">Save</button>
+        <button type="button" class="btn-link" data-sec-ren-cancel>Cancel</button></div>`
+    : `<div class="su-sec__head"><span class="su-sec__name">Section ${si + 1}: ${esc(s.name)}</span>
+        ${editable ? `${iconBtn('edit', `data-sec-edit="${si}"`)}${iconBtn('del', `data-sec-del="${si}"`)}` : ''}</div>`;
+  return `<div class="su-sec" data-sec="${si}">
+    ${head}
+    ${s.lessons.map((l, li) => lessonCard(l, si, li)).join('')}
+    ${sectionUi(s, si)}
+  </div>`;
+}
+
+function drawDetails() {
+  renumber();
+  const draft = creatingSection ? `<div class="su-sec">
+    <div class="su-sec__head"><span class="su-sec__name">Section ${sections.length + 1}:</span></div>
+    <div class="adm-field"><label>Section Title <span class="req">*</span></label>
+      <input class="adm-input" id="sec-name" placeholder="Enter section title" maxlength="60"><p class="adm-err" id="sec-err"></p></div>
+    <div class="su-inline__row">
+      <button type="button" class="btn-cta btn-cta--sm" data-sec-save>Save</button>
+      <button type="button" class="btn-link" data-sec-cancel>Cancel</button>
+    </div>
+  </div>` : '';
+  $('panel').innerHTML = `<div class="adm-card su-panel" id="struct">
+    ${sections.map((s, si) => sectionBlock(s, si)).join('')}
+    ${draft}
+    ${editable && !creatingSection ? `<button type="button" class="btn-cta" data-sec-add style="align-self:flex-start">${ICON.plus}Section</button>` : ''}
+  </div>`;
+  if (creatingSection) $('sec-name')?.focus();
+  if (editingSec != null) $('sec-ren')?.focus();
+  if (editingLes) $('les-ren')?.focus();
+  const siFocus = sections.findIndex((s) => s.ui === 'newLecture' || s.ui === 'newQuiz');
+  if (siFocus >= 0) {
+    if (sections[siFocus].ui === 'newLecture') $(`lec-name-${siFocus}`)?.focus();
+    if (sections[siFocus].ui === 'newQuiz') $(`qz-title-${siFocus}`)?.focus();
+  }
+}
+
+function drawBasic() {
+  const catOpts = ['<option value="">Select Category</option>'].concat(D.categories.map((c) => `<option ${c === 'Data & AI' ? 'selected' : ''}>${esc(c)}</option>`)).join('');
+  $('panel').innerHTML = `<fieldset ${editable ? '' : 'disabled'}><form class="adm-card su-panel" id="basic" style="display:flex;flex-direction:column;gap:16px;max-width:720px">
+    <div class="adm-field"><label>Course Title <span class="req">*</span></label><input class="adm-input" id="b-title" value="${esc(title)}"></div>
+    <div class="adm-field"><span class="adm-label">Description <span class="req">*</span></span>
+      ${Richbox({ id: 'b-desc', ph: 'Course description...', html: 'Course overview for learners.' })}</div>
+    <div class="adm-field"><span class="adm-label">Who is this course for <span class="req">*</span></span>
+      ${Richbox({ id: 'b-who', html: 'Engineers and L&amp;D teams.' })}</div>
+    <div class="adm-field"><span class="adm-label">What will you learn <span class="req">*</span></span>
+      ${Richbox({ id: 'b-learn', html: 'Core concepts and practice.' })}</div>
+    <div class="adm-field"><label>Category <span class="req">*</span></label><select class="adm-input" id="b-cat">${catOpts}</select></div>
+    <div class="cc-row">
+      <div class="adm-field"><label>Sub Category <span class="req">*</span></label><select class="adm-input" id="b-sub"></select></div>
+      <div class="adm-field"><span class="adm-label">Duration <span class="req">*</span></span>
+        <div class="dur"><label><input id="b-h" value="2" inputmode="numeric"><span>h</span></label><b>:</b><label><input id="b-m" value="0" inputmode="numeric"><span>m</span></label></div></div>
+    </div>
+    <div class="adm-field"><span class="adm-label">Thumbnail</span>
+      <div class="thumb ${hasThumb ? 'is-ok' : ''}" id="thumb" data-thumb>${hasThumb ? 'Thumbnail uploaded' : '<b>Click to upload thumbnail</b><br><span>JPG, PNG, WEBP (max 20MB)</span>'}</div></div>
+    ${editable ? `<div class="adm-btn-combo"><button type="button" class="btn-cta" data-basic-save>Save</button></div>` : ''}
+  </form></fieldset>`;
+  drawSub();
+}
+function drawSub() {
+  const c = $('b-cat')?.value; if (!$('b-sub')) return;
+  $('b-sub').innerHTML = (SUBS[c] || ['General']).map((s) => `<option>${esc(s)}</option>`).join('');
+}
+function render() {
+  renderTop();
+  LHSetup.release();
+  if (tab === 'details') drawDetails(); else if (tab === 'basic') drawBasic();
+  else if (tab === 'practice') LHSetup.drawPractice($('panel')); else LHSetup.drawAudience($('panel'));
+}
+LHSetup.init({
+  editable: true,
+  /* Câu thi của khoá: nguồn kiểm trùng đề luyện tập (BR-PQ-03) */
+  getExam: () => sections.flatMap((s) => s.lessons.filter((l) => l.type === 'quiz').flatMap((l) => (l.questions || []).map((q, k) => ({ quiz: l.name, n: k + 1, text: q.text })))),
+  onChange: () => renderTop(),
+  goTab: (t) => { tab = t; render(); },
+});
+
+/* ---------- Quiz question / import modals (kept) ---------- */
+function modalQuestion(si, li) {
+  openModal(Modal({
+    id: 'm-q', size: 'lg', title: 'Add Question',
+    body: `<div class="stack" style="display:flex;flex-direction:column;gap:12px">
+      <div class="adm-field"><label>Question Type <span class="req">*</span></label>
+        <select class="adm-input" id="qq-type"><option value="single">Single choice</option><option value="multi">Multiple choice</option><option value="tf">True / False</option></select></div>
+      <div class="adm-field"><span class="adm-label">Question Content <span class="req">*</span></span>
+        ${Richbox({ ph: 'Enter question...', bodyAttrs: 'id="qq-text"' })}
+        <p class="adm-err" id="qq-err"></p></div>
+      <div class="adm-field"><label>Score (Points) <span class="req">*</span></label><input class="adm-input" id="qq-score" type="number" min="1" value="1" style="max-width:120px"></div>
+      <div class="adm-field"><span class="adm-label">Answer Option <span class="req">*</span></span>
+        <div id="qq-opts"></div>
+        <button type="button" class="btn-link btn-link--blue" id="qq-add-opt" style="margin-top:4px;padding:0;align-self:flex-start">+ Add more Answer Option</button>
+        <p class="adm-err" id="qq-opt-err"></p></div>
+      <div class="adm-field"><span class="adm-label">Explanation <span class="muted">(optional)</span></span>
+        <textarea class="adm-input" id="qq-explain" rows="2"></textarea></div>
+    </div>`,
+    foot: `<button type="button" class="btn-cta btn-cta--line" data-close>Cancel</button><button type="button" class="btn-cta" data-qq-save="${si}:${li}">Save</button>`,
+  }));
+  drawOpts(['', '']);
+  $('qq-type')?.addEventListener('change', () => { drawOpts($('qq-type').value === 'tf' ? ['True', 'False'] : ['', '']); });
+  $('qq-add-opt')?.addEventListener('click', () => {
+    const rows = [...document.querySelectorAll('#qq-opts .opt-row input[type=text]')].map((i) => i.value);
+    if (rows.length >= 4) { toast('Maximum 4 options'); return; }
+    rows.push(''); drawOpts(rows);
+  });
+}
+function drawOpts(vals) {
+  const host = $('qq-opts'); if (!host) return;
+  const tf = $('qq-type')?.value === 'tf';
+  host.innerHTML = vals.map((v, i) => `<div class="opt-row">
+    <input type="radio" name="qq-correct" value="${i}" ${i === 0 ? 'checked' : ''} aria-label="Correct">
+    <input class="adm-input" type="text" value="${esc(v)}" placeholder="Option ${i + 1}" ${tf ? 'readonly' : ''}>
+    ${tf || vals.length <= 2 ? '<span></span>' : `<button type="button" class="icon-btn" data-opt-del="${i}" aria-label="Remove">${ICON.x}</button>`}
+  </div>`).join('');
+  host.querySelectorAll('[data-opt-del]').forEach((b) => b.addEventListener('click', () => {
+    const rows = [...host.querySelectorAll('input[type=text]')].map((i) => i.value);
+    rows.splice(+b.dataset.optDel, 1); drawOpts(rows);
+  }));
+  if ($('qq-add-opt')) $('qq-add-opt').style.display = tf ? 'none' : '';
+}
+function modalImport(si, li) {
+  openModal(Modal({
+    id: 'm-import', size: 'md', title: 'Import Questions from Excel',
+    body: `<div class="stack" style="display:flex;flex-direction:column;gap:12px">
+      <p class="adm-hint">Template columns: Question Type, Question Text, Score, Answer Options (1–4), Correct Answer indices. No Explanation column.</p>
+      <button type="button" class="btn-cta btn-cta--line" data-dl-tpl style="align-self:flex-start">${ICON.download}Download Template</button>
+      <div class="adm-field"><label>Excel File</label>
+        <label class="dropzone"><input type="file" id="imp-file" accept=".xlsx,.xls,.csv" hidden>
+          <span class="dropzone__ic">${ICON.upload}</span><b>Choose Excel file</b><span>.xlsx / .csv</span></label></div>
+    </div>`,
+    foot: `<button type="button" class="btn-cta btn-cta--line" data-close>Cancel</button><button type="button" class="btn-cta" data-imp-run="${si}:${li}">Import</button>`,
+  }));
 }
 
 document.addEventListener('click', (e) => {
-  if (e.target.closest('[data-sec-add]')) { let i = sections.length + 1; while (sections.some((s) => s.name === 'Section ' + i)) i++; sections.push({ name: 'Section ' + i, lessons: [] }); drawSyllabus(); document.querySelector(`[data-sec-name="${sections.length - 1}"]`).select(); return; }
-  const la = e.target.closest('[data-les-add]'); if (la) { openAddLesson(+la.dataset.lesAdd); return; }
-  const sd = e.target.closest('[data-sec-del]'); if (sd) { const si = +sd.dataset.secDel; const s = sections[si];
-    AdminConfirm({ danger: true, title: 'Xoá section này?', text: `<b>${esc(s.name)}</b> và ${s.lessons.length} bài bên trong sẽ bị xoá.`, ok: 'Xoá', onOk: () => { sections.splice(si, 1); drawSyllabus(); toast('Đã xoá section'); } }); return; }
-  const ld = e.target.closest('[data-les-del]'); if (ld) { const { si, li, l } = at(ld.dataset.lesDel);
-    const del = () => { sections[si].lessons.splice(li, 1); drawSyllabus(); toast(l.type === 'quiz' ? 'Đã xoá quiz' : 'Đã xoá bài'); };
-    if (l.type === 'quiz') LHQuiz.confirmDelete(l.quiz, del); else AdminConfirm({ danger: true, title: 'Bạn chắc chắn muốn xoá bài này?', text: esc(l.name), ok: 'Xoá', onOk: del }); return; }
-  const lr = e.target.closest('[data-les-ren]'); if (lr) { const { l } = at(lr.dataset.lesRen); const n = prompt('Tên bài', l.name); if (n && n.trim()) { l.name = n.trim(); drawSyllabus(); } return; }
-  const qm = e.target.closest('[data-qz-mgr]'); if (qm) { openMgr(qm.dataset.qzMgr); return; }
-  const qe = e.target.closest('[data-qz-edit]'); if (qe) { openMgr(qe.dataset.qzEdit, { step: 1 }); return; }
-  const blockers = () => { const E = quizErrors(); return Object.entries(E).map(([k, v]) => [`${at(k).l.quiz.title}: ${v}`, '#sec-content']); };
-  if (e.target.closest('[data-submit]')) {
-    const B = [...(missing ? [['Thiếu ảnh bìa', '#sec-info'], ['Thiếu tên khoá', '#sec-info'], ['Thiếu mô tả', '#sec-info'], ['Section 3 chưa có bài học', '#sec-content']] : []), ...blockers()];
-    if (B.length) return LHApproval.submitErrors(B);
-    st = st.startsWith('rev-') ? 'rev-pending' : 'pending'; render(); toast('Đã gửi duyệt. Email đã gửi tới Admin L&D.');
+  if (e.target.closest('[data-close]') || e.target.classList.contains('modal-backdrop')) { closeModal(); return; }
+  const tb = e.target.closest('[data-tab]'); if (tb) { tab = tb.dataset.tab; render(); return; }
+
+  /* Section */
+  if (e.target.closest('[data-sec-add]')) { creatingSection = true; editingSec = null; drawDetails(); return; }
+  if (e.target.closest('[data-sec-cancel]')) { creatingSection = false; drawDetails(); return; }
+  if (e.target.closest('[data-sec-save]')) {
+    const name = ($('sec-name')?.value || '').trim();
+    const err = $('sec-err');
+    if (!name) { if (err) err.textContent = 'Please enter Name'; return; }
+    sections.push({ name, ui: 'idle', lessons: [] });
+    creatingSection = false; drawDetails(); toast('Section created successfully'); return;
   }
-  if (e.target.closest('[data-publish]')) { const B = blockers(); if (B.length) return LHApproval.submitErrors(B); st = 'published'; render(); toast('Đã publish khoá học'); }
-  if (e.target.closest('[data-save]')) toast('Đã lưu nháp.');
-  if (e.target.closest('[data-edit]')) { st = 'rev-draft'; render(); toast('Đã mở bản sửa. Học viên vẫn học nội dung đang chạy.'); }
+  const se = e.target.closest('[data-sec-edit]'); if (se) { editingSec = +se.dataset.secEdit; editingLes = null; drawDetails(); return; }
+  if (e.target.closest('[data-sec-ren-cancel]')) { editingSec = null; drawDetails(); return; }
+  const srs = e.target.closest('[data-sec-ren-save]'); if (srs) {
+    const name = ($('sec-ren')?.value || '').trim();
+    if (!name) { toast('Please enter Name'); return; }
+    sections[+srs.dataset.secRenSave].name = name; editingSec = null; drawDetails(); return;
+  }
+  const sd = e.target.closest('[data-sec-del]'); if (sd) {
+    AdminConfirm({ danger: true, title: 'Delete section?', text: 'Lessons inside will be removed.', ok: 'Delete', onOk: () => { sections.splice(+sd.dataset.secDel, 1); drawDetails(); } }); return;
+  }
+
+  /* Add lesson pick / lecture / quiz inline */
+  const pick = e.target.closest('[data-les-pick]'); if (pick) {
+    sections.forEach((s) => { s.ui = 'idle'; });
+    sections[+pick.dataset.lesPick].ui = 'addLesson'; drawDetails(); return;
+  }
+  const lc = e.target.closest('[data-les-cancel]'); if (lc) { sections[+lc.dataset.lesCancel].ui = 'idle'; drawDetails(); return; }
+  const nl = e.target.closest('[data-new-lecture]'); if (nl) { sections[+nl.dataset.newLecture].ui = 'newLecture'; drawDetails(); return; }
+  const nq = e.target.closest('[data-new-quiz]'); if (nq) { sections[+nq.dataset.newQuiz].ui = 'newQuiz'; drawDetails(); return; }
+  const ls = e.target.closest('[data-lec-save]'); if (ls) {
+    const si = +ls.dataset.lecSave;
+    const name = ($(`lec-name-${si}`)?.value || '').trim();
+    const err = $(`lec-err-${si}`);
+    if (!name) { if (err) err.textContent = 'Please enter Name'; return; }
+    sections[si].lessons.push(mkLesson({ name, picking: false, content: null }));
+    sections[si].ui = 'idle'; drawDetails(); toast('Lesson created successfully'); return;
+  }
+  const qs = e.target.closest('[data-quiz-save]'); if (qs) {
+    const si = +qs.dataset.quizSave;
+    const name = ($(`qz-title-${si}`)?.value || '').trim();
+    const err = $(`qz-err-${si}`);
+    if (!name) { if (err) err.textContent = 'Please enter Quiz Title'; return; }
+    const pass = +$(`qz-pass-${si}`).value;
+    if (!(pass >= 1 && pass <= 100) || !Number.isInteger(pass)) { $(`qz-pass-err-${si}`).textContent = 'Passing Score must be between 1 and 100%.'; return; }
+    sections[si].lessons.push(mkLesson({
+      type: 'quiz', name, content: 'quiz', questions: [],
+      quiz: { time: $(`qz-time-${si}`).value, pass, desc: ($(`qz-desc-${si}`)?.value || '').trim() }, // BR-EX-14: không có ô số lượt
+    }));
+    sections[si].ui = 'idle'; drawDetails(); toast('Quiz created successfully'); return;
+  }
+
+  /* Lesson card */
+  const le = e.target.closest('[data-les-edit]'); if (le) { editingLes = le.dataset.lesEdit; editingSec = null; drawDetails(); return; }
+  const lrs = e.target.closest('[data-les-ren-save]'); if (lrs) {
+    const [si, li] = lrs.dataset.lesRenSave.split(':').map(Number);
+    const name = ($('les-ren')?.value || '').trim();
+    if (!name) { toast('Please enter Name'); return; }
+    sections[si].lessons[li].name = name; editingLes = null; drawDetails(); return;
+  }
+  const ld = e.target.closest('[data-les-del]'); if (ld) {
+    const [si, li] = ld.dataset.lesDel.split(':').map(Number);
+    AdminConfirm({ danger: true, title: 'Delete lesson?', ok: 'Delete', onOk: () => { sections[si].lessons.splice(li, 1); drawDetails(); } }); return;
+  }
+  const lt = e.target.closest('[data-les-tog]'); if (lt) {
+    const [si, li] = lt.dataset.lesTog.split(':').map(Number);
+    sections[si].lessons[li].open = !sections[si].lessons[li].open; drawDetails(); return;
+  }
+  const ct = e.target.closest('[data-content]'); if (ct) {
+    const [si, li] = ct.dataset.content.split(':').map(Number);
+    sections[si].lessons[li].picking = true; sections[si].lessons[li].open = true; drawDetails(); return;
+  }
+  const pc = e.target.closest('[data-pick-clear]'); if (pc) {
+    const [si, li] = pc.dataset.pickClear.split(':').map(Number);
+    sections[si].lessons[li].picking = false; drawDetails(); return;
+  }
+  const sc = e.target.closest('[data-set-content]'); if (sc) {
+    const [si, li, kind] = sc.dataset.setContent.split(':');
+    const L = sections[+si].lessons[+li];
+    L.content = kind; L.picking = false; L.open = true;
+    if (kind === 'article') { L.articleEditing = true; L.files = []; }
+    else { L.files = []; L.articleEditing = false; }
+    drawDetails(); toast('Content type saved'); return;
+  }
+  const as = e.target.closest('[data-art-save]'); if (as) {
+    const [si, li] = as.dataset.artSave.split(':').map(Number);
+    const body = $(`art-${si}-${li}`);
+    sections[si].lessons[li].articleHtml = (body?.innerHTML || '').trim();
+    sections[si].lessons[li].articleEditing = false;
+    drawDetails(); toast('Lesson article created successfully'); return;
+  }
+  const ae = e.target.closest('[data-art-edit]'); if (ae) {
+    const [si, li] = ae.dataset.artEdit.split(':').map(Number);
+    sections[si].lessons[li].articleEditing = true; drawDetails(); return;
+  }
+  const ar = e.target.closest('[data-add-res]'); if (ar) {
+    const [si, li] = ar.dataset.addRes.split(':').map(Number);
+    const L = sections[si].lessons[li];
+    if (!L.files) L.files = [];
+    L.files.push({ name: 'file.pdf', size: '2mb', at: '18.11.2026, 11:30 AM', pct: 100 });
+    drawDetails(); toast('Resource added'); return;
+  }
+  const drop = e.target.closest('[data-drop]'); if (drop) {
+    const [si, li] = drop.dataset.drop.split(':').map(Number);
+    const L = sections[si].lessons[li];
+    if (!L.files) L.files = [];
+    L.files.push({ name: 'Design.mp4', size: '2mb', at: '18.11.2026, 11:30 AM', pct: 55, speed: '90KB/Sec' });
+    drawDetails();
+    setTimeout(() => {
+      const f = L.files[L.files.length - 1]; if (f && f.pct < 100) { f.pct = 100; f.speed = ''; drawDetails(); }
+    }, 1200);
+    return;
+  }
+  const fd = e.target.closest('[data-file-del]'); if (fd) {
+    const [si, li, fi] = fd.dataset.fileDel.split(':').map(Number);
+    AdminConfirm({
+      title: 'Warning', text: 'Are you sure you want to delete this resource?', ok: 'Confirm', danger: false,
+      onOk: () => { sections[si].lessons[li].files.splice(fi, 1); drawDetails(); toast('Resource deleted'); },
+    }); return;
+  }
+  if (e.target.closest('[data-learn-types]')) { e.preventDefault(); toast('Content types: Video, Video & Slide Mashup, Article'); return; }
+
+  /* Quiz Q */
+  const qa = e.target.closest('[data-q-add]'); if (qa) {
+    const [si, li] = qa.dataset.qAdd.split(':').map(Number);
+    LHSetup.questionModal({ bank: 'exam', withScore: true, onSave: (q) => { const L = sections[si].lessons[li]; (L.questions = L.questions || []).push(q); drawDetails(); return L.questions.length; } }); return;
+  }
+  const qsave = e.target.closest('[data-qq-save]'); if (qsave) {
+    const [si, li] = qsave.dataset.qqSave.split(':').map(Number);
+    const text = ($('qq-text')?.textContent || '').trim();
+    const opts = [...document.querySelectorAll('#qq-opts input[type=text]')].map((i) => i.value.trim());
+    const correct = +document.querySelector('#qq-opts input[type=radio]:checked')?.value;
+    const err = $('qq-err'); const oerr = $('qq-opt-err');
+    if (err) err.textContent = ''; if (oerr) oerr.textContent = '';
+    if (!text) { if (err) err.textContent = 'Please enter Question Content'; return; }
+    if (opts.filter(Boolean).length < 2) { if (oerr) oerr.textContent = 'At least 2 answer options are required'; return; }
+    if (!sections[si].lessons[li].questions) sections[si].lessons[li].questions = [];
+    sections[si].lessons[li].questions.push({ type: $('qq-type').value, text, score: +$('qq-score').value || 1, options: opts, correct, explain: ($('qq-explain')?.value || '').trim() });
+    closeModal(); drawDetails(); toast('Question created successfully'); return;
+  }
+  const qi = e.target.closest('[data-q-import]'); if (qi) {
+    const [si, li] = qi.dataset.qImport.split(':').map(Number);
+    LHSetup.importModal({ bank: 'exam', onImport: (qs) => { const L = sections[si].lessons[li]; L.questions = L.questions || []; const a = L.questions.length + 1; L.questions.push(...qs.map((q) => ({ ...q, score: 1 }))); drawDetails(); return [a, L.questions.length]; } }); return;
+  }
+  if (e.target.closest('[data-dl-tpl]')) { toast('Template downloaded (demo)'); return; }
+  const ir = e.target.closest('[data-imp-run]'); if (ir) {
+    const [si, li] = ir.dataset.impRun.split(':').map(Number);
+    if (!$('imp-file')?.files?.[0]) { toast('Please choose an Excel file'); return; }
+    if (!sections[si].lessons[li].questions) sections[si].lessons[li].questions = [];
+    sections[si].lessons[li].questions.push(
+      { type: 'single', text: 'Imported sample question 1', score: 1, options: ['A', 'B', 'C', 'D'], correct: 0, explain: '' },
+      { type: 'tf', text: 'Imported true/false sample', score: 1, options: ['True', 'False'], correct: 0, explain: '' },
+    );
+    closeModal(); drawDetails(); toast('Questions imported successfully'); return;
+  }
+
+  if (e.target.closest('[data-thumb]')) {
+    if (!editable) return;
+    hasThumb = true; toast('Thumbnail uploaded successfully'); drawBasic(); return;
+  }
+  if (e.target.closest('[data-basic-save]')) {
+    title = $('b-title')?.value.trim() || title; toast('Course updated successfully'); renderTop(); return;
+  }
+  if (e.target.closest('[data-publish]')) {
+    /* Course Information 3.3 (BR-CI-08) → Cannot publish yet; Course Audience 3.7 (BR-AUD-09) → popup Scope + N learners */
+    LHSetup.publish({ title, sections, onDone: () => { st = 'published'; editable = false; basicErr = false; toast('Course published successfully'); render(); } }); return;
+  }
+  if (e.target.closest('[data-edit]')) {
+    AdminConfirm({ title: 'Edit Course Version', text: 'This version is published. You can edit it by creating a new version.', ok: 'Continue', onOk: () => {
+      st = 'rev-draft'; editable = true; toast('Draft version created'); render();
+    } }); return;
+  }
 });
-/* Đổi tên section: ≤ 60 ký tự, không trống, không trùng */
 document.addEventListener('change', (e) => {
-  if (e.target.id === 'f-cat') { drawSub(); return; }
-  const sn = e.target.dataset.secName; if (sn == null) return; const i = +sn, v = e.target.value.trim();
-  const bad = !v ? 'Tên section không được trống.' : sections.some((s, k) => k !== i && LHQuizCore.nq(s.name) === LHQuizCore.nq(v)) ? 'Tên section đã tồn tại.' : '';
-  if (bad) { e.target.classList.add('is-error'); toast(bad); e.target.value = sections[i].name; setTimeout(() => e.target.classList.remove('is-error'), 1500); return; }
-  sections[i].name = v; toast('Đã đổi tên section');
-});
-/* Kéo thả bài (cùng section hoặc sang section khác) */
-let dragKey = null;
-document.addEventListener('dragstart', (e) => { const r = e.target.closest?.('[data-les]'); if (!r) return; dragKey = r.dataset.les; r.classList.add('is-drag'); e.dataTransfer.effectAllowed = 'move'; });
-document.addEventListener('dragend', () => { dragKey = null; document.querySelectorAll('.is-drag,.is-over').forEach((x) => x.classList.remove('is-drag', 'is-over')); });
-document.addEventListener('dragover', (e) => { const t = e.target.closest('[data-les],[data-drop]'); if (!dragKey || !t) return; e.preventDefault(); document.querySelectorAll('.is-over').forEach((x) => x.classList.remove('is-over')); t.classList.add('is-over'); });
-document.addEventListener('drop', (e) => {
-  const t = e.target.closest('[data-les],[data-drop]'); if (!dragKey || !t) return; e.preventDefault();
-  const from = at(dragKey); const [l] = sections[from.si].lessons.splice(from.li, 1);
-  if (t.dataset.drop != null) sections[+t.dataset.drop].lessons.push(l);
-  else { const [si, li] = t.dataset.les.split(':').map(Number); sections[si].lessons.splice(li, 0, l); } // kéo xuống: nằm sau bài đích · kéo lên: nằm trước
-  drawSyllabus(); toast('Đã đổi thứ tự bài');
+  if (e.target.id === 'b-cat') drawSub();
+  if (e.target.id && e.target.id.startsWith('qz-nolimit-')) {
+    const si = e.target.id.replace('qz-nolimit-', '');
+    const att = $(`qz-att-${si}`); if (att) att.disabled = e.target.checked;
+  }
 });
 
-const params = new URLSearchParams(location.search);
-LH.DemoBar('Soạn khoá + Quiz Exam / Practice', [
-  { label: 'Vai trò', key: 'r', options: [['creator', 'Course Creator'], ['admin', 'Admin L&D']] },
-  { label: 'Trạng thái', key: 'st', options: [['draft', 'Nháp'], ['pending', 'Chờ duyệt'], ['rejected', 'Cần chỉnh sửa'], ['published', 'Đang chạy'], ['rev-draft', 'Bản sửa nháp'], ['rev-pending', 'Bản sửa chờ duyệt']] },
-  { label: 'Quiz', key: 'qz', options: [['ok', 'Hợp lệ'], ['legacy', 'Bài cũ (Practice tắt)'], ['empty', 'Quiz chưa có câu'], ['dup', 'Câu Practice trùng Exam'], ['busy', 'Đang có người làm (D-59)']] },
-  { label: 'Mở sẵn', key: 'open', options: [['none', 'Không'], ['new', 'Thêm bài'], ['w1', 'Wizard B1'], ['w2', 'B2 Chọn cách'], ['w2add', 'B2 Soạn tay'], ['w2imp', 'B2 Nhập file'], ['w3', 'B3 Practice'], ['w3pdf', 'B3 Nhập PDF'], ['pdfscan', 'PDF scan lỗi'], ['mgr', 'Sửa quiz có sẵn']] },
-  { label: 'Dữ liệu', key: 'm', options: [['ok', 'Đủ'], ['missing', 'Thiếu (BR-CRS-11)']] },
+LH.DemoBar('Course setup · Details Figma', [
+  { label: 'Role', key: 'r', options: [['admin', 'Admin'], ['editor', 'Editor']] },
+  { label: 'Status', key: 'st', options: [['draft', 'DRAFT'], ['published', 'PUBLISHED']] },
+  { label: 'Tab', key: 'tab', options: [['details', 'Details'], ['basic', 'Basic Information'], ['audience', 'Audience'], ['practice', 'Practice']] },
+  { label: 'Practice', key: 'pq', options: [['empty', 'Off · chưa có câu (khoá cũ)'], ['off', 'Off · có 4 câu'], ['on', 'On · 4 câu'], ['dup', 'On · có câu trùng đề thi']] },
+  { label: 'Audience', key: 'aud', options: [['all', 'All Company'], ['restricted', 'Restricted · QA, QC Automation'], ['mandatory', 'Restricted QA · Mandatory'], ['empty', 'Restricted · chưa chọn ai']] },
+  { label: 'Thumbnail', key: 'thumb', options: [['', 'None'], ['1', 'Uploaded']] },
 ], (s) => {
-  document.querySelectorAll('.qz-modal').forEach((x) => x.remove());
-  role = s.r === 'admin' ? 'admin' : 'creator'; st = s.st; missing = s.m === 'missing'; inProgress = s.qz === 'busy' ? 4 : 0;
-  seed(s.qz); render();
-  const k = '0:1';
-  const P2 = { title: 'Test Domain 3 — MCP & Tool Design', minutes: 45, pass: 80, practice: true };
-  const P3 = { ...P2, exam: sc(D.examQuestions) };
-  if (s.open === 'mgr' || params.get('quiz')) openMgr(k);
-  if (s.open === 'new') openAddLesson(2);
-  if (s.open === 'w1') openNewQuiz(2);
-  if (s.open === 'w2') openNewQuiz(2, P2, 2);
-  if (s.open === 'w2add') openNewQuiz(2, P2, 2, 'add');
-  if (s.open === 'w2imp') openNewQuiz(2, P2, 2, 'importdemo');
-  if (s.open === 'w3') openNewQuiz(2, P3, 3);
-  if (s.open === 'w3pdf') openNewQuiz(2, P3, 3, 'importpdf');
-  if (s.open === 'pdfscan') openNewQuiz(2, P3, 3, 'pdfscan');
+  role = LH.admRole(s.r); st = s.st; tab = s.tab; hasThumb = !!s.thumb;
+  editable = st === 'draft' || st === 'rev-draft';
+  basicErr = false; creatingSection = false; editingSec = null; editingLes = null;
+  LHSetup.audience.published = st === 'published';
+  if (st === 'published') {
+    title = P.get('t') || 'Claude Certified Architect – Foundations';
+    sections = normalizeSections(D.course.sessions.slice(0, 2).map((sess) => ({
+      name: sess.name,
+      lessons: sess.lessons.map(([k, n]) => ({
+        type: k === 'quiz' ? 'quiz' : 'lecture',
+        name: n,
+        content: k === 'quiz' ? 'quiz' : (k === 'video' ? 'video' : 'article'),
+      })),
+    })));
+  } else if (P.get('t')) {
+    title = P.get('t');
+  }
+  LHSetup.seedPractice(s.pq); LHSetup.seedAudience(s.aud);
+  render();
 });
 </script>
 </body>

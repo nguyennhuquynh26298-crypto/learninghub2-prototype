@@ -1,108 +1,106 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>All courses · Learning Hub</title>
+<title>Search Courses · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1118w"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
+<style>
+  .cs-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 12px; }
+  .cs-hint { font-size: 12.5px; color: var(--text-subtle); }
+  .cs-pager { display: flex; gap: 6px; justify-content: center; margin: 24px 0; }
+  .cs-pager button { min-width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-default); background: #fff; cursor: pointer; }
+  .cs-pager button[aria-current="page"] { background: #2a28df; color: #fff; border-color: #2a28df; }
+</style>
 </head>
 <body class="page">
-<!-- Chép bố cục /course/search?ct=…: header → category 60 → container py-13 → Back + tiêu đề → dòng tóm tắt → lưới card 336 → footer.
-     LH2 #6 — D-72 (13/11): gõ ở ô search header là lưới khoá lọc ngay (search:live), không còn bảng gợi ý khi đang gõ; bảng xổ chỉ còn "Tìm gần đây" khi ô trống.
-     · Trang này bỏ thanh lọc. Còn 1 dòng: "N khoá học" + chip Trạng thái / Thời gian (✕ để bỏ) + Xoá tất cả + Sắp xếp bên phải.
-     · Không chip từ khoá (đã ở ô search), không chip danh mục (thanh danh mục đã gạch chân).
-     · Thanh danh mục + menu Explore lọc tại chỗ. Bảng xổ phát 'search:apply' → trang lọc tại chỗ, không tải lại. -->
+<!-- Learner Experience 2.1 + 3.1 · BR-CS-01…07 (Notion LH2 Product Docs No 9, Đợt 2 · Gói 5).
+     Tìm theo tên, Category, Sub Category (không tag) · My Status · Time · Sort · 12 khoá / trang · giữ bộ lọc trên URL. -->
 <div id="header"></div>
 <div id="cats"></div>
 <main class="container page__in">
   <div id="back"></div>
+  <div class="cs-filters" id="filters"></div>
   <div class="search-sum" id="sum"></div>
   <div class="course-grid" id="grid"></div>
+  <div class="cs-pager" id="pager"></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1113c"></script>
-<script src="../assets/js/data.js?v=1113c"></script>
-<script src="../assets/js/search.js?v=1113c"></script>
+<script src="../assets/js/components.js?v=1118w"></script>
+<script src="../assets/js/data.js?v=1118w"></script>
+<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
 <script>
-const { AppHeader, CategoryNav, AppFooter, BackLink, CourseCard, FilterDropdown, Button, ICON, esc } = LH; const D = LHData; const S = LHSearch;
+const { AppHeader, CategoryNav, AppFooter, BackLink, FilterDropdown, Button, ICON, esc } = LH; const D = LHData;
+/* Danh mục khoá: thêm Sub Category, trạng thái của tôi đủ loại, nhãn Mandatory / Paid để minh hoạ 3.1 */
+const EXTRA = { 'QA AUTOMATION _ MODULE 2: FUNDAMENTAL TESTING': { mand: true, sub: 'QA Automation' }, 'CCAR-F Claude Certified Architect – Foundations': { sub: 'AI Engineering', paid: true },
+  'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION': { sub: 'QA Automation' }, "PENETRATION TESTING: THE ATTACKER'S MINDSET": { sub: 'Security' },
+  'QA IN THE AGE OF AI AGENTS: RETHINKING SOFTWARE QUALITY': { start: '25/11', sub: 'AI Engineering' }, 'HARNESS IS AL YOU NEED': { st: 'closed', my: 50, progress: 40, video: [2, 5], test: [0, 1], sub: 'AI Engineering' },
+  'PROMPTS ENGINEERING': { st: 'removed', my: 70, progress: 66, video: [2, 3], test: [0, 0], sub: 'Prompting' }, 'CURSOR TAKE IN HAND': { sub: 'Tools' } };
+const ALL = D.catalog.map((c) => ({ ...c, sub: c.tags && c.tags[0], ...(EXTRA[c.title] || {}), start: (EXTRA[c.title] || {}).start || (c.sched && c.sched.start ? c.sched.start.slice(0, 5) : '') }));
+const MANY = Array.from({ length: 16 }, (_, i) => ({ title: `TESTING WORKSHOP ${String(i + 1).padStart(2, '0')}`, cat: 'Software Development', sub: 'Testing', lessons: 3, hours: '2h 0m', pub: 300 + i, st: 'none', cover: '' }));
+
+const STATUS = [['all', 'All'], ['none', 'Not Enrolled'], ['learning', 'In Progress'], ['done', 'Completed'], ['fail', 'Failed']];
+const TIME = [['all', 'All time'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days']];
 const p = new URLSearchParams(location.search);
-const f = { q: p.get('q') || '', ct: p.get('ct') || 'all', st: p.get('st') || 'all', pd: p.get('pd') || 'all', sort: p.get('sort') || '' };
-let mode = 'ok', reqId = 0, lat = 'fast';
-document.getElementById('header').innerHTML = AppHeader({ search: f.q }); // vẽ 1 lần để không mất focus khi gõ
+const f = { q: p.get('q') || '', ct: p.get('ct') || 'all', st: p.get('st') || 'all', pd: p.get('pd') || 'all', sort: p.get('sort') || '', page: +(p.get('page') || 1) };
+let pool = ALL;
+document.getElementById('header').innerHTML = AppHeader({ search: f.q });
 document.getElementById('footer').innerHTML = AppFooter();
 const qInput = document.querySelector('.search-pill input');
 
-function syncUrl() {
-  const u = new URLSearchParams(); Object.entries(f).forEach(([k, v]) => { if (v && v !== 'all') u.set(k, v); });
-  history.replaceState(null, '', '?' + u.toString());
+function syncUrl() { const u = new URLSearchParams(); Object.entries(f).forEach(([k, v]) => { if (v && v !== 'all' && !(k === 'page' && v === 1)) u.set(k, v); }); history.replaceState(null, '', '?' + u); }
+function run() {
+  const q = f.q.trim();
+  let out = pool.map((c) => ({ c, r: LHW2.rank(c, q) })).filter((x) => x.r > 0 && ['none', 'learning', 'done', 'fail', 'closed', 'removed'].includes(x.c.st || 'none'));
+  if (f.ct !== 'all') out = out.filter((x) => x.c.cat === f.ct);
+  if (f.st !== 'all') out = out.filter((x) => (x.c.st || 'none') === f.st);       // BR-CS-05: Closed / Access Removed chỉ ở All
+  if (f.pd !== 'all') out = out.filter((x) => x.c.my != null && x.c.my <= +f.pd); // BR-CS-06: chưa đăng ký chỉ ở All time
+  const sort = f.sort || (q ? 'rel' : 'new');
+  out.sort(sort === 'rel' ? (a, b) => a.r - b.r || a.c.pub - b.c.pub : sort === 'az' ? (a, b) => a.c.title.localeCompare(b.c.title) : (a, b) => a.c.pub - b.c.pub);
+  return { q, sort, items: out.map((x) => x.c) };
 }
-const count = (patch) => S.run(D.catalog, { ...f, ...patch }).items.length;
-
-const title = () => f.q ? `Kết quả cho “${S.clean(f.q)}”` : f.ct !== 'all' ? f.ct : 'All courses';
 function render() {
+  const cats = ['all', ...new Set(ALL.map((c) => c.cat))];
   document.getElementById('cats').innerHTML = CategoryNav(f.ct);
-  document.getElementById('back').innerHTML = BackLink(title(), { href: 'home.html' });
-  document.title = title() + ' · Learning Hub';
-  if (document.activeElement !== qInput) { qInput.value = f.q; qInput.form.querySelector('.search-pill__x').hidden = !f.q; }
-  const r = S.run(D.catalog, f);
-  const sortOpts = [...(r.q ? [['rel', 'Liên quan nhất']] : []), ['new', 'Mới nhất'], ['az', 'Tên A–Z']];
-  const chips = [];
-  if (f.st !== 'all') chips.push(['st', S.STATUS_OPTS.find((o) => o[0] === f.st)[1]]);
-  if (f.pd !== 'all') chips.push(['pd', 'Đăng ký / hoàn thành ' + S.DAY_OPTS.find((o) => o[0] === f.pd)[1].toLowerCase()]);
-  document.getElementById('sum').innerHTML = `<span class="search-sum__n">${mode === 'loading' ? 'Đang tìm…' : `${r.items.length} khoá học`}</span>` +
-    chips.map(([k, t]) => `<span class="chip is-active">${esc(t)}<button class="icon-btn" data-rm="${k}" aria-label="Bỏ điều kiện ${esc(t)}" style="width:20px;height:20px">${ICON.x}</button></span>`).join('') +
-    (chips.length ? '<button class="btn btn--link" data-rm-all>Xoá tất cả</button>' : '') +
-    '<span class="search-sum__sp"></span>' +
-    FilterDropdown({ key: 'sort', label: 'Sắp xếp:', value: r.sort, def: r.sort, options: sortOpts, align: 'right' });
-
-  const grid = document.getElementById('grid');
-  if (mode === 'loading') { grid.innerHTML = '<div class="skeleton"></div>'.repeat(3); return; }
+  document.getElementById('back').innerHTML = BackLink('Search Courses', { href: 'home.html' });
+  if (document.activeElement !== qInput) qInput.value = f.q;
+  const r = run();
+  document.getElementById('filters').innerHTML =
+    FilterDropdown({ key: 'ct', label: 'Category:', value: f.ct, options: cats.map((c) => [c, c === 'all' ? 'All' : c]) })
+    + FilterDropdown({ key: 'st', label: 'My Status:', value: f.st, options: STATUS })
+    + FilterDropdown({ key: 'pd', label: 'Time:', value: f.pd, options: TIME })
+    + '<span class="cs-hint">Based on your enrollment date, or completion date if completed.</span>';
+  const chips = [['ct', f.ct], ['st', (STATUS.find((o) => o[0] === f.st) || [])[1]], ['pd', (TIME.find((o) => o[0] === f.pd) || [])[1]]].filter(([k]) => f[k] !== 'all');
+  const sortOpts = [...(r.q ? [['rel', 'Most Relevant']] : []), ['new', 'Newest'], ['az', 'Name A–Z']];
+  document.getElementById('sum').innerHTML = `<span class="search-sum__n">${r.items.length} courses${r.q ? ` for “${esc(r.q)}”` : ''}</span>`
+    + chips.map(([k, t]) => `<span class="chip is-active">${esc(t)}<button class="icon-btn" data-rm="${k}" aria-label="Remove ${esc(t)}" style="width:20px;height:20px">${ICON.x}</button></span>`).join('')
+    + (chips.length ? '<button class="btn btn--link" data-rm-all>Clear All</button>' : '')
+    + '<span class="search-sum__sp"></span>' + FilterDropdown({ key: 'sort', label: 'Sort by:', value: r.sort, def: r.sort, options: sortOpts, align: 'right' });
+  const grid = document.getElementById('grid'), pager = document.getElementById('pager');
   if (!r.items.length) {
-    const filtered = r.q || chips.length;
-    const seeAll = r.q ? Button({ label: f.ct !== 'all' ? `Xem tất cả khoá trong ${f.ct}` : 'Xem tất cả khoá học', variant: 'link', attrs: 'data-see-all' }) : '';
-    grid.innerHTML = `<div class="empty search-empty">${ICON.search}<b>Không tìm thấy khoá học phù hợp${r.q ? ` với “${esc(r.q)}”` : ''}</b><span class="muted t-sm">${!filtered ? 'Danh mục này chưa có khoá học nào.' : 'Thử từ khoá ngắn hơn, không dấu, hoặc bỏ bớt bộ lọc.'}</span><div class="row gap-12">${filtered ? Button({ label: 'Xoá bộ lọc', variant: 'outline', attrs: 'data-reset' }) : ''}${seeAll}</div></div>`;
-    return;
+    grid.innerHTML = `<div class="empty search-empty" style="grid-column:1/-1">${ICON.search}<b>No courses found${r.q ? ` for “${esc(r.q)}”` : ''}</b>${chips.length ? Button({ label: 'Clear Filters', variant: 'outline', attrs: 'data-rm-all' }) : ''}</div>`;
+    pager.innerHTML = ''; return;
   }
-  grid.innerHTML = r.items.map((c) => {
-    const state = c.restricted ? 'restricted' : c.st === 'done' ? 'completed' : c.st === 'learning' ? 'in-progress' : c.st === 'fail' ? 'failed' : 'default';
-    return CourseCard({ title: c.title, desc: c.desc || c.tags.map((t) => '#' + t).join('  '), state, progress: c.progress || 0, video: c.video, test: c.test, q: r.q, done: c.done, cover: c.cover, lessons: c.lessons, hours: c.hours, sched: c.sched });
-  }).join('');
+  const pages = Math.ceil(r.items.length / 12); f.page = Math.min(f.page, pages);
+  grid.innerHTML = r.items.slice((f.page - 1) * 12, f.page * 12).map((c) => LHW2.card(c, { q: r.q })).join('');
+  pager.innerHTML = pages > 1 ? Array.from({ length: pages }, (_, i) => `<button data-page="${i + 1}" ${i + 1 === f.page ? 'aria-current="page"' : ''}>${i + 1}</button>`).join('') : '';
 }
-function apply(patch) {
-  Object.assign(f, patch); syncUrl();
-  // BR-LRN-18 — chỉ nhận kết quả của lần tìm mới nhất
-  const id = ++reqId; mode = 'loading'; render();
-  setTimeout(() => { if (id !== reqId) return; mode = 'ok'; render(); }, lat === 'slow' ? 900 : 120);
-}
-/* Bảng xổ dưới ô search (Enter, Xem tất cả, chip lọc nhanh, tìm gần đây) → lọc tại chỗ */
-document.addEventListener('search:apply', (e) => {
-  e.preventDefault(); const d = e.detail;
-  apply({ q: d.q, st: d.st, pd: d.pd, ...(d.q !== f.q ? { sort: '' } : {}) });
-});
-/* Gõ trong ô tìm (D-72) → lưới khoá lọc ngay, không cần chọn trong bảng xổ */
-document.addEventListener('search:live', (e) => {
-  const q = e.detail.q; if (q === f.q) return;
-  if (lat === 'slow') { apply({ q, sort: '' }); return; } // mạng chậm: skeleton, chỉ nhận lần gõ mới nhất (BR-LRN-18)
-  ++reqId; mode = 'ok'; Object.assign(f, { q, sort: '' }); syncUrl(); render(); // nhanh: lọc thẳng, không nháy skeleton mỗi phím
-});
+const apply = (patch) => { Object.assign(f, { page: 1 }, patch); syncUrl(); render(); };
+document.addEventListener('search:apply', (e) => { e.preventDefault(); apply({ q: e.detail.q, sort: '' }); });
+document.addEventListener('search:live', (e) => { if (e.detail.q !== f.q) apply({ q: e.detail.q, sort: '' }); });
 document.addEventListener('fdd:change', (e) => apply({ [e.detail.key]: e.detail.value }));
 document.addEventListener('click', (e) => {
-  const cat = e.target.closest('[data-cat]');
-  if (cat) { e.preventDefault(); document.querySelector('.explore.is-open')?.classList.remove('is-open'); document.querySelector('.explore__menu').hidden = true;
-    apply({ ct: f.ct === cat.dataset.cat && cat.closest('.cat-nav') ? 'all' : cat.dataset.cat }); return; }
-  if (e.target.closest('.explore__all')) { e.preventDefault(); document.querySelector('.explore__menu').hidden = true; apply({ q: '', ct: 'all', st: 'all', pd: 'all', sort: '' }); return; }
+  const cat = e.target.closest('[data-cat]'); if (cat) { e.preventDefault(); apply({ ct: f.ct === cat.dataset.cat ? 'all' : cat.dataset.cat }); return; }
   const rm = e.target.closest('[data-rm]'); if (rm) { apply({ [rm.dataset.rm]: 'all' }); return; }
-  if (e.target.closest('[data-rm-all]')) { apply({ st: 'all', pd: 'all' }); return; }
-  if (e.target.closest('[data-see-all]')) { qInput.value = ''; apply({ q: '', st: 'all', pd: 'all', sort: '' }); return; }
-  if (e.target.closest('[data-reset]')) { qInput.value = ''; apply({ q: '', ct: 'all', st: 'all', pd: 'all', sort: '' }); }
+  if (e.target.closest('[data-rm-all]')) { apply({ ct: 'all', st: 'all', pd: 'all' }); return; } // Clear All / Clear Filters: giữ từ khoá
+  const pg = e.target.closest('[data-page]'); if (pg) { f.page = +pg.dataset.page; syncUrl(); render(); scrollTo(0, 0); }
 });
-LH.DemoBar('#6 — Tìm khoá học', [
-  { label: 'Từ khoá mẫu', key: 'sc', options: [['url', 'Theo URL'], ['kiem-thu', '“kiem thu”'], ['testing', '“testing”'], ['claude', '“claude ai”'], ['none', 'Không kết quả']] },
-  { label: 'Mạng', key: 'lat', options: [['fast', 'Nhanh'], ['slow', 'Chậm (skeleton)']] },
+LH.DemoBar('LH2 · Search Courses (Đợt 2 · Gói 5)', [
+  { label: 'Keyword', key: 'sc', options: [['url', 'From URL'], ['kiem', '“qa automation”'], ['cat', '“data ai” (Category)'], ['many', '28 courses (2 pages)'], ['none', 'No results']] },
 ], (s) => {
-  lat = s.lat;
-  const preset = { 'kiem-thu': 'kiem thu', testing: 'testing', claude: 'claude ai', none: 'blockchain' }[s.sc];
-  if (preset !== undefined) { qInput.value = preset; apply({ q: preset, sort: '', ct: 'all', st: 'all', pd: 'all' }); return; }
+  pool = s.sc === 'many' ? [...ALL, ...MANY] : ALL;
+  const preset = { kiem: 'qa automation', cat: 'data ai', none: 'blockchain', many: '' }[s.sc];
+  if (preset !== undefined) { apply({ q: preset, sort: '', ct: 'all', st: 'all', pd: 'all' }); return; }
   render();
 });
 </script>

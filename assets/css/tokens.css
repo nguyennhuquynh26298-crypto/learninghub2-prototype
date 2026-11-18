@@ -17,7 +17,9 @@
   --amber-50: #fffbeb; --amber-100: #fef3c7; --amber-200: #fde68a; --amber-600: #d97706; --amber-800: #92400e;
   --blue-100: #dbeafe; --blue-700: #1447e6;
   --violet-100: #f3e8ff; --violet-700: #8200db;
-  --back-from: #2a28df; --back-to: #e5339e;  /* nút Back gradient */
+  /* Paint style Figma "Main item" — Admin Page head eyebrow + Back (DNA admin-shell.md) */
+  --grad-main-from: #2a28df; --grad-main-to: #e5339e;
+  --back-from: var(--grad-main-from); --back-to: var(--grad-main-to);
 
   /* ---- Semantic ---- */
   --bg-page: var(--neutral-50);          /* #FAFAFA — Home, My courses, Search */

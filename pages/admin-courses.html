@@ -1,90 +1,168 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quản lý khoá học · LearningHub</title>
+<title>Course Management · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1118p">
+<style>
+  /* LH1 + Admin DNA — list tools = adm-box__head */
+  .cm-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0; min-height: 40px; }
+  .cm-tools h2 { flex: 1; margin: 0; font-size: 20px; line-height: 24px; font-weight: 600; color: var(--adm-body); }
+  .cm-tools__cta { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .adm-box { gap: 16px; }
+  .dur-cell { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; flex-wrap: nowrap; }
+  .dur-cell svg { width: 16px; height: 16px; color: var(--adm-sub); flex: none; }
+</style>
 </head>
 <body>
 <div id="header"></div>
-<!-- Course Management — Figma 1282:10336: sidebar thu gọn · Header · Combo button · Danh sách khoá học (Admin / Table row + Stage tag + Hover list) -->
 <main>
   <div id="head"></div>
-  <div id="note"></div>
-  <div id="tabs"></div>
+  <div id="tabs" class="adm-seg" role="tablist"></div>
   <section class="adm-box">
-    <div class="adm-box__head adm-box__head--tools"><h2 class="adm-box__title" style="flex:1">Danh sách khoá học</h2>
-      <label class="adm-inline-search"><input id="q" placeholder="Tìm theo tên khoá"><span></span></label>
-      <label class="filter-btn" id="cat-wrap"></label>
-      <span id="new"></span></div>
+    <div class="cm-tools"><h2>Course List</h2><span class="cm-tools__cta" id="new"></span></div>
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1113c"></script>
-<script src="../assets/js/data.js?v=1113c"></script>
-<script src="../assets/js/approval.js?v=1113c"></script>
+<script src="../assets/js/components.js?v=1118p"></script>
+<script src="../assets/js/data.js?v=1118c"></script>
+<script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
-const { ICON, Avatar, Alert, esc, toast, AdminLayout, AdminHead, AdminTable, StageTag, RowMenu } = LH; const D = LHData;
-let role, tab = 'all', rows, cat = 'all', q = new URLSearchParams(location.search).get('q') || '';
-const TABS = [['all', 'Tất cả'], ['pending', 'Chờ duyệt'], ['draft', 'Nháp'], ['rejected', 'Cần chỉnh sửa'], ['published', 'Đang chạy']];
-/* Danh mục · Danh mục con · Thời lượng (cột gốc Figma 159:4104) */
-const META = { 'Kiểm thử tự động với Playwright': ['Software Development', 'Testing', '6 giờ'], 'Claude Certified Architect – Foundations': ['Data & AI', 'AI Agent', '12 giờ'], 'Kiểm thử API với Postman': ['Software Development', 'Testing', '4 giờ'], 'Clean Code cho Frontend': ['Software Development', 'Web', '5 giờ'], 'AI Agent Engineering': ['Data & AI', 'AI Agent', '8 giờ'], 'Docker cho người mới': ['Software Development', 'DevOps', '4 giờ'] };
-const CAT = Object.fromEntries(Object.entries(META).map(([k, v]) => [k, v[0]]));
-// Bản sửa chờ duyệt cũng nằm ở tab Chờ duyệt
-const edSt = (c) => c.revision ? (c.revision === 'pending' ? 'rev-pending' : 'rev-draft') : c.status;
-const inTab = (c, t) => t === 'all' || (t === 'pending' ? c.status === 'pending' || c.revision === 'pending' : t === 'rejected' ? c.status === 'rejected' || c.revision === 'rejected' : c.status === t);
-document.querySelector('.adm-inline-search span').innerHTML = ICON.search;
-document.getElementById('q').value = q;
-function render() {
+const { ICON, esc, toast, AdminLayout, AdminHead, AdminTable, Tag, RowMenu, AdminConfirm } = LH; const D = LHData;
+let role, tab = 'published', rows, q = new URLSearchParams(location.search).get('q') || '', wave = 'd1', tab2 = 'all';
+const TABS = [['published', 'Published Courses'], ['draft', 'Draft Courses']];
+
+function statusChip(c) {
+  if (c.status === 'published') return Tag('Published', 'published');
+  if (c.status === 'archived') return Tag('Archived', 'neutral');
+  return Tag('Draft', 'draft');
+}
+function inTab(c, t) { return t === 'published' ? c.status === 'published' : c.status === 'draft'; }
+function ver(c) { return 'V' + String(c.ver || '1').replace(/^V/i, '').replace(/\.0$/, ''); }
+
+/* ---------- Đợt 2 · Course Creator & Approval 3.7 (bật bằng DemoBar "Đợt 2") ----------
+ * Tab All · Pending Approval (n) (chỉ Admin L&D) · Draft · Changes Requested · Rejected · Published
+ * Cột Course Title · Owner · Status · Last Updated · Submitted At. Bản sửa của khoá đang chạy: "Published · Edit Pending Approval".
+ * Bấm dòng Pending → course-approval.html. Unpublish (chỉ Admin L&D) hỏi xác nhận khi còn người In Progress. */
+const ST2 = { draft: ['Draft', 'draft'], pending: ['Pending Approval', 'pending'], changes: ['Changes Requested', 'pending'], rejected: ['Rejected', 'neutral'], published: ['Published', 'published'] };
+const ROWS2 = [
+  { title: 'Kiểm thử tự động với Playwright', owner: 'Phạm Thanh Long', st: 'pending', updated: '09/11/2026 10:24', sent: '09/11/2026 10:24', k: 'new' },
+  { title: 'Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', st: 'published', rev: 'pending', updated: '08/11/2026 16:02', sent: '08/11/2026 16:02', k: 'rev', inProgress: 64 },
+  { title: 'AI Agent Engineering', owner: 'Lê Thị Mai', st: 'published', updated: '01/11/2026 09:10', sent: '—', inProgress: 9 },
+  { title: 'ADLC Guideline: Techvify SpecKit', owner: 'Phạm Thanh Long', st: 'published', updated: '16/11/2026 14:30', sent: '15/11/2026 17:05', inProgress: 0 },
+  { title: 'Corporate Onboarding 2026', owner: 'Lê Thị Mai', st: 'published', updated: '12/11/2026 08:45', sent: '—', inProgress: 120 },
+  { title: 'Clean Code cho Frontend', owner: 'Trần Văn Bình', st: 'changes', updated: '10/11/2026 11:00', sent: '07/11/2026 15:20' },
+  { title: 'Docker cơ bản', owner: 'Trần Văn Bình', st: 'rejected', updated: '05/11/2026 10:00', sent: '04/11/2026 09:30' },
+  { title: 'QA Automation Module 3', owner: 'Phạm Thanh Long', st: 'draft', updated: '18/11/2026 09:00', sent: '—' },
+];
+let rows2 = ROWS2.map((r) => ({ ...r }));
+function renderD2() {
+  AdminLayout({ active: 'courses', collapsed: false, role });
   const admin = role === 'admin';
-  AdminLayout({ active: 'courses', collapsed: true, role });
-  document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Tạo và quản lý nội dung đào tạo', title: admin ? 'Quản lý khoá học' : 'Khoá học của tôi',
-    desc: admin ? 'Duyệt khoá Course Creator gửi lên, gán đối tượng học và theo dõi trạng thái.' : 'Khoá bạn phụ trách. Gửi duyệt để Admin L&D publish.' });
-  document.getElementById('new').innerHTML = `<a class="btn-cta" href="course-editor.html?st=draft&r=${role}">${ICON.plus}Tạo khoá học</a>`;
-  const mine = admin ? rows : rows.filter((c) => c.owner === 'Phạm Thanh Long'); // Creator chỉ thấy khoá mình phụ trách
-  const pend = mine.filter((c) => inTab(c, 'pending')).length;
-  document.getElementById('note').innerHTML = admin && pend ? Alert({ tone: 'warning', icon: 'clock', title: `${pend} khoá đang chờ bạn duyệt` }) : '';
-  document.getElementById('note').hidden = !(admin && pend);
-  document.getElementById('tabs').innerHTML = `<div class="combo">${TABS.filter(([v]) => admin || v !== 'pending').map(([v, t]) => `<button class="${tab === v ? 'is-active' : ''}" data-tab="${v}">${t}${v === 'pending' && admin ? ` <span class="cnt">${pend}</span>` : ''}</button>`).join('')}</div>`;
-  const cats = [...new Set(mine.map((c) => CAT[c.title]).filter(Boolean))].sort();
-  document.getElementById('cat-wrap').innerHTML = `${ICON.filter}<select id="cat"><option value="all">Danh mục</option>${cats.map((x) => `<option ${cat === x ? 'selected' : ''}>${x}</option>`).join('')}</select>`;
+  document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Create and management your educational content', title: 'Course Management' });
+  document.getElementById('new').innerHTML = `<a class="btn-cta" href="course-create.html?r=${role}">Create new course</a>`;
+  const pend = rows2.filter((c) => c.st === 'pending' || c.rev === 'pending').length;
+  const tabs = [['all', 'All'], ...(admin ? [['pending', `Pending Approval (${pend})`]] : []), ['draft', 'Draft'], ['changes', 'Changes Requested'], ['rejected', 'Rejected'], ['published', 'Published']];
+  if (!tabs.some(([v]) => v === tab2)) tab2 = 'all';
+  document.getElementById('tabs').innerHTML = tabs.map(([v, t]) => `<button type="button" role="tab" aria-selected="${tab2 === v}" class="${tab2 === v ? 'is-active' : ''}" data-tab2="${v}">${t}</button>`).join('');
+  const inT = (c) => tab2 === 'all' || (tab2 === 'pending' ? (c.st === 'pending' || c.rev === 'pending') : c.st === tab2);
+  const list = rows2.filter(inT);
+  const cols = ['Course Title', 'Owner', 'Status', 'Last Updated', 'Submitted At', ['', 't-act']];
+  document.getElementById('tbl').innerHTML = AdminTable(cols, list.length ? list.map((c) => {
+    const i = rows2.indexOf(c);
+    const chip = c.st === 'published' && c.rev === 'pending' ? Tag('Published · Edit Pending Approval', 'pending') : Tag(...ST2[c.st]);
+    const items = [];
+    if (admin && (c.st === 'pending' || c.rev === 'pending')) items.push({ label: 'Review', icon: 'eye', href: `course-approval.html?w=admin&k=${c.k || 'new'}` });
+    items.push({ label: 'Edit', icon: 'edit', href: `course-editor.html?r=${role}&st=${c.st === 'published' ? 'published' : 'draft'}&t=${encodeURIComponent(c.title)}&tab=details` });
+    if (admin && c.st === 'published') { items.push({ label: 'View Learners', icon: 'usersRound', href: `admin-course-learners.html?t=${encodeURIComponent(c.title)}&r=admin` }); items.push({ label: 'Export Data', icon: 'download', attrs: `data-export2="${i}"` }); items.push({ label: 'Unpublish', icon: 'eyeOff', danger: true, attrs: `data-unpub="${i}"` }); }
+    const go = admin && (c.st === 'pending' || c.rev === 'pending') ? `data-go-review="${c.k || 'new'}" style="cursor:pointer"` : '';
+    return `<tr ${go}><td class="t-name"><b>${esc(c.title)}</b></td><td>${esc(c.owner)}</td><td>${chip}</td><td>${esc(c.updated)}</td><td>${esc(c.sent)}</td><td class="t-act">${RowMenu(items)}</td></tr>`;
+  }).join('') : `<tr><td colspan="${cols.length}"><div class="empty" style="border:0">${ICON.book}<b>No courses in this status.</b></div></td></tr>`);
+}
+function render() {
+  if (wave === 'd2') { renderD2(); return; }
+  AdminLayout({ active: 'courses', collapsed: false, role });
+  document.getElementById('head').innerHTML = AdminHead({
+    eyebrow: 'Create and management your educational content',
+    title: 'Course Management',
+  });
+  document.getElementById('new').innerHTML = `<a class="btn-cta" href="course-create.html?r=${role}">Create new course</a>`;
+  document.getElementById('tabs').innerHTML = TABS.map(([v, t]) =>
+    `<button type="button" role="tab" aria-selected="${tab === v}" class="${tab === v ? 'is-active' : ''}" data-tab="${v}">${t}</button>`).join('');
   const nq = LH.norm(q.trim());
-  const list = mine.filter((c) => inTab(c, tab) && (cat === 'all' || CAT[c.title] === cat) && (!nq || LH.norm(c.title).includes(nq)));
-  const cols = ['Tên khoá học', 'Danh mục', ['Danh mục con', 'col-opt'], ['Phiên bản', 'col-opt'], ['Thời lượng', 'col-opt'], ['Cập nhật', 'col-opt'], 'Trạng thái', ...(admin ? ['Người phụ trách'] : []), ['Thao tác', 't-act']];
+  const list = rows.filter((c) => inTab(c, tab) && (!nq || LH.norm(c.title).includes(nq)));
+  const cols = ['Course Name', 'Category', 'Sub Category', 'Duration', 'Status', 'Version', 'Created by', 'Updated at', ['', 't-act']];
   document.getElementById('tbl').innerHTML = AdminTable(cols,
     list.length ? list.map((c) => {
-      const i = rows.indexOf(c); const waiting = c.status === 'pending' || c.revision === 'pending';
+      const i = rows.indexOf(c);
+      const st = c.status === 'draft' ? 'draft' : c.status;
+      /* Course Audience 3.7: View Learners chỉ ở khoá đã từng Publish (BR-AUD-14); Delete chỉ ở khoá chưa có ai đăng ký (BR-AUD-15).
+         Learning Data Export 2.1: Export Data trong menu dòng (Đợt 1: Admin L&D). Course Information: nháp Incomplete mở lại ở form Create (BR-CI-07). */
       const items = [];
-      if (admin && waiting) items.push({ label: 'Duyệt', icon: 'shieldCheck', href: `course-approval.html?k=${c.revision ? 'rev' : 'new'}` });
-      if (c.status === 'published') items.push({ label: 'Quản lý đối tượng', icon: 'users', href: `admin-audience.html?t=${encodeURIComponent(c.title)}&role=${admin ? 'Admin' : 'Creator'}` });
-      if (c.status === 'published') items.push({ label: 'Quiz Exam / Practice', icon: 'quiz', href: `course-editor.html?r=${role}&st=${edSt(c)}&open=mgr` });
-      if (admin) items.push({ label: 'Sửa', icon: 'edit', href: `course-editor.html?r=admin&st=${edSt(c)}` });
-      if (!admin) items.push({ label: c.status === 'published' && !c.revision ? 'Sửa nội dung' : 'Mở', icon: 'edit', href: `course-editor.html?r=creator&st=${edSt(c)}` });
-      if (c.status === 'draft') items.push({ label: 'Xoá', icon: 'trash', danger: true, attrs: `data-del="${i}"` });
-      return `<tr><td class="t-name"><b>${esc(c.title)}</b>${c.kind ? `<div class="adm-hint">${c.kind}${c.sent ? ' · gửi ' + c.sent : ''}</div>` : ''}<div class="adm-hint only-narrow">${c.revision ? 'Ver 2.0' : 'Ver 1.0'} · cập nhật ${c.updated}</div></td>
-        <td>${CAT[c.title] || '—'}</td><td class="col-opt">${META[c.title] ? META[c.title][1] : '—'}</td><td class="col-opt">${c.revision ? 'Ver 2.0' : 'Ver 1.0'}</td><td class="col-opt">${META[c.title] ? META[c.title][2] : '—'}</td><td class="col-opt">${c.updated}</td>
-        <td>${StageTag(c.status, c.revision)}</td>
-        ${admin ? `<td><span class="adm-meta">${Avatar(c.owner, 'sm')}${esc(c.owner)}</span></td>` : ''}
-        <td class="t-act">${admin && waiting ? `<a class="btn-cta btn-cta--soft btn-cta--sm" href="course-approval.html?k=${c.revision ? 'rev' : 'new'}">Duyệt</a> ` : ''}${RowMenu(items)}</td></tr>`;
-    }).join('') : `<tr><td colspan="${cols.length}"><div class="empty" style="border:0">${ICON.book}<b>Không có khoá nào ở mục này</b></div></td></tr>`);
+      const everPub = c.status === 'published' || c.everPublished;
+      if (role === 'admin' && everPub) items.push({ label: 'View Learners', icon: 'usersRound', href: `admin-course-learners.html?t=${encodeURIComponent(c.title)}&r=admin` });
+      items.push({ label: 'Edit', icon: 'edit', href: c.incomplete ? `course-create.html?r=${role}&edit=${encodeURIComponent(c.title)}` : `course-editor.html?r=${role}&st=${st}&t=${encodeURIComponent(c.title)}&tab=details` });
+      if (role === 'admin' && everPub) items.push({ label: 'Export Data', icon: 'download', attrs: `data-export="${i}"` });
+      if (!c.learners) items.push({ label: 'Delete', icon: 'trash', danger: true, attrs: `data-del="${i}"` });
+      return `<tr>
+        <td class="t-name"><b>${esc(c.title)}</b>${c.incomplete ? Tag('Incomplete', 'pending').replace('class="', 'class="cm-incomplete ') : ''}</td>
+        <td>${esc(c.cat || '—')}</td>
+        <td>${esc(c.sub || '—')}</td>
+        <td class="t-dur"><span class="dur-cell">${ICON.clock}${esc(c.dur || '—')}</span></td>
+        <td>${statusChip(c)}</td>
+        <td>${esc(ver(c))}</td>
+        <td>${esc(c.owner || '—')}</td>
+        <td>${esc(c.updated || c.created || '—')}</td>
+        <td class="t-act">${RowMenu(items)}</td></tr>`;
+    }).join('') : `<tr><td colspan="${cols.length}"><div class="empty" style="border:0">${ICON.book}<b>No courses</b></div></td></tr>`);
+  const search = document.querySelector('.adm-search input[name="q"]');
+  if (search && q) search.value = q;
 }
 document.addEventListener('click', (e) => {
+  const t2 = e.target.closest('[data-tab2]'); if (t2) { tab2 = t2.dataset.tab2; render(); return; }
+  const up = e.target.closest('[data-unpub]'); if (up) {
+    const c = rows2[+up.dataset.unpub];
+    const done = () => { c.st = 'draft'; c.rev = null; render(); toast(`${c.title} unpublished`); };
+    if (c.inProgress) AdminConfirm({ title: `Unpublish ${c.title}?`, text: `${c.inProgress} learners in progress will lose access to the content; their progress is kept.`, ok: 'Unpublish', cancel: 'Cancel', danger: true, onOk: done });
+    else AdminConfirm({ title: `Unpublish ${c.title}?`, ok: 'Unpublish', cancel: 'Cancel', danger: true, onOk: done });
+    return;
+  }
+  const x2 = e.target.closest('[data-export2]'); if (x2) { const c = rows2[+x2.dataset.export2]; LHExport.open({ course: c.title, total: 40 }); return; }
+  const gr = e.target.closest('tr[data-go-review]'); if (gr && !e.target.closest('.row-menu, button, a')) { location.href = `course-approval.html?w=admin&k=${gr.dataset.goReview}`; return; }
   const t = e.target.closest('[data-tab]'); if (t) { tab = t.dataset.tab; render(); return; }
+  const x = e.target.closest('[data-export]'); if (x) { const c = rows[+x.dataset.export]; LHExport.open({ course: c.title, code: c.code || c.title.split(' ')[0].toUpperCase(), total: c.learners || 0, limited: !!c.restricted }); return; }
   const d = e.target.closest('[data-del]'); if (d) {
     const c = rows[+d.dataset.del];
-    document.body.insertAdjacentHTML('beforeend', LH.Modal({ id: 'm-del', size: 'sm', icon: 'trash', iconTone: 'danger', title: 'Xoá khoá nháp?', desc: `<b>${esc(c.title)}</b> sẽ bị xoá. Không khôi phục được.`,
-      foot: LH.Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + LH.Button({ label: 'Xoá', variant: 'danger', attrs: 'id="del-ok"' }) }));
-    document.getElementById('del-ok').onclick = () => { rows.splice(rows.indexOf(c), 1); document.getElementById('m-del').remove(); render(); toast('Đã xoá khoá nháp'); };
+    AdminConfirm({ title: 'Delete Course', text: 'Are you sure you want to delete this course?', ok: 'Delete', cancel: 'Cancel', danger: true, onOk: () => { rows.splice(rows.indexOf(c), 1); render(); toast('Course deleted'); } });
   }
 });
-document.addEventListener('change', (e) => { if (e.target.id === 'cat') { cat = e.target.value; render(); } });
-document.addEventListener('input', (e) => { if (e.target.id === 'q') { q = e.target.value; render(); document.getElementById('q').focus(); } });
-LH.DemoBar('#3 — Quản lý khoá học', [
-  { label: 'Vai trò', key: 'r', options: [['admin', 'Admin L&D'], ['creator', 'Course Creator']] },
-  { label: 'Tab', key: 't', options: [['all', 'Tất cả'], ['pending', 'Chờ duyệt'], ['rejected', 'Cần chỉnh sửa']] },
-], (s) => { role = s.r; tab = s.t; rows = D.adminCourses.map((c) => ({ ...c })); render(); });
+
+LH.DemoBar('Course Management · LH1 + LH2 Đợt 1 (menu dòng, Incomplete, Export Data)', [
+  { label: 'Role', key: 'r', options: [['admin', 'Admin'], ['editor', 'Editor']] },
+  { label: 'Tab', key: 't', options: [['published', 'Published'], ['draft', 'Draft']] },
+  { label: 'Đợt', key: 'w', options: [['d1', 'Đợt 1 (Published / Draft như web)'], ['d2', 'Đợt 2 · Course Creator & Approval']] },
+], (s) => {
+  wave = s.w === 'd2' ? 'd2' : 'd1'; if (s.t === 'pending') { wave = 'd2'; tab2 = 'pending'; }
+  role = LH.admRole(s.r);
+  tab = s.t === 'draft' ? 'draft' : 'published';
+  rows = D.adminCourses.map((c) => ({
+    ...c,
+    created: c.created || c.updated,
+    ver: String(c.ver || '1').replace(/\.0$/, ''),
+    /* Số người đã đăng ký (demo): khoá Published đã có học viên → không Delete; ADLC vừa publish chưa ai đăng ký */
+    learners: c.status === 'published' ? ({ 'ADLC Guideline: Techvify SpecKit': 0, 'Claude Certified Architect – Foundations': 148, 'AI Agent Engineering': 14, 'Corporate Onboarding 2026': 386 }[c.title] ?? 20) : 0,
+    code: { 'Claude Certified Architect – Foundations': 'CCAR-F', 'AI Agent Engineering': 'AIAE', 'Corporate Onboarding 2026': 'ONB-26', 'ADLC Guideline: Techvify SpecKit': 'ADLC' }[c.title],
+  }));
+  /* Course Information 3.1: bản nháp chỉ có Course Title → ô trống hiện "—", nhãn Incomplete */
+  rows.push({ title: 'QA Automation Module 3', owner: 'Lê Thị Mai', status: 'draft', cat: '', sub: '', dur: '', ver: '1', created: '18/11/2026', updated: '18/11/2026', incomplete: true, learners: 0 });
+  let nc = null; try { nc = JSON.parse(sessionStorage.getItem('lhNewCourse')); } catch (e) { /* */ }
+  if (nc && !rows.some((c) => c.title === nc.title)) {
+    rows.unshift({ title: nc.title, owner: role === 'admin' ? 'Lê Thị Mai' : 'Phạm Thanh Long', status: 'draft', cat: nc.cat, sub: nc.sub, dur: nc.dur, ver: '1', created: '18/11/2026', updated: '18/11/2026', incomplete: !!nc.incomplete, learners: 0 });
+  }
+  render();
+});
 </script>
 </body>
 </html>

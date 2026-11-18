@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Results · Reviews · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1118w"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
+<style>
+  .mr { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .mr { grid-template-columns: 1fr; } }
+  .mr-box { background: #fff; border: 1px solid var(--border-default); border-radius: 16px; padding: 20px 24px; }
+  .mr-box h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .mr-kpi { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 14px; }
+  .mr-kpi b { display: block; font-size: 30px; color: #101828; }
+  .mr-kpi span { font-size: 13px; color: #667085; }
+  .mr-t { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .mr-t th, .mr-t td { text-align: left; padding: 10px 8px; border-top: 1px solid #eaecf0; }
+  .mr-t th { color: #667085; font-weight: 500; font-size: 13px; }
+</style>
+</head>
+<body class="page">
+<!-- Learner Experience 2.3, 2.4, 3.5, 3.6 · BR-LP-05, BR-LP-11 (Notion LH2 Product Docs No 9, Đợt 2 · Gói 5).
+     Khối My Results trên trang khoá + popup Rate this course + tab Reviews của màn học (thay "Reviews content coming soon..."). -->
+<div id="header"></div>
+<main class="container page__in stack gap-24">
+  <div id="back"></div>
+  <div class="mr"><section class="mr-box" id="results"></section><section class="mr-box" id="reviews"></section></div>
+</main>
+<div id="footer"></div>
+<script src="../assets/js/components.js?v=1118w"></script>
+<script src="../assets/js/data.js?v=1118w"></script>
+<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
+<script>
+const { AppHeader, AppFooter, BackLink, esc } = LH;
+const COURSE = 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION';
+document.getElementById('header').innerHTML = AppHeader();
+document.getElementById('footer').innerHTML = AppFooter();
+document.getElementById('back').innerHTML = BackLink(COURSE, { href: 'course-detail.html' });
+const STATUS_TAG = { learning: ['In Progress', 'info'], done: ['Completed', 'success'], fail: ['Failed', 'danger'], removed: ['Access Removed', 'neutral'], closed: ['Closed', 'neutral'] };
+const SCEN = {
+  done: { st: 'done', p: 100, v: [8, 8], q: [2, 2], quizzes: [['Java Basics Test', 85, 2, 'Passed'], ['Final Test', 92, 1, 'Passed']] },
+  learning: { st: 'learning', p: 33, v: [3, 10], q: [1, 4], quizzes: [['Java Basics Test', 85, 2, 'Passed'], ['OOP Test', 56, 1, 'Not Passed'], ['Git Test', null, 0, 'Not Attempted'], ['Final Test', null, 0, 'Not Attempted']] },
+  fail: { st: 'fail', p: 50, v: [6, 8], q: [1, 2], quizzes: [['Java Basics Test', 85, 1, 'Passed'], ['Final Test', 69, 3, 'Failed']] },
+  removed: { st: 'removed', p: 45, v: [4, 8], q: [1, 2], quizzes: [['Java Basics Test', 80, 1, 'Passed'], ['Final Test', null, 0, 'Not Attempted']] },
+};
+let rated = false, reviews = [
+  { name: 'Trần Minh Anh', stars: 5, date: '18/11/2026', text: 'Clear structure, the practice questions helped a lot before the exam.' },
+  { name: 'Vũ Ngọc Lan', stars: 4, date: '15/11/2026', text: 'Good content. The Git part could use more examples.' },
+  { name: 'Lê Hoàng Nam', stars: 4, date: '12/11/2026', text: '' },
+];
+const DEFAULT = reviews.slice();
+let s;
+function renderResults() {
+  const [t, tone] = STATUS_TAG[s.st];
+  const locked = ['removed', 'closed'].includes(s.st);
+  document.getElementById('results').innerHTML = `<h2>My Results <span class="badge badge--${tone}">${t}</span></h2>
+    <div class="mr-kpi"><div><b>${s.p}%</b><span>Completion Rate</span></div><div><b>${s.v[0]}/${s.v[1]}</b><span>Videos</span></div><div><b>${s.q[0]}/${s.q[1]}</b><span>Quizzes</span></div></div>
+    <table class="mr-t"><thead><tr><th>Quiz</th><th>Highest Score</th><th>Attempts</th><th>Result</th><th></th></tr></thead><tbody>
+    ${s.quizzes.map(([n, sc, a, r]) => `<tr><td>${esc(n)}</td><td>${sc == null ? '—' : `<b>${sc}</b>`}</td><td>${a}/3</td><td>${r}</td><td>${a && !locked ? '<a href="test-result.html">Review</a>' : ''}</td></tr>`).join('')}</tbody></table>
+    <p class="t-xs muted" style="margin-top:10px">Completion Rate is course progress, never a quiz score (BR-LP-05).</p>
+    ${s.st === 'done' && !rated ? '<button class="wbtn" data-rate style="margin-top:8px">Rate Course</button>' : ''}`;
+}
+function renderReviews() {
+  const n = reviews.length, avg = n ? reviews.reduce((a, r) => a + r.stars, 0) / n : 0;
+  document.getElementById('reviews').innerHTML = `<h2>Reviews <span class="t-xs muted" style="font-weight:400">tab on the learning screen</span></h2>${n ? `
+    <div class="rv-sum"><b>${avg.toFixed(1)}</b><div><div style="color:#fdb022;font-size:20px">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5 - Math.round(avg))}</div><span class="t-sm muted">${n} ratings</span></div></div>
+    ${reviews.map((r) => `<div class="rv-item"><div class="rv-item__h"><b>${esc(r.name)}</b><span>${'★'.repeat(r.stars)}</span><small>${r.date}</small></div>${r.text ? `<p>${esc(r.text)}</p>` : ''}</div>`).join('')}` : '<div class="empty"><p>No reviews yet.</p></div>'}`;
+}
+const render = () => { renderResults(); renderReviews(); };
+const ask = () => LHW2.rateCourse({ course: COURSE, onSubmit: ({ stars, comment }) => { rated = true; reviews = [{ name: 'Hara Nguyen', stars, date: '20/11/2026', text: comment }, ...reviews]; render(); } });
+document.addEventListener('click', (e) => { if (e.target.closest('[data-rate]')) ask(); });
+LH.DemoBar('LH2 · My Results + Rating (Đợt 2 · Gói 5)', [
+  { label: 'Status', key: 'st', options: [['done', 'Completed'], ['learning', 'In Progress'], ['fail', 'Failed'], ['removed', 'Access Removed']] },
+  { label: 'Rating', key: 'rt', options: [['popup', 'Popup opens after Completed'], ['later', 'Chose Later'], ['none', 'No reviews yet']] },
+], (st) => {
+  s = SCEN[st.st]; rated = false;
+  reviews = st.rt === 'none' ? [] : DEFAULT.slice();
+  document.querySelectorAll('.w2-pop').forEach((p) => p.remove());
+  render();
+  if (st.st === 'done' && st.rt === 'popup') ask();
+});
+</script>
+</body>
+</html>

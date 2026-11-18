@@ -374,7 +374,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
         <li>Bài test có từ trước: tự <b>tắt</b> Luyện tập, bộ câu luyện tập rỗng.</li>
         <li>Mọi bài thi về 3 lượt. Đã Đạt giữ kết quả; chưa Đạt đếm lại đủ 3 lượt mới.</li>
         <li>Bài đã tính xong theo luật tiến độ cũ giữ nguyên.</li>
-        <li>Khoá hiện có để Toàn công ty. Ai đang học quá 2 khoá vẫn học tiếp, chỉ bị chặn đăng ký mới.</li></ul></div>
+        <li>Khoá hiện có để Toàn công ty. Ai đang học quá 3 khoá vẫn học tiếp, chỉ bị chặn đăng ký mới.</li></ul></div>
       <div class="prob rv"><b>Làm sau · Không làm</b><ul>
         <li><b>Sau Đợt 1:</b> nhãn Khoá có phí. <b>Sau Đợt 2:</b> chuông thông báo trong app (đang có UI, chưa có backend).</li>
         <li><b>Đề xuất PM không làm</b> (ngoài file L&amp;D): Giao khoá bắt buộc, Manager View, Learning Alerts.</li>
@@ -425,7 +425,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
     </div>
     <div class="next rv">
       <div><b>Đang ở · 12/11</b><span>Chốt Feature List v4; Notion xếp 5 module · 15 function · 31 feature</span></div>
-      <div><b>Đợt 1 · 16–20/11</b><span>17 tính năng: Practice, 3 lượt thi, Đối tượng + Lịch học, Export, giới hạn 2 khoá</span></div>
+      <div><b>Đợt 1 · 16–20/11</b><span>17 tính năng: Practice, 3 lượt thi, Đối tượng + Lịch học, Export, giới hạn 3 khoá</span></div>
       <div><b>Đợt 2 · 23–27/11</b><span>12 tính năng: Creator + duyệt khoá, Tìm kiếm, Kết quả, Dashboard</span></div>
       <div><b>Sau 2 đợt</b><span>Nhãn Có phí, chuông thông báo trong app</span></div>
     </div>
@@ -443,7 +443,7 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0}a{color:inherit}button{font:in
 </div>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Ảnh hiện trạng"><figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure></div>
 
-<script src="../assets/js/lh2-feature-list.js?v=1113c"></script>
+<script src="../assets/js/lh2-feature-list.js?v=1113e"></script>
 <script>
 /* ===== DỮ LIỆU 9 YÊU CẦU =====
    Nguồn: docs/specs/lh2/00-quyet-dinh-dot-1.md, 00-quyet-dinh-dot-2.md, 01..09-*.md
@@ -490,7 +490,7 @@ REQS.push({
   module: 'Assessment', who: 'Learner', prio: 'Cao', spec: '02-review-answer', dec: 'D-06, D-07, D-36, D-39, D-40',
   q: 'Nộp bài Exam xong, học viên thấy được gì?',
   purpose: 'Học viên biết mình sai ở đâu để tự học lại, nhưng không lấy được đáp án đúng để học thuộc cho lượt sau hoặc chia sẻ cho người khác.',
-  short: { b: 'Nộp Exam là xem được đáp án đúng + giải thích của mọi câu.', a: 'Cố định 3 lượt. Chưa đạt thì lượt sau chỉ làm lại câu sai. Đạt hoặc hết 3 lượt thì bài khoá và mở đáp án. Điểm chính thức là điểm cao nhất.' },
+  short: { b: 'Nộp Exam là xem được đáp án đúng + giải thích của mọi câu.', a: 'Cố định 3 lượt. Chưa đạt thì lượt sau làm lại cả đề (vẫn hiện Đúng/Sai + lựa chọn lượt trước). Đạt hoặc hết 3 lượt thì bài khoá và mở đáp án. Điểm chính thức là điểm cao nhất.' },
   before: [
     'Exam ghi "Answers and explanations appear only after you submit": nộp xong là thấy đáp án đúng của mọi câu.',
     'Màn kết quả có điểm, Pass / Fail và Review Answer hiện đúng / sai + đáp án từng câu ngay.',
@@ -498,7 +498,7 @@ REQS.push({
   shots: [['00-ld-yc2-ket-qua-review-answer.png', 'Review Answer sau khi nộp (ảnh L&D)'], ['05-practice-check-answer.jpg', 'Check answer hiện đáp án']],
   reqs: [
     ['REQ-2.1', 'L', 'Bài thi cho tối đa <b>3 lượt</b>. Mỗi lần Nộp bài trừ 1 lượt; màn làm bài ghi rõ "Lượt n/3".', 'Modal xác nhận nộp: số câu chưa trả lời, số câu đánh dấu, "Nộp bài sẽ dùng 1 lượt (còn x/3)".'],
-    ['REQ-2.2', 'L', 'Nộp bài xong hiện ngay <b>tổng số câu Đúng / Sai</b>, điểm, Đạt / Chưa đạt. Chưa đạt và còn lượt → nút <b>Làm lại n câu sai</b>.', '<b>Đạt → bài khoá</b>, không làm lại. Hết 3 lượt → bài khoá (BR-ASM-17).'],
+    ['REQ-2.2', 'L', 'Nộp bài xong hiện ngay <b>tổng số câu Đúng / Sai</b>, điểm, Đạt / Chưa đạt. Chưa đạt và còn lượt → nút <b>Làm lại bài thi</b> (cả đề).', '<b>Đạt → bài khoá</b>, không làm lại. Hết 3 lượt → bài khoá (BR-EX-06).'],
     ['REQ-2.2b', 'L', 'Lượt 2, 3 <b>chỉ gồm các câu Sai / Bỏ trống</b> của lượt trước, giữ số thứ tự gốc. Câu đúng giữ nguyên đáp án và vẫn tính Đúng.', 'Điểm tính trên toàn đề nên chỉ tăng hoặc giữ (BR-ASM-18). Thời gian như lượt 1.'],
     ['REQ-2.3', 'L', '<b>Điểm chính thức = điểm cao nhất</b>. Đây là điểm duy nhất dùng ở Kết quả của tôi (#7), file export (#5) và tiến độ (#8).', 'Lượt điểm cao nhất gắn nhãn "Điểm cao nhất"; khi khoá đổi thành "Điểm chính thức" (BR-ASM-16).'],
     ['REQ-2.4', 'L', 'Chưa đạt và còn lượt: Review chỉ hiện lựa chọn của học viên + nhãn Đúng / Sai cả câu, <b>không hiện đáp án đúng</b>, không hiện giải thích.', 'Thông báo: "Đáp án đúng và giải thích sẽ hiện khi bạn Đạt hoặc dùng hết 3 lượt."'],
@@ -506,8 +506,8 @@ REQS.push({
     ['REQ-2.6', 'L', 'Câu nhiều đáp án chấm Đúng / Sai <b>cả câu</b>, không đánh dấu từng lựa chọn khi đang ẩn đáp án.', 'Không có điểm từng phần (BR-ASM-12).'],
     ['REQ-2.7', 'L', 'Màn làm bài: <b>đồng hồ đặt cạnh lưới câu hỏi</b>, đánh dấu câu, lọc Review theo Tất cả / Đúng / Sai.', 'Rời trang giữa bài: đồng hồ vẫn chạy, quay lại làm tiếp; hết giờ tự nộp và trừ lượt.'],
     ['REQ-2.8', 'A', 'Không có chức năng cộng thêm lượt: bài đã mở đáp án thì không làm lại được.', 'Tránh xem đáp án rồi làm lại để nâng điểm.']],
-  brs: [['BR-ASM-10', 'Đáp án đúng + giải thích chỉ hiện khi Đạt hoặc dùng hết 3 lượt.'], ['BR-ASM-16', 'Cố định 3 lượt; điểm chính thức = điểm cao nhất.'], ['BR-ASM-17', 'Bài khoá khi Đạt hoặc hết lượt.'], ['BR-ASM-18', 'Lượt sau chỉ làm lại câu sai, câu đúng giữ nguyên.'], ['BR-ASM-11', 'Điều kiện mở đáp án xét theo bài: đạt rồi thì mọi lượt cũ cũng hiện.'], ['BR-ASM-12', 'Câu nhiều đáp án chấm Đúng / Sai cả câu.'], ['BR-ASM-13', 'Giải thích ẩn / hiện cùng đáp án đúng.'],],
-  note: '<b>Chốt 11/11 theo đúng file đề xuất (D-40):</b> Đạt → khoá bài + mở đáp án. Chưa đạt → làm lại câu sai, tối đa 3 lượt. Hết 3 lượt → khoá + mở đáp án, điểm chính thức = điểm cao nhất; khoá học chuyển Không đạt (yêu cầu #9).',
+  brs: [['BR-EX-07', 'Đáp án đúng + giải thích chỉ hiện khi Đạt hoặc dùng hết 3 lượt.'], ['BR-EX-01', 'Cố định 3 lượt; điểm chính thức = điểm cao nhất.'], ['BR-EX-06', 'Bài khoá khi Đạt hoặc hết lượt.'], ['BR-EX-03', 'Lượt 2–3 làm lại cả đề; vẫn hiện Đúng/Sai + lựa chọn lượt trước.'], ['BR-EX-08', 'Câu nhiều đáp án chấm Đúng / Sai cả câu.'],],
+  note: '<b>Chốt 17/11 (D-120 / Exam v1.2):</b> Đạt → khoá bài + mở đáp án. Chưa đạt → làm lại toàn bộ đề, tối đa 3 lượt. Hết 3 lượt → khoá + mở đáp án, điểm chính thức = điểm cao nhất; khoá học chuyển Không đạt (yêu cầu #9).',
   oos: 'Thay đổi cách chấm điểm, ngưỡng Pass. Màn Practice luôn hiện đáp án (yêu cầu #1).',
   links: [
     ['assessment.html', 'Bài thi trọn luồng 1 trang', 'Đồng hồ cạnh lưới câu, nộp bài, tổng Đúng / Sai, làm lại 3 lượt', 'L', 1],
@@ -580,27 +580,27 @@ REQS.push({
   module: 'Learner', who: 'Learner · Admin', prio: 'Cao', spec: '09-enroll-limit', dec: 'D-42, D-43, D-49, D-51',
   q: 'Một học viên được học cùng lúc bao nhiêu khoá?',
   purpose: 'Học viên tập trung hoàn thành khoá đang học, tránh đăng ký dàn trải rồi bỏ dở, làm tỷ lệ hoàn thành thấp và số liệu đào tạo sai lệch.',
-  short: { b: 'Đăng ký bao nhiêu khoá cũng được; nhiều khoá dở dang, tỷ lệ hoàn thành thấp.', a: 'Tối đa 2 khoá Đang học. Phải hoàn thành mới đăng ký thêm; trượt bài thi sau 3 lượt thì khoá Không đạt và trả suất.' },
+  short: { b: 'Đăng ký bao nhiêu khoá cũng được; nhiều khoá dở dang, tỷ lệ hoàn thành thấp.', a: 'Tối đa 3 khoá Đang học. Phải hoàn thành mới đăng ký thêm; trượt bài thi sau 3 lượt thì khoá Không đạt và trả suất.' },
   before: [
     'Không giới hạn số khoá đăng ký cùng lúc.',
     'My Courses dồn nhiều khoá dở dang, tiến độ thấp.',
     'Học viên thi trượt hết lượt thì khoá treo mãi ở Đang học.'],
   shots: [['01-home.jpg', 'Trang chủ'], ['06-my-courses.jpg', 'My Courses']],
   reqs: [
-    ['REQ-9.1', 'L', 'Mỗi học viên học tối đa <b>2 khoá Đang học</b> cùng lúc. Con số cố định, không cấu hình.', 'BR-LRN-01.'],
-    ['REQ-9.2', 'L', 'Bấm Start Courses khi đã đủ 2 khoá → popup <b>"Bạn đang học 2/2 khoá"</b> liệt kê khoá đang học, mỗi dòng có Tiếp tục học.', 'Không có nút Rời khoá: hoàn thành một khoá mới đăng ký được khoá mới.'],
+    ['REQ-9.1', 'L', 'Mỗi học viên học tối đa <b>3 khoá Đang học</b> cùng lúc. Con số cố định, không cấu hình.', 'BR-ENR-01.'],
+    ['REQ-9.2', 'L', 'Bấm Start Courses khi đã đủ 3 khoá → popup <b>"Bạn đang học 3/3 khoá"</b> liệt kê khoá đang học, mỗi dòng có Tiếp tục học.', 'Không có nút Rời khoá: hoàn thành một khoá mới đăng ký được khoá mới.'],
     ['REQ-9.3', 'L', 'Chỉ khoá <b>Đang học</b> tính vào giới hạn.', 'Hoàn thành, Không đạt, Mất quyền không tính (BR-LRN-01).'],
     ['REQ-9.4', 'L', 'Một bài thi hết 3 lượt vẫn chưa đạt → khoá chuyển <b>Không đạt</b>, trả suất học.', 'Vẫn xem lại được nội dung; có trong file export với trạng thái "Không đạt" (BR-LRN-32).'],
     ['REQ-9.5', 'L', 'Trang chủ hiện chỉ báo <b>Suất học n/2</b> cạnh khoá đang học.', 'Đầy suất → nhắc hoàn thành khoá đang học.'],
-    ['REQ-9.6', 'L', 'Người đang học nhiều hơn 2 khoá lúc lên bản: <b>học tiếp bình thường</b>, chỉ bị chặn khi enroll khoá mới.', 'BR-LRN-04.'],
+    ['REQ-9.6', 'L', 'Người đang học nhiều hơn 3 khoá lúc lên bản: <b>học tiếp bình thường</b>, chỉ bị chặn khi enroll khoá mới.', 'BR-ENR-09.'],
     ['REQ-9.7', 'L', 'Kiểm tra giới hạn tại thời điểm bấm đăng ký.', '2 tab cùng đăng ký → tab sau bị chặn (BR-LRN-06).'],
     ['REQ-9.8', 'A', 'Chỉ Admin L&D gỡ được học viên khỏi khoá (tab Đối tượng, #4).', 'Học viên không tự rời khoá.']],
   brs: [['BR-LRN-01', 'Khoá tính giới hạn = Đang học, tối đa 2.'], ['BR-LRN-04', 'Lên bản không gỡ ai; chỉ chặn đăng ký mới.'], ['BR-LRN-06', 'Kiểm tra tại thời điểm bấm đăng ký.'], ['BR-LRN-32', 'Hết 3 lượt thi chưa đạt → khoá Không đạt, không tính giới hạn.']],
   oos: 'Tự rời khoá; Admin cấu hình con số giới hạn; giới hạn khác nhau theo phòng ban / vị trí; hàng chờ.',
   links: [
-    ['home.html?f=1', 'Trang chủ: đạt giới hạn', 'Suất học 2/2', 'L', 1],
+    ['home.html?f=1', 'Trang chủ: đạt giới hạn', 'Suất học 3/3', 'L', 1],
     ['home.html?f=0', 'Trang chủ: còn suất', 'Suất học 1/2', 'L'],
-    ['course-detail.html?s=limit', 'Trang khoá: đạt giới hạn', 'Popup 2 khoá đang học, chỉ có Tiếp tục học', 'L'],
+    ['course-detail.html?s=limit', 'Trang khoá: đạt giới hạn', 'Popup 3 khoá đang học, chỉ có Tiếp tục học', 'L'],
     ['course-detail.html?s=failed', 'Trang khoá: Không đạt', 'Trượt bài thi sau 3 lượt, trả suất', 'L'],
     ['my-courses.html?k=over', 'My Courses: đang quá giới hạn', 'Học tiếp, chỉ chặn đăng ký mới', 'L']]
 });
@@ -729,12 +729,12 @@ const EXTRA = {
       ['Luyện tập xong: màn tổng kết hiện đáp án ngay, có nút Luyện lại câu sai.', 'practice.html?sc=done']]
   },
   r2: {
-    lead: 'Học viên sửa câu sai trong 3 lượt; chỉ thấy đáp án khi Đạt hoặc hết lượt.',
+    lead: 'Học viên làm lại cả đề trong 3 lượt; chỉ thấy đáp án đúng khi Đạt hoặc hết lượt.',
     cb: ['Nộp bài là thấy đáp án đúng + giải thích của mọi câu', 'Lịch sử lượt làm nằm trong tab Overview, khó tìm', 'Đáp án dễ bị chép cho lượt sau hoặc chia cho người khác'],
-    ca: ['Cố định 3 lượt; chưa đạt thì lượt sau chỉ làm lại câu sai', 'Đạt → bài khoá, mở đáp án đúng + giải thích', 'Hết 3 lượt → khoá, mở đáp án; điểm chính thức = điểm cao nhất'],
+    ca: ['Cố định 3 lượt; chưa đạt thì lượt sau làm lại cả đề (nhãn Đúng/Sai + lựa chọn cũ)', 'Đạt → bài khoá, mở đáp án đúng + giải thích', 'Hết 3 lượt → khoá, mở đáp án; điểm chính thức = điểm cao nhất'],
     try: [
       ['Mở bài thi từ đầu (đã xoá các lượt demo cũ).', 'assessment.html?demo=reset'],
-      ['Làm bài rồi Nộp: thấy tổng Đúng / Sai, đáp án đúng vẫn ẩn, nút "Làm lại n câu sai".', null],
+      ['Làm bài rồi Nộp: thấy tổng Đúng / Sai, đáp án đúng vẫn ẩn, nút "Làm lại bài thi".', null],
       ['Lượt 2 Đạt: bài khoá, mở đáp án + giải thích.', 'test-result.html?sc=perfect'],
       ['Hết 3 lượt chưa đạt: mở đáp án cho mọi lượt, điểm chính thức là điểm cao nhất.', 'test-result.html?sc=last'],
       ['Thử đồng hồ còn 5 phút; hết giờ thì bài tự nộp và trừ 1 lượt.', 'assessment.html?demo=5min']]
@@ -760,12 +760,12 @@ const EXTRA = {
       ['Đăng nhập vai Creator: chỉ xuất được khoá mình phụ trách.', 'admin-audience.html?role=Creator']]
   },
   r9: {
-    lead: 'Mỗi học viên học tối đa 2 khoá cùng lúc, phải học xong mới đăng ký thêm.',
+    lead: 'Mỗi học viên học tối đa 3 khoá cùng lúc, phải học xong mới đăng ký thêm.',
     cb: ['Đăng ký bao nhiêu khoá cũng được', 'Nhiều khoá dở dang, tỷ lệ hoàn thành thấp'],
-    ca: ['Tối đa 2 khoá Đang học, cố định', 'Không tự rời khoá: phải hoàn thành mới có suất mới', 'Trượt bài thi sau 3 lượt → khoá Không đạt, trả suất'],
+    ca: ['Tối đa 3 khoá Đang học, cố định', 'Không tự rời khoá: phải hoàn thành mới có suất mới', 'Trượt bài thi sau 3 lượt → khoá Không đạt, trả suất'],
     try: [
-      ['Trang chủ khi đầy suất: Suất học 2/2.', 'home.html?f=1'],
-      ['Bấm Start Courses khoá mới khi đã đầy: popup 2 khoá đang học, chỉ có Tiếp tục học.', 'course-detail.html?s=limit'],
+      ['Trang chủ khi đầy suất: Suất học 3/3.', 'home.html?f=1'],
+      ['Bấm Start Courses khoá mới khi đã đầy: popup 3 khoá đang học, chỉ có Tiếp tục học.', 'course-detail.html?s=limit'],
       ['Khoá trượt bài thi sau 3 lượt: nhãn Không đạt, suất được trả.', 'course-detail.html?s=failed']]
   },
   r3: {
@@ -841,10 +841,10 @@ REQS.forEach((r) => Object.assign(r, EXTRA[r.id]));
   /* Tóm gọn từng yêu cầu: số tính năng + điểm chính (khớp Feature List v4 12/11 và Notion LH2 Features) */
   const KEY = {
     r1: [6, 'Assessment · Bật / tắt theo từng bài test · bộ câu riêng (soạn tay hoặc nhập file), chặn trùng đề thi · luyện không giới hạn, xem đáp án ngay · không tính tiến độ, không trừ lượt thi'],
-    r2: [4, 'Assessment · Cố định 3 lượt · lượt sau chỉ làm lại câu sai · Đạt hoặc hết lượt thì khoá bài, mở đáp án · điểm chính thức = điểm cao nhất'],
+    r2: [4, 'Assessment · Cố định 3 lượt · lượt sau làm lại cả đề · Đạt hoặc hết lượt thì khoá bài, mở đáp án · điểm chính thức = điểm cao nhất'],
     r4: [5, 'Course Management · Toàn công ty hoặc Giới hạn theo Phòng ban, Vị trí, từng người · Lịch học · email mời tuỳ chọn · bị gỡ mất quyền, giữ tiến độ · nhãn Có phí làm sau Đợt 1'],
     r5: [1, 'Report · File .xlsx theo khoá, toàn khoá hoặc theo Session · cột Tình trạng tiến độ (Đúng tiến độ / Học chậm / Quá hạn), cùng công thức với Dashboard'],
-    r9: [1, 'Learning · Tối đa 2 khoá Đang học, cố định · không có Rời khoá · Hoàn thành, Không đạt không chiếm suất'],
+    r9: [1, 'Learning · Tối đa 3 khoá Đang học, cố định · không có Rời khoá · Hoàn thành, Không đạt không chiếm suất'],
     r3: [7, 'Course Management + Settings · Admin L&amp;D cấp quyền Course Creator · gửi duyệt trước khi Publish · email báo duyệt · chuông trong app làm sau Đợt 2'],
     r6: [3, 'Learning · Tìm trong tên khoá + tag, không phân biệt hoa thường và dấu · lọc theo trạng thái và thời gian học · My Courses lọc / sắp xếp'],
     r7: [2, 'Learning · Tỷ lệ hoàn thành = tiến độ khoá, không phải điểm thi · Điểm cao nhất hiện ở từng bài test'],
@@ -872,7 +872,7 @@ REQS.forEach((r) => Object.assign(r, EXTRA[r.id]));
     </article>`;
   };
   const LAND = `<article class="card land"><div class="k"><span class="no">⛺</span><div><p class="meta">Chiếu nghỉ · Xong Đợt 1</p><h3>Đã vượt Đợt 1</h3></div></div>
-    <ul><li>Đề luyện tách khỏi đề thi; đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt.</li><li>Khoá giới hạn đúng đối tượng; mỗi người tối đa 2 khoá tự chọn.</li><li>L&amp;D xuất được tiến độ và điểm ra Excel.</li></ul></article>`;
+    <ul><li>Đề luyện tách khỏi đề thi; đáp án chỉ mở khi Đạt hoặc đã dùng hết 3 lượt.</li><li>Khoá giới hạn đúng đối tượng; mỗi người tối đa 3 khoá tự chọn.</li><li>L&amp;D xuất được tiến độ và điểm ra Excel.</li></ul></article>`;
   const INTRO = `<article class="card intro"><div class="k"><span class="no">🎓</span><div><p class="meta">Chân cầu thang</p><h3>9 bậc, 2 đợt, 1 đỉnh</h3></div></div>
     <p class="what">Cuộn xuống để Techter leo từng bậc. Mỗi bậc là một yêu cầu; bấm số bậc hoặc "Mở chiếu chỉ" để đọc đặc tả đầy đủ.</p></article>`;
   const PEAK = `<article class="card intro"><div class="k"><span class="no">🏆</span><div><p class="meta">Về đích</p><h3>Đã lên tới đỉnh</h3></div></div>

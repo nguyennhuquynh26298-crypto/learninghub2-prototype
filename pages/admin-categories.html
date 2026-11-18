@@ -2,44 +2,108 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Danh mục khoá học · Cài đặt · LearningHub Admin</title>
+<title>Category Management · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1113c"><link rel="stylesheet" href="../assets/css/base.css?v=1113c"><link rel="stylesheet" href="../assets/css/components.css?v=1113c"><link rel="stylesheet" href="../assets/css/admin.css?v=1113c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1117a"><link rel="stylesheet" href="../assets/css/base.css?v=1117a"><link rel="stylesheet" href="../assets/css/components.css?v=1117a">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1117a">
 </head>
 <body>
 <div id="header"></div>
-<!-- Figma chưa có frame — dùng bố cục danh sách của Setting 421:6741. Nghiệp vụ: Notion Features checklist / Admin / Category
-     (tên không trùng, có danh mục con, không cho xoá khi đang có khoá dùng). -->
-<main></main>
-<script src="../assets/js/components.js?v=1113c"></script>
-<script src="../assets/js/data.js?v=1113c"></script>
-<script src="../assets/js/admin-frame.js?v=1113c"></script>
+<main>
+  <div id="head"></div>
+  <section class="adm-box">
+    <div class="adm-box__head adm-box__head--tools"><h2 class="adm-box__title" style="flex:1">Categories</h2>
+      <label class="adm-inline-search"><input id="q" placeholder="Search categories"><span></span></label>
+      <button class="btn-cta" id="btn-new" type="button"></button></div>
+    <div class="adm-card" id="tbl"></div>
+  </section>
+</main>
+<script src="../assets/js/components.js?v=1117a"></script>
+<script src="../assets/js/data.js?v=1117a"></script>
 <script>
-const { esc, Tag } = LH;
-const SUBS = { 'Software Development': ['Programming Fundamentals', 'Web', 'DevOps'], 'Data & AI': ['Machine Learning', 'AI Agent'], Language: ['English', 'Japanese'] };
-const COUNT = { 'Software Development': 12, 'Data & AI': 5, Language: 3, 'Corporate & Mandatory Training': 4 };
-const rows = LHData.categories.map((name) => ({ name, parent: '', subs: (SUBS[name] || []).join(', '), courses: COUNT[name] || 0, desc: '' }));
-LHFrame.list({
-  active: 'categories', eyebrow: 'Cài đặt', title: 'Danh mục khoá học',
-  desc: 'Nhóm khoá học theo danh mục và danh mục con. Học viên lọc khoá theo danh mục ở trang Home.',
-  cta: 'Tạo danh mục', search: 'Tìm danh mục',
-  cols: ['Tên danh mục', 'Danh mục con', ['Số khoá', 'num'], ['Thao tác', 't-act']],
-  rows, blank: { subs: '', courses: 0 },
-  cell: (r) => `<td class="t-name"><b>${esc(r.name)}</b>${r.parent ? `<div class="adm-hint">Thuộc ${esc(r.parent)}</div>` : ''}</td>
-    <td>${r.subs ? `<span class="stage-wrap">${r.subs.split(', ').map((s) => Tag(s, 'neutral')).join('')}</span>` : '<span class="adm-hint">—</span>'}</td><td class="num">${r.courses}</td>`,
-  menu: (r, i) => [{ label: 'Sửa', icon: 'edit', attrs: `data-frm-edit="${i}"` }, { label: 'Xoá', icon: 'trash', danger: true, attrs: `data-frm-del="${i}"` }],
-  canDelete: (r) => (r.courses ? `Không xoá được: ${r.name} đang có ${r.courses} khoá học. Chuyển khoá sang danh mục khác trước.` : ''),
-  empty: { icon: 'list', title: 'Chưa có dữ liệu', desc: 'Chưa có danh mục nào. Tạo danh mục để gắn cho khoá học.', cta: '<button class="btn-cta" data-frm-new>Tạo danh mục</button>' },
-  delTitle: 'Bạn chắc chắn muốn xoá danh mục này?', delText: (r) => `Các danh mục con của <b>${esc(r.name)}</b> cũng bị xoá.`,
-  form: {
-    newTitle: 'Tạo danh mục', editTitle: 'Sửa danh mục',
-    fields: [
-      { key: 'name', label: 'Tên danh mục', req: true, unique: true, ph: 'Nhập tên danh mục', max: 60, hint: 'Tối đa 60 ký tự, không trùng danh mục đã có.' },
-      { key: 'parent', label: 'Danh mục cha', type: 'select', options: LHData.categories, ph: 'Không có (danh mục gốc)', hint: 'Chọn danh mục cha nếu đây là danh mục con.' },
-      { key: 'desc', label: 'Mô tả', type: 'textarea', ph: 'Nhập mô tả...', full: true },
-    ],
-  },
-  note: '[KT] Theo Notion (Category) — Figma chưa có frame, dùng bố cục danh sách của Cài đặt. LH2 không đổi.',
+const { ICON, esc, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, Tag, RowMenu, Modal, Button } = LH;
+const TYPE = { CATEGORY: 'Category', SUB_CATEGORY: 'Sub category', TOPIC: 'Topic' };
+const SAMPLE = [
+  { name: 'Software Development', type: 'CATEGORY', parent: '', desc: 'Engineering and delivery skills' },
+  { name: 'Web', type: 'SUB_CATEGORY', parent: 'Software Development', desc: '' },
+  { name: 'Programming Fundamentals', type: 'TOPIC', parent: 'Web', desc: 'Syntax, logic, clean code' },
+  { name: 'Data & AI', type: 'CATEGORY', parent: '', desc: '' },
+  { name: 'Machine Learning', type: 'SUB_CATEGORY', parent: 'Data & AI', desc: '' },
+  { name: 'AI Agent', type: 'TOPIC', parent: 'Machine Learning', desc: '' },
+  { name: 'Language', type: 'CATEGORY', parent: '', desc: 'Business languages' },
+  { name: 'English', type: 'SUB_CATEGORY', parent: 'Language', desc: '' },
+  { name: 'Corporate & Mandatory Training', type: 'CATEGORY', parent: '', desc: 'Onboarding and compliance' },
+];
+let role, rows = [], q = '';
+const depthOf = (r) => (r.type === 'CATEGORY' ? 0 : r.type === 'SUB_CATEGORY' ? 1 : 2);
+function flatTree(list) {
+  const order = (a, b) => a.name.localeCompare(b.name);
+  const roots = list.filter((x) => x.type === 'CATEGORY').sort(order);
+  const out = [];
+  roots.forEach((root) => {
+    out.push(root);
+    list.filter((x) => x.parent === root.name && x.type === 'SUB_CATEGORY').sort(order).forEach((sub) => {
+      out.push(sub);
+      list.filter((x) => x.parent === sub.name && x.type === 'TOPIC').sort(order).forEach((t) => out.push(t));
+    });
+  });
+  list.filter((x) => !out.includes(x)).forEach((x) => out.push(x));
+  return out;
+}
+document.querySelector('.adm-inline-search span').innerHTML = ICON.search;
+document.getElementById('btn-new').innerHTML = ICON.plus + 'Create';
+function openModal(editRow) {
+  const isNew = !editRow;
+  const parents = rows.filter((x) => x.type !== 'TOPIC').map((x) => x.name);
+  document.body.insertAdjacentHTML('beforeend', Modal({
+    id: 'm-cat', size: 'md', icon: 'list', title: isNew ? 'Create category' : 'Edit category',
+    body: `<div class="adm-form">
+      <div class="adm-field"><label>Name <span class="req">*</span></label><input class="adm-input" id="f-name" value="${esc(editRow?.name || '')}" placeholder="Category name"></div>
+      <div class="adm-field"><label>Type</label><select class="adm-input" id="f-type">${Object.keys(TYPE).map((k) => `<option value="${k}" ${editRow?.type === k ? 'selected' : ''}>${TYPE[k]}</option>`).join('')}</select></div>
+      <div class="adm-field"><label>Parent</label><select class="adm-input" id="f-parent"><option value="">—</option>${parents.map((p) => `<option ${editRow?.parent === p ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select></div>
+      <div class="adm-field full"><label>Description</label><textarea class="adm-input" id="f-desc" placeholder="Optional">${esc(editRow?.desc || '')}</textarea></div>
+    </div>`,
+    foot: Button({ label: 'Cancel', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Save', variant: 'primary', attrs: 'id="m-ok"' }),
+  }));
+  document.getElementById('m-ok').onclick = () => { document.getElementById('m-cat').remove(); toast(isNew ? 'Category saved (stub)' : 'Changes saved (stub)'); };
+}
+function render() {
+  const admin = role === 'admin';
+  AdminLayout({ active: 'categories', collapsed: true, role });
+  document.getElementById('head').innerHTML = AdminHead({
+    eyebrow: 'Settings · Category Management',
+    title: 'Category Management',
+    desc: 'Manage category tree: Category → Sub category → Topic. Courses link to items in this tree.',
+  });
+  document.getElementById('btn-new').hidden = !admin;
+  const nq = LH.norm(q.trim());
+  const list = flatTree(rows).filter((r) => !nq || LH.norm(r.name + r.parent + r.desc).includes(nq));
+  const cols = ['Name', 'Type', 'Parent', 'Description', ['Actions', 't-act']];
+  document.getElementById('tbl').innerHTML = list.length
+    ? AdminTable(cols, list.map((r) => {
+      const i = rows.indexOf(r);
+      const pad = depthOf(r) * 20;
+      return `<tr><td class="t-name"><b style="padding-left:${pad}px;display:inline-block">${esc(r.name)}</b></td>
+        <td>${Tag(TYPE[r.type] || r.type, r.type === 'CATEGORY' ? 'info' : 'neutral')}</td>
+        <td>${r.parent ? esc(r.parent) : '<span class="adm-hint">—</span>'}</td>
+        <td>${r.desc ? esc(r.desc) : '<span class="adm-hint">—</span>'}</td>
+        <td class="t-act">${RowMenu([{ label: 'Edit', icon: 'edit', attrs: `data-ed="${i}"` }])}</td></tr>`;
+    }).join(''))
+    : AdminEmpty({ icon: 'list', title: 'No categories yet', desc: 'Create a category or switch Demo to sample data.', compact: true });
+}
+document.getElementById('btn-new').onclick = () => openModal(null);
+document.addEventListener('click', (e) => {
+  const ed = e.target.closest('[data-ed]'); if (ed) { openModal(rows[+ed.dataset.ed]); return; }
+  if (e.target.closest('[data-close]')) { const m = e.target.closest('.modal-backdrop'); if (m) m.remove(); }
+});
+document.addEventListener('input', (e) => { if (e.target.id === 'q') { q = e.target.value; render(); document.getElementById('q').focus(); } });
+LH.DemoBar('Category Management · LH1', [
+  { label: 'Role', key: 'r', options: [['admin', 'Admin'], ['editor', 'Editor']] },
+  { label: 'Data', key: 'data', options: [['empty', 'Empty'], ['sample', 'Sample tree']] },
+], (s) => {
+  role = LH.admRole(s.r);
+  rows = s.data === 'sample' ? SAMPLE.map((x) => ({ ...x })) : [];
+  render();
 });
 </script>
 </body>

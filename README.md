@@ -22,19 +22,22 @@ Mỗi màn có thanh **DEMO** ở đáy để đổi trạng thái. Mở thẳng
 | Dữ liệu mẫu | `assets/js/data.js` | Tên khoá, session lấy từ web thật |
 | Màn | `pages/*.html` | Chỉ ghép component |
 
-## Màn đợt 1 ↔ spec
+## Màn đợt 1 ↔ docs Notion (bản 18/11/2026)
 
-| Màn | Trạng thái DEMO | Spec |
+Chữ trên màn tiếng Anh theo bảng UI copy. Mỗi màn có DemoBar để đổi trạng thái.
+
+| Màn | Trạng thái DEMO | Doc |
 |---|---|---|
-| `test-start.html` | `practice=on/off`, `att=3/inf/0` | 01 §3.2 |
-| `practice.html` | tương tác thật: chọn → Kiểm tra → Câu sau | 01 §3.3 |
-| `admin-test-practice.html` | `st=legacy/empty/dup/ok` | 01 §3.1 |
-| `test-result.html` | `sc=fail-left/pass/fail-last/unlimited` | 02 §3.1–3.2 |
-| `admin-audience.html` | `role=Admin/Creator`, `sc=limited/all/empty` + nút Xuất dữ liệu | 04 §3.1, 05 §3.1 |
-| `course-detail.html` | `s=all/limit/restricted/removed/mandatory` | 04 §3.2, 09 §3.1 |
-| `home.html` | `f=1/0` | 04 §3.3, 09 §3.4 |
-| `my-courses.html` | `k=full/over` | 09 §3.2–3.3 |
-| `admin-settings.html` | nhập 0 hoặc 11 để thấy lỗi | 09 §3.5 |
+| `assessment.html` (#start · #practice · #exam · #result) | `seed=fresh/one/two/pass/out/reopen`, bài cuối khoá → popup hoàn thành | Exam · Practice · Learner |
+| `test-start` · `practice` · `exam` · `test-result.html` | chuyển hướng vào `assessment.html` (giữ link cũ) | — |
+| `course-detail.html` | `s=…` + `m=1` (Mandatory) + `p=off` (khoá tắt Practice) | Enrollment · Course Audience 3.5 · Practice · Learner 3.1 |
+| `home.html` | `f=1` (3/3) · `m=1` (có khoá Mandatory) | Enrollment 3.2 |
+| `lesson-learn.html` | `i=5` video · `all=last` (xong video → Completed + popup) | Learning Progress |
+| `course-editor.html` | `tab=practice/audience` · `pq=empty/off/on/dup` · `aud=all/restricted/mandatory/empty` · Publish | Practice · Admin · Course Audience · Exam 3.6–3.7 · Course Information 3.3 |
+| `admin-courses.html` | menu dòng View Learners / Export Data / Delete theo luật · nháp Incomplete | Course Audience 3.7 · Learning Data Export · Course Information |
+| `course-create.html` | Save as Draft chỉ cần Course Title | Course Information 2.2 |
+| `admin-course-learners.html` | Unenroll · Reopen Attempts · Export Data | Course Audience 3.4 · Exam 3.5 · Learning Data Export 3.1 |
+| `admin-audience.html` · `admin-test-practice.html` | chuyển hướng vào tab Audience / Practice của `course-editor.html` | — |
 
 Ảnh chụp mới nhất: `screenshots/`.
 

@@ -1,91 +1,85 @@
-/* Report / Export modal — spec docs/specs/lh2/05-export-learning-data.md §3.1
- * Variant: Scope = course | session ; State = default | empty | generating
- * open({ course, code, limited, depts, from, to, source }) — Đợt 2: Learning Dashboard gọi kèm bộ lọc đang xem (prefill). */
+/* Report / Export modal — Learning Data Export 3.1–3.3 (LH2 Product Docs, Notion 18/11/2026).
+ * Đợt 1: Admin L&D xuất 1 khoá / 1 file Excel. Mở từ menu dòng Course Management hoặc màn View Learners.
+ * Bộ lọc: Section ("xuất theo session", BR-EXP-09) · Enrollment Date · Department · Learning Status. Estimated cập nhật ngay.
+ * N = 0 → nút Export tắt (BR-EXP-02). Hơn 2.000 dòng → "Generating file…", đóng popup vẫn tạo tiếp.
+ * open({ course, code, limited, depts, statuses, total, source, period }) — period ('yyyy-mm') từ Learning Report (Đợt 2) được
+ * đổi thành khoảng Enrollment Date của tháng đó để giữ tương thích. */
 (function () {
   const { ICON, Modal, Button, esc, toast } = LH; const D = LHData;
-  const BASE = ['Đang học', 'Hoàn thành', 'Không đạt', 'Mất quyền'];
-  const NOT_ENROLLED = 'Chưa đăng ký'; // chỉ khoá Giới hạn, và chỉ khi không lọc ngày enroll (BR-RPT-08)
+  const BASE = ['In Progress', 'Completed', 'Failed', 'Access Removed', 'Closed', 'Unenrolled'];
+  const NOT_ENROLLED = 'Not Enrolled';
+  const SHARE = { 'In Progress': 0.42, Completed: 0.31, Failed: 0.08, 'Access Removed': 0.04, Closed: 0, Unenrolled: 0.03, 'Not Enrolled': 0.12 };
+  const DEPT = { QA: 0.3, 'QC Automation': 0.14, Development: 0.28, BA: 0.08, Design: 0.04, HR: 0.03, Sales: 0.08, 'L&D': 0.05 };
+  const iso = (d) => d.split('/').reverse().join('-');
   let s;
   const reset = (o = {}) => {
-    s = { scope: 'course', sessions: [], from: o.from || '', to: o.to || '', depts: (o.depts || []).slice(),
-      limited: o.limited !== false, course: o.course || D.course.title, code: o.code || D.course.code, total: o.total || 148, source: o.source || '' };
-    s.statuses = [...(s.limited ? [NOT_ENROLLED] : []), ...BASE];
+    let from = '', to = '';
+    if (o.period) { const [y, m] = o.period.split('-'); const last = new Date(+y, +m, 0).getDate(); from = `01/${m}/${y}`; to = `${last}/${m}/${y}`; }
+    s = { course: o.course || D.course.title, code: o.code || D.course.code || 'CCAR-F', limited: !!o.limited, total: o.total || 148,
+      sections: [], from, to, depts: (o.depts || []).slice(), statuses: (o.statuses || []).slice(), source: o.source || '' };
   };
   reset();
-  const hasDate = () => !!(s.from || s.to);
-  const statusOpts = () => (s.limited && !hasDate() ? [NOT_ENROLLED, ...BASE] : BASE.slice());
-
+  const opts = () => (s.limited && !s.from && !s.to ? [...BASE, NOT_ENROLLED] : BASE);
+  const dateErr = () => (s.from && s.to && iso(s.from) > iso(s.to) ? 'Start date must be before end date.' : '');
   function estimate() {
-    const opts = statusOpts();
-    let n = s.total;
-    if (s.depts.length) n = s.depts.reduce((a, d) => a + (d === 'QA' ? 42 : d === 'QC Automation' ? 17 : d === 'Development' ? 23 : 0), 0);
-    const picked = s.statuses.filter((x) => opts.includes(x)).length;
-    n = Math.round(n * picked / (s.limited ? BASE.length + 1 : BASE.length));
-    if (s.scope === 'session' && !s.sessions.length) return null;
-    return n;
+    const st = s.statuses.length ? s.statuses.filter((x) => opts().includes(x)) : opts();
+    let n = s.total * st.reduce((a, x) => a + (SHARE[x] || 0), 0);
+    if (s.depts.length) n *= s.depts.reduce((a, d) => a + (DEPT[d] || 0), 0);
+    if (s.from || s.to) n *= 0.35;
+    return Math.round(n);
   }
+  const multi = (key, list, sel, allLabel) => `<div class="ex-multi" data-ex-multi="${key}">
+      <label class="check"><input type="checkbox" data-ex-all="${key}" ${sel.length ? '' : 'checked'}>${esc(allLabel)}</label>
+      ${list.map((v, k) => `<label class="check"><input type="checkbox" data-ex-v="${key}" value="${esc(String(key === 'sections' ? k : v))}" ${sel.includes(key === 'sections' ? k : v) ? 'checked' : ''}>${esc(key === 'sections' ? `Section ${k + 1}: ${v.name}` : v)}</label>`).join('')}</div>`;
   function body() {
-    const dateErr = s.from && s.to && s.from > s.to;
-    const n = estimate();
-    const sessErr = s.scope === 'session' && !s.sessions.length;
-    const disabled = dateErr || sessErr || n === 0;
-    const opts = statusOpts();
+    const n = estimate(), err = dateErr();
     const html = `<div class="stack gap-16">
-      ${s.source ? `<div class="t-xs muted">Bộ lọc điền sẵn từ ${esc(s.source)} · sửa được trước khi xuất</div>` : ''}
-      <div class="field"><span class="field__label">Khoá học</span><div class="input" style="display:flex;align-items:center;background:var(--bg-subtle)">${esc(s.course)}</div></div>
-      <div class="field"><span class="field__label">Phạm vi<span class="req">*</span></span>
-        <div class="choice-cards">
-          <label class="choice-card ${s.scope === 'course' ? 'is-selected' : ''}" data-ex-scope="course"><input type="radio" ${s.scope === 'course' ? 'checked' : ''}><div><b>Toàn khoá</b><span>Tiến độ và bài thi của cả khoá.</span></div></label>
-          <label class="choice-card ${s.scope === 'session' ? 'is-selected' : ''}" data-ex-scope="session"><input type="radio" ${s.scope === 'session' ? 'checked' : ''}><div><b>Theo session</b><span>Chỉ tính các session được chọn.</span></div></label>
-        </div></div>
-      ${s.scope === 'session' ? `<div class="field"><span class="field__label">Session<span class="req">*</span></span><div class="stack gap-8" style="max-height:180px;overflow:auto;border:1px solid var(--border-default);border-radius:8px;padding:10px 12px">
-        ${D.course.sessions.map((x, k) => `<label class="check"><input type="checkbox" data-ex-sess="${k}" ${s.sessions.includes(k) ? 'checked' : ''}>${esc(x.name)}</label>`).join('')}</div>
-        ${sessErr ? `<span class="field__error">${ICON.alert}Chọn ít nhất 1 session.</span>` : ''}</div>` : ''}
-      <div class="row gap-12" style="align-items:flex-start">
-        <div class="field grow"><span class="field__label">Thời gian enroll — từ</span><input class="input ${dateErr ? 'is-error' : ''}" type="date" data-ex-date="from" value="${s.from}"></div>
-        <div class="field grow"><span class="field__label">đến</span><input class="input ${dateErr ? 'is-error' : ''}" type="date" data-ex-date="to" value="${s.to}"></div>
-      </div>
-      ${dateErr ? `<span class="field__error" style="margin-top:-10px">${ICON.alert}Ngày bắt đầu phải trước ngày kết thúc.</span>` : ''}
-      <div class="field"><span class="field__label">Phòng ban <span class="t-xs muted">· chọn nhiều, để trống = tất cả</span></span>
-        <div class="row gap-16" style="flex-wrap:wrap">${D.hr.departments.map((d) => `<label class="check"><input type="checkbox" data-ex-dept="${esc(d)}" ${s.depts.includes(d) ? 'checked' : ''}>${esc(d)}</label>`).join('')}</div></div>
-      <div class="field"><span class="field__label">Trạng thái học</span><div class="row gap-16" style="flex-wrap:wrap">${opts.map((x) => `<label class="check"><input type="checkbox" data-ex-status="${x}" ${s.statuses.includes(x) ? 'checked' : ''}>${x}</label>`).join('')}</div>
-        ${s.limited && hasDate() ? `<span class="t-xs muted">Đang lọc ngày enroll nên không có dòng Chưa đăng ký.</span>` : ''}</div>
-      ${n === 0 ? `<div class="estimate" style="background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-text)">${ICON.alert}Không có học viên khớp bộ lọc.</div>`
-        : `<div class="estimate">${ICON.users}<span class="grow">Dự kiến <b>${n ?? '—'}</b> học viên</span><span class="t-xs muted">File .xlsx · 3 sheet: Học viên, Bài thi, Thông tin</span></div>`}
+      ${s.source ? `<div class="t-xs muted">Filters prefilled from ${esc(s.source)} · you can change them before exporting</div>` : ''}
+      <div class="field"><span class="field__label">Course</span><div class="input" style="display:flex;align-items:center;background:var(--bg-subtle)">${esc(s.course)}</div></div>
+      <div class="field"><span class="field__label">Section <span class="t-xs muted">· optional, default All (whole course)</span></span>${multi('sections', D.course.sessions, s.sections, 'All sections')}
+        ${s.sections.length ? '<span class="t-xs muted">The Quizzes sheet only includes quizzes in the selected Sections. The Learners sheet adds "Progress in selected Sections (%)".</span>' : ''}</div>
+      <div class="field"><span class="field__label">Enrollment Date <span class="t-xs muted">· optional</span></span>
+        <div class="row gap-8"><input class="input" data-ex-from placeholder="dd/mm/yyyy" value="${esc(s.from)}" style="flex:1"><span class="muted">–</span><input class="input" data-ex-to placeholder="dd/mm/yyyy" value="${esc(s.to)}" style="flex:1"></div>
+        ${err ? `<span class="field__error">${ICON.alert}${err}</span>` : s.limited && (s.from || s.to) ? '<span class="t-xs muted">With an Enrollment Date range, Not Enrolled learners are not included.</span>' : ''}</div>
+      <div class="field"><span class="field__label">Department</span>${multi('depts', D.hr.departments, s.depts, 'All departments')}</div>
+      <div class="field"><span class="field__label">Learning Status</span>${multi('statuses', opts(), s.statuses, 'All statuses')}</div>
+      ${n === 0 ? `<div class="estimate" style="background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-text)">${ICON.alert}No learners match the selected filters.</div>`
+        : `<div class="estimate">${ICON.users}<span class="grow">Estimated: <b>${n}</b> learners</span><span class="t-xs muted">.xlsx · sheets Learners, Quizzes, Info</span></div>`}
     </div>`;
-    return { html, disabled, n };
+    return { html, disabled: !!err || n === 0, n };
   }
   function paint() {
     const m = document.getElementById('m-export'); if (!m) return;
-    const b = body();
-    m.querySelector('.modal__body').innerHTML = b.html;
+    const y = m.querySelector('.modal__body').scrollTop;
+    const b = body(); m.querySelector('.modal__body').innerHTML = b.html; m.querySelector('.modal__body').scrollTop = y;
     const btn = m.querySelector('#ex-go'); btn.disabled = b.disabled; btn.dataset.n = b.n;
   }
   function open(o = {}) {
     reset(o);
     document.getElementById('m-export')?.remove();
-    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-export', size: 'md', icon: 'download', iconTone: 'info', title: 'Xuất dữ liệu học tập', desc: 'Tiến độ và kết quả bài thi tại thời điểm xuất. Không gồm kết quả luyện tập.', body: '',
-      foot: Button({ label: 'Huỷ', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Xuất file', icon: 'download', attrs: 'id="ex-go"' }) }));
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-export', size: 'md', icon: 'download', iconTone: 'info', title: 'Export Data',
+      desc: 'Progress and exam results at the time of export. Practice results are not included.', body: '',
+      foot: Button({ label: 'Cancel', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Export', icon: 'download', attrs: 'id="ex-go"' }) }));
     paint();
   }
+  const today = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth() + 1).padStart(2, '0')}${d.getFullYear()}`; };
   document.addEventListener('click', (e) => {
-    const sc = e.target.closest('[data-ex-scope]'); if (sc) { e.preventDefault(); s.scope = sc.dataset.exScope; paint(); return; }
-    const go = e.target.closest('#ex-go'); if (go && !go.disabled) {
-      const n = +go.dataset.n; const m = document.getElementById('m-export');
-      const name = `${s.code}_${s.scope === 'course' ? 'ToanKhoa' : 'Session'}_12112026.xlsx`;
-      if (n > 40) {
-        m.querySelector('.modal__body').innerHTML = `<div class="stack gap-12" style="align-items:center;padding:24px 0;text-align:center"><div class="progress" style="width:100%"><i style="width:60%"></i></div><b>Đang tạo file…</b><span class="t-sm muted">Bạn có thể đóng popup, file vẫn được tạo và sẽ báo khi xong.</span></div>`;
-        go.disabled = true;
-        setTimeout(() => { document.getElementById('m-export')?.remove(); toast(`Đã xuất ${n} học viên — ${name}`); }, 1500);
-      } else { m.remove(); toast(`Đã xuất ${n} học viên — ${name}`); }
-    }
+    if (e.target.closest('#m-export [data-close]')) { document.getElementById('m-export')?.remove(); return; }
+    const go = e.target.closest('#ex-go'); if (!go || go.disabled) return;
+    const n = +go.dataset.n; const m = document.getElementById('m-export');
+    const name = `${s.code}_${today()}.xlsx`;
+    if (n > 2000 || s.total > 2000) {
+      m.querySelector('.modal__body').innerHTML = `<div class="stack gap-12" style="align-items:center;padding:24px 0;text-align:center"><div class="progress" style="width:100%"><i style="width:60%"></i></div><b>Generating file…</b><span class="t-sm muted">You can close this popup. The file keeps generating and downloads when it's ready.</span></div>`;
+      go.disabled = true;
+      setTimeout(() => { document.getElementById('m-export')?.remove(); toast(`Exported ${n} learners · ${name}`); }, 1500);
+    } else { m.remove(); toast(`Exported ${n} learners · ${name}`); }
   });
   document.addEventListener('change', (e) => {
     const t = e.target; if (!t.closest || !t.closest('#m-export')) return;
-    if (t.dataset.exSess !== undefined) { const k = +t.dataset.exSess; s.sessions = t.checked ? [...s.sessions, k] : s.sessions.filter((x) => x !== k); paint(); }
-    else if (t.dataset.exDate) { s[t.dataset.exDate] = t.value; paint(); }
-    else if (t.dataset.exDept !== undefined) { const v = t.dataset.exDept; s.depts = t.checked ? [...s.depts, v] : s.depts.filter((x) => x !== v); paint(); }
-    else if (t.dataset.exStatus) { const v = t.dataset.exStatus; s.statuses = t.checked ? [...s.statuses, v] : s.statuses.filter((x) => x !== v); paint(); }
+    if (t.dataset.exAll) { s[t.dataset.exAll] = []; paint(); return; }
+    if (t.dataset.exV) { const k = t.dataset.exV, v = k === 'sections' ? +t.value : t.value; s[k] = t.checked ? [...s[k], v] : s[k].filter((x) => x !== v); paint(); return; }
+    if (t.matches('[data-ex-from]')) { s.from = t.value.trim(); paint(); }
+    if (t.matches('[data-ex-to]')) { s.to = t.value.trim(); paint(); }
   });
   window.LHExport = { open };
 })();
