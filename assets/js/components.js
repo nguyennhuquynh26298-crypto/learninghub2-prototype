@@ -494,15 +494,17 @@ var LH_V = '1118d';
       <div class="psum__act">${wrong.length ? `<button class="wbtn" data-retry-wrong>Practice ${wrong.length} Incorrect</button>` : ''}<button class="wbtn wbtn--outline" data-restart>Restart</button><button class="wbtn wbtn--outline" data-exit-practice>Exit</button></div></div>`;
   }
   /* ---------- Enroll — Enrollment 3.1, 3.2 (BR-ENR-01, 10) ---------- */
-  /** Learner / Slot indicator — "In progress: x/3 elective courses · y mandatory". State: Available | Full */
+  /** Learner / Slot indicator — D-119/D-139: "In progress: x/3 elective courses". Mandatory không tính suất (không +1 slot). */
   function EnrollSlotPanel({ used = 0, limit = 3, mandatory = 0 }) {
     const full = used >= limit;
-    const dots = Array.from({ length: Math.max(limit, used) }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('');
-    return `<span class="slot-chip ${full ? 'slot-chip--full' : ''}" title="${full ? 'Complete a course to enroll in a new one. Mandatory courses don\'t count toward this limit.' : 'Mandatory courses don\'t count toward this limit.'}"><span class="slot-chip__dots">${dots}</span>In progress: <b>${used}/${limit}</b> elective courses${mandatory ? ` · ${mandatory} mandatory` : ''}</span>`;
+    const dots = Array.from({ length: limit }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('');
+    const note = mandatory > 0 ? ` · ${mandatory} mandatory (not in limit)` : '';
+    return `<span class="slot-chip ${full ? 'slot-chip--full' : ''}" title="Mandatory courses don\'t count toward the ${limit} elective limit."><span class="slot-chip__dots">${dots}</span>In progress: <b>${used}/${limit}</b> elective courses${note}</span>`;
   }
-  /** Learner / Empty slot — khung nét đứt cùng cỡ thẻ khoá */
-  function EmptySlotCard(n = 1) {
-    return `<a class="slot-empty" href="course-search.html"><span class="slot-empty__ic">${ICON.plus}</span><b>${n} slot${n > 1 ? 's' : ''} left</b><span class="grow"></span><span class="slot-empty__go">Explore courses${ICON.chevronR}</span></a>`;
+  /** Learner / Empty enroll frame — CTA đăng ký thêm trong giới hạn 3 elective (D-119). Không cộng suất mandatory. */
+  function EmptySlotCard(left = 1) {
+    const n = Math.max(1, left | 0);
+    return `<a class="slot-empty" href="course-search.html" title="Open Search Courses, then Start Course. Mandatory courses don't count toward the 3 elective limit."><span class="slot-empty__ic">${ICON.plus}</span><b>Enroll another course</b><span class="slot-empty__go">${n} elective left · Browse${ICON.chevronR}</span></a>`;
   }
 
   /**
@@ -533,8 +535,9 @@ var LH_V = '1118d';
   }
   function SlotMeter(used, limit, mandatory = 0) {
     const full = used >= limit;
-    const dots = Array.from({ length: Math.max(limit, used) }, (_, i) => `<i class="${i < used ? 'on' : ''}"></i>`).join('');
-    return `<span class="slot-meter ${full ? 'slot-meter--full' : ''}"><span class="slot-meter__dots">${dots}</span>In progress: ${used}/${limit} elective courses${mandatory ? ` · ${mandatory} mandatory` : ''}</span>`;
+    const dots = Array.from({ length: limit }, (_, i) => `<i class="${i < used ? 'on' : ''}"></i>`).join('');
+    const note = mandatory > 0 ? ` · ${mandatory} mandatory (not in limit)` : '';
+    return `<span class="slot-meter ${full ? 'slot-meter--full' : ''}"><span class="slot-meter__dots">${dots}</span>In progress: ${used}/${limit} elective courses${note}</span>`;
   }
   /* ---------- Đợt 2 · #8 Tiến độ · #7 Kết quả ---------- */
   /** Course / Progress breakdown — Mode: compact (card) | full (popover). BR-LRN-21, 26 */

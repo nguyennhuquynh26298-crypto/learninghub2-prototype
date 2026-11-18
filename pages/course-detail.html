@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CCAR-F Claude Certified Architect – Foundations · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118q"><link rel="stylesheet" href="../assets/css/base.css?v=1118q"><link rel="stylesheet" href="../assets/css/components.css?v=1118q">
 <style>
   /* LH2 #7 — khối Kết quả của tôi (thêm mới, không có trên web cũ) */
   .my-result { display: flex; gap: 24px; align-items: center; padding: 20px; border-radius: 20px; border: 1px solid var(--neutral-200); background: var(--bg-aside); margin-bottom: 16px; }
@@ -30,9 +30,9 @@
   </div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1118p"></script>
-<script src="../assets/js/data.js?v=1118p"></script>
-<script src="../assets/js/enroll-limit.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1118q"></script>
+<script src="../assets/js/data.js?v=1118q"></script>
+<script src="../assets/js/enroll-limit.js?v=1118q"></script>
 <script>
 const { ICON, AppHeader, AppFooter, BackLink, LessonsAccordion, WebProgress, Badge, AccessNotice, SlotMeter, toast, ProgressBreakdown, CompletionRing, CourseCta, PracticeEntry, esc } = LH;
 const D = LHData; const C = D.course;
@@ -136,7 +136,8 @@ function render() {
   const t = CC ? CC.title : C.title;
   if (state === 'completed' && window.LHCert) LHCert.mint({ courseTitle: t, completedAt: R.done ? '2026-11-05T00:00:00.000Z' : undefined });
   const certHref = state === 'completed' ? 'certificate.html?c=' + encodeURIComponent(t) : '';
-  cta.innerHTML = CourseCta({ state, sched, slots: slots(), result: R, startDate: '25/11/2026', certHref, mandatory: MAND, mandatoryN: MAND ? 0 : 1 });
+  /* D-139: chỉ báo x/3 = khoá tự chọn Đang học. Khoá bắt buộc không tính suất — không gắn "+1 mandatory" giả vào chip khi xem khoá thường. */
+  cta.innerHTML = CourseCta({ state, sched, slots: slots(), result: R, startDate: '25/11/2026', certHref, mandatory: MAND, mandatoryN: 0 });
 }
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-continue]')) { location.href = 'lesson-learn.html'; return; }

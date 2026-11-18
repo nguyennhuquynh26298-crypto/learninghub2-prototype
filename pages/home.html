@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118r"><link rel="stylesheet" href="../assets/css/base.css?v=1118r"><link rel="stylesheet" href="../assets/css/components.css?v=1118r">
 </head>
 <body class="page">
 <!-- Chép bố cục learninghub.techvify.com/ : header 64 → category 60 → container py-13 → My Courses → All Courses → footer -->
@@ -21,10 +21,10 @@
   </section>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1118p"></script>
-<script src="../assets/js/data.js?v=1118p"></script>
-<script src="../assets/js/enroll-limit.js?v=1118p"></script>
-<script src="../assets/js/search.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1118r"></script>
+<script src="../assets/js/data.js?v=1118r"></script>
+<script src="../assets/js/enroll-limit.js?v=1118r"></script>
+<script src="../assets/js/search.js?v=1118r"></script>
 <script>
 const { AppHeader, CategoryNav, AppFooter, SectionHead, CourseCard, EnrollSlotPanel, EmptySlotCard } = LH; const D = LHData;
 document.getElementById('header').innerHTML = AppHeader();
@@ -35,16 +35,20 @@ let full, mand; // mand: học viên có khoá bắt buộc (Course Audience · 
 function render() {
   // My Courses: tối đa 2 thẻ + khung Suất học (khoá còn lại xem ở View More)
   // BR-ENR-01: chỉ khoá Đang học tính suất (tối đa 3); Hoàn thành, Không đạt không tính
+  /* D-119 / D-139: used = số khoá tự chọn Đang học (tối đa 3). Khoá Mandatory không cộng vào used / không tạo “+1 slot”. */
   const used = full ? 3 : (LH.App.mode ? Math.min(3, D.catalog.filter((c) => c.st === 'learning').length) : 2);
   const learning = D.catalog.filter((c) => c.st === 'learning').slice(0, Math.min(2, used));
   const cards = learning.map((c) => card(c, 'in-progress')).slice(0, 2);
+  /* Chip elective x/3; mandatory ghi chú riêng, không đổi mẫu số 3 */
   document.getElementById('h-my').innerHTML = SectionHead('My Courses', 'myCourses', 'my-courses.html', EnrollSlotPanel({ used, limit: 3, mandatory: mand ? 1 : 0 }));
-  document.getElementById('learning').innerHTML = cards.join('') + (cards.length < 2 ? EmptySlotCard(Math.max(1, 3 - used)) : '');
+  /* Còn suất (< 3): tối đa 2 thẻ khoá + khung Enroll another → Search → Start Course. Đủ 3/3: chỉ thẻ, không khung add. */
+  const left = Math.max(0, 3 - used);
+  document.getElementById('learning').innerHTML = cards.join('') + (left > 0 ? EmptySlotCard(left) : '');
   // All Courses
   const st = full ? 'limit-reached' : 'default';
   const all = D.catalog.filter((c) => c.st === 'none').slice(0, 6);
   document.getElementById('h-all').innerHTML = SectionHead('All Courses', 'allCourses', 'course-search.html');
-  /* Khoá bắt buộc với học viên: nhãn Mandatory, Start Course luôn đăng ký được kể cả khi 3/3 */
+  /* Khoá bắt buộc: nhãn Mandatory, Start luôn được kể cả 3/3 — không chiếm suất */
   document.getElementById('featured').innerHTML = all.map((c, k) => card(c, c.restricted ? 'restricted' : (mand && k === 0 ? 'default' : st), mand && k === 0 && !c.restricted)).join('');
 }
 document.addEventListener('click', (e) => {
