@@ -533,7 +533,7 @@
     ['Trần Minh Anh', 'QA', 'In Progress'], ['Lê Hoàng Nam', 'QC Automation', 'Completed'], ['Phạm Thu Trang', 'QA', 'Not Enrolled'],
     ['Đỗ Quang Huy', 'Development', 'In Progress'], ['Vũ Ngọc Lan', 'QA', 'Failed'], ['Ngô Đức Thịnh', 'QC Automation', 'Not Enrolled'],
     ['Hoàng Thu Hà', 'QA', 'In Progress'], ['Bùi Văn Khoa', 'QC Automation', 'Unenrolled'],
-  ].map(([name, dept, status]) => { const s = name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().split(' '); return { name, dept, status, email: `${s.slice(-1)[0]}.${s.slice(0, -1).join('')}@techvify.com.vn` }; });
+  ].map(([name, dept, status]) => { const s = name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().split(' '); return { name, dept, status, email: `${s.slice(-1)[0]}.${s.slice(0, -1).join('')}@techvify.com.vn` }; }).map((p, i) => ({ ...p, id: `TVF${String(1021 + i * 37).padStart(5, '0')}` }));
   const DEPT_SIZE = { QA: 18, 'QC Automation': 9, Development: 42, BA: 11, Design: 6, HR: 5, Sales: 14, 'L&D': 4 };
   const COMPANY = 412;
   const A = { scope: 'all', depts: [], indiv: [], mandatory: false, start: '', end: '', invite: false, notify: false, excluded: [], q: '', err: {}, saved: null, published: true };
@@ -560,8 +560,9 @@
     const q = LH.norm(ms.q);
     if (key === 'd') return D.hr.departments.filter((d) => !A.depts.includes(d) && (!q || LH.norm(d).includes(q)))
       .map((d) => ({ v: d, main: d, sub: `${DEPT_SIZE[d] || 0} people` }));
-    return PEOPLE.filter((p) => !A.indiv.includes(p.name) && (!q || LH.norm(p.name + ' ' + p.email).includes(q)))
-      .map((p) => ({ v: p.name, main: p.name, sub: `${p.email} · ${p.dept}` }));
+    /* Course Audience 3.1: tìm theo tên (không dấu cũng được), email, mã nhân viên */
+    return PEOPLE.filter((p) => !A.indiv.includes(p.name) && (!q || LH.norm(p.name + ' ' + p.email + ' ' + p.id).includes(q)))
+      .map((p) => ({ v: p.name, main: p.name, sub: `${p.id} · ${p.email} · ${p.dept}` }));
   }
   function msField(key, label, ph, arr) {
     const ro = !cfg.editable;
@@ -588,7 +589,7 @@
         </div>
         ${A.scope === 'restricted' ? `<div class="cc-row aud-pick">
           ${msField('d', 'Departments', 'Search departments', A.depts)}
-          ${msField('i', 'Individuals', 'Search by name or email', A.indiv)}
+          ${msField('i', 'Individuals', 'Search by name, email or employee ID', A.indiv)}
         </div>${A.err.scope ? `<p class="adm-err">${A.err.scope}</p>` : ''}` : ''}
       </section>
       <section class="aud-block"><h3>Rules</h3>
