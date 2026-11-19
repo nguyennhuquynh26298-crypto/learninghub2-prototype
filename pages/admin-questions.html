@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course setup · LearningHub</title>
+<!-- 19/11/2026 (Larry chốt): bỏ màn Questions riêng. Câu thi quản lý trong dòng Quiz (tab Details), câu luyện tập trong tab Practice.
+     Giữ file để link cũ vẫn mở đúng chỗ. -->
+<script>
+(function () {
+  const p = new URLSearchParams(location.search);
+  const exam = p.get('bank') === 'exam';
+  const q = new URLSearchParams({ r: p.get('r') || 'admin', st: 'published', tab: exam ? 'details' : 'practice' });
+  if (p.get('demo')) q.set('pq', p.get('demo') === 'list' ? 'on' : p.get('demo'));
+  location.replace('course-editor.html?' + q);
+})();
+</script>
+</head>
+<body><p style="font-family:Inter,sans-serif;padding:24px">Opening <a href="course-editor.html?tab=practice">Course setup</a>…</p></body>
+</html>

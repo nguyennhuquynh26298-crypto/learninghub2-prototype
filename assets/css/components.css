@@ -890,3 +890,25 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .att-table td .badge { margin-left: 4px; }
 /* Export Data — Learning Data Export 3.1 */
 .ex-multi { display: flex; flex-wrap: wrap; gap: 8px 16px; max-height: 150px; overflow: auto; border: 1px solid var(--border-default); border-radius: 8px; padding: 10px 12px; }
+/* Practice — Skip, vạch 4 màu, xem lại (plan 19/11) */
+.dash__bar i.is-ok { background: var(--green-600); }
+.dash__bar i.is-bad { background: var(--red-600); }
+.dash__bar i.is-skip { background: var(--gray-400, #9ca3af); }
+.dash__bar i.is-cur { box-shadow: 0 0 0 1.5px var(--primary-700); }
+.wq-acts { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.wq-acts .wq-check { margin: 0; }
+.wbtn--ghost { background: transparent; color: var(--gray-600); border-color: transparent; }
+.wbtn--ghost:hover { background: var(--gray-100, #f3f4f6); }
+.wq-keys { margin-left: auto; font-size: 12px; color: var(--gray-400, #9ca3af); }
+.psum__wrong a.is-skip { border-style: dashed; color: var(--gray-600); }
+.pr-review { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--gray-600); }
+@media (max-width: 640px) { .wq-keys { display: none; } }
+/* Form / Required guard — luật chung field bắt buộc (19/11) */
+.is-req-err, .adm-input.is-req-err, .input.is-req-err { border-color: #e7000b !important; box-shadow: 0 0 0 3px rgba(231, 0, 11, .12) !important; }
+.req-msg { margin: 6px 0 0; font-size: 13px; line-height: 18px; color: #c10007; }
+.req-msg:empty { display: none; }
+button:disabled[title="Fill in all required fields"] { cursor: not-allowed; }
+/* Header bảng tương phản rõ (19/11) — bảng phía học viên (Attempt History…) */
+.table th { background: #e4e7ec; color: #1e293b; font-weight: 600; font-size: 13px; text-transform: none; letter-spacing: .01em; border-bottom: 1px solid #d0d5dd; }
+/* Công tắc bị khoá khi chưa có dữ liệu */
+.switch.is-locked { cursor: not-allowed; opacity: .55; }

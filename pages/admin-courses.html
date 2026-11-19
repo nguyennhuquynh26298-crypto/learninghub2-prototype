@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Course Management · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1119m">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1119r">
 <style>
   /* LH1 + Admin DNA — list tools = adm-box__head */
   .cm-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0; min-height: 40px; }
@@ -26,7 +26,7 @@
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1119q"></script>
 <script src="../assets/js/data.js?v=1118c"></script>
 <script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
@@ -98,14 +98,14 @@ function render() {
     list.length ? list.map((c) => {
       const i = rows.indexOf(c);
       const st = c.status === 'draft' ? 'draft' : c.status;
-      /* Course Audience 3.7: View Learners chỉ ở khoá đã từng Publish (BR-AUD-14); Delete chỉ ở khoá chưa có ai đăng ký (BR-AUD-15).
+      /* Course Audience 3.7: View Learners chỉ ở khoá đã từng Publish (BR-AUD-14); Delete chỉ ở khoá không đang Published (luật web) và chưa có ai đăng ký (BR-AUD-15 v1.1).
          Learning Data Export 2.1: Export Data trong menu dòng (Đợt 1: Admin L&D). Course Information: nháp Incomplete mở lại ở form Create (BR-CI-07). */
       const items = [];
       const everPub = c.status === 'published' || c.everPublished;
       if (role === 'admin' && everPub) items.push({ label: 'View Learners', icon: 'usersRound', href: `admin-course-learners.html?t=${encodeURIComponent(c.title)}&r=admin` });
       items.push({ label: 'Edit', icon: 'edit', href: c.incomplete ? `course-create.html?r=${role}&edit=${encodeURIComponent(c.title)}` : `course-editor.html?r=${role}&st=${st}&t=${encodeURIComponent(c.title)}&tab=details` });
       if (role === 'admin' && everPub) items.push({ label: 'Export Data', icon: 'download', attrs: `data-export="${i}"` });
-      if (!c.learners) items.push({ label: 'Delete', icon: 'trash', danger: true, attrs: `data-del="${i}"` });
+      if (c.status !== 'published' && !c.learners) items.push({ label: 'Delete', icon: 'trash', danger: true, attrs: `data-del="${i}"` });
       return `<tr>
         <td class="t-name"><b>${esc(c.title)}</b>${c.incomplete ? Tag('Incomplete', 'pending').replace('class="', 'class="cm-incomplete ') : ''}</td>
         <td>${esc(c.cat || '—')}</td>

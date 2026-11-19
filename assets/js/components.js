@@ -2,7 +2,7 @@
  * Mỗi hàm = 1 component Figma cùng tên. Trạng thái = tham số (variant), chữ = tham số (text property).
  * Dùng: <script src="../assets/js/components.js"></script> → window.LH.* */
 /* Số phiên bản tài nguyên — tăng cùng ?v= trong pages/*.html mỗi lần sửa JS/CSS để trình duyệt không dùng bản cũ */
-var LH_V = '1118d';
+var LH_V = '1119q';
 (function () {
   const P = (d) => `<svg class="ic" width="16" height="16" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const ICON = {
@@ -155,11 +155,12 @@ var LH_V = '1118d';
    * Search / Filter dropdown — nút lọc dạng pill + menu chọn 1.
    * State: default (giá trị mặc định) | active (đang lọc, nền primary-50) | open. Chọn → phát sự kiện 'fdd:change' {key, value}.
    */
-  function FilterDropdown({ key, label, value, options, def = 'all', align = 'left' }) {
+  function FilterDropdown({ key, label, value, options, def = 'all', align = 'left', title = '' }) {
     const cur = options.find((o) => o[0] === value) || options[0];
     const active = value !== def;
-    return `<div class="fdd ${active ? 'is-active' : ''}" data-fdd="${key}">
-      <button type="button" class="fdd__btn" aria-haspopup="listbox" aria-expanded="false"><span class="fdd__l">${esc(label)}</span><b>${esc(cur[1])}</b>${ICON.chevronD}</button>
+    const tip = title ? ` title="${esc(title)}"` : '';
+    return `<div class="fdd ${active ? 'is-active' : ''}" data-fdd="${key}"${tip}>
+      <button type="button" class="fdd__btn" aria-haspopup="listbox" aria-expanded="false"${tip}><span class="fdd__l">${esc(label)}</span><b>${esc(cur[1])}</b>${ICON.chevronD}</button>
       <div class="fdd__menu fdd__menu--${align}" role="listbox" hidden>${options.map(([v, t, n]) => `<button type="button" role="option" class="fdd__opt ${v === value ? 'is-sel' : ''}" data-v="${esc(v)}" aria-selected="${v === value}" ${n === 0 && v !== value ? 'data-zero' : ''}><span>${esc(t)}</span>${n != null ? `<i>${n}</i>` : ''}${v === value ? ICON.check : ''}</button>`).join('')}</div></div>`;
   }
 
@@ -178,7 +179,8 @@ var LH_V = '1118d';
     let main = '';
     if (state === 'recent') main = recent.length ? `<div class="sp-sec"><div class="sp-h">Tìm gần đây</div>${recent.map((r, i) => `<div class="sp-rec" data-sp-i="${i}" data-sp-q="${esc(r)}" role="option">${ICON.clock}<span>${esc(r)}</span><button type="button" class="sp-rec__x" data-sp-del="${esc(r)}" aria-label="Xoá khỏi lịch sử">${ICON.x}</button></div>`).join('')}</div>` : '';
     if (state === 'typing') main = `<div class="sp-sec"><div class="sp-h">Khoá học</div>${results.map((r, i) => SearchResultItem({ ...r, q, i })).join('')}</div>`;
-    if (state === 'empty') main = `<div class="sp-empty">${ICON.search}<b>Không có khoá nào khớp “${esc(q)}”</b><span>Thử từ khoá ngắn hơn hoặc không dấu.</span></div>`;
+    if (state === 'empty') main = `<div class="sp-empty">${ICON.search}<b>No courses found for “${esc(q)}”</b></div>`;
+
     const all = q ? `<button type="button" class="sp-all" data-sp-all data-sp-i="${state === 'typing' ? results.length : state === 'recent' ? recent.length : 0}" role="option">${ICON.search}<span>Xem tất cả <b>${total}</b> kết quả cho “${esc(q)}”</span>${ICON.chevronR}</button>` : '';
     return `<div class="sp" data-state="${state}">${main}${all}</div>`;
   }
@@ -199,6 +201,46 @@ var LH_V = '1118d';
     if (!host) { host = document.createElement('div'); host.className = 'toast-host'; document.body.appendChild(host); }
     const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = ICON.check + esc(text);
     host.appendChild(t); setTimeout(() => t.remove(), 3200);
+  }
+
+  /**
+   * Form / Required guard — LUẬT CHUNG cho mọi form có field bắt buộc (19/11/2026):
+   *  1. Field bắt buộc còn trống → viền đỏ + câu báo dưới field, hiện sau khi người dùng rời field (blur) hoặc khi gọi touchAll().
+   *     Chưa chạm vào thì không đỏ (không "mắng" người dùng lúc vừa mở form).
+   *  2. Nút hành động (Save / Continue / Save as Draft…) tắt tới khi đủ các field nó cần; rê chuột lên nút tắt thấy "Fill in all required fields".
+   *  3. Lỗi nghiệp vụ khác (trùng câu, sai định dạng…) vẫn kiểm khi bấm nút như cũ.
+   * reqGuard({ root, rules: () => [{ key, el, ok, msg, mark?, msgEl? }], buttons: () => [{ el, keys? }] }) → { run, touchAll, ok }
+   *  - rules() gọi lại mỗi lần kiểm nên form vẽ lại (re-render) vẫn đúng · key ổn định giữa các lần vẽ
+   *  - el: chỗ đặt câu báo (sau el) · mark: các ô tô đỏ (mặc định [el]) · msgEl: dùng ô báo lỗi có sẵn thay vì tự tạo
+   *  - buttons[].keys: chỉ các rule nút đó cần (vd. Save as Draft chỉ cần Course Title); bỏ trống = cần tất cả
+   */
+  function reqGuard({ root = document, rules, buttons = () => [] } = {}) {
+    const touched = new Set(), marked = new Set(); let all = false;
+    const keysOf = (t) => rules().filter((x) => x.el && (x.el === t || x.el.contains(t) || (x.mark || []).some((m) => m && (m === t || m.contains(t))))).map((x) => x.key);
+    function run() {
+      const list = rules();
+      marked.forEach((m) => { m.classList.remove('is-req-err'); m.removeAttribute('aria-invalid'); }); marked.clear();
+      list.forEach((r) => {
+        if (!r.el) return;
+        const show = !r.ok && (all || touched.has(r.key));
+        if (show) (r.mark || [r.el]).forEach((m) => { if (!m) return; m.classList.add('is-req-err'); m.setAttribute('aria-invalid', 'true'); marked.add(m); });
+        let m = r.msgEl || r.el.parentElement.querySelector(`:scope > .req-msg[data-for="${r.key}"]`);
+        if (!m) { m = document.createElement('p'); m.className = 'req-msg'; m.dataset.for = r.key; r.el.insertAdjacentElement('afterend', m); }
+        if (r.msgEl) { if (show) m.textContent = r.msg; else if (m.dataset.req === '1') m.textContent = ''; m.dataset.req = show ? '1' : ''; }
+        else m.textContent = show ? r.msg : '';
+      });
+      buttons().forEach(({ el, keys }) => {
+        if (!el) return;
+        const need = keys ? list.filter((r) => keys.includes(r.key) || keys.some((k) => r.key.startsWith(k + ':'))) : list;
+        const bad = need.some((r) => !r.ok);
+        el.disabled = bad; el.title = bad ? 'Fill in all required fields' : '';
+      });
+      return list.every((r) => r.ok);
+    }
+    root.addEventListener('focusout', (e) => { const ks = keysOf(e.target); if (ks.length) { ks.forEach((k) => touched.add(k)); setTimeout(run, 0); } });
+    ['input', 'change'].forEach((ev) => root.addEventListener(ev, () => setTimeout(run, 0)));
+    root.addEventListener('click', () => setTimeout(run, 0));
+    return { run, touchAll() { all = true; return run(); }, ok: () => rules().every((r) => r.ok), touch(k) { touched.add(k); run(); } };
   }
 
   /* ---------- Course ---------- */
@@ -413,7 +455,7 @@ var LH_V = '1118d';
     const verdict = livePrior || (!result ? '' : `<span class="wq-res wq-res--${result}">${result === 'correct' ? ICON.check + 'Correct' : result === 'blank' ? 'Unanswered' : ICON.x + 'Incorrect'}</span>`);
     const foot = reveal && explain ? `<div class="wq-foot"><div class="wq-explain"><p>Explanation</p><div>${esc(explain)}</div></div></div>`
       : changed ? `<div class="wq-changed">${ICON.alert}You changed this answer. It was correct in the previous attempt.</div>`
-      : showCheck && state === 'answering' ? `<button class="wbtn wbtn--outline wq-check" data-check ${blank ? 'disabled' : ''}>Check Answer</button>` : '';
+      : showCheck && state === 'answering' ? `<div class="wq-acts"><button class="wbtn wq-check" data-check ${blank ? 'disabled' : ''}>Check Answer</button><button class="wbtn wbtn--ghost" data-skip>Skip</button><span class="wq-keys">A–D to choose · Enter to check · → to skip</span></div>` : '';
     const flag = state === 'exam' ? `<button class="wq-flag ${flagged ? 'is-on' : ''}" data-flag title="Mark for review">${ICON.flag}${flagged ? 'Marked for review' : 'Mark for review'}</button>` : '';
     return `<div class="wq ${flagged ? 'is-flagged' : ''} ${changed ? 'is-changed' : ''}" id="q${n}" data-n="${n}" data-state="${state}" data-result="${result || (prior && prior.result) || ''}">
       <div class="wq-head"><div class="wq-head__l"><span class="wq-num">Question ${n}</span>${verdict}</div><div class="wq-badges"><span class="wq-type">${TYPE_UI[type] || TYPE_UI.single}</span><span class="wq-pt">${points} point${points > 1 ? 's' : ''}</span>${flag}</div></div>
@@ -421,8 +463,10 @@ var LH_V = '1118d';
       <div class="wq-opts">${opts}</div>${foot}</div>`;
   }
   /** Assessment / Dash meter — "x / N" + vạch 3px */
-  function DashMeter(done, total, label = 'complete') {
-    return `<div class="dash"><div class="dash__row"><span>${done} / ${total} ${esc(label)}</span>${ICON.trophy}</div><div class="dash__bar">${Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</div></div>`;
+  /** marks (tuỳ chọn): mảng trạng thái từng vạch 'ok' | 'bad' | 'skip' | '' và cur = vị trí đang làm (Practice: "Question x of n") */
+  function DashMeter(done, total, label = 'complete', marks = null, cur = -1) {
+    const bar = Array.from({ length: total }, (_, i) => `<i class="${marks ? (marks[i] ? 'is-' + marks[i] : '') : (i < done ? 'on' : '')} ${i === cur ? 'is-cur' : ''}"></i>`).join('');
+    return `<div class="dash"><div class="dash__row"><span>${marks ? esc(label) : `${done} / ${total} ${esc(label)}`}</span>${ICON.trophy}</div><div class="dash__bar">${bar}</div></div>`;
   }
   /** Assessment / Quiz top bar — Mode: practice | exam | review. Dính trên cùng màn quiz */
   function QuizTopBar({ mode = 'practice', title, center = '', right = '' }) {
@@ -487,11 +531,15 @@ var LH_V = '1118d';
     return `<div class="rfilter" role="tablist">${[['all', 'All'], ['correct', 'Correct'], ['incorrect', 'Incorrect']].map(([k, t]) => `<button role="tab" class="${active === k ? 'is-active' : ''}" data-f="${k}">${t}<span>${counts[k]}</span></button>`).join('')}</div>`;
   }
   /** Assessment / Practice summary — Practice · Learner 3.3 Tổng kết */
-  function PracticeSummary({ right, total, wrong = [] }) {
-    return `<div class="psum"><div class="psum__head"><span class="psum__ic">${ICON.trophy}</span><div><h2>Practice complete</h2><p><b>${right} / ${total}</b> correct</p></div></div>
+  /** wrong: số thứ tự câu sai · skipped: số thứ tự câu bỏ qua (Skip) — cả hai vào lượt "Practice n Incorrect" */
+  function PracticeSummary({ right, total, wrong = [], skipped = [] }) {
+    const redo = wrong.length + skipped.length;
+    const chip = (n, sk) => `<a href="#q${n}" data-jump="${n}" class="${sk ? 'is-skip' : ''}">Question ${n}${sk ? ' · skipped' : ''}</a>`;
+    const list = [...wrong.map((n) => [n, false]), ...skipped.map((n) => [n, true])].sort((a, b) => a[0] - b[0]);
+    return `<div class="psum"><div class="psum__head"><span class="psum__ic">${ICON.trophy}</span><div><h2>Practice complete</h2><p><b>${right} / ${total}</b> correct · ${wrong.length} incorrect${skipped.length ? ` · ${skipped.length} skipped` : ''}</p></div></div>
       <div class="psum__note">${ICON.info}Practice does not count toward exam attempts or progress, and results are not saved.</div>
-      ${wrong.length ? `<div class="psum__wrong"><b>Questions to review</b><div>${wrong.map((n) => `<a href="#q${n}" data-jump="${n}">Question ${n}</a>`).join('')}</div></div>` : '<div class="psum__wrong"><b>All answers are correct.</b></div>'}
-      <div class="psum__act">${wrong.length ? `<button class="wbtn" data-retry-wrong>Practice ${wrong.length} Incorrect</button>` : ''}<button class="wbtn wbtn--outline" data-restart>Restart</button><button class="wbtn wbtn--outline" data-exit-practice>Exit</button></div></div>`;
+      ${redo ? `<div class="psum__wrong"><b>Questions to review</b><div>${list.map(([n, sk]) => chip(n, sk)).join('')}</div></div>` : '<div class="psum__wrong"><b>All answers are correct.</b></div>'}
+      <div class="psum__act">${redo ? `<button class="wbtn" data-retry-wrong>Practice ${redo} Incorrect${skipped.length ? ' &amp; Skipped' : ''}</button>` : ''}<button class="wbtn wbtn--outline" data-restart>Restart</button><button class="wbtn wbtn--outline" data-back-course>Back to Course</button></div></div>`;
   }
   /* ---------- Enroll — Enrollment 3.1, 3.2 (BR-ENR-01, 10) ---------- */
   /** Learner / Slot indicator — D-119/D-139: "In progress: x/3 elective courses". Mandatory không tính suất (không +1 slot). */
@@ -1133,10 +1181,110 @@ var LH_V = '1118d';
     if (mb) { const l = mb.nextElementSibling; l.hidden = !l.hidden; mb.setAttribute('aria-expanded', !l.hidden); }
   });
 
-  window.LH = { App, url, ICON, esc, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
+  /* Admin droplist — thay native <select> (OS xám/xanh hệ thống) bằng menu trắng + active primary như learning .fdd */
+  function closeAdmDd(except) {
+    document.querySelectorAll('.adm-dd.is-open').forEach((el) => {
+      if (el === except) return;
+      el.classList.remove('is-open');
+      const m = el.querySelector('.adm-dd__menu');
+      if (m) m.hidden = true;
+      el.querySelector('.adm-dd__btn')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+  function paintAdmDd(wrap) {
+    const sel = wrap._admSel; if (!sel) return;
+    const btn = wrap.querySelector('.adm-dd__btn');
+    const menu = wrap.querySelector('.adm-dd__menu');
+    if (!btn || !menu) return;
+    const opt = sel.selectedOptions[0];
+    const label = (opt && opt.textContent) || (sel.options[0] && sel.options[0].textContent) || '';
+    const empty = !sel.value;
+    btn.innerHTML = `<span class="${empty ? 'is-ph' : ''}">${esc(label)}</span>${ICON.chevronD}`;
+    btn.disabled = !!sel.disabled;
+    wrap.classList.toggle('is-disabled', !!sel.disabled);
+    wrap.classList.toggle('is-error', sel.classList.contains('is-error') || sel.classList.contains('is-req-err'));
+    menu.innerHTML = [...sel.options].map((o) => {
+      const on = o.selected || (String(o.value) === String(sel.value));
+      return `<button type="button" class="adm-dd__opt ${on ? 'is-sel' : ''}" data-v="${esc(o.value)}" role="option" aria-selected="${on}"><span>${esc(o.textContent)}</span>${on ? ICON.check : ''}</button>`;
+    }).join('');
+  }
+  function enhanceSelect(sel) {
+    if (!sel || sel.tagName !== 'SELECT') return;
+    const host = sel.closest('.adm-dd');
+    if (host) { host._admSel = sel; paintAdmDd(host); return; }
+    const wrap = document.createElement('div');
+    wrap.className = 'adm-dd';
+    wrap._admSel = sel;
+    sel.classList.add('adm-dd__native');
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'adm-dd__btn';
+    btn.setAttribute('aria-haspopup', 'listbox');
+    btn.setAttribute('aria-expanded', 'false');
+    const menu = document.createElement('div');
+    menu.className = 'adm-dd__menu';
+    menu.hidden = true;
+    menu.setAttribute('role', 'listbox');
+    wrap.appendChild(btn);
+    wrap.appendChild(menu);
+    paintAdmDd(wrap);
+    const mo = new MutationObserver(() => paintAdmDd(wrap));
+    mo.observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class'] });
+    sel.addEventListener('change', () => paintAdmDd(wrap));
+  }
+  function enhanceSelects(root = document) {
+    root.querySelectorAll('select.adm-input, select.rpt-sel, .filter-btn select').forEach(enhanceSelect);
+  }
+  document.addEventListener('click', (e) => {
+    const opt = e.target.closest('.adm-dd__opt');
+    if (opt) {
+      const wrap = opt.closest('.adm-dd');
+      const sel = wrap && wrap._admSel;
+      const v = opt.dataset.v;
+      if (sel && String(sel.value) !== String(v)) {
+        sel.value = v;
+        sel.dispatchEvent(new Event('input', { bubbles: true }));
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      paintAdmDd(wrap);
+      closeAdmDd();
+      return;
+    }
+    const btn = e.target.closest('.adm-dd__btn');
+    if (btn) {
+      const wrap = btn.closest('.adm-dd');
+      if (!wrap || wrap.classList.contains('is-disabled')) return;
+      const open = !wrap.classList.contains('is-open');
+      closeAdmDd(wrap);
+      wrap.classList.toggle('is-open', open);
+      const menu = wrap.querySelector('.adm-dd__menu');
+      if (menu) menu.hidden = !open;
+      btn.setAttribute('aria-expanded', open);
+      e.preventDefault();
+      return;
+    }
+    if (!e.target.closest('.adm-dd')) closeAdmDd();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAdmDd(); });
+  const bootSelects = () => enhanceSelects();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootSelects);
+  else bootSelects();
+  new MutationObserver((muts) => {
+    muts.forEach((m) => {
+      m.addedNodes.forEach((n) => {
+        if (n.nodeType !== 1) return;
+        if (n.matches?.('select.adm-input, select.rpt-sel')) enhanceSelect(n);
+        else if (n.querySelector) n.querySelectorAll('select.adm-input, select.rpt-sel, .filter-btn select').forEach(enhanceSelect);
+      });
+    });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  window.LH = { App, url, ICON, esc, reqGuard, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
     RichboxBar, Richbox, wireRichbox,
     admRole, ADM_USER, AdminLayout, AdminSidebar, AdminToolbar, AdminHead, AdminFilter, AdminTable, StageTag, Tag, RowMenu, AdminEmpty, AdminConfirm, TrendKpi,
-    ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight,
+    ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight, enhanceSelect, enhanceSelects,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
     QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary, CertificateSheet, AnswerNote, PracticeEntry };
 })();

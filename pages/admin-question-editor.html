@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course setup · LearningHub</title>
+<!-- 19/11/2026 (Larry chốt, D-158): bỏ trang soạn câu riêng. Như web, form thêm / sửa câu hiện ngay dưới dòng Quiz (tab Details);
+     câu luyện tập dùng cùng form ngay trong tab Practice. Bản cũ cất ở docs/archive/prototype/admin-question-editor.html. Giữ file để link cũ mở đúng chỗ. -->
+<script>
+(function () {
+  const p = new URLSearchParams(location.search);
+  const exam = p.get('bank') === 'exam';
+  const q = new URLSearchParams({ r: p.get('r') || 'admin', st: p.get('st') || 'draft', tab: exam ? 'details' : 'practice' });
+  if (p.get('course')) q.set('t', p.get('course'));
+  location.replace('course-editor.html?' + q);
+})();
+</script>
+</head>
+<body><p style="font-family:Inter,sans-serif;padding:24px">Opening <a href="course-editor.html?tab=details">Course setup</a>…</p></body>
+</html>

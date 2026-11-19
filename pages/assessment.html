@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Exam · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1119j">
 <link rel="stylesheet" href="../assets/css/certificate.css?v=1118p"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118p">
 <style>
   .exam-line { margin-top: 6px; font-size: 14px; color: var(--gray-600); }
@@ -25,7 +25,7 @@
                đáp án mở khi Passed hoặc hết 3 lượt (BR-EX-07); pháo hoa + Techter chỉ ngay sau lượt Passed (BR-EX-19);
                bài cuối làm khoá Completed → chỉ popup hoàn thành khoá (BR-LP-13). -->
 <div id="app"></div>
-<script src="../assets/js/components.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1119j"></script>
 <script src="../assets/js/data.js?v=1118p"></script>
 <script src="../assets/js/lh2-wave2.js?v=1118p"></script>
 <script>
@@ -81,44 +81,77 @@ function viewStart() {
   if (expired) toast('Your unfinished attempt ran out of time and was submitted automatically.');
 }
 
-/* ---------- Practice — từng câu (Practice · Learner 3.3, 3.4) ---------- */
-let P = null; // { st:[{chosen,checked}], order:[i], pos, done }
-const newPractice = (only) => ({ st: PQ.map(() => ({ chosen: [], checked: false })), order: only || PQ.map((_, i) => i), pos: 0, done: false });
+/* ---------- Practice — từng câu (Practice · Learner 3.3, 3.4 + plan 19/11: Skip, xem lại, phím tắt) ----------
+ * Check Answer → Correct/Incorrect + Correct answer + Explanation → Next. Skip khi chưa Check (tính là chưa đúng).
+ * Tổng kết: x / n correct · y incorrect · z skipped → Practice n Incorrect & Skipped · Restart · Back to Course.
+ * Bấm câu trong danh sách ôn → xem lại chỉ đọc → Back to Summary. Không lưu kết quả (BR-PR-04). */
+let P = null; // { st:[{chosen,checked,skipped}], order:[i], pos, done, review }
+const newPractice = (only) => ({ st: PQ.map(() => ({ chosen: [], checked: false, skipped: false })), order: only || PQ.map((_, i) => i), pos: 0, done: false, review: false });
+const pOk = (i) => P.st[i].checked && isOk(PQ[i], P.st[i].chosen);
+const pMark = (i) => (P.st[i].checked ? (pOk(i) ? 'ok' : 'bad') : P.st[i].skipped ? 'skip' : '');
+const courseHref = () => LH.url('course-detail.html');
 function viewPractice() {
   shell(false); if (!P) P = newPractice();
-  const okI = (i) => P.st[i].checked && isOk(PQ[i], P.st[i].chosen);
-  const checked = P.order.filter((i) => P.st[i].checked).length;
-  const i = P.order[P.pos], s = P.st[i];
-  const last = P.pos === P.order.length - 1;
-  const main = P.done
-    ? `${PracticeSummary({ right: P.order.filter(okI).length, total: P.order.length, wrong: P.order.filter((k) => !okI(k)).map((k) => k + 1) })}`
-    : `<div class="pr-one">${WebQuestion({ n: i + 1, ...PQ[i], chosen: s.chosen, state: s.checked ? 'checked' : 'answering', showCheck: true })}
-        ${s.checked ? `<div class="pr-one__foot"><span class="grow t-sm muted">Question ${P.pos + 1} of ${P.order.length}</span><button class="wbtn" data-next>${last ? 'See Summary' : 'Next'}</button></div>` : ''}</div>`;
-  app.innerHTML = `<div class="quiz-page">${QuizTopBar({ mode: 'practice', title: D.course.title, center: DashMeter(checked, P.order.length, 'checked'), right: '<button class="wbtn wbtn--outline" data-exit-practice>Exit</button>' })}
+  const n = P.order.length, i = P.order[P.pos], s = P.st[i], last = P.pos === n - 1;
+  const summary = P.done && !P.review;
+  const meter = DashMeter(0, n, summary ? `${n} of ${n} done` : `Question ${P.pos + 1} of ${n}`, P.order.map(pMark), summary ? -1 : P.pos);
+  let main;
+  if (summary) {
+    main = PracticeSummary({ right: P.order.filter(pOk).length, total: n,
+      wrong: P.order.filter((k) => P.st[k].checked && !pOk(k)).map((k) => k + 1),
+      skipped: P.order.filter((k) => !P.st[k].checked).map((k) => k + 1) });
+  } else if (P.review) {
+    /* Xem lại từ tổng kết: chỉ đọc, hiện đáp án đúng + giải thích; câu bỏ qua ghi Unanswered */
+    main = `<div class="pr-one"><div class="pr-review">${LH.ICON.eye}Reviewing · ${s.checked ? 'read only' : 'you skipped this question'}</div>
+      ${WebQuestion({ n: i + 1, ...PQ[i], chosen: s.chosen, state: 'checked' })}
+      <div class="pr-one__foot"><span class="grow"></span><button class="wbtn" data-back-summary>Back to Summary</button></div></div>`;
+  } else {
+    main = `<div class="pr-one">${WebQuestion({ n: i + 1, ...PQ[i], chosen: s.chosen, state: s.checked ? 'checked' : 'answering', showCheck: true })}
+      ${s.checked ? `<div class="pr-one__foot"><span class="grow t-sm muted">${pOk(i) ? 'Correct — well done.' : 'Not quite. See the correct answer above.'}</span><button class="wbtn" data-next>${last ? 'See Summary' : 'Next'}</button></div>` : ''}</div>`;
+  }
+  app.innerHTML = `<div class="quiz-page">${QuizTopBar({ mode: 'practice', title: D.course.title, center: meter, right: '<button class="wbtn wbtn--outline" data-exit-practice>Exit</button>' })}
     <div class="stage-card"><div class="quiz">
       <div class="quiz-head"><div class="quiz-head__t"><h1>Practice</h1><span class="quiz-badge">Practice</span></div>
-        <p>${P.order.length < PQ.length ? `Practising ${P.order.length} incorrect questions` : `${PQ.length} questions`} · See answers right after each question · Does not count toward exam attempts or progress</p></div>
+        <p>${n < PQ.length ? `Practising ${n} incorrect &amp; skipped questions` : `${PQ.length} questions`} · See answers right after each question · Does not count toward exam attempts or progress</p></div>
       ${main}
     </div></div></div>`;
 }
-function practiceClick(e) {
-  const i = P.order[P.pos], s = P.st[i];
-  if (e.target.closest('[data-check]')) { s.checked = true; viewPractice(); return; }
-  const o = e.target.closest('.wq-opt'); if (o && !s.checked && !P.done) { const k = +o.dataset.k;
-    s.chosen = PQ[i].type === 'multi' ? (s.chosen.includes(k) ? s.chosen.filter((x) => x !== k) : [...s.chosen, k]) : [k]; viewPractice(); return; }
-  if (e.target.closest('[data-next]')) { if (P.pos < P.order.length - 1) P.pos++; else P.done = true; viewPractice(); return; }
-  if (e.target.closest('[data-retry-wrong]')) { const wrong = P.order.filter((k) => !(P.st[k].checked && isOk(PQ[k], P.st[k].chosen))); P = newPractice(wrong); viewPractice(); return; }
-  if (e.target.closest('[data-restart]')) { P = newPractice(); viewPractice(); return; }
-  const j = e.target.closest('[data-jump]'); if (j) { e.preventDefault(); const k = P.order.indexOf(+j.dataset.jump - 1); if (k >= 0) { P.pos = k; P.done = false; viewPractice(); } return; }
-  if (e.target.closest('[data-exit-practice]')) {
-    const any = P.order.some((k) => P.st[k].checked);
-    if (P.done || !any) { P = null; location.href = LH.url('course-detail.html'); return; }
-    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'exit', size: 'sm', icon: 'info', title: 'Exit practice?',
-      body: '<p class="t-sm">Your progress in this session will not be saved.</p>',
-      foot: '<button class="wbtn wbtn--outline" data-close>Stay</button><button class="wbtn" data-exit-confirm>Exit</button>' }));
-  }
-  if (e.target.closest('[data-exit-confirm]')) { P = null; location.href = LH.url('course-detail.html'); }
+function pAdvance() { if (P.pos < P.order.length - 1) P.pos++; else P.done = true; viewPractice(); }
+function pCheck() { const s = P.st[P.order[P.pos]]; if (!s.chosen.length) return; s.checked = true; s.skipped = false; viewPractice(); }
+function pChoose(k) {
+  const i = P.order[P.pos], s = P.st[i]; if (s.checked || P.done || P.review || k >= PQ[i].options.length) return;
+  s.chosen = PQ[i].type === 'multi' ? (s.chosen.includes(k) ? s.chosen.filter((x) => x !== k) : [...s.chosen, k]) : [k]; s.skipped = false; viewPractice();
 }
+function pLeave() {
+  const any = P.order.some((k) => P.st[k].checked);
+  if (P.done || !any) { P = null; location.href = courseHref(); return; }
+  document.body.insertAdjacentHTML('beforeend', Modal({ id: 'exit', size: 'sm', icon: 'info', title: 'Exit practice?',
+    body: '<p class="t-sm">Your progress in this session will not be saved.</p>',
+    foot: '<button class="wbtn wbtn--outline" data-close>Stay</button><button class="wbtn" data-exit-confirm>Exit</button>' }));
+}
+function practiceClick(e) {
+  const s = P.st[P.order[P.pos]];
+  if (e.target.closest('[data-check]')) { pCheck(); return; }
+  if (e.target.closest('[data-skip]')) { s.skipped = true; pAdvance(); return; }
+  const o = e.target.closest('.wq-opt'); if (o) { pChoose(+o.dataset.k); return; }
+  if (e.target.closest('[data-next]')) { pAdvance(); return; }
+  if (e.target.closest('[data-back-summary]')) { P.review = false; viewPractice(); return; }
+  if (e.target.closest('[data-retry-wrong]')) { P = newPractice(P.order.filter((k) => !pOk(k))); viewPractice(); return; }
+  if (e.target.closest('[data-restart]')) { P = newPractice(); viewPractice(); return; }
+  const j = e.target.closest('[data-jump]'); if (j) { e.preventDefault(); const k = P.order.indexOf(+j.dataset.jump - 1); if (k >= 0) { P.pos = k; P.review = true; viewPractice(); } return; }
+  if (e.target.closest('[data-back-course]') || e.target.closest('[data-exit-confirm]')) { P = null; location.href = courseHref(); return; }
+  if (e.target.closest('[data-exit-practice]')) pLeave();
+}
+/* Phím tắt: A–D / 1–4 chọn · Enter = Check rồi Next · → = Skip (hoặc Next khi đã Check) */
+addEventListener('keydown', (e) => {
+  if ((location.hash.slice(1) || 'start') !== 'practice' || !P || P.done || P.review || document.querySelector('.modal-backdrop')) return;
+  if (e.target.closest && e.target.closest('input, textarea, select')) return;
+  const s = P.st[P.order[P.pos]], key = e.key.toLowerCase();
+  const idx = key.length === 1 ? Math.max('abcd'.indexOf(key), '1234'.indexOf(key)) : -1;
+  if (idx >= 0) { e.preventDefault(); pChoose(idx); return; }
+  if (e.key === 'Enter') { e.preventDefault(); if (s.checked) pAdvance(); else pCheck(); return; }
+  if (e.key === 'ArrowRight') { e.preventDefault(); if (!s.checked) s.skipped = true; pAdvance(); }
+});
 
 /* ---------- Exam ---------- */
 let cur = 0;

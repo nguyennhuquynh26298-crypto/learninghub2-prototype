@@ -4,10 +4,9 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Search Courses · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1118w"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118y"><link rel="stylesheet" href="../assets/css/base.css?v=1118y"><link rel="stylesheet" href="../assets/css/components.css?v=1119j"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118y">
 <style>
   .cs-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 12px; }
-  .cs-hint { font-size: 12.5px; color: var(--text-subtle); }
   .cs-pager { display: flex; gap: 6px; justify-content: center; margin: 24px 0; }
   .cs-pager button { min-width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-default); background: #fff; cursor: pointer; }
   .cs-pager button[aria-current="page"] { background: #2a28df; color: #fff; border-color: #2a28df; }
@@ -26,9 +25,9 @@
   <div class="cs-pager" id="pager"></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1118w"></script>
-<script src="../assets/js/data.js?v=1118w"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
+<script src="../assets/js/components.js?v=1119j"></script>
+<script src="../assets/js/data.js?v=1118y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1118y"></script>
 <script>
 const { AppHeader, CategoryNav, AppFooter, BackLink, FilterDropdown, Button, ICON, esc } = LH; const D = LHData;
 /* Danh mục khoá: thêm Sub Category, trạng thái của tôi đủ loại, nhãn Mandatory / Paid để minh hoạ 3.1 */
@@ -39,7 +38,8 @@ const EXTRA = { 'QA AUTOMATION _ MODULE 2: FUNDAMENTAL TESTING': { mand: true, s
 const ALL = D.catalog.map((c) => ({ ...c, sub: c.tags && c.tags[0], ...(EXTRA[c.title] || {}), start: (EXTRA[c.title] || {}).start || (c.sched && c.sched.start ? c.sched.start.slice(0, 5) : '') }));
 const MANY = Array.from({ length: 16 }, (_, i) => ({ title: `TESTING WORKSHOP ${String(i + 1).padStart(2, '0')}`, cat: 'Software Development', sub: 'Testing', lessons: 3, hours: '2h 0m', pub: 300 + i, st: 'none', cover: '' }));
 
-const STATUS = [['all', 'All'], ['none', 'Not Enrolled'], ['learning', 'In Progress'], ['done', 'Completed'], ['fail', 'Failed']];
+/* 06 §3.1: My Status = All · Not Enrolled · In Progress · Completed (Failed chỉ ở My Courses §3.2) */
+const STATUS = [['all', 'All'], ['none', 'Not Enrolled'], ['learning', 'In Progress'], ['done', 'Completed']];
 const TIME = [['all', 'All time'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days']];
 const p = new URLSearchParams(location.search);
 const f = { q: p.get('q') || '', ct: p.get('ct') || 'all', st: p.get('st') || 'all', pd: p.get('pd') || 'all', sort: p.get('sort') || '', page: +(p.get('page') || 1) };
@@ -68,9 +68,9 @@ function render() {
   document.getElementById('filters').innerHTML =
     FilterDropdown({ key: 'ct', label: 'Category:', value: f.ct, options: cats.map((c) => [c, c === 'all' ? 'All' : c]) })
     + FilterDropdown({ key: 'st', label: 'My Status:', value: f.st, options: STATUS })
-    + FilterDropdown({ key: 'pd', label: 'Time:', value: f.pd, options: TIME })
-    + '<span class="cs-hint">Based on your enrollment date, or completion date if completed.</span>';
+    + FilterDropdown({ key: 'pd', label: 'Time:', value: f.pd, options: TIME });
   const chips = [['ct', f.ct], ['st', (STATUS.find((o) => o[0] === f.st) || [])[1]], ['pd', (TIME.find((o) => o[0] === f.pd) || [])[1]]].filter(([k]) => f[k] !== 'all');
+  /* 06 §3.1 Sort: Most Relevant (khi có q) · Newest · Name A–Z — không Recently Accessed */
   const sortOpts = [...(r.q ? [['rel', 'Most Relevant']] : []), ['new', 'Newest'], ['az', 'Name A–Z']];
   document.getElementById('sum').innerHTML = `<span class="search-sum__n">${r.items.length} courses${r.q ? ` for “${esc(r.q)}”` : ''}</span>`
     + chips.map(([k, t]) => `<span class="chip is-active">${esc(t)}<button class="icon-btn" data-rm="${k}" aria-label="Remove ${esc(t)}" style="width:20px;height:20px">${ICON.x}</button></span>`).join('')
@@ -78,6 +78,7 @@ function render() {
     + '<span class="search-sum__sp"></span>' + FilterDropdown({ key: 'sort', label: 'Sort by:', value: r.sort, def: r.sort, options: sortOpts, align: 'right' });
   const grid = document.getElementById('grid'), pager = document.getElementById('pager');
   if (!r.items.length) {
+    /* 06 §2.1 empty: No courses found + Clear Filters khi đang lọc — không thêm hint ngoài Docs */
     grid.innerHTML = `<div class="empty search-empty" style="grid-column:1/-1">${ICON.search}<b>No courses found${r.q ? ` for “${esc(r.q)}”` : ''}</b>${chips.length ? Button({ label: 'Clear Filters', variant: 'outline', attrs: 'data-rm-all' }) : ''}</div>`;
     pager.innerHTML = ''; return;
   }

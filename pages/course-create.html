@@ -4,20 +4,20 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Create new Course · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118z"><link rel="stylesheet" href="../assets/css/base.css?v=1118z"><link rel="stylesheet" href="../assets/css/components.css?v=1119m">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1119t">
 <style>
   /* LH1 + DNA — form card pad 20 · field gap 16 · sticky CTA */
-  .cc-card { display: flex; flex-direction: column; gap: 16px; padding: 20px; }
-  .cc-form { display: flex; flex-direction: column; gap: 16px; }
+  .cc-card { display: flex; flex-direction: column; gap: 24px; padding: 28px 32px; width: 100%; box-sizing: border-box; max-width: none; }
+  .cc-form { display: flex; flex-direction: column; gap: 24px; width: 100%; }
   .cc-form .adm-field { gap: 8px; }
   .cc-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
   @media (max-width: 720px) { .cc-row { grid-template-columns: 1fr; } }
-  .adm-err { font-size: 13px; line-height: 18px; color: #f04438; margin: 0; }
+  .adm-err { font-size: 13px; line-height: 18px; color: #e7000b; margin: 0; }
   .adm-err:empty { display: none; }
   .dur { display: inline-flex; align-items: center; gap: 6px; height: 44px; border: 1px solid var(--adm-field-stroke); border-radius: 8px; padding: 0 12px; background: #fff; width: fit-content; box-sizing: border-box; box-shadow: 0 1px 2px rgba(10,13,18,.05); }
   .dur:focus-within { border-color: var(--adm-primary); box-shadow: 0 0 0 4px #e3e9ff; }
-  .dur.is-error { border-color: #fb5252; }
+  .dur.is-error { border-color: #e7000b; }
   .dur label { display: inline-flex; align-items: center; gap: 4px; flex: none; }
   .dur input { width: 2.75ch; border: 0; outline: 0; font: 400 16px Inter, sans-serif; color: var(--adm-text); text-align: center; background: none; }
   .dur span, .dur b { color: var(--adm-sub); font-size: 14px; flex: none; }
@@ -45,8 +45,8 @@
   </section>
   <div class="adm-btn-combo" id="actions"></div>
 </main>
-<script src="../assets/js/components.js?v=1118p"></script>
-<script src="../assets/js/data.js?v=1118c"></script>
+<script src="../assets/js/components.js?v=1119t"></script>
+<script src="../assets/js/data.js?v=1118z"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminConfirm, Richbox, wireRichbox } = LH; const D = LHData;
 const SUBS = { 'Data & AI': ['AI Agent', 'Machine Learning', 'Applied & Advanced'], 'Software Development': ['Testing', 'Web', 'DevOps'], Language: ['English', 'Japanese'], 'Corporate & Mandatory Training': ['Role-based Training', 'Onboarding', 'Security & Compliance'] };
@@ -82,15 +82,15 @@ function check() {
     dur: h > 0 || m > 0 ? (m > 59 ? 'Minutes must be 0–59' : '') : 'Please enter Hours or Minutes',
   };
 }
-function showErr() {
-  const E = check();
-  document.querySelectorAll('[data-err]').forEach((p) => { p.textContent = tried ? (E[p.dataset.err] || '') : ''; });
-  $('f-title').classList.toggle('is-error', tried && !!E.title);
-  ['description', 'who', 'learn'].forEach((k) => $('rte-' + k).classList.toggle('is-error', tried && !!E[k]));
-  $('f-cat').classList.toggle('is-error', tried && !!E.cat); $('f-sub').classList.toggle('is-error', tried && !!E.sub);
-  $('dur').classList.toggle('is-error', tried && !!E.dur);
-  return Object.values(E).every((x) => !x);
-}
+/* Luật chung field bắt buộc (LH.reqGuard): rời field còn trống → đỏ + câu báo tại field.
+ * Save as Draft chỉ cần Course Title (BR-CI-05) · Continue cần đủ 7 trường → chưa đủ thì nút tắt. */
+const FIELD_EL = { title: 'f-title', description: 'rte-description', who: 'rte-who', learn: 'rte-learn', cat: 'f-cat', sub: 'f-sub', dur: 'dur' };
+const guard = LH.reqGuard({
+  root: $('form'),
+  rules: () => { const E = check(); return Object.entries(FIELD_EL).map(([k, id]) => ({ key: k, el: $(id), ok: !E[k], msg: E[k], msgEl: document.querySelector(`[data-err="${k}"]`) })); },
+  buttons: () => [{ el: document.querySelector('[data-save]'), keys: ['title'] }, { el: document.querySelector('[data-next]') }],
+});
+function showErr() { return tried ? guard.touchAll() : guard.run(); }
 function mark() { dirty = true; showErr(); }
 document.addEventListener('input', (e) => {
   if (e.target.matches('#f-h, #f-m')) e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
@@ -109,9 +109,7 @@ function payload() {
 function submit(kind) {
   tried = true;
   if (kind === 'draft') {
-    const E = check(); showErr();
-    document.querySelectorAll('[data-err]').forEach((p) => { if (p.dataset.err !== 'title') p.textContent = ''; });
-    document.querySelectorAll('.is-error').forEach((x) => { if (x.id !== 'f-title') x.classList.remove('is-error'); });
+    const E = check(); tried = false; guard.touch('title');
     if (E.title) { $('f-title').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     const data = { ...payload(), incomplete: Object.values(E).some(Boolean) };
     if (!$('f-cat').value) data.cat = ''; if (!$('f-sub').value) data.sub = ''; if (!(+$('f-h').value || +$('f-m').value)) data.dur = '';

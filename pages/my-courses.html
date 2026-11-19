@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My courses · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1118w"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118y"><link rel="stylesheet" href="../assets/css/base.css?v=1118y"><link rel="stylesheet" href="../assets/css/components.css?v=1119j"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118y">
 </head>
 <body class="page">
 <!-- Learner Experience 2.2 + 3.2 · BR-MC-01, 03, 04 (Notion LH2 Product Docs No 9, Đợt 2 · Gói 5).
@@ -16,9 +16,9 @@
   <div class="course-grid" id="grid"></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1118w"></script>
-<script src="../assets/js/data.js?v=1118w"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
+<script src="../assets/js/components.js?v=1119j"></script>
+<script src="../assets/js/data.js?v=1118y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1118y"></script>
 <script>
 const { ICON, AppHeader, AppFooter, BackLink, FilterDropdown, Button, esc } = LH; const D = LHData;
 document.getElementById('header').innerHTML = AppHeader();
@@ -45,7 +45,9 @@ function render() {
   const STATUS = [['all', `All (${counts[0]})`], ['learning', `In Progress (${counts[1]})`], ['done', `Completed (${counts[2]})`], ['fail', `Failed (${counts[3]})`]];
   if (!document.getElementById('mq')) document.getElementById('bar').innerHTML = `<div id="fd" class="row gap-8"></div>
     <label class="input-wrap" style="width:300px">${ICON.search}<input class="input" id="mq" placeholder="Search my courses"></label><span class="grow"></span><div id="fs"></div>`;
-  document.getElementById('fd').innerHTML = FilterDropdown({ key: 'st', label: 'Status:', value: f.st, options: STATUS }) + FilterDropdown({ key: 'pd', label: 'Time:', value: f.pd, options: TIME });
+  document.getElementById('fd').innerHTML = FilterDropdown({ key: 'st', label: 'Status:', value: f.st, options: STATUS })
+    + FilterDropdown({ key: 'pd', label: 'Time:', value: f.pd, options: TIME });
+
   document.getElementById('fs').innerHTML = FilterDropdown({ key: 'sort', label: 'Sort by:', value: f.sort, def: f.sort, options: SORT, align: 'right' });
   const list = filtered(f.st);
   list.sort(f.sort === 'pg' ? (a, b) => (b.progress || 0) - (a.progress || 0) : f.sort === 'az' ? (a, b) => a.title.localeCompare(b.title) : (a, b) => (a.lastDays ?? 1e9) - (b.lastDays ?? 1e9));

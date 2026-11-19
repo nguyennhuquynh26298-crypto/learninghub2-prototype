@@ -4,9 +4,12 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>View Learners · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1118p">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1119m">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1119r">
 <style>
+  .vl-ex { cursor: pointer; font: inherit; }
+  .vl-acts { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; }
+  .vl-ex.is-on { border-color: var(--adm-primary); color: var(--adm-primary); background: var(--adm-primary-50); }
   /* Nguồn: web thật /dashboard/settings/course-management/[instanceId]/learners
    * (LearnerProgressPage · StatCards · column.tsx · LearnerQuizSubTable) — dựng lại theo style Admin LH2 */
   .kpi-grid button.kpi-card { cursor: pointer; }
@@ -54,19 +57,21 @@
     <div class="adm-box__head adm-box__head--tools"><h2 class="adm-box__title" style="flex:1">Tiến độ học viên</h2>
       <label class="adm-inline-search"><input id="q" placeholder="Tìm theo tên hoặc phòng ban…"><span></span></label>
       <label class="filter-btn" id="st-wrap"></label>
+      <button type="button" class="filter-btn vl-ex" id="ex-wrap" data-ex hidden></button>
       <button type="button" class="btn-cta btn-cta--line" data-export id="export"></button></div>
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1119q"></script>
 <script src="../assets/js/data.js?v=1118p"></script>
 <script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
 /* View Learners — LH1 /learners + LH2 Đợt 1 (docs Notion 18/11/2026)
  * Course Audience 3.4: Learning Status = Not Enrolled · In Progress · Completed · Failed · Access Removed · Closed · Unenrolled (bỏ Not Started).
- * Thao tác dòng (chỉ Admin L&D): Unenroll (In Progress, Reason 10–500) · Reopen Attempts (Failed còn quyền, Exam 3.5).
+ * Thao tác dòng (chỉ Admin L&D): Unenroll (In Progress, Reason 10–500) · Reopen Attempts (Failed còn quyền, Exam 3.5) · Remove (mọi dòng còn quyền).
+ * Course Audience v1.1 (D-156, BR-AUD-16): danh sách học viên + Excluded / Re-add chuyển từ tab Audience sang đây. Cột Source. Khoá Restricted có dòng Not Enrolled.
  * Learning Data Export 2.1: nút Export Data mở popup xuất của khoá. Exam BR-EX-05: điểm chính thức = cao nhất. */
-const { ICON, Avatar, esc, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, Tag, Progress, Modal } = LH;
+const { ICON, Avatar, esc, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, Tag, Progress, Modal, RowMenu, AdminConfirm } = LH;
 const $ = (id) => document.getElementById(id);
 const P = new URLSearchParams(location.search);
 const COURSE = P.get('t') || 'AI Agent Engineering';
@@ -79,7 +84,10 @@ const SEED = [
   ['Đặng Ngọc Lan', 'QA', 18, '08/10/2026', 'removed'], ['Bùi Thanh Long', 'BA', 100, '10/10/2026'], ['Đỗ Thị Mai', 'HR', 12, '12/10/2026', 'unenrolled'],
   ['Ngô Gia Nam', 'Development', 60, '14/10/2026'], ['Dương Phương Oanh', 'BA', 88, '15/10/2026', 'failed'], ['Lý Hoàng Phúc', 'DevOps', 0, '20/10/2026'],
   ['Mai Anh Quân', 'Development', 100, '21/10/2026'], ['Trịnh Thảo Vy', 'QA', 33, '25/10/2026'],
+  ['Phan Minh Tú', 'QA', 0, '—', 'none'], ['Cao Thị Yến', 'Design', 0, '—', 'none'],
 ];
+/* Source (Course Audience 3.4): khoá Restricted chọn phòng QA, Development, BA + vài cá nhân */
+const SRC_DEPTS = ['QA', 'Development', 'BA'];
 const slug = (n) => n.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().split(' ');
 function quizOf(status, pct, i) {
   return QUIZZES.map((title, k) => {
@@ -95,7 +103,8 @@ function quizOf(status, pct, i) {
 const learners = SEED.map(([name, dept, pct, enrolled, force], i) => {
   const s = slug(name);
   const status = force || (pct === 100 ? 'done' : 'progress');
-  return { name, email: `${s.slice(-1)[0]}.${s.slice(0, -1).join('')}@techvify.com.vn`, dept, pct, enrolled, status, quiz: quizOf(status, pct, i), reopened: false };
+  const source = SRC_DEPTS.includes(dept) ? 'Department' : 'Individual'; // tên phòng đã ở cột Department
+  return { name, email: `${s.slice(-1)[0]}.${s.slice(0, -1).join('')}@techvify.com.vn`, dept, pct, enrolled, status, source, quiz: quizOf(status, pct, i), reopened: false };
 });
 
 let rows = learners, q = '', st = 'all', page = 1, open = new Set();
@@ -105,10 +114,10 @@ $('export').innerHTML = ICON.download + 'Export Data';
 document.querySelector('.adm-box__title').textContent = 'Learner Progress';
 
 function kpis() {
-  const n = (k) => rows.filter((r) => r.status === k).length, tot = rows.length;
+  const n = (k) => rows.filter((r) => r.status === k).length, tot = rows.filter((r) => r.status !== 'removed').length;
   const card = (key, label, value, sub, icon, tone) => `<button type="button" class="kpi-card kpi-card--trend ${tone ? 'kpi-card--' + tone : ''} ${st === key ? 'is-active' : ''}" data-kpi="${key}" aria-pressed="${st === key}">
     <span class="kpi-card__text"><span class="kpi-card__label">${label}</span><span class="kpi-card__value">${value}</span><span class="kpi-card__sub">${sub}</span></span><span class="kpi-card__ic">${ICON[icon]}</span></button>`;
-  $('kpis').innerHTML = card('all', 'Total Learners', tot, 'enrolled in this course', 'usersRound', '')
+  $('kpis').innerHTML = card('all', 'Total Learners', tot, 'with access to this course', 'usersRound', '')
     + card('done', 'Completed', n('done'), `${tot ? Math.round(n('done') / tot * 100) : 0}% completion rate`, 'award', 'success')
     + card('progress', 'In Progress', n('progress'), 'enrolled, not finished yet', 'play', 'info')
     + card('failed', 'Failed', n('failed'), 'used all 3 exam attempts', 'x', 'warning');
@@ -119,17 +128,20 @@ function quizSub(r) {
     <td>${Tag(z.result, z.result === 'Passed' ? 'published' : z.result === 'Failed' ? 'pending' : z.result === 'Not Attempted' ? 'neutral' : 'info')}</td></tr>`).join('')}</tbody></table></div></div>`;
 }
 function actions(r, i) {
-  const a = [];
-  if (r.status === 'progress') a.push(`<button type="button" class="btn-link btn-link--danger" data-unenroll="${i}">Unenroll</button>`);
-  if (r.status === 'failed') a.push(`<button type="button" class="btn-outline-sm" data-reopen="${i}">Reopen Attempts</button>`);
-  return a.join('');
+  /* Excluded: chỉ còn Re-add (BR-AUD-06). Dòng còn quyền: Reopen Attempts (Failed) hiện ngoài; Unenroll + Remove trong menu dòng */
+  if (r.status === 'removed') return `<button type="button" class="btn-cta btn-cta--outline btn-cta--sm" data-readd="${i}">Re-add</button>`;
+  const items = [];
+  if (r.status === 'failed') items.push({ label: 'Reopen Attempts', icon: 'repeat', attrs: `data-reopen="${i}"` });
+  if (r.status === 'progress') items.push({ label: 'Unenroll', icon: 'logout', attrs: `data-unenroll="${i}"` });
+  items.push({ label: 'Remove', icon: 'trash', danger: true, attrs: `data-remove="${i}"` });
+  return RowMenu(items);
 }
 function table() {
   const nq = LH.norm(q.trim());
-  const list = rows.filter((r) => (st === 'all' || r.status === st) && (!nq || LH.norm(r.name + ' ' + r.dept + ' ' + r.email).includes(nq)));
+  const list = rows.filter((r) => (st === 'all' ? r.status !== 'removed' : r.status === st) && (!nq || LH.norm(r.name + ' ' + r.dept + ' ' + r.email).includes(nq)));
   const pages = Math.max(1, Math.ceil(list.length / PAGE)); page = Math.min(page, pages);
   const cur = list.slice((page - 1) * PAGE, page * PAGE);
-  const cols = ['Learner', 'Department', 'Progress', ['Enroll Date', 'col-opt'], 'Learning Status', ['', 't-act'], ['', 't-act']];
+  const cols = ['Learner', 'Department', ['Source', 'col-opt'], 'Progress', ['Enroll Date', 'col-opt'], 'Learning Status', ['', 't-act']];
   const empty = !rows.length
     ? AdminEmpty({ icon: 'usersRound', title: 'No learners yet', desc: 'Nobody has enrolled in this course yet.', compact: true })
     : AdminEmpty({ icon: 'search', title: 'No learners found', desc: 'Try another keyword or clear the status filter.', compact: true });
@@ -137,10 +149,10 @@ function table() {
     const i = rows.indexOf(r), on = open.has(i);
     return `<tr data-row="${i}" class="${on ? 'is-open' : ''}"><td><div class="person">${Avatar(r.name, 'sm')}<div><b>${esc(r.name)}</b><small>${esc(r.email)}</small></div></div></td>
       <td>${esc(r.dept)}</td>
+      <td class="col-opt">${esc(r.source)}</td>
       <td><div class="pg ${r.pct === 100 ? 'is-done' : ''}"><b>${r.pct}%</b>${Progress(r.pct)}</div></td>
       <td class="col-opt">${r.enrolled}</td><td>${Tag(...ST[r.status])}</td>
-      <td class="t-act" style="white-space:nowrap">${actions(r, i)}</td>
-      <td class="t-act"><button type="button" class="row-x" aria-expanded="${on}" aria-label="Quiz results">${ICON.chevronD}</button></td></tr>
+      <td class="t-act"><span class="vl-acts">${actions(r, i)}${r.status === 'none' ? '' : `<button type="button" class="row-x" aria-expanded="${on}" aria-label="Quiz results">${ICON.chevronD}</button>`}</span></td></tr>
       ${on ? `<tr class="sub"><td colspan="${cols.length}">${quizSub(r)}</td></tr>` : ''}`;
   }).join('') : `<tr><td colspan="${cols.length}">${empty}</td></tr>`)
     + (list.length > PAGE ? `<div class="pager"><span>${(page - 1) * PAGE + 1}–${Math.min(page * PAGE, list.length)} of ${list.length} learners</span><div class="pager__btns">
@@ -150,7 +162,11 @@ function table() {
   $('export').disabled = !rows.length;
 }
 function filters() {
-  $('st-wrap').innerHTML = `${ICON.filter}<select id="st"><option value="all">All statuses</option>${Object.entries(ST).filter(([k]) => k !== 'none').map(([v, [t]]) => `<option value="${v}" ${st === v ? 'selected' : ''}>${t}</option>`).join('')}</select>`;
+  $('st-wrap').innerHTML = `${ICON.filter}<select id="st"><option value="all">All statuses</option>${Object.entries(ST).filter(([k]) => k !== 'removed').map(([v, [t]]) => `<option value="${v}" ${st === v ? 'selected' : ''}>${t}</option>`).join('')}</select>`;
+  /* Excluded (n): bộ lọc riêng cạnh trạng thái; 0 thì ẩn (Course Audience 3.4) */
+  const ex = rows.filter((r) => r.status === 'removed').length;
+  $('ex-wrap').hidden = !ex;
+  $('ex-wrap').innerHTML = `Excluded (${ex})`; $('ex-wrap').setAttribute('aria-pressed', st === 'removed'); $('ex-wrap').classList.toggle('is-on', st === 'removed');
 }
 function draw() { kpis(); filters(); table(); }
 function render(role) {
@@ -163,8 +179,7 @@ function render(role) {
   }
   AdminLayout({ active: 'courses', collapsed: true, role: r });
   $('head').innerHTML = AdminHead({ back: 'admin-courses.html?r=admin', eyebrow: 'Course Management · View Learners', title: esc(COURSE),
-    right: `<a class="btn-cta btn-cta--soft" href="course-editor.html?r=admin&st=published&tab=audience&t=${encodeURIComponent(COURSE)}">${ICON.users}Audience</a>
-      <button type="button" class="btn-cta btn-cta--line" data-export>${ICON.download}Export Data</button>` });
+    right: `<a class="btn-cta btn-cta--soft" href="course-editor.html?r=admin&st=published&tab=audience&t=${encodeURIComponent(COURSE)}">${ICON.users}Audience</a>` });
   draw();
 }
 
@@ -175,6 +190,9 @@ function unenroll(r) {
     body: `<p class="t-sm">The course will be removed from their in-progress list and free up a slot. Progress (${r.pct}%) is kept if they enroll again.</p>
       <div class="adm-field" style="margin-top:12px"><label>Reason <span class="req">*</span></label><textarea class="adm-input" id="un-r" rows="3" maxlength="500" placeholder="Why are you unenrolling this learner?"></textarea><p class="adm-err" id="un-e"></p></div>`,
     foot: '<button type="button" class="btn-cta btn-cta--line" data-close>Cancel</button><button type="button" class="btn-cta btn-cta--danger" data-un-ok>Confirm</button>' }));
+  /* Luật chung: Confirm tắt tới khi Reason đủ 10 ký tự */
+  const unBtn = document.querySelector('#m-un [data-un-ok]'); unBtn.disabled = true;
+  $('un-r').addEventListener('input', () => { unBtn.disabled = $('un-r').value.trim().length < 10; });
   document.getElementById('m-un').addEventListener('click', (e) => {
     if (e.target.closest('[data-close]')) { document.getElementById('m-un').remove(); return; }
     if (!e.target.closest('[data-un-ok]')) return;
@@ -194,6 +212,10 @@ function reopen(r) {
       <div class="adm-field"><label>Reason <span class="req">*</span></label><textarea class="adm-input" id="re-r" rows="3" maxlength="500" placeholder="Why are you reopening attempts?"></textarea><p class="adm-err" id="re-e"></p></div>
       <div class="alert alert--warning" role="status">${ICON.alert}<div>This learner has already seen the answers to the current questions. Consider updating the quiz before reopening.</div></div></div>`,
     foot: '<button type="button" class="btn-cta btn-cta--line" data-close>Cancel</button><button type="button" class="btn-cta" data-re-ok>Reopen</button>' }));
+  /* Luật chung: Reopen tắt tới khi chọn Quiz và Reason đủ 10 ký tự */
+  const reBtn = document.querySelector('#m-re [data-re-ok]');
+  const reSync = () => { reBtn.disabled = !$('re-q').value || $('re-r').value.trim().length < 10; };
+  reSync(); $('re-r').addEventListener('input', reSync); $('re-q').addEventListener('change', reSync);
   document.getElementById('m-re').addEventListener('click', (e) => {
     if (e.target.closest('[data-close]')) { document.getElementById('m-re').remove(); return; }
     if (!e.target.closest('[data-re-ok]')) return;
@@ -211,11 +233,16 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-export]')) { LHExport.open({ course: COURSE, code: COURSE.split(' ')[0].toUpperCase(), total: rows.length, source: 'View Learners' }); return; }
   const un = e.target.closest('[data-unenroll]'); if (un) { unenroll(rows[+un.dataset.unenroll]); return; }
   const re = e.target.closest('[data-reopen]'); if (re) { reopen(rows[+re.dataset.reopen]); return; }
-  const tr = e.target.closest('tr[data-row]'); if (tr && !e.target.closest('button.btn-link, .btn-outline-sm')) { const i = +tr.dataset.row; open.has(i) ? open.delete(i) : open.add(i); table(); }
+  if (e.target.closest('[data-ex]')) { st = st === 'removed' ? 'all' : 'removed'; page = 1; draw(); return; }
+  const rm = e.target.closest('[data-remove]'); if (rm) { const r = rows[+rm.dataset.remove];
+    AdminConfirm({ title: 'Remove learner?', text: `Remove ${esc(r.name)} from this course? They will lose access immediately; their progress is kept.`, ok: 'Remove', danger: true,
+      onOk: () => { r.prev = r.status; r.status = 'removed'; draw(); toast(`${r.name} removed · moved to Excluded`); } }); return; }
+  const ra = e.target.closest('[data-readd]'); if (ra) { const r = rows[+ra.dataset.readd]; r.status = r.prev || (r.pct === 100 ? 'done' : r.enrolled === '—' ? 'none' : 'progress'); draw(); toast(`${r.name} re-added · can learn again`); return; }
+  const tr = e.target.closest('tr[data-row]'); if (tr && !e.target.closest('button')) { const i = +tr.dataset.row; open.has(i) ? open.delete(i) : open.add(i); table(); }
 });
 document.addEventListener('change', (e) => { if (e.target.id === 'st') { st = e.target.value; page = 1; draw(); } });
 document.addEventListener('input', (e) => { if (e.target.id === 'q') { q = e.target.value; page = 1; table(); } });
-LH.DemoBar('View Learners · LH1 + LH2 Đợt 1 (Unenroll · Reopen Attempts · Export Data)', [
+LH.DemoBar('View Learners · LH1 + LH2 Đợt 1 (Remove · Re-add · Unenroll · Reopen Attempts · Export Data)', [
   { label: 'Role', key: 'r', options: [['admin', 'Admin'], ['editor', 'Editor (blocked)']] },
   { label: 'Data', key: 'data', options: [['full', 'Has learners'], ['empty', 'Empty']] },
 ], (s) => { rows = s.data === 'empty' ? [] : learners; open.clear(); render(s.r); });
