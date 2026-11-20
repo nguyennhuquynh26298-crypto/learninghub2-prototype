@@ -106,15 +106,20 @@
 /* D-168 (20/11): màn bắt đầu bài thi — 2 ô cùng khuôn: tên chế độ · các dòng nhãn / giá trị · nút. Nền trắng, chỉ biểu tượng có màu */
 .mode-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); gap: 16px; margin-top: 24px; align-items: stretch; }
 @media (max-width: 680px) { .mode-pair { grid-template-columns: minmax(0, 1fr); } }
-.mode-box { display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1px solid var(--border-default); border-radius: 12px; background: var(--c-white); text-align: left; }
-.mode-box h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font-size: var(--fs-md); line-height: 24px; font-weight: 600; color: var(--text-strong); }
-.mode-box h2 svg { width: 20px; height: 20px; }
-.mode-box--practice h2 svg { color: var(--c-violet); }
-.mode-box--exam h2 svg { color: var(--primary-900); }
-.mode-kv { display: flex; justify-content: space-between; gap: 12px; font-size: var(--fs-sm); line-height: 20px; color: var(--text-subtle); }
+/* D-171: 2 ô có màu nhẹ — nền nhạt + viền cùng tông + chip biểu tượng; không gradient */
+.mode-box { --mb-bg: var(--c-white); --mb-bd: var(--border-default); --mb-chip: var(--bg-page); --mb-ic: var(--text-strong); --mb-line: var(--border-default);
+  display: flex; flex-direction: column; gap: 0; padding: 20px; border: 1px solid var(--mb-bd); border-radius: 12px; background: var(--mb-bg); text-align: left; transition: box-shadow .15s, border-color .15s; }
+.mode-box:hover { box-shadow: 0 4px 16px rgba(17, 24, 39, .06); }
+.mode-box--practice { --mb-bg: #fcf8ff; --mb-bd: #ead8fb; --mb-chip: var(--c-violet-bg); --mb-ic: var(--c-violet); --mb-line: #efe2fb; }
+.mode-box--exam { --mb-bg: #f8f9ff; --mb-bd: var(--primary-200); --mb-chip: var(--primary-100); --mb-ic: var(--primary-700); --mb-line: #e6eaff; }
+.mode-box h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: var(--fs-md); line-height: 24px; font-weight: 600; color: var(--text-strong); }
+.mode-box h2 svg { box-sizing: content-box; width: 20px; height: 20px; padding: 8px; border-radius: 10px; background: var(--mb-chip); color: var(--mb-ic); }
+.mode-kv { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px dashed var(--mb-line, var(--border-default)); font-size: var(--fs-sm); line-height: 20px; color: var(--text-subtle); }
 .mode-kv b { font-weight: 600; color: var(--text-strong); text-align: right; }
 .mode-box .wbtn { margin-top: auto; width: 100%; }
-.mode-box .mode-kv:last-of-type { margin-bottom: 10px; }
+.mode-box .mode-kv:last-of-type { margin-bottom: 16px; }
+.mode-box--practice .wbtn--outline { background: var(--c-white); border-color: #d8b4fe; color: var(--c-violet); }
+.mode-box--practice .wbtn--outline:hover { background: var(--c-violet-bg); border-color: var(--c-violet); }
 /* D-167: tab Exam Questions · Practice Questions trong dòng Quiz (Admin) */
 .qz-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--adm-stroke, var(--c-border)); margin-bottom: 4px; }
 .qz-tabs button { border: 0; background: none; padding: 8px 12px; font: 500 var(--fs-sm) Inter, sans-serif; color: var(--adm-sub, var(--c-text-subtle)); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -124,3 +129,9 @@
 /* D-168: trong dòng Quiz, tab Practice không lặp tiêu đề + nút (nút nằm trên dòng Quiz, áp cho tab đang mở) */
 .qz-body .pq-head { display: none; }
 .qz-body .pq-switch { margin: 4px 0 8px; }
+
+/* D-172: chip Practice trên mọi dòng Quiz (kể cả khi thu gọn) — bấm mở thẳng tab Practice Questions của Quiz đó */
+.qz-pr { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 10px; border-radius: 999px; border: 1px dashed var(--border-strong, #d1d5db); background: var(--c-white); color: var(--text-subtle); font-family: inherit; font-size: var(--fs-xs); line-height: 16px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.qz-pr svg { width: 14px; height: 14px; }
+.qz-pr:hover { border-color: var(--c-violet); color: var(--c-violet); }
+.qz-pr.is-on { border: 1px solid #ead8fb; background: var(--c-violet-bg); color: var(--c-violet); }

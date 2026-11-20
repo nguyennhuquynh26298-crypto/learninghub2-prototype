@@ -5,7 +5,7 @@
 <title>Course setup · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1120x">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1121b">
 <style>
   /* Details — Figma nested Section → Lesson → Content */
   .su-panel { min-height: 200px; display: flex; flex-direction: column; gap: 24px; padding: 28px 32px; width: 100%; box-sizing: border-box; }
@@ -89,7 +89,7 @@
   <div class="adm-seg" id="tabs" role="tablist"></div>
   <div id="panel"></div>
 </main>
-<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/components.js?v=1121b"></script>
 <script src="../assets/js/data.js?v=1120y"></script>
 <script src="../assets/js/setup-lh2.js?v=1120p"></script>
 <script>
@@ -228,7 +228,23 @@ function articleBlock(l, si, li) {
   </div>${editable ? fileRows({ files: l.files || [] }, si, li) : ''}`;
 }
 function practiceKey() { for (let si = 0; si < sections.length; si++) { const li = sections[si].lessons.findIndex((l) => l.type === 'quiz'); if (li >= 0) return `${si}:${li}`; } return ''; }
-function openPracticeQuiz() { const k = practiceKey(); if (!k) return; const [si, li] = k.split(':').map(Number); const L = sections[si].lessons[li]; L.open = true; L.qtab = 'practice'; }
+/* D-172: mỗi Quiz một đề luyện tập riêng. LHSetup giữ đề của Quiz đang mở tab Practice; đề các Quiz khác cất trong banks */
+let pqKey = '', banks = {};
+const activePQ = () => pqKey || practiceKey();
+function bankOf(k) { if (k === activePQ()) return { n: LHSetup.practiceCount(), on: LHSetup.practiceEnabled() }; const b = banks[k]; return { n: b ? b.questions.length : 0, on: !!(b && b.enabled) }; }
+function usePractice(k) {
+  const cur = activePQ(); if (!k || k === cur) { pqKey = k || pqKey; return; }
+  banks[cur] = { questions: LHSetup.practiceDraft(), enabled: LHSetup.practiceEnabled() };
+  const next = banks[k] || { questions: [], enabled: false }; delete banks[k];
+  LHSetup.restorePractice(next); pqKey = k;
+  LHSetup.writePracticeStore({ questions: next.questions, enabled: !!next.enabled, banks, pqKey, course: title });
+}
+function openPractice(k) {
+  if (!k) return; usePractice(k);
+  sections.forEach((sec, si) => sec.lessons.forEach((L, li) => { if (L.type === 'quiz' && `${si}:${li}` !== k && L.qtab === 'practice') L.qtab = 'exam'; }));
+  const [si, li] = k.split(':').map(Number); const L = sections[si].lessons[li]; L.open = true; L.qtab = 'practice';
+}
+function openPracticeQuiz() { openPractice(activePQ()); }
 function attachPractice() { const h = document.querySelector('[data-pq-host]'); if (h) LHSetup.drawPractice(h); }
 function lessonBody(l, si, li) {
   if (l.type === 'quiz') {
@@ -241,10 +257,10 @@ function lessonBody(l, si, li) {
     const qs = l.questions || [];
     /* D-167: mỗi Quiz có đề luyện tập riêng — 2 tab Exam Questions · Practice Questions (Practice · Admin 3, Exam 3.7).
        Prototype: đề luyện tập demo gắn với Quiz đầu tiên; Quiz khác hiện đề rỗng. */
-    const isPQ = key === practiceKey(), pn = isPQ ? LHSetup.tabs().practiceCount : 0;
+    if (l.qtab === 'practice' && key !== activePQ()) usePractice(key);
+    const pn = bankOf(key).n;
     const qtabs = `<div class="qz-tabs" role="tablist"><button type="button" role="tab" data-qtab="${key}|exam" class="${l.qtab !== 'practice' ? 'is-active' : ''}">Exam Questions (${qs.length})</button><button type="button" role="tab" data-qtab="${key}|practice" class="${l.qtab === 'practice' ? 'is-active' : ''}">Practice Questions (${pn})</button></div>`;
-    if (l.qtab === 'practice') return `<div class="qz-body">${qtabs}${isPQ ? `<div data-pq-host="${key}"></div>`
-      : `<div class="adm-card su-panel lh2-tab pq-tab"><div class="pq-switch"><label class="switch is-locked" title="Add at least 1 practice question before enabling Practice."><input type="checkbox" disabled><span class="switch__track"></span><span><b>Enable Practice for this quiz</b></span></label></div><p class="qz-empty">No questions yet. Add your first question!</p></div>`}</div>`;
+    if (l.qtab === 'practice') return `<div class="qz-body">${qtabs}<div data-pq-host="${key}"></div></div>`;
     const tot = qs.reduce((a, q) => a + (+q.score || 0), 0), pass = (l.quiz && l.quiz.pass) || 80;
     const errOf = (q) => LHSetup.dupErr('exam', q.text, -1);
     if (!qs.length) return `<div class="qz-body">${qtabs}<p class="qz-empty">No questions yet. Add your first question!</p></div>`;
@@ -268,7 +284,7 @@ function lessonCard(l, si, li) {
   const qErr = isQuiz ? (l.questions || []).filter((q) => LHSetup.dupErr('exam', q.text, -1)).length : 0;
   const quizMeta = isQuiz ? (qn
     ? `<span class="quiz-meta">${qn} question${qn === 1 ? '' : 's'} · ${qp} point${qp === 1 ? '' : 's'}</span>${qErr ? `<span class="qz-sum__err">${ICON.alert}${qErr} with errors</span>` : ''}`
-    : `<span class="quiz-meta is-warn" title="The course can't be published until this quiz has questions.">${ICON.alert}0 questions</span>`) + (key === practiceKey() && LHSetup.practiceEnabled() ? '<span class="qz-pr-on">Practice on</span>' : '') : '';
+    : `<span class="quiz-meta is-warn" title="The course can't be published until this quiz has questions.">${ICON.alert}0 questions</span>`) + (() => { const b = bankOf(key); return `<button type="button" class="qz-pr ${b.on ? 'is-on' : ''}" data-pq-open="${key}" title="Open Practice Questions">${ICON.dumbbell || ''}Practice: ${b.on ? 'On' : 'Off'}${b.n ? ` · ${b.n}` : ''}</button>`; })() : '';
   const ic = isQuiz ? ICON.lightbulb : ICON.book;
   const addContent = editable && l.type === 'lecture' && !l.content && !l.picking
     ? `<button type="button" class="btn-cta btn-cta--outline btn-cta--sm" data-content="${si}:${li}">${ICON.plus}Add Content</button>`
@@ -642,7 +658,8 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-learn-types]')) { e.preventDefault(); toast('Content types: Video, Document (PDF), Article'); return; }
 
   if (e.target.closest('[data-pq-soft]')) { openPracticeQuiz(); tab = 'details'; render(); return; }
-  const qt = e.target.closest('[data-qtab]'); if (qt) { const [k, v] = qt.dataset.qtab.split('|'); const [si, li] = k.split(':').map(Number); sections[si].lessons[li].qtab = v; drawDetails(); return; }
+  const po = e.target.closest('[data-pq-open]'); if (po) { openPractice(po.dataset.pqOpen); drawDetails(); document.querySelector(`[data-les="${po.dataset.pqOpen}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+  const qt = e.target.closest('[data-qtab]'); if (qt) { const [k, v] = qt.dataset.qtab.split('|'); const [si, li] = k.split(':').map(Number); if (v === 'practice') openPractice(k); else sections[si].lessons[li].qtab = v; drawDetails(); return; }
   if (e.target.closest('[data-pq-demo]')) { toast('Prototype: the demo practice set is on the first quiz of the course.'); return; }
   /* Dòng câu thi (component chung LHSetup.questionRows, ns = "si:li"): Delete hỏi xác nhận rồi lưu ngay · Edit mở trang soạn câu */
   const qd = e.target.closest('[data-qr-del]'); if (qd && !qd.dataset.qrDel.startsWith('p|')) {
@@ -660,8 +677,7 @@ document.addEventListener('click', (e) => {
   if (rowBtn) {
     const k = rowBtn.dataset.qAdd || rowBtn.dataset.qImport; const [si0, li0] = k.split(':').map(Number); const L0 = sections[si0].lessons[li0];
     if (L0.qtab === 'practice') {
-      if (k !== practiceKey()) { toast('Prototype: the demo practice set is on the first quiz of the course.'); return; }
-      L0.open = true; if (!document.querySelector('[data-pq-host]')) drawDetails();
+      openPractice(k); if (!document.querySelector('[data-pq-host]')) drawDetails();
       document.querySelector(`[data-pq-host] ${rowBtn.dataset.qAdd ? '[data-pq-add]' : '[data-pq-import]'}`)?.click(); return;
     }
   }
@@ -741,11 +757,11 @@ LH.DemoBar('Course setup · Details Figma', [
   } else if (P.get('t')) {
     title = P.get('t');
   }
-  LHSetup.seedPractice(s.pq); LHSetup.seedAudience(s.aud);
+  LHSetup.seedPractice(s.pq); LHSetup.seedAudience(s.aud); pqKey = ''; banks = {};
   /* Quay về từ màn Practice Questions: đề lấy từ kho chung (trừ khi URL chọn kịch bản pq khác) */
   const pStore = window.__pqRestored ? null : LHSetup.readPracticeStore();
   window.__pqRestored = true; // chỉ khôi phục ở lần nạp đầu; đổi DemoBar sau đó dùng kịch bản đã chọn
-  if (pStore && !P.get('pq') && (!pStore.course || pStore.course === title)) { LHSetup.restorePractice(pStore); if (pStore.sectionsSnapshot) sections = pStore.sectionsSnapshot; }
+  if (pStore && !P.get('pq') && (!pStore.course || pStore.course === title)) { LHSetup.restorePractice(pStore); if (pStore.sectionsSnapshot) sections = pStore.sectionsSnapshot; banks = pStore.banks || {}; pqKey = pStore.pqKey || ''; }
   hydrateFromQuestionEditor();
   render();
 });
