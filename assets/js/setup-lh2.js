@@ -204,9 +204,9 @@
     const lockOn = !n && !P.enabled;
     el.innerHTML = `<div class="adm-card su-panel lh2-tab pq-tab" id="practice-strip">
       <div class="pq-switch">
-        <label class="switch ${lockOn ? 'is-locked' : ''}" ${lockOn ? 'title="Add at least 1 practice question before enabling Practice."' : ''}><input type="checkbox" id="pq-on" ${P.enabled ? 'checked' : ''} ${cfg.editable && !lockOn ? '' : 'disabled'}><span class="switch__track"></span><span><b>Enable Practice for this course</b></span></label>
+        <label class="switch ${lockOn ? 'is-locked' : ''}" ${lockOn ? 'title="Add at least 1 practice question before enabling Practice."' : ''}><input type="checkbox" id="pq-on" ${P.enabled ? 'checked' : ''} ${cfg.editable && !lockOn ? '' : 'disabled'}><span class="switch__track"></span><span><b>Enable Practice for this quiz</b></span></label>
       </div>
-      <div class="pq-head"><h3>Practice questions <span>${n}</span></h3>${errN ? `<span class="qz-sum__err">${ICON.alert}${errN} with errors</span>` : ''}<span class="grow"></span>${acts}</div>
+      <div class="pq-head"><h3>Practice Questions <span>${n}</span></h3>${errN ? `<span class="qz-sum__err">${ICON.alert}${errN} with errors</span>` : ''}<span class="grow"></span>${acts}</div>
       ${formOn ? qfHtml() : n ? questionRows({ list: P.draft, ns: 'p', errOf: (q, i) => P.rowErr[i] || '', editable: cfg.editable, fresh: pFresh })
         : '<p class="qz-empty">No questions yet. Add your first question!</p>'}
     </div>`;
@@ -433,7 +433,7 @@
       { row: 3, q: 'Unit test kiểm tra phạm vi nào?', type: 'single', opts: ['Một hàm / module', 'Cả hệ thống', 'Giao diện', 'Hạ tầng'], ans: 'a → A', score: 1, parsed: { type: 'single', text: 'Unit test kiểm tra phạm vi nào?', options: ['Một hàm / module', 'Cả hệ thống', 'Giao diện', 'Hạ tầng'], correct: [0], explain: 'Unit test cô lập từng đơn vị nhỏ.', score: 1 } },
       { row: 4, q: 'Trái đất tròn', type: 'tf', opts: ['True', 'False'], ans: 't → True', score: 1, parsed: { type: 'tf', text: 'Trái đất tròn', options: ['True', 'False'], correct: [0], explain: '', score: 1 } },
       { row: 5, q: 'Những công cụ nào dùng cho test tự động?', type: 'multi', opts: ['Playwright', 'Selenium', 'Figma', 'Cypress'], ans: 'A, B; D', score: 2, parsed: { type: 'multi', text: 'Những công cụ nào dùng cho test tự động?', options: ['Playwright', 'Selenium', 'Figma', 'Cypress'], correct: [0, 1, 3], explain: '', score: 2 } },
-      { row: 6, q: 'Regression test chạy khi nào?', type: 'single', opts: ['Sau mỗi thay đổi', 'Chỉ khi release', 'Không bao giờ'], ans: '', err: 'Missing correct answer.' },
+      { row: 6, q: 'Regression test chạy khi nào?', type: 'single', opts: ['Sau mỗi thay đổi', 'Chỉ khi release', 'Không bao hours'], ans: '', err: 'Missing correct answer.' },
       { row: 7, q: 'Bug severity khác priority ở điểm nào?', type: 'single', opts: ['Mức ảnh hưởng vs thứ tự xử lý', 'Giống nhau'], ans: 'E', err: 'Answer "E" has no matching option.' },
     ];
     if (bank === 'practice' && ex) rows.push({ row: 8, q: ex.text, type: 'single', opts: ['…'], ans: 'B', err: `Duplicate of question ${ex.n} in quiz "${ex.quiz}". Please write a different question.` });
@@ -706,8 +706,8 @@
       if (!t.checked && P.enabled && (P.draft.length || P.saved.length)) {
         t.checked = true;
         AdminConfirm({
-          cancel: 'Cancel', title: 'Turn off Practice?',
-          text: 'Learners will not see Practice on the course page. Questions are kept.',
+          cancel: 'Cancel', title: 'Turn off Practice for this quiz?',
+          text: 'Learners will only see Exam Mode. Questions are kept.',
           ok: 'Turn off', danger: true,
           onOk: () => { P.enabled = false; P.err = ''; P.savedEnabled = false; writePracticeStore({ enabled: false }); redraw(); toast('Practice turned off · questions kept'); },
         });
@@ -717,7 +717,7 @@
       if (t.checked && !P.draft.length) { P.enabled = false; P.err = 'Add at least 1 practice question before enabling Practice.'; redraw(); return; }
       P.enabled = t.checked; P.err = '';
       P.savedEnabled = P.enabled; writePracticeStore({ enabled: P.enabled });
-      if (P.enabled) toast('Practice turned on · learners can see Practice');
+      if (P.enabled) toast('Practice turned on · learners see Practice Mode on this quiz');
       redraw();
     }
     if (t.name === 'aud-scope') {
@@ -774,6 +774,7 @@
     drawPractice(el) { host = el; which = 'practice'; drawPractice(el); },
     drawAudience(el) { host = el; which = 'audience'; drawAudience(el); },
     release() { host = null; which = null; },
+    practiceEnabled: () => !!P.enabled,
     questionModal, importModal, publish,
     audience: A,
   };

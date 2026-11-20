@@ -119,13 +119,13 @@ var LH_V = '1119q';
     return `<header class="app-header"><div class="container app-header__in">
       <div class="app-header__left">
         <a class="logo" href="home.html"><img src="${LOGO}" width="32" height="32" alt="Learning Hub"><span>Learning<i></i>Hub</span></a>
-        <div class="search-wrap"><form class="search-pill" action="course-search.html" role="search"><input type="search" name="q" placeholder="Tìm theo tên khoá hoặc tag" value="${esc(search)}" maxlength="100" autocomplete="off" aria-controls="search-pop" aria-expanded="false"><button type="button" class="search-pill__x" data-qclear aria-label="Xoá từ khoá" ${search ? '' : 'hidden'}>${ICON.x}</button><button class="search-pill__go" aria-label="Tìm">${ICON.search}</button></form><div class="search-pop" id="search-pop" role="listbox" hidden></div></div>
+        <div class="search-wrap"><form class="search-pill" action="course-search.html" role="search"><input type="search" name="q" placeholder="Search courses" value="${esc(search)}" maxlength="100" autocomplete="off" aria-controls="search-pop" aria-expanded="false"><button type="button" class="search-pill__x" data-qclear aria-label="Clear search" ${search ? '' : 'hidden'}>${ICON.x}</button><button class="search-pill__go" aria-label="Search">${ICON.search}</button></form><div class="search-pop" id="search-pop" role="listbox" hidden></div></div>
         <div class="explore"><button class="explore-btn" data-explore aria-expanded="false">Explore${ICON.chevronD}</button>
-          <div class="explore__menu" hidden><div class="explore__h">Danh mục khoá học</div>${((window.LHData && LHData.categories) || []).map((c) => `<a href="course-search.html?ct=${encodeURIComponent(c)}" data-cat="${esc(c)}">${esc(c)}</a>`).join('')}<a class="explore__all" href="course-search.html">Xem tất cả khoá học${ICON.chevronR}</a></div></div>
+          <div class="explore__menu" hidden><div class="explore__h">Course categories</div>${((window.LHData && LHData.categories) || []).map((c) => `<a href="course-search.html?ct=${encodeURIComponent(c)}" data-cat="${esc(c)}">${esc(c)}</a>`).join('')}<a class="explore__all" href="course-search.html">View all courses${ICON.chevronR}</a></div></div>
       </div>
       <div class="app-header__right">
-        <button class="hd-icon" aria-label="Thông báo" title="Chuông thông báo: làm Sau Đợt 2 (hiện chỉ có UI)">${ICON.bell2}</button>
-        <button class="hd-icon" aria-label="Ứng dụng">${ICON.grid}</button>
+        <button class="hd-icon" aria-label="Notifications" title="Notifications">${ICON.bell2}</button>
+        <button class="hd-icon" aria-label="Apps">${ICON.grid}</button>
         <a class="user-chip" href="my-courses.html"><span class="user-chip__av">${initials(user)}<i></i></span><span class="user-chip__name">${esc(user)}</span>${role !== 'Learner' ? `<span class="role-pill">${esc(role)}</span>` : ''}${ICON.chevronD}</a>
       </div></div></header>`;
   }
@@ -137,14 +137,14 @@ var LH_V = '1119q';
   /** App / Footer — nền tối + ảnh footer.png, cao 812 */
   function AppFooter() {
     return `<footer class="app-footer"><div class="container">
-      <div class="app-footer__h"><h5>Phát triển bản thân cùng</h5><h5 class="lime">Learning Hub</h5></div>
-      <p>Nâng cao kỹ năng và mở rộng kiến thức với các khoá học được thiết kế riêng cho đội ngũ Techvify. Dù bạn là developer, designer hay project manager — luôn có một khoá học phù hợp đang chờ bạn.<br>Cùng nhau học, cùng nhau lớn, cùng nhau vươn xa!</p>
+      <div class="app-footer__h"><h5>Grow yourself with</h5><h5 class="lime">Learning Hub</h5></div>
+      <p>Build your skills with courses designed for the Techvify team. Whether you are a developer, designer or project manager, there is a course waiting for you.<br>Learn together, grow together, go further together!</p>
       <div class="app-footer__brand"><img src="${LOGO}" width="32" height="32" alt="logo"><span>Learning <i></i> Hub</span></div>
     </div></footer>`;
   }
   /** App / Back — icon undo #2A28DF + chữ gradient, kèm tiêu đề trang */
-  function BackLink(title = '', { href = 'javascript:history.back()', big = false } = {}) {
-    return `<div class="back-head"><a class="back-link" href="${href}">${ICON.undo}<span>Back</span></a>${title ? `<div class="back-head__t ${big ? 'is-big' : ''}">${esc(title)}</div>` : ''}</div>`;
+  function BackLink(title = '', { href = 'home.html', big = false } = {}) {
+    return `<div class="back-head"><a class="back-link" href="${href}" data-back>${ICON.undo}<span>Back</span></a>${title ? `<div class="back-head__t ${big ? 'is-big' : ''}">${esc(title)}</div>` : ''}</div>`;
   }
   /** App / Section head — icon 2 màu + tiêu đề 24/700 + "View More" */
   function SectionHead(title, icon, href, extra = '') {
@@ -170,18 +170,18 @@ var LH_V = '1119q';
    * recent: [từ khoá]; results: [{title, cover, cat, st}]; total: số kết quả đầy đủ.
    * Không có lọc nhanh trong bảng xổ (D-41) — lọc Trạng thái / Thời gian nằm ở trang Tìm khoá.
    */
-  const ST_LABEL = { notenrolled: 'Chưa đăng ký', learning: 'Đang học', done: 'Hoàn thành', fail: 'Không đạt' };
+  const ST_LABEL = { notenrolled: 'Not Enrolled', learning: 'In Progress', done: 'Completed', fail: 'Failed' };
   function SearchResultItem({ title, cover, cat, st, q, i }) {
-    return `<a class="sp-item" href="course-detail.html" data-sp-i="${i}" role="option"><img src="${cover}" alt=""><span class="sp-item__b"><b>${q ? highlight(title, q) : esc(title)}</b><span>${esc(cat)} · ${ST_LABEL[st] || 'Chưa đăng ký'}</span></span></a>`;
+    return `<a class="sp-item" href="course-detail.html" data-sp-i="${i}" role="option"><img src="${cover}" alt=""><span class="sp-item__b"><b>${q ? highlight(title, q) : esc(title)}</b><span>${esc(cat)} · ${ST_LABEL[st] || 'Not Enrolled'}</span></span></a>`;
   }
   function SearchPanel({ q = '', recent = [], results = [], total = 0 }) {
     const state = !q ? 'recent' : results.length ? 'typing' : 'empty';
     let main = '';
-    if (state === 'recent') main = recent.length ? `<div class="sp-sec"><div class="sp-h">Tìm gần đây</div>${recent.map((r, i) => `<div class="sp-rec" data-sp-i="${i}" data-sp-q="${esc(r)}" role="option">${ICON.clock}<span>${esc(r)}</span><button type="button" class="sp-rec__x" data-sp-del="${esc(r)}" aria-label="Xoá khỏi lịch sử">${ICON.x}</button></div>`).join('')}</div>` : '';
-    if (state === 'typing') main = `<div class="sp-sec"><div class="sp-h">Khoá học</div>${results.map((r, i) => SearchResultItem({ ...r, q, i })).join('')}</div>`;
+    if (state === 'recent') main = recent.length ? `<div class="sp-sec"><div class="sp-h">Recent searches</div>${recent.map((r, i) => `<div class="sp-rec" data-sp-i="${i}" data-sp-q="${esc(r)}" role="option">${ICON.clock}<span>${esc(r)}</span><button type="button" class="sp-rec__x" data-sp-del="${esc(r)}" aria-label="Remove from history">${ICON.x}</button></div>`).join('')}</div>` : '';
+    if (state === 'typing') main = `<div class="sp-sec"><div class="sp-h">Courses</div>${results.map((r, i) => SearchResultItem({ ...r, q, i })).join('')}</div>`;
     if (state === 'empty') main = `<div class="sp-empty">${ICON.search}<b>No courses found for “${esc(q)}”</b></div>`;
 
-    const all = q ? `<button type="button" class="sp-all" data-sp-all data-sp-i="${state === 'typing' ? results.length : state === 'recent' ? recent.length : 0}" role="option">${ICON.search}<span>Xem tất cả <b>${total}</b> kết quả cho “${esc(q)}”</span>${ICON.chevronR}</button>` : '';
+    const all = q ? `<button type="button" class="sp-all" data-sp-all data-sp-i="${state === 'typing' ? results.length : state === 'recent' ? recent.length : 0}" role="option">${ICON.search}<span>View all <b>${total}</b> results for “${esc(q)}”</span>${ICON.chevronR}</button>` : '';
     return `<div class="sp" data-state="${state}">${main}${all}</div>`;
   }
 
@@ -190,7 +190,7 @@ var LH_V = '1119q';
       <div class="modal modal--${size}${document.body.classList.contains('adm-body') ? ' adm-popup' : ''}">
         <div class="modal__head">${icon ? `<span class="modal__icon modal__icon--${iconTone}">${ICON[icon]}</span>` : ''}
           <div class="grow"><div class="modal__title" id="${id}-t">${title}</div>${desc ? `<div class="modal__desc">${desc}</div>` : ''}</div>
-          <button class="icon-btn" data-close aria-label="Đóng">${ICON.x}</button></div>
+          <button class="icon-btn" data-close aria-label="Close">${ICON.x}</button></div>
         <div class="modal__body">${body}</div>
         ${foot ? `<div class="modal__foot">${footNote ? `<span class="grow">${footNote}</span>` : ''}${foot}</div>` : ''}
       </div></div>`;
@@ -305,13 +305,13 @@ var LH_V = '1119q';
   /** Assessment / Mode card — Mode: practice | exam */
   function ModeCard({ mode, questions, minutes, attemptsLeft }) {
     if (mode === 'practice') return `<div class="mode-card mode-card--practice"><span class="mode-card__icon">${ICON.dumbbell}</span>
-      <div><div class="mode-card__title">Luyện tập</div></div>
-      <ul><li>${questions} câu luyện tập</li><li>Không giới hạn thời gian và số lần</li></ul>
-      ${Button({ label: 'Luyện tập', variant: 'outline', icon: 'dumbbell', attrs: 'data-go="practice"' })}</div>`;
+      <div><div class="mode-card__title">Practice</div></div>
+      <ul><li>${questions} questions</li><li>Unlimited</li></ul>
+      ${Button({ label: 'Start Practice', variant: 'outline', icon: 'dumbbell', attrs: 'data-go="practice"' })}</div>`;
     return `<div class="mode-card mode-card--exam"><span class="mode-card__icon">${ICON.award}</span>
-      <div><div class="mode-card__title">Bài thi</div></div>
-      <ul><li>${questions} câu · ${minutes} phút</li><li>${attemptsLeft}</li></ul>
-      ${Button({ label: 'Làm bài thi', icon: 'play', attrs: 'data-go="exam"' })}</div>`;
+      <div><div class="mode-card__title">Exam</div></div>
+      <ul><li>${questions} questions · ${minutes} min</li><li>${attemptsLeft}</li></ul>
+      ${Button({ label: 'Start Exam', icon: 'play', attrs: 'data-go="exam"' })}</div>`;
   }
 
   /**
@@ -327,26 +327,26 @@ var LH_V = '1119q';
       const isChosen = chosen.includes(i), isRight = correct.includes(i);
       let cls = 'opt', tag = '', mark = '';
       if (review === 'unanswered') { if (isChosen) { cls += ' opt--chosen'; mark = ICON.check; } }
-      else if (!reveal) { if (isChosen) { cls += ' opt--chosen'; mark = ICON.check; tag = 'Lựa chọn của bạn'; } }
+      else if (!reveal) { if (isChosen) { cls += ' opt--chosen'; mark = ICON.check; tag = 'Your answer'; } }
       else {
-        if (isRight) { cls += ' opt--right'; mark = ICON.check; tag = isChosen ? 'Bạn chọn · Đáp án đúng' : 'Đáp án đúng'; }
-        else if (isChosen) { cls += ' opt--wrong'; mark = ICON.x; tag = 'Lựa chọn của bạn'; }
+        if (isRight) { cls += ' opt--right'; mark = ICON.check; tag = isChosen ? 'Your answer · Correct answer' : 'Correct answer'; }
+        else if (isChosen) { cls += ' opt--wrong'; mark = ICON.x; tag = 'Your answer'; }
       }
       return `<div class="${cls}"><span class="opt__mark ${multi ? 'opt__mark--box' : ''}">${mark}</span><span class="opt__text">${String.fromCharCode(65 + i)}. ${esc(o)}</span>${tag ? `<span class="opt__tag">${tag}</span>` : ''}</div>`;
     }).join('');
     const tone = review === 'unanswered' ? '' : result === 'correct' ? 'q-card--correct' : 'q-card--incorrect';
     const footer = review === 'hidden'
-      ? `<div class="locked-answer">${ICON.eyeOff}<span>Hiện khi Đạt hoặc hết lượt</span></div>`
-      : reveal && explain ? `<div class="explain"><b>Giải thích</b>${esc(explain)}</div>` : '';
+      ? `<div class="locked-answer">${ICON.eyeOff}<span>Shown after you pass or use all attempts</span></div>`
+      : reveal && explain ? `<div class="explain"><b>Explanation</b>${esc(explain)}</div>` : '';
     return `<article class="q-card ${tone}" data-review="${review}" data-result="${result || ''}">
-      <div class="q-card__head"><span class="q-card__num">Câu ${n}${total ? '/' + total : ''}</span><span class="q-card__type">${multi ? 'Nhiều đáp án' : 'Một đáp án'}</span><span class="grow"></span>${resBadge}</div>
+      <div class="q-card__head"><span class="q-card__num">Question ${n}${total ? '/' + total : ''}</span><span class="q-card__type">${multi ? 'Multiple Choice' : 'Single Choice'}</span><span class="grow"></span>${resBadge}</div>
       <div class="q-card__body"><p class="q-card__text">${esc(text)}</p><div class="stack gap-8">${opts}</div>${footer}</div></article>`;
   }
 
   /** Assessment / Score ring */
   function ScoreRing({ score, pass }) {
     const c = pass ? 'var(--green-600)' : 'var(--red-600)';
-    return `<div class="score-ring" style="background:conic-gradient(${c} ${score * 3.6}deg, var(--neutral-200) 0)"><div class="score-ring__in"><span class="score-ring__val" style="color:${c}">${score}</span><span class="score-ring__lbl">/ 100 điểm</span></div></div>`;
+    return `<div class="score-ring" style="background:conic-gradient(${c} ${score * 3.6}deg, var(--neutral-200) 0)"><div class="score-ring__in"><span class="score-ring__val" style="color:${c}">${score}</span><span class="score-ring__lbl">/ 100</span></div></div>`;
   }
 
   /* ---------- Learn (chép DOM /course/<id>/learn và /quiz/<id>) ---------- */
@@ -393,7 +393,7 @@ var LH_V = '1119q';
       <header class="learn-hd"><div class="learn-hd__l"><a href="home.html" class="learn-hd__home">Learning Hub</a><span class="learn-hd__sep"></span><a href="course-detail.html"><h1>${esc(course)}</h1></a></div>
         <button class="learn-hd__pg" data-pop>${Gauge(pct)}<span>Your progress</span>${ICON.chevronD}</button></header>
       <div class="learn-main"><div class="learn-col"><div class="learn-stage-wrap">
-        <div class="learn-stage">${stage}<button class="stage-nav stage-nav--l" aria-label="Bài trước">${ICON.chevronL}</button><button class="stage-nav stage-nav--r" aria-label="Bài sau">${ICON.chevronR}</button></div></div>
+        <div class="learn-stage">${stage}<button class="stage-nav stage-nav--l" aria-label="Previous lesson">${ICON.chevronL}</button><button class="stage-nav stage-nav--r" aria-label="Next lesson">${ICON.chevronR}</button></div></div>
         <div class="learn-tabs">${tabs.map((t) => `<button class="${t === tab ? 'is-active' : ''}">${t}</button>`).join('')}</div>
         <div class="learn-below">${below}</div></div>
         <aside class="learn-drawer">${drawer}</aside></div></div>`;
@@ -405,7 +405,8 @@ var LH_V = '1119q';
 
   /** Assessment / Exam intro (màn bắt đầu bài thi) — Exam 3.1, Practice · Learner 3.2.
    *  Chỉ còn Exam (Practice là mục riêng trên trang khoá, BR-PR-01). State: default | in-progress | passed | out */
-  function ModeSelect({ title, questions, minutes, passMark = 80, totalPts, maxAttempts = 3, attemptsLeft = 3, best = null, state = 'default', remain = '', retake = false, desc = '' }) {
+  /* D-167 (20/11): practice = { questions } → ô Practice Mode bên trái ô Exam Mode, cùng cỡ (Practice · Learner 3.1). Không truyền = chỉ Exam Mode */
+  function ModeSelect({ title, questions, minutes, passMark = 80, totalPts, maxAttempts = 3, attemptsLeft = 3, best = null, state = 'default', remain = '', retake = false, desc = '', practice = null }) {
     const need = totalPts ? Math.ceil(passMark * totalPts / 100) : null;
     const meta = [[ICON.list, `${questions} Questions`], [ICON.clock, minutes ? `${minutes} Minutes` : 'No time limit']]
       .map(([i, t]) => `<span>${i}${esc(t)}</span>`).join('');
@@ -422,9 +423,19 @@ var LH_V = '1119q';
       ${badge ? `<div class="mode-sel__badge">${badge}</div>` : ''}
       <h1>${esc(title)}</h1>
       ${desc ? `<p class="mode-sel__sub">${esc(desc)}</p>` : ''}
-      <div class="mode-sel__meta">${meta}</div>
-      <div class="exam-intro"><span class="exam-intro__h">${ICON.award}Exam Mode</span>${lines.map((l) => `<span>${l}</span>`).join('')}</div>
-      <div class="mode-sel__btns is-single"><div class="mode-sel__opt"><button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button></div></div>
+      ${practice ? '' : `<div class="mode-sel__meta">${meta}</div>`}
+      ${practice ? (() => {
+        /* D-168: 2 ô cùng khuôn — biểu tượng + tên chế độ, 3 dòng "nhãn · giá trị" thẳng hàng, nút dưới đáy. Không câu mô tả. */
+        const row = (k, v) => `<div class="mode-kv"><span>${k}</span><b>${v}</b></div>`;
+        return `<div class="mode-pair">
+          <section class="mode-box mode-box--practice"><h2>${ICON.dumbbell}Practice</h2>
+            ${row('Questions', practice.questions)}${row('Time', 'No limit')}${row('Attempts', 'Unlimited')}
+            <button class="wbtn wbtn--outline wbtn--lg" data-go="practice">Start Practice</button></section>
+          <section class="mode-box mode-box--exam"><h2>${ICON.award}Exam</h2>
+            ${row('Questions', questions)}${row('Time', minutes ? `${minutes} min` : 'No limit')}${row('Passing Score', `${passMark}%${need ? ` (${need}/${totalPts})` : ''}`)}${row('Attempts', `${attemptsLeft}/${maxAttempts} left`)}${best != null ? row('Highest Score', best) : ''}
+            <button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button></section>
+        </div>`; })() : `<div class="exam-intro"><span class="exam-intro__h">${ICON.award}Exam Mode</span>${lines.map((l) => `<span>${l}</span>`).join('')}</div>
+      <div class="mode-sel__btns is-single"><div class="mode-sel__opt"><button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button></div></div>`}
     </div></div>`;
   }
 
@@ -517,7 +528,7 @@ var LH_V = '1119q';
         <div class="rsum__t"><h1>${isLatest ? title : `Attempt ${attemptNo}: ${pass ? 'Passed' : 'Not Passed'}`}</h1></div>
         <div class="rsum__stats"><div class="is-ok"><b>${right}</b><span>Correct</span></div><div class="is-bad"><b>${wrong}</b><span>Incorrect</span></div><div><b>${blank}</b><span>Unanswered</span></div><div><b>${total}</b><span>Total</span></div></div>
         <div class="rsum__meta"><span>Attempt ${attemptNo}/${maxAttempts}</span>${minutes ? `<span>${minutes} min</span>` : ''}<span>Passing Score: ${passMark}%${need ? ` (${need}/${totalPts})` : ''}</span>${final ? `<span>Final Score: <b>${best}</b></span>` : ''}</div>
-        <div class="rsum__act">${canRetry ? `<button class="wbtn" data-retry>Retake Exam (${left} attempt${left > 1 ? 's' : ''} left)</button>` : ''}<button class="wbtn wbtn--outline" data-review>Review Answers</button><a class="wbtn wbtn--outline" href="course-detail.html" data-back-course>Back to Course</a></div>
+        <div class="rsum__act">${canRetry ? `<button class="wbtn" data-retry>Retake Exam (${left} attempt${left > 1 ? 's' : ''} left)</button>` : ''}<button class="wbtn wbtn--outline" data-review>Review Answers</button><button class="wbtn wbtn--outline" data-go="start">Back to Quiz</button></div>
       </div></div>`;
   }
   /** Assessment / Answer note — Exam 3.3 Dòng thông báo đáp án. State: hidden | passed | out */
@@ -539,7 +550,7 @@ var LH_V = '1119q';
     return `<div class="psum"><div class="psum__head"><span class="psum__ic">${ICON.trophy}</span><div><h2>Practice complete</h2><p><b>${right} / ${total}</b> correct · ${wrong.length} incorrect${skipped.length ? ` · ${skipped.length} skipped` : ''}</p></div></div>
       <div class="psum__note">${ICON.info}Practice does not count toward exam attempts or progress, and results are not saved.</div>
       ${redo ? `<div class="psum__wrong"><b>Questions to review</b><div>${list.map(([n, sk]) => chip(n, sk)).join('')}</div></div>` : '<div class="psum__wrong"><b>All answers are correct.</b></div>'}
-      <div class="psum__act">${redo ? `<button class="wbtn" data-retry-wrong>Practice ${redo} Incorrect${skipped.length ? ' &amp; Skipped' : ''}</button>` : ''}<button class="wbtn wbtn--outline" data-restart>Restart</button><button class="wbtn wbtn--outline" data-back-course>Back to Course</button></div></div>`;
+      <div class="psum__act">${redo ? `<button class="wbtn" data-retry-wrong>Practice ${redo} Incorrect${skipped.length ? ' &amp; Skipped' : ''}</button>` : ''}<button class="wbtn wbtn--outline" data-restart>Restart</button><button class="wbtn wbtn--outline" data-back-course>Back to Quiz</button></div></div>`;
   }
   /* ---------- Enroll — Enrollment 3.1, 3.2 (BR-ENR-01, 10) ---------- */
   /** Learner / Slot indicator — D-119/D-139: "In progress: x/3 elective courses". Mandatory không tính suất (không +1 slot). */
@@ -602,20 +613,20 @@ var LH_V = '1119q';
   }
   /** Learner / Completion ring — vòng Tỷ lệ hoàn thành (#7) */
   function CompletionRing(pct, size = 120) {
-    return `<div class="c-ring" style="--p:${pct};width:${size}px;height:${size}px"><div class="c-ring__in"><b>${pct}%</b><span>hoàn thành</span></div></div>`;
+    return `<div class="c-ring" style="--p:${pct};width:${size}px;height:${size}px"><div class="c-ring__in"><b>${pct}%</b><span>complete</span></div></div>`;
   }
 
   /* ---------- Đợt 2 · #3 Duyệt khoá ---------- */
-  const STATUS = { draft: ['Nháp', 'neutral'], pending: ['Chờ duyệt', 'warning'], rejected: ['Cần chỉnh sửa', 'danger'], published: ['Đang chạy', 'success'] };
+  const STATUS = { draft: ['Draft', 'neutral'], pending: ['Pending Approval', 'warning'], rejected: ['Changes Requested', 'danger'], published: ['Published', 'success'] };
   /** Course / Status badge — Status: draft | pending | rejected | published · Revision: none | pending | rejected */
   function CourseStatus(status, revision) {
     const [l, t] = STATUS[status];
-    const rev = revision === 'pending' ? Badge('Bản sửa chờ duyệt', 'warning') : revision === 'rejected' ? Badge('Bản sửa cần chỉnh sửa', 'danger') : revision === 'draft' ? Badge('Bản sửa nháp', 'neutral') : '';
+    const rev = revision === 'pending' ? Badge('Edit Pending Approval', 'warning') : revision === 'rejected' ? Badge('Edit Changes Requested', 'danger') : revision === 'draft' ? Badge('Edit Draft', 'neutral') : '';
     return `<span class="row gap-4">${Badge(l, t)}${rev}</span>`;
   }
   /** Course / Approval banner — chỉ dùng khi Admin trả về kèm nhận xét (BR-CRS-07).
    *  Không có nút (Gửi duyệt / Sửa nội dung nằm ở chân trang), không có câu ghi chú trạng thái (đã có tag cạnh tiêu đề). */
-  function ApprovalBanner({ title = 'Admin L&D yêu cầu chỉnh sửa', comment = '', by = 'Lê Thị Mai (Admin L&D)', at = '10:24 · 09/11/2026' }) {
+  function ApprovalBanner({ title = 'L&D requested changes', comment = '', by = 'Lê Thị Mai (Admin L&D)', at = '10:24 · 09/11/2026' }) {
     const quote = comment ? `<blockquote class="ab__quote">“${esc(comment)}”<cite>${esc(by)} · ${esc(at)}</cite></blockquote>` : '';
     return `<div class="ab alert alert--danger">${ICON.alert}<div class="grow stack gap-4"><b>${esc(title)}</b>${quote}</div></div>`;
   }
@@ -837,40 +848,72 @@ var LH_V = '1119q';
     creator: ['Phạm Thanh Long', 'Editor'], /* alias cũ → editor */
     employee: ['Trần Minh Anh', 'Employee'],
   };
-  const OUT = 'Ngoài phạm vi LearningHub 2';
+  const OUT = 'Not in LearningHub 2 scope';
   function admRole(r) {
     const v = String(r || App.role() || 'admin').toLowerCase();
     if (v.startsWith('ed') || v.startsWith('cr')) return 'editor';
     if (v.startsWith('em') || v.startsWith('le')) return 'employee';
     return 'admin';
   }
+  /* Admin / Sidebar — chép đúng web thật (shadcn sidebar, đo 20/11/2026 trên /dashboard/settings/*):
+   * Expanded 256 · Collapsed 72 (chỉ icon) · chuyển động 0.3s · nhớ trạng thái (web: cookie sidebar_state → prototype: localStorage lhSidebar).
+   * Header: logo 40 + "Learning • Hub" 24/400 đen (ẩn khi thu gọn). Nhóm: nhãn 18/400 #959595 cao 32 (thu gọn: mờ 0, vẫn giữ chỗ).
+   * Mục: cao 40, đệm 8, bo 10, icon lucide 20 nét 2, chữ 14/400 #0a0a0a. Hover và mục đang chọn: nền #EEF0FE, chữ + icon #4757FF; đang chọn chữ 500.
+   * Thu gọn: mục 32×32 đệm 6 căn giữa; rê chuột hiện tooltip đen bên phải (12px, đệm 6/12, bo 8).
+   * Chân: nút panel-left 28×28 nền trắng bo 8 — mở: sát phải; thu gọn: căn giữa. LH2 thêm mục Permissions và nhóm Reports theo cùng kiểu. */
+  const SB_IC = {
+    courses: '<path d="M15.033 9.44a.647.647 0 0 1 0 1.12l-4.065 2.352a.645.645 0 0 1-.968-.56V7.648a.645.645 0 0 1 .967-.56z"/><path d="M7 21h10"/><rect width="20" height="14" x="2" y="3" rx="2"/>',
+    categories: '<path d="M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z"/><path d="M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193"/><circle cx="10.5" cy="6.5" r=".5" fill="currentColor"/>',
+    employees: '<path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/>',
+    entities: '<path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M12 6h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M8 6h.01"/><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><rect x="4" y="2" width="16" height="20" rx="2"/>',
+    roles: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+    sync: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    settings: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    reports: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+    panel: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
+  };
+  const sbSvg = (k, size = 20) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SB_IC[k]}</svg>`;
+  const sbCollapsed = () => localStorage.getItem('lhSidebar') === 'collapsed';
   function AdminSidebar({ active = 'courses', collapsed = false, role = 'admin' } = {}) {
     const r = admRole(role);
     const q = `?r=${r}`;
-    const it = (key, icon, label, href, extra = '') => href
-      ? `<a class="adm-item ${active === key ? 'is-active' : ''}" href="${href}" title="${esc(label)}">${ICON[icon]}<span>${esc(label)}</span>${extra}</a>`
-      : `<button type="button" class="adm-item" data-out="${esc(label)}" title="${esc(label)}">${ICON[icon]}<span>${esc(label)}</span></button>`;
-    /* LH1 Settings: Course · Category · (admin) Employees · Entity · Role · Sync · LH2: Báo cáo ngoài nhóm + ACL Creator */
-    const SUB = ['courses', 'categories', 'employees', 'entities', 'roles', 'sync', 'settings'];
-    const settingsOpen = SUB.includes(active) || active === 'courses';
-    return `<aside class="adm-side ${collapsed ? 'adm-side--collapsed' : ''}" aria-label="Menu Admin">
-      <a class="adm-side__logo" href="admin-courses.html${q}"><img src="${LOGO}" alt=""><span>Learning Hub</span></a>
-      <div class="adm-side__groups">
-        <div class="adm-side__group"><div class="adm-side__title">Settings</div><div class="adm-side__items">
-          ${it('courses', 'bookOpen', 'Course Management', 'admin-courses.html' + q)}
-          ${it('categories', 'list', 'Category Management', 'admin-categories.html' + q)}
-          ${r === 'admin' ? it('employees', 'usersRound', 'Employee Management', 'admin-employees.html' + q) : ''}
-          ${r === 'admin' ? it('entities', 'building', 'Entity Management', 'admin-entities.html' + q) : ''}
-          ${r === 'admin' ? it('roles', 'shield', 'Role Management', 'admin-roles.html' + q) : ''}
-          ${r === 'admin' ? it('sync', 'repeat', 'Sync Data', 'admin-sync.html' + q) : ''}
-          ${r === 'admin' ? it('settings', 'shieldCheck', 'Creator ACL', 'admin-settings.html' + q, '<i>LH2</i>') : ''}
-        </div></div>
-        <div class="adm-side__group"><div class="adm-side__title">Reports</div><div class="adm-side__items">
-          ${it('reports', 'chart', 'Learning Report', 'admin-reports.html' + q, '<i>LH2</i>')}
-          ${it('logout', 'logout', 'Logout')}
-        </div></div>
-      </div></aside>`;
+    const it = (key, label, href) => `<li><a class="sb-btn ${active === key ? 'is-active' : ''}" href="${href}" data-tip="${esc(label)}" ${active === key ? 'aria-current="page"' : ''}>${sbSvg(key)}<span>${esc(label)}</span></a></li>`;
+    return `<aside class="adm-side sb" aria-label="Admin menu">
+      <div class="sb__head"><a class="sb__logo" href="admin-courses.html${q}"><img src="${LOGO}" alt="logo" width="40" height="40"></a><span class="sb__brand">Learning <i></i> Hub</span></div>
+      <div class="sb__content">
+        <div class="sb__group"><div class="sb__label">Settings</div><ul class="sb__menu">
+          ${it('courses', 'Course Management', 'admin-courses.html' + q)}
+          ${it('categories', 'Category Management', 'admin-categories.html' + q)}
+          ${r === 'admin' ? it('employees', 'Employee Management', 'admin-employees.html' + q) : ''}
+          ${r === 'admin' ? it('entities', 'Entity Management', 'admin-entities.html' + q) : ''}
+          ${r === 'admin' ? it('roles', 'Role Management', 'admin-roles.html' + q) : ''}
+          ${r === 'admin' ? it('sync', 'Sync Data', 'admin-sync.html' + q) : ''}
+          ${r === 'admin' ? it('settings', 'Permissions', 'admin-settings.html' + q) : ''}
+        </ul></div>
+        <div class="sb__group"><div class="sb__label">Reports</div><ul class="sb__menu">
+          ${it('reports', 'Learning Report', 'admin-reports.html' + q)}
+        </ul></div>
+      </div>
+      <div class="sb__foot"><button type="button" class="sb__trigger" data-sb-toggle aria-label="Toggle Sidebar" title="Toggle Sidebar">${sbSvg('panel', 24)}</button></div>
+    </aside>`;
   }
+  /* Tooltip khi thu gọn + nút thu gọn / mở (gắn 1 lần) */
+  let sbTip = null;
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('[data-sb-toggle]')) return;
+    const shell = document.querySelector('.adm'); if (!shell) return;
+    const c = !shell.classList.contains('adm--sb-collapsed');
+    shell.classList.toggle('adm--sb-collapsed', c); localStorage.setItem('lhSidebar', c ? 'collapsed' : 'expanded');
+    if (sbTip) sbTip.hidden = true;
+  });
+  document.addEventListener('mouseover', (e) => {
+    const b = e.target.closest('.adm--sb-collapsed .sb-btn');
+    if (!b) { if (sbTip) sbTip.hidden = true; return; }
+    if (!sbTip) { sbTip = document.createElement('div'); sbTip.className = 'sb-tip'; sbTip.setAttribute('role', 'tooltip'); document.body.appendChild(sbTip); }
+    const r = b.getBoundingClientRect();
+    sbTip.textContent = b.dataset.tip; sbTip.hidden = false;
+    sbTip.style.left = (r.right + 9) + 'px'; sbTip.style.top = (r.top + r.height / 2) + 'px';
+  });
   function AdminToolbar({ role = 'admin', active = '' } = {}) {
     const r = admRole(role);
     const [name] = ADM_USER[r] || ADM_USER.admin;
@@ -901,16 +944,17 @@ var LH_V = '1119q';
       shell.querySelector('.adm-main').appendChild(main);
       const h = document.getElementById('header'); if (h) h.hidden = true;
     }
-    /* Trang không ép thu gọn → tự thu gọn ở khổ 1024–1279 (CSS); dưới 1024 luôn là thanh icon */
-    shell.classList.toggle('adm--auto-collapse', !collapsed);
+    /* 20/11: bỏ tự thu gọn theo khổ màn — web thật chỉ thu gọn khi bấm nút */
+    shell.classList.remove('adm--auto-collapse');
+    shell.classList.toggle('adm--sb-collapsed', sbCollapsed()); // như web: chỉ người dùng thu gọn / mở (nút cuối sidebar), nhớ trạng thái; trang không ép
     shell.querySelector('.adm-side-slot').outerHTML = `<div class="adm-side-slot" style="display:contents">${AdminSidebar({ active, collapsed, role: r })}</div>`;
     shell.querySelector('.adm-tb-slot').innerHTML = AdminToolbar({ role: r, active });
     return '';
   }
   /** Stage tag (73:1692) — trạng thái khoá. Status: draft | pending | rejected | published · Revision: pending | rejected | draft */
   function StageTag(status, revision) {
-    const S = { draft: ['Nháp', 'draft'], pending: ['Chờ duyệt', 'pending'], rejected: ['Cần chỉnh sửa', 'rejected'], published: ['Đang chạy', 'published'] }[status] || [status, 'neutral'];
-    const R = { pending: ['Bản sửa chờ duyệt', 'pending'], rejected: ['Bản sửa cần chỉnh sửa', 'rejected'], draft: ['Bản sửa nháp', 'draft'] }[revision];
+    const S = { draft: ['Draft', 'draft'], pending: ['Pending Approval', 'pending'], rejected: ['Changes Requested', 'rejected'], published: ['Published', 'published'] }[status] || [status, 'neutral'];
+    const R = { pending: ['Edit Pending Approval', 'pending'], rejected: ['Edit Changes Requested', 'rejected'], draft: ['Edit Draft', 'draft'] }[revision];
     return `<span class="stage-wrap"><span class="stage-tag stage-tag--${S[1]}">${S[0]}</span>${R ? `<span class="stage-tag stage-tag--${R[1]}">${R[0]}</span>` : ''}</span>`;
   }
   /** Tag tuỳ ý cùng kiểu Stage tag — tone: pending | published | draft | rejected | info | neutral */
@@ -922,13 +966,13 @@ var LH_V = '1119q';
   /** Hover list (menu 3 chấm) — items: [{ label, icon, href, attrs, danger }] */
   function RowMenu(items) {
     if (!items.length) return '';
-    return `<span class="row-menu"><button type="button" data-rowmenu aria-label="Thao tác" aria-expanded="false">${ICON.ellipsisV}</button><span class="row-menu__list" hidden>${items.map((i) => i.href
+    return `<span class="row-menu"><button type="button" data-rowmenu aria-label="Actions" aria-expanded="false">${ICON.ellipsisV}</button><span class="row-menu__list" hidden>${items.map((i) => i.href
       ? `<a href="${i.href}" class="${i.danger ? 'is-danger' : ''}" ${i.attrs || ''}>${ICON[i.icon] || ''}${esc(i.label)}</a>`
       : `<button type="button" class="${i.danger ? 'is-danger' : ''}" ${i.attrs || ''}>${ICON[i.icon] || ''}${esc(i.label)}</button>`).join('')}</span></span>`;
   }
   /** Đầu trang admin: eyebrow (dòng nhỏ gradient) + tiêu đề + mô tả + vùng nút bên phải */
   function AdminHead({ eyebrow = '', title, desc = '', right = '', back = '', xl = false }) {
-    return `<div class="adm-head ${xl ? 'adm-head--xl' : ''}"><div class="adm-head__text">${back ? `<a class="adm-back" href="${back}">${ICON.undo}Back</a>` : ''}${eyebrow ? `<span class="adm-head__eyebrow">${esc(eyebrow)}</span>` : ''}<h1>${title}</h1>${desc ? `<p>${desc}</p>` : ''}</div>${right}</div>`;
+    return `<div class="adm-head ${xl ? 'adm-head--xl' : ''}"><div class="adm-head__text">${back ? `<a class="adm-back" href="${back}" ${back === '#' ? '' : 'data-back'}>${ICON.undo}Back</a>` : ''}${eyebrow ? `<span class="adm-head__eyebrow">${esc(eyebrow)}</span>` : ''}<h1>${title}</h1>${desc ? `<p>${desc}</p>` : ''}</div>${right}</div>`;
   }
 
   /* Admin / Filter chip — ghost trigger + popover trắng (Airtable-style, màu LH)
@@ -955,23 +999,23 @@ var LH_V = '1119q';
           }
           return `<button type="button" class="ff__option ${sel ? 'is-selected' : ''}" role="option" data-ff-opt data-v="${esc(v)}" aria-selected="${sel}"><span>${esc(t)}</span>${sel ? ICON.check.replace('class="ic"', 'class="ic ff__check"') : ''}</button>`;
         }).join('');
-        body = `<div class="ff__search">${ICON.search}<input type="search" data-ff-search placeholder="${esc(it.searchPh || 'Tìm…')}" autocomplete="off"></div>
-          <div class="ff__list" role="listbox">${opts || '<div class="ff__empty">Không có lựa chọn.</div>'}</div>`;
+        body = `<div class="ff__search">${ICON.search}<input type="search" data-ff-search placeholder="${esc(it.searchPh || 'Search…')}" autocomplete="off"></div>
+          <div class="ff__list" role="listbox">${opts || '<div class="ff__empty">No options.</div>'}</div>`;
       }
       return `<div class="ff ${it.hasValue ? 'has-value' : ''}" data-ff="${esc(it.key)}" data-ff-mode="${esc(it.mode)}">
         <button type="button" class="ff__trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="${openId}">
           <span class="ff__label"><em>${esc(it.label)}:</em> ${esc(it.display)}</span>
           <span class="ff__caret" aria-hidden="true"></span>
         </button>
-        <button type="button" class="ff__clear" data-ff-clear aria-label="Xoá ${esc(it.label)}">${ICON.x}</button>
+        <button type="button" class="ff__clear" data-ff-clear aria-label="Clear ${esc(it.label)}">${ICON.x}</button>
         <div class="ff__popover ${it.mode === 'date' ? 'ff__popover--date' : ''}" id="${openId}" role="dialog" hidden>
           <div class="ff__card">${body}
-            <div class="ff__footer"><button type="button" data-ff-cancel>Huỷ</button><button type="button" class="ff__apply" data-ff-apply>Áp dụng</button></div>
+            <div class="ff__footer"><button type="button" data-ff-cancel>Cancel</button><button type="button" class="ff__apply" data-ff-apply>Apply</button></div>
           </div>
         </div>
       </div>`;
     };
-    return `<div class="ff-bar">${items.map(chip).join('')}${any ? `<button type="button" class="ff-clear-all" data-ff-clear-all>Xoá lọc</button>` : ''}</div>`;
+    return `<div class="ff-bar">${items.map(chip).join('')}${any ? `<button type="button" class="ff-clear-all" data-ff-clear-all>Clear filters</button>` : ''}</div>`;
   }
   function closeAdminFilters(except) {
     document.querySelectorAll('.ff.is-open').forEach((el) => {
@@ -1046,7 +1090,7 @@ var LH_V = '1119q';
   }
   bindAdminFilters();
   /** Admin / Empty state (1265:7417) — icon tròn + tiêu đề + mô tả + CTA (html nút). Dùng cho màn chưa có dữ liệu. */
-  function AdminEmpty({ icon = 'file', title = 'Chưa có dữ liệu', desc = '', cta = '', compact = false } = {}) {
+  function AdminEmpty({ icon = 'file', title = 'No data yet', desc = '', cta = '', compact = false } = {}) {
     return `<div class="adm-empty ${compact ? 'adm-empty--sm' : ''}"><span class="adm-empty__ic">${ICON[icon] || ICON.file}</span><b>${esc(title)}</b>${desc ? `<p>${desc}</p>` : ''}${cta ? `<div class="adm-empty__cta">${cta}</div>` : ''}</div>`;
   }
   /** Admin / Confirm popup (1273:8970 xoá · 1273:8997 xác nhận) — mở popup, bấm đồng ý gọi onOk(). */
@@ -1161,7 +1205,7 @@ var LH_V = '1119q';
     return el;
   }
   /** Content / Card có xu hướng (71:1346) — trend: số % (dương xanh, âm đỏ), tone: '' | success | warning | danger | pink */
-  function TrendKpi(label, value, trend, icon, tone = '', note = 'so với tháng trước') {
+  function TrendKpi(label, value, trend, icon, tone = '', note = 'vs last month') {
     const up = trend >= 0;
     /* 13/11: số là trọng tâm — số lớn trên cùng, nhãn dưới (CSS order, DOM giữ nhãn trước cho trình đọc màn hình), icon nhỏ góc phải */
     return `<div class="kpi-card kpi-card--trend ${tone ? 'kpi-card--' + tone : ''}"><span class="kpi-card__text"><span class="kpi-card__label" title="${esc(label)}">${esc(label)}</span><span class="kpi-card__value">${value}</span>
@@ -1281,7 +1325,32 @@ var LH_V = '1119q';
     });
   }).observe(document.documentElement, { childList: true, subtree: true });
 
-  window.LH = { App, url, ICON, esc, reqGuard, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
+  /* ===== Quy chuẩn Back (DS 20/11, docs/design-system/learninghub-ds-plan.md §3.4) =====
+   * Mọi nút Back (BackLink, AdminHead back) có data-back:
+   *  1. Trang đang có thay đổi chưa lưu (trang khai báo window.LHGuard = () => true) → hỏi "Discard unsaved changes?" (Keep editing · Discard).
+   *  2. Về đúng màn trước trong luồng của người dùng (giữ bộ lọc, tab, vị trí cuộn) = lịch sử trình duyệt;
+   *     mở thẳng link (không có màn trước trong hệ thống) → về màn cha cố định ở href.
+   * href="#": trang tự xử lý bước lùi trong cùng màn (vd form → danh sách), không đi qua đây. */
+  function goBack(fallback) {
+    let same = false; try { same = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (err) { /* */ }
+    if (same && history.length > 1) history.back(); else location.href = fallback;
+  }
+  function discardThen(fn) {
+    if (!(typeof window.LHGuard === 'function' && window.LHGuard())) { fn(); return; }
+    const body = document.body.classList.contains('adm-body');
+    if (body) { AdminConfirm({ title: 'Discard unsaved changes?', text: 'Your changes will not be saved.', ok: 'Discard', cancel: 'Keep editing', danger: true, onOk: fn }); return; }
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-discard', size: 'sm', icon: 'alert', iconTone: 'warning', title: 'Discard unsaved changes?', body: '<p class="t-sm">Your changes will not be saved.</p>',
+      foot: '<button class="wbtn wbtn--outline" data-close>Keep editing</button><button class="wbtn" data-discard-ok>Discard</button>' }));
+    const m = document.getElementById('m-discard');
+    m.addEventListener('click', (e) => { if (e.target.closest('[data-close]') || e.target === m) m.remove(); if (e.target.closest('[data-discard-ok]')) { m.remove(); fn(); } });
+  }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('a[data-back]'); if (!b || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+    e.preventDefault(); discardThen(() => { window.LHGuard = null; goBack(b.getAttribute('href')); });
+  });
+  window.addEventListener('beforeunload', (e) => { if (typeof window.LHGuard === 'function' && window.LHGuard()) { e.preventDefault(); e.returnValue = ''; } });
+
+  window.LH = { App, goBack, discardThen, url, ICON, esc, reqGuard, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
     RichboxBar, Richbox, wireRichbox,
     admRole, ADM_USER, AdminLayout, AdminSidebar, AdminToolbar, AdminHead, AdminFilter, AdminTable, StageTag, Tag, RowMenu, AdminEmpty, AdminConfirm, TrendKpi,
     ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight, enhanceSelect, enhanceSelects,

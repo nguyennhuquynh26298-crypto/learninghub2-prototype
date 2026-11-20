@@ -28,7 +28,7 @@ window.LHData = {
       options: ['Mô tả tool rõ ràng kèm ví dụ', 'Dùng JSON schema chặt cho input', 'Tăng temperature', 'Validate input phía tool server'], correct: [0, 1, 3], chosen: [0, 1],
       explain: 'Mô tả rõ, schema chặt và validate phía server cùng giảm lỗi tham số. Tăng temperature làm kết quả kém ổn định hơn.' },
     { type: 'single', text: 'Khi nào nên chọn workflow cố định thay vì agent tự chủ?',
-      options: ['Khi các bước đã biết trước và cần kết quả ổn định', 'Khi nhiệm vụ mở, không đoán trước số bước', 'Khi cần agent tự chọn tool', 'Không bao giờ'], correct: [0], chosen: [1],
+      options: ['Khi các bước đã biết trước và cần kết quả ổn định', 'Khi nhiệm vụ mở, không đoán trước số bước', 'Khi cần agent tự chọn tool', 'Không bao hours'], correct: [0], chosen: [1],
       explain: 'Workflow cố định phù hợp khi đường đi đã rõ, dễ kiểm thử và chi phí thấp hơn agent tự chủ.' },
     { type: 'single', text: 'Prompt caching có tác dụng chính là gì?',
       options: ['Tăng độ chính xác', 'Giảm độ trễ và chi phí cho phần prompt lặp lại', 'Mở rộng context window', 'Mã hoá dữ liệu'], correct: [1], chosen: [],
@@ -120,12 +120,12 @@ window.LHData = {
     { title: 'Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', status: 'published', updated: '08/11/2026', created: '01/11/2026', cat: 'Data & AI', sub: 'AI Agent', dur: '14 hours', ver: '4' },
     { title: 'AI Agent Engineering', owner: 'Lê Thị Mai', status: 'published', updated: '01/11/2026', created: '20/10/2026', cat: 'Data & AI', sub: 'AI Agent', dur: '8 hours', ver: '1' },
     { title: 'Corporate Onboarding 2026', owner: 'Lê Thị Mai', status: 'published', updated: '12/11/2026', created: '10/11/2026', cat: 'Corporate & Mandatory Training', sub: 'Role-based Training', dur: '2 hours', ver: '10' },
-    { title: 'Kiểm thử tự động với Playwright', owner: 'Phạm Thanh Long', status: 'draft', updated: '09/11/2026', created: '09/11/2026', cat: 'Software Development', sub: 'Testing', dur: '6 hours', ver: '1' },
-    { title: 'Clean Code cho Frontend', owner: 'Trần Văn Bình', status: 'draft', updated: '06/11/2026', created: '06/11/2026', cat: 'Software Development', sub: 'Web', dur: '5 hours', ver: '1' },
+    { title: 'Automated Testing with Playwright', owner: 'Phạm Thanh Long', status: 'draft', updated: '09/11/2026', created: '09/11/2026', cat: 'Software Development', sub: 'Testing', dur: '6 hours', ver: '1' },
+    { title: 'Clean Code for Frontend', owner: 'Trần Văn Bình', status: 'draft', updated: '06/11/2026', created: '06/11/2026', cat: 'Software Development', sub: 'Web', dur: '5 hours', ver: '1' },
   ],
   /* LH2 DemoBar — khoá chờ duyệt (không nằm baseline list) */
   adminCoursesLh2: [
-    { title: 'Kiểm thử tự động với Playwright', owner: 'Phạm Thanh Long', status: 'pending', kind: 'Khoá mới', sent: '09/11 · 10:24', updated: '09/11/2026', cat: 'Software Development', sub: 'Testing', dur: '6 giờ', ver: '1.0' },
+    { title: 'Automated Testing with Playwright', owner: 'Phạm Thanh Long', status: 'pending', kind: 'Khoá mới', sent: '09/11 · 10:24', updated: '09/11/2026', cat: 'Software Development', sub: 'Testing', dur: '6 giờ', ver: '1.0' },
     { title: 'Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', status: 'published', revision: 'pending', kind: 'Bản sửa', sent: '08/11 · 16:02', updated: '08/11/2026', cat: 'Data & AI', sub: 'AI Agent', dur: '12 giờ', ver: '2.0' },
   ],
   creators: [
@@ -138,7 +138,7 @@ window.LHData = {
 /* Đề thi đủ 32 câu cho màn làm bài (4 câu mẫu ở trên + 28 câu theo chủ đề 5 domain). Chỉ dùng cho prototype. */
 (function () {
   const T = [
-    ['subagent', 'Khi nào nên giao việc cho subagent?', ['Khi việc cần khám phá nhiều, tốn context', 'Khi chỉ cần 1 lệnh đơn giản', 'Khi muốn tăng temperature', 'Không bao giờ'], 0],
+    ['subagent', 'Khi nào nên giao việc cho subagent?', ['Khi việc cần khám phá nhiều, tốn context', 'Khi chỉ cần 1 lệnh đơn giản', 'Khi muốn tăng temperature', 'Không bao hours'], 0],
     ['MCP', 'MCP server cung cấp gì cho model?', ['Tool, resource và prompt có mô tả chuẩn', 'Trọng số model', 'Bộ nhớ dài hạn tự động', 'Giao diện chat'], 0],
     ['tool schema', 'Input schema của tool nên thế nào?', ['Chặt, có kiểu và mô tả từng trường', 'Để trống cho linh hoạt', 'Chỉ có 1 trường string', 'Không cần'], 0],
     ['CLAUDE.md', 'CLAUDE.md dùng để làm gì?', ['Ghi hướng dẫn dự án cho Claude Code đọc mỗi phiên', 'Lưu log', 'Cấu hình mạng', 'Thay README'], 0],

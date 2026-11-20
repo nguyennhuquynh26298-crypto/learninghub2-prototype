@@ -4,13 +4,14 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Search Courses · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118y"><link rel="stylesheet" href="../assets/css/base.css?v=1118y"><link rel="stylesheet" href="../assets/css/components.css?v=1119j"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118y">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1120x">
 <style>
   .cs-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 12px; }
   .cs-pager { display: flex; gap: 6px; justify-content: center; margin: 24px 0; }
-  .cs-pager button { min-width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-default); background: #fff; cursor: pointer; }
-  .cs-pager button[aria-current="page"] { background: #2a28df; color: #fff; border-color: #2a28df; }
+  .cs-pager button { min-width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-default); background: var(--c-white); cursor: pointer; }
+  .cs-pager button[aria-current="page"] { background: var(--c-primary-deep); color: var(--c-white); border-color: var(--c-primary-deep); }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body class="page">
 <!-- Learner Experience 2.1 + 3.1 · BR-CS-01…07 (Notion LH2 Product Docs No 9, Đợt 2 · Gói 5).
@@ -25,9 +26,9 @@
   <div class="cs-pager" id="pager"></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1119j"></script>
-<script src="../assets/js/data.js?v=1118y"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118y"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1120y"></script>
 <script>
 const { AppHeader, CategoryNav, AppFooter, BackLink, FilterDropdown, Button, ICON, esc } = LH; const D = LHData;
 /* Danh mục khoá: thêm Sub Category, trạng thái của tôi đủ loại, nhãn Mandatory / Paid để minh hoạ 3.1 */

@@ -22,7 +22,7 @@
   const CLAP = '<svg class="clap" viewBox="0 0 60 60" aria-hidden="true"><path d="M10 30 L2 26M14 18 L8 8M26 14 L28 2M38 18 L46 10"/></svg>';
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const ttGrad = ({ play = true } = {}) => `<span class="tt-grad ${play ? 'tt-grad--play' : ''}" role="img" aria-label="Techter, mascot TECHVIFY, mặc áo cử nhân vỗ tay chúc mừng"><img src="${IMG}" alt="" draggable="false">${GOWN}<span class="cap">${CAP}</span>${CLAP}</span>`;
+  const ttGrad = ({ play = true } = {}) => `<span class="tt-grad ${play ? 'tt-grad--play' : ''}" role="img" aria-label="Techter, the TECHVIFY mascot, in a graduation gown clapping"><img src="${IMG}" alt="" draggable="false">${GOWN}<span class="cap">${CAP}</span>${CLAP}</span>`;
 
   /* Pháo hoa: 3 chùm nổ + pháo giấy rơi, dừng hẳn sau ~3 giây */
   function fireworks() {
@@ -92,7 +92,7 @@
   function rateCourse({ course = 'this course', onSubmit } = {}) {
     let v = 0;
     const body = `<div class="w2-field"><span>Rating</span><div class="rate-stars" role="radiogroup" aria-label="Rating">${[1, 2, 3, 4, 5].map((n) => `<button type="button" data-star="${n}" role="radio" aria-checked="false" aria-label="${n} star${n > 1 ? 's' : ''}">★</button>`).join('')}</div><div class="rate-err" data-err hidden>Please select a rating from 1 to 5 stars.</div></div>
-      <label class="w2-field"><span>Comment <small style="font-weight:400;color:#667085">(optional)</small></span><textarea maxlength="1000" data-cm placeholder="Share what you liked or what could be better"></textarea></label>`;
+      <label class="w2-field"><span>Comment <small style="font-weight:400;color:var(--c-text-subtle)">(optional)</small></span><textarea maxlength="1000" data-cm placeholder="Share what you liked or what could be better"></textarea></label>`;
     const el = pop({ title: 'Rate this course', desc: `How was <b>${esc(course)}</b>?`, body, ok: 'Submit', cancel: 'Later',
       onOk: (p) => { if (!v) { p.querySelector('[data-err]').hidden = false; return false; } toast('Thanks for your feedback!'); if (onSubmit) onSubmit({ stars: v, comment: p.querySelector('[data-cm]').value.trim() }); } });
     el.addEventListener('click', (e) => { const b = e.target.closest('[data-star]'); if (!b) return; v = +b.dataset.star; el.querySelectorAll('[data-star]').forEach((s) => { const on = +s.dataset.star <= v; s.classList.toggle('is-on', on); s.setAttribute('aria-checked', +s.dataset.star === v); }); el.querySelector('[data-err]').hidden = true; });

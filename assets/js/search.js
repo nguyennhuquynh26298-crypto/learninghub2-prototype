@@ -19,11 +19,11 @@
   const myStatus = (c) => (c.st === 'done' ? 'done' : c.st === 'learning' ? 'learning' : c.st === 'fail' ? 'fail' : 'notenrolled');
 
   /** Trang Tìm khoá: có Chưa đăng ký; Không đạt chỉ hiện ở Tất cả */
-  const STATUS_OPTS = [['all', 'Tất cả'], ['notenrolled', 'Chưa đăng ký'], ['learning', 'Đang học'], ['done', 'Hoàn thành']];
+  const STATUS_OPTS = [['all', 'All'], ['notenrolled', 'Not Enrolled'], ['learning', 'In Progress'], ['done', 'Completed']];
   /** Khoá của tôi: chỉ khoá đã enroll → không có Chưa đăng ký; có Không đạt */
-  const MY_STATUS_OPTS = [['all', 'Tất cả'], ['learning', 'Đang học'], ['done', 'Hoàn thành'], ['fail', 'Không đạt']];
+  const MY_STATUS_OPTS = [['all', 'All'], ['learning', 'In Progress'], ['done', 'Completed'], ['fail', 'Failed']];
   /** BR-LRN-16 — Thời gian của tôi: ngày hoàn thành (khoá đã xong) hoặc ngày đăng ký (khoá chưa xong). Khoá chưa đăng ký chỉ hiện ở Tất cả */
-  const DAY_OPTS = [['all', 'Tất cả'], ['7', '7 ngày qua'], ['30', '30 ngày qua'], ['90', '90 ngày qua']];
+  const DAY_OPTS = [['all', 'All'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days']];
 
   /** Áp lọc + sắp xếp. f = { q, ct, st, pd, sort } */
   function run(list, f) {

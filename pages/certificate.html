@@ -4,7 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Certificate · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1117a"><link rel="stylesheet" href="../assets/css/base.css?v=1117a"><link rel="stylesheet" href="../assets/css/components.css?v=1119j"><link rel="stylesheet" href="../assets/css/certificate.css?v=1117a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1117a">
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body class="page bg-white">
 <!-- LH1 /course/[id]/certificate — chỉ khi enrolled + completed 100% -->
@@ -18,17 +19,17 @@
   <div id="wrap" hidden>
     <div class="cert-scale"><div class="cert-scale__in" id="sheet"></div></div>
     <div class="cert-actions">
-      <button class="wbtn" id="print">Tải / In PDF</button>
+      <button class="wbtn" id="print">Download / Print PDF</button>
       <div class="cert-share">
         <input class="input" id="share" readonly>
-        <button class="wbtn wbtn--outline" id="copy">Sao chép link</button>
+        <button class="wbtn wbtn--outline" id="copy">Copy link</button>
       </div>
     </div>
   </div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1119j"></script>
-<script src="../assets/js/data.js?v=1117a"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
 <script>
 const { AppHeader, AppFooter, BackLink, CertificateSheet, Alert, toast, esc } = LH;
 const D = LHData;
@@ -55,26 +56,28 @@ function render() {
   document.getElementById('empty').hidden = ok;
   document.getElementById('wrap').hidden = !ok;
   if (!ok) {
-    document.getElementById('empty').innerHTML = `${Alert({ tone: 'warning', icon: 'info', title: 'Chưa có chứng chỉ', text: 'Hoàn thành 100% khoá học để nhận certificate_number (mint một lần, không thu hồi).' })}
-      <div style="margin-top:16px"><a class="wbtn" href="course-detail.html">Về trang khoá</a></div>`;
+    document.getElementById('empty').innerHTML = `${Alert({ tone: 'warning', icon: 'info', title: 'No certificate yet', text: 'Complete the course to receive your certificate.' })}
+      <div style="margin-top:16px"><a class="wbtn" href="course-detail.html">Back to Course</a></div>`;
     return;
   }
   document.title = 'Certificate · ' + title;
   document.getElementById('sheet').innerHTML = CertificateSheet(cert);
   const link = shareUrl(cert.shareToken);
   document.getElementById('share').value = link;
-  document.getElementById('status').innerHTML = demoCompleted ? '<span class="badge badge--success">Hoàn thành</span>' : '<span class="badge badge--info">Demo</span>';
+  document.getElementById('status').innerHTML = demoCompleted ? '<span class="badge badge--success">Completed</span>' : '<span class="badge badge--info">Demo</span>';
 }
 document.getElementById('copy').addEventListener('click', () => {
-  navigator.clipboard.writeText(document.getElementById('share').value).then(() => toast('Đã sao chép link chia sẻ'));
+  navigator.clipboard.writeText(document.getElementById('share').value).then(() => toast('Share link copied'));
 });
 document.getElementById('print').addEventListener('click', () => window.print());
 LH.DemoBar('LH1 · Certificate (enrolled)', [
   { label: 'Kịch bản', key: 'sc', options: [['done', 'Đã hoàn thành (QA Module 1)'], ['ccar', 'CCAR-F demo mint'], ['empty', 'Chưa hoàn thành']] },
 ], (s) => {
-  if (s.sc === 'done') location.search = '?c=' + encodeURIComponent('QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION');
-  else if (s.sc === 'ccar') location.search = '?c=' + encodeURIComponent(D.course.title);
-  else location.search = '?c=' + encodeURIComponent('PROMPTS ENGINEERING');
+  /* Sửa 20/11: trước đây luôn gán location.search khi trang tải → tải lại vô hạn. Chỉ đổi khi khoá chọn khác khoá đang mở. */
+  const want = s.sc === 'done' ? 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION' : s.sc === 'ccar' ? D.course.title : 'PROMPTS ENGINEERING';
+  const cur = new URLSearchParams(location.search).get('c');
+  if (cur !== null && cur !== want) { location.search = '?c=' + encodeURIComponent(want); return; }
+  if (cur === null && new URLSearchParams(location.search).get('sc')) { location.search = '?c=' + encodeURIComponent(want); return; }
   render();
 });
 render();

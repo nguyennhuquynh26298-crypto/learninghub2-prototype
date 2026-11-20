@@ -4,24 +4,25 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Celebration · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1119j"><link rel="stylesheet" href="../assets/css/certificate.css?v=1118w">
-<link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1118w">
+<link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1120x">
 <style>
   .cel-res { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: center; }
-  .cel-score { width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; border: 10px solid #17b26a; font-size: 36px; font-weight: 700; color: #067647; }
-  .cel-score.is-fail { border-color: #f04438; color: #b42318; }
-  .cel-stats { display: flex; gap: 24px; margin: 12px 0; font-size: 14px; color: #475467; }
-  .cel-stats b { display: block; font-size: 20px; color: #101828; }
-  .cel-note { font-size: 13px; color: #667085; margin-top: 16px; }
+  .cel-score { width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; border: 10px solid var(--c-success-icon); font-size: var(--fs-3xl); font-weight: 700; color: var(--c-success); }
+  .cel-score.is-fail { border-color: var(--c-danger); color: var(--c-danger); }
+  .cel-stats { display: flex; gap: 24px; margin: 12px 0; font-size: var(--fs-sm); color: var(--c-text-subtle); }
+  .cel-stats b { display: block; font-size: var(--fs-xl); color: var(--c-text-strong); }
+  .cel-note { font-size: var(--fs-xs); color: var(--c-text-subtle); margin-top: 16px; }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body>
 <!-- Exam 3.3 + BR-EX-19 (Passed) · Learning Progress 3.3 + BR-LP-13 (Course Completed) · D-148.
      Màn minh hoạ hiệu ứng; màn Kết quả thật (test-result.html) và màn học (lesson-learn.html) gắn LHW2 khi phiên Đợt 1 xong. -->
 <div class="quiz-page"><div id="bar"></div><div class="stage-card"><div class="quiz" id="stage"></div></div></div>
-<script src="../assets/js/components.js?v=1119j"></script>
-<script src="../assets/js/data.js?v=1118w"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1120y"></script>
 <script>
 const { QuizTopBar, esc } = LH;
 const QUIZ = 'QA Automation · Module 1 Final Test', COURSE = 'QA AUTOMATION _ MODULE 1: INTRODUCTION';
@@ -36,7 +37,7 @@ function result(s) {
   const right = Math.round(s.score / 5), total = 20;
   return `${s.pass && s.fx ? LHW2.passBanner({ quiz: QUIZ }) : ''}
   <div class="cel-res"><div class="cel-score ${s.pass ? '' : 'is-fail'}">${s.score}</div><div>
-    <h1 style="margin:0;font-size:24px">${s.pass ? 'Passed' : 'Not Passed'}</h1>
+    <h1 style="margin:0;font-size: var(--fs-2xl)">${s.pass ? 'Passed' : 'Not Passed'}</h1>
     <div class="cel-stats"><span><b>${right}</b>Correct</span><span><b>${total - right}</b>Incorrect</span><span><b>0</b>Unanswered</span><span><b>${total}</b>Total</span></div>
     <div class="t-sm muted">Passing Score: 85% (17/20) · Attempt ${s.pass ? 2 : 1}/3</div>
     <div style="display:flex;gap:12px;margin-top:16px">${s.pass ? '' : '<button class="wbtn">Retake Exam</button>'}<button class="wbtn wbtn--outline">Review Answers</button><a class="wbtn wbtn--outline" href="course-detail.html">Back to Course</a></div>

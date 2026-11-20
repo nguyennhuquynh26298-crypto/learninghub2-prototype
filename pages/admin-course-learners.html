@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>View Learners · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1119m">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120m">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1120z">
 <style>
   .vl-ex { cursor: pointer; }
   .adm-box__head .adm-inline-search input { width: 230px; }
@@ -16,38 +16,39 @@
   .kpi-grid button.kpi-card { cursor: pointer; }
   .kpi-grid button.kpi-card:hover { box-shadow: 0 0 0 1px var(--adm-primary) inset, var(--adm-lift); }
   .kpi-card--trend.is-active { box-shadow: 0 0 0 2px var(--adm-primary) inset; }
-  .kpi-card__sub { order: 3; font-size: 13px; color: var(--adm-sub); }
-  .kpi-card--trend.kpi-card--info { --kpi-line: #2e90fa; } .kpi-card--info .kpi-card__ic { background: #eff8ff; color: #2e90fa; }
+  .kpi-card__sub { order: 3; font-size: var(--fs-xs); color: var(--adm-sub); }
+  .kpi-card--trend.kpi-card--info { --kpi-line: #2e90fa; } .kpi-card--info .kpi-card__ic { background: var(--c-bg-hover); color: var(--c-brand); }
   .kpi-card--trend.kpi-card--success { --kpi-line: #46b003; } .kpi-card--trend.kpi-card--warning { --kpi-line: #dc6803; }
-  .kpi-card--success .kpi-card__value { color: #46b003; } .kpi-card--info .kpi-card__value { color: #2e90fa; }
+  .kpi-card--success .kpi-card__value { color: var(--c-success-icon); } .kpi-card--info .kpi-card__value { color: var(--c-brand); }
   @media (max-width: 1023px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 599px) { .kpi-grid { grid-template-columns: minmax(0, 1fr); } }
   .person { display: flex; align-items: center; gap: 12px; min-width: 220px; }
   .person b { display: block; font-weight: 600; }
-  .person small { display: block; font-size: 13px; color: var(--adm-sub); }
-  .pg { min-width: 140px; } .pg b { font-size: 14px; color: #2e90fa; } .pg.is-done b { color: #46b003; }
-  .pg .progress { margin-top: 6px; background: #f1f5f9; } .pg .progress > i { background: #2e90fa; } .pg.is-done .progress > i { background: #46b003; }
-  .row-x { width: 32px; height: 32px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: #fff; color: var(--adm-sub); display: inline-grid; place-items: center; cursor: pointer; }
+  .person small { display: block; font-size: var(--fs-xs); color: var(--adm-sub); }
+  .pg { min-width: 140px; } .pg b { font-size: var(--fs-sm); color: var(--c-brand); } .pg.is-done b { color: var(--c-success-icon); }
+  .pg .progress { margin-top: 6px; background: var(--c-bg-hover); } .pg .progress > i { background: var(--c-brand); } .pg.is-done .progress > i { background: var(--c-success-icon); }
+  .row-x { width: 32px; height: 32px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: var(--c-white); color: var(--adm-sub); display: inline-grid; place-items: center; cursor: pointer; }
   .row-x svg { width: 18px; height: 18px; transition: transform .15s; }
   .row-x:hover { border-color: var(--adm-primary); color: var(--adm-primary); }
   tr.is-open .row-x { background: var(--adm-primary-50); border-color: var(--adm-primary); color: var(--adm-primary); } tr.is-open .row-x svg { transform: rotate(180deg); }
   tr[data-row] { cursor: pointer; }
-  .adm-table tr.sub > td { height: auto; padding: 0 0 16px; border-top: 0; background: #fafbff; }
-  .adm-table tr.sub:hover > td { background: #fafbff; }
-  .qsub { margin: 0 16px; padding: 16px; background: #fff; border: 1px solid var(--adm-stroke); border-radius: 12px; }
-  .qsub h3 { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: var(--adm-body); }
-  .qsub table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .qsub th { text-align: left; font-weight: 500; font-size: 13px; color: var(--adm-sub); padding: 8px 12px; border-bottom: 1px solid var(--adm-stroke); }
-  .qsub td { padding: 10px 12px; border-top: 1px solid #f1f5f9; color: var(--adm-body); }
-  .qsub td .stage-tag { margin-left: 8px; height: 20px; font-size: 12px; }
-  .qsub__empty { padding: 16px; text-align: center; color: var(--adm-sub); font-size: 14px; }
-  .pager { display: flex; align-items: center; gap: 8px; justify-content: space-between; flex-wrap: wrap; padding-top: 16px; font-size: 14px; color: var(--adm-sub); }
+  .adm-table tr.sub > td { height: auto; padding: 0 0 16px; border-top: 0; background: var(--c-bg-subtle); }
+  .adm-table tr.sub:hover > td { background: var(--c-bg-subtle); }
+  .qsub { margin: 0 16px; padding: 16px; background: var(--c-white); border: 1px solid var(--adm-stroke); border-radius: 12px; }
+  .qsub h3 { margin: 0 0 8px; font-size: var(--fs-sm); font-weight: 600; color: var(--adm-body); }
+  .qsub table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+  .qsub th { text-align: left; font-weight: 500; font-size: var(--fs-sm); color: var(--adm-sub); padding: 8px 12px; border-bottom: 1px solid var(--adm-stroke); }
+  .qsub td { padding: 10px 12px; border-top: 1px solid var(--c-bg-hover); color: var(--adm-body); }
+  .qsub td .stage-tag { margin-left: 8px; height: 20px; font-size: var(--fs-xs); }
+  .qsub__empty { padding: 16px; text-align: center; color: var(--adm-sub); font-size: var(--fs-sm); }
+  .pager { display: flex; align-items: center; gap: 8px; justify-content: space-between; flex-wrap: wrap; padding-top: 16px; font-size: var(--fs-sm); color: var(--adm-sub); }
   .pager__btns { display: flex; gap: 4px; }
-  .pager__btns button { min-width: 34px; height: 34px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: #fff; color: var(--adm-body); font: 500 14px Inter, sans-serif; cursor: pointer; display: inline-grid; place-items: center; }
-  .pager__btns button.is-on { background: var(--adm-primary); border-color: var(--adm-primary); color: #fff; }
+  .pager__btns button { min-width: 34px; height: 34px; border: 1px solid var(--adm-stroke); border-radius: 8px; background: var(--c-white); color: var(--adm-body); font: 500 var(--fs-sm) Inter, sans-serif; cursor: pointer; display: inline-grid; place-items: center; }
+  .pager__btns button.is-on { background: var(--adm-primary); border-color: var(--adm-primary); color: var(--c-white); }
   .pager__btns button:disabled { opacity: .4; cursor: default; }
   .pager__btns svg { width: 16px; height: 16px; }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body>
 <div id="header"></div>
@@ -55,16 +56,16 @@
   <div id="head"></div>
   <div class="kpi-grid" id="kpis"></div>
   <section class="adm-box">
-    <div class="adm-box__head adm-box__head--tools"><h2 class="adm-box__title" style="flex:1">Tiến độ học viên</h2>
-      <label class="adm-inline-search"><input id="q" placeholder="Tìm theo tên hoặc phòng ban…"><span></span></label>
+    <div class="adm-box__head adm-box__head--tools"><h2 class="adm-box__title" style="flex:1">Learner progress</h2>
+      <label class="adm-inline-search"><input id="q" placeholder="Search name or department…"><span></span></label>
       <label class="filter-btn" id="st-wrap"></label>
       <button type="button" class="filter-btn vl-ex" id="ex-wrap" data-ex hidden></button>
       <button type="button" class="btn-cta btn-cta--line" data-export id="export"></button></div>
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1119q"></script>
-<script src="../assets/js/data.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
 <script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
 /* View Learners — LH1 /learners + LH2 Đợt 1 (docs Notion 18/11/2026)

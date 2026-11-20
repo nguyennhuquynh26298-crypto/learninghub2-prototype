@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Create new Course · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118z"><link rel="stylesheet" href="../assets/css/base.css?v=1118z"><link rel="stylesheet" href="../assets/css/components.css?v=1119m">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120m">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1120z">
 <style>
   /* LH1 + DNA — form card pad 20 · field gap 16 · sticky CTA */
   .cc-card { display: flex; flex-direction: column; gap: 24px; padding: 28px 32px; width: 100%; box-sizing: border-box; max-width: none; }
@@ -13,16 +13,17 @@
   .cc-form .adm-field { gap: 8px; }
   .cc-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
   @media (max-width: 720px) { .cc-row { grid-template-columns: 1fr; } }
-  .adm-err { font-size: 13px; line-height: 18px; color: #e7000b; margin: 0; }
+  .adm-err { font-size: var(--fs-xs); line-height: 18px; color: var(--c-danger-icon); margin: 0; }
   .adm-err:empty { display: none; }
-  .dur { display: inline-flex; align-items: center; gap: 6px; height: 44px; border: 1px solid var(--adm-field-stroke); border-radius: 8px; padding: 0 12px; background: #fff; width: fit-content; box-sizing: border-box; box-shadow: 0 1px 2px rgba(10,13,18,.05); }
-  .dur:focus-within { border-color: var(--adm-primary); box-shadow: 0 0 0 4px #e3e9ff; }
-  .dur.is-error { border-color: #e7000b; }
+  .dur { display: inline-flex; align-items: center; gap: 6px; height: 44px; border: 1px solid var(--adm-field-stroke); border-radius: 8px; padding: 0 12px; background: var(--c-white); width: fit-content; box-sizing: border-box; box-shadow: 0 1px 2px rgba(10,13,18,.05); }
+  .dur:focus-within { border-color: var(--adm-primary); box-shadow: 0 0 0 4px var(--c-bg-selected); }
+  .dur.is-error { border-color: var(--c-danger-icon); }
   .dur label { display: inline-flex; align-items: center; gap: 4px; flex: none; }
-  .dur input { width: 2.75ch; border: 0; outline: 0; font: 400 16px Inter, sans-serif; color: var(--adm-text); text-align: center; background: none; }
-  .dur span, .dur b { color: var(--adm-sub); font-size: 14px; flex: none; }
-  .adm-input:disabled { background: #fafafa; color: #a4a7ae; cursor: not-allowed; }
+  .dur input { width: 2.75ch; border: 0; outline: 0; font: 400 var(--fs-md) Inter, sans-serif; color: var(--adm-text); text-align: center; background: none; }
+  .dur span, .dur b { color: var(--adm-sub); font-size: var(--fs-sm); flex: none; }
+  .adm-input:disabled { background: var(--c-bg-subtle); color: var(--c-nav-group); cursor: not-allowed; }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body>
 <div id="header"></div>
@@ -45,9 +46,10 @@
   </section>
   <div class="adm-btn-combo" id="actions"></div>
 </main>
-<script src="../assets/js/components.js?v=1119t"></script>
-<script src="../assets/js/data.js?v=1118z"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
 <script>
+window.LHGuard = () => typeof dirty !== 'undefined' && dirty; // Back / Cancel / đóng tab đều hỏi khi có thay đổi chưa lưu (DS §3.4)
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminConfirm, Richbox, wireRichbox } = LH; const D = LHData;
 const SUBS = { 'Data & AI': ['AI Agent', 'Machine Learning', 'Applied & Advanced'], 'Software Development': ['Testing', 'Web', 'DevOps'], Language: ['English', 'Japanese'], 'Corporate & Mandatory Training': ['Role-based Training', 'Onboarding', 'Security & Compliance'] };
 const $ = (id) => document.getElementById(id);
@@ -113,7 +115,7 @@ function submit(kind) {
     if (E.title) { $('f-title').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     const data = { ...payload(), incomplete: Object.values(E).some(Boolean) };
     if (!$('f-cat').value) data.cat = ''; if (!$('f-sub').value) data.sub = ''; if (!(+$('f-h').value || +$('f-m').value)) data.dur = '';
-    sessionStorage.setItem('lhNewCourse', JSON.stringify(data));
+    sessionStorage.setItem('lhNewCourse', JSON.stringify(data)); dirty = false;
     toast('Saved as draft');
     setTimeout(() => { location.href = 'admin-courses.html?r=' + role + '&t=draft'; }, 400);
     return;
@@ -124,7 +126,7 @@ function submit(kind) {
     return;
   }
   const data = payload();
-  sessionStorage.setItem('lhNewCourse', JSON.stringify(data));
+  sessionStorage.setItem('lhNewCourse', JSON.stringify(data)); dirty = false;
   {
     toast('Create successfully');
     location.href = `course-editor.html?st=draft&r=${role}&t=${encodeURIComponent(data.title)}&tab=details`;
@@ -135,7 +137,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-next]')) return submit('next');
   const c = e.target.closest('[data-cancel]');
   if (c) { e.preventDefault(); if (!dirty) { location.href = c.href; return; }
-    AdminConfirm({ title: 'Cancel?', text: 'Your changes will not be saved.', ok: 'Discard', cancel: 'Stay', danger: true, onOk: () => { location.href = c.href; } }); }
+    LH.discardThen(() => { dirty = false; location.href = c.href; }); }
 });
 
 function render() {

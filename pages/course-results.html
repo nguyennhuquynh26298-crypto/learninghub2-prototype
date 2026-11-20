@@ -4,19 +4,20 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My Results · Reviews · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1119j"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1120x">
 <style>
   .mr { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   @media (max-width: 900px) { .mr { grid-template-columns: 1fr; } }
-  .mr-box { background: #fff; border: 1px solid var(--border-default); border-radius: 16px; padding: 20px 24px; }
-  .mr-box h2 { margin: 0 0 14px; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .mr-box { background: var(--c-white); border: 1px solid var(--border-default); border-radius: 16px; padding: 20px 24px; }
+  .mr-box h2 { margin: 0 0 14px; font-size: var(--fs-xl); display: flex; align-items: center; gap: 10px; }
   .mr-kpi { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 14px; }
-  .mr-kpi b { display: block; font-size: 30px; color: #101828; }
-  .mr-kpi span { font-size: 13px; color: #667085; }
-  .mr-t { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .mr-t th, .mr-t td { text-align: left; padding: 10px 8px; border-top: 1px solid #eaecf0; }
-  .mr-t th { color: #667085; font-weight: 500; font-size: 13px; }
+  .mr-kpi b { display: block; font-size: var(--fs-3xl); color: var(--c-text-strong); }
+  .mr-kpi span { font-size: var(--fs-xs); color: var(--c-text-subtle); }
+  .mr-t { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+  .mr-t th, .mr-t td { text-align: left; padding: 10px 8px; border-top: 1px solid var(--c-bg-page); }
+  .mr-t th { color: var(--c-text-subtle); font-weight: 500; font-size: var(--fs-sm); }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body class="page">
 <!-- Learner Experience 2.3, 2.4, 3.5, 3.6 · BR-LP-05, BR-LP-11 (Notion LH2 Product Docs No 9, Đợt 2 · Gói 5).
@@ -27,9 +28,9 @@
   <div class="mr"><section class="mr-box" id="results"></section><section class="mr-box" id="reviews"></section></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1119j"></script>
-<script src="../assets/js/data.js?v=1118w"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1120y"></script>
 <script>
 const { AppHeader, AppFooter, BackLink, esc } = LH;
 const COURSE = 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION';
@@ -63,7 +64,7 @@ function renderResults() {
 function renderReviews() {
   const n = reviews.length, avg = n ? reviews.reduce((a, r) => a + r.stars, 0) / n : 0;
   document.getElementById('reviews').innerHTML = `<h2>Reviews <span class="t-xs muted" style="font-weight:400">tab on the learning screen</span></h2>${n ? `
-    <div class="rv-sum"><b>${avg.toFixed(1)}</b><div><div style="color:#fdb022;font-size:20px">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5 - Math.round(avg))}</div><span class="t-sm muted">${n} ratings</span></div></div>
+    <div class="rv-sum"><b>${avg.toFixed(1)}</b><div><div style="color:var(--c-star);font-size: var(--fs-xl)">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5 - Math.round(avg))}</div><span class="t-sm muted">${n} ratings</span></div></div>
     ${reviews.map((r) => `<div class="rv-item"><div class="rv-item__h"><b>${esc(r.name)}</b><span>${'★'.repeat(r.stars)}</span><small>${r.date}</small></div>${r.text ? `<p>${esc(r.text)}</p>` : ''}</div>`).join('')}` : '<div class="empty"><p>No reviews yet.</p></div>'}`;
 }
 const render = () => { renderResults(); renderReviews(); };

@@ -14,7 +14,7 @@ img { display: block; max-width: 100%; }
 /* Tailwind container của web: rộng 1280 ở ≥1280, không padding */
 .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
 @media (min-width: 1328px) { .container { padding: 0; } }
-body.bg-white { background: #fff; }
+body.bg-white { background: var(--c-white); }
 .stack { display: flex; flex-direction: column; }
 .row { display: flex; align-items: center; }
 .gap-4 { gap: 4px; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; } .gap-16 { gap: 16px; } .gap-24 { gap: 24px; } .gap-32 { gap: 32px; }
@@ -26,26 +26,41 @@ body.bg-white { background: #fff; }
 .t-xl { font-size: var(--fs-xl); line-height: 28px; }
 .t-2xl { font-size: var(--fs-2xl); line-height: 32px; }
 .fw-500 { font-weight: 500; } .fw-600 { font-weight: 600; } .fw-700 { font-weight: 700; }
-.page-title { font-size: var(--fs-2xl); line-height: 32px; font-weight: 700; color: var(--text-strong); }
-.section-title { font-size: var(--fs-lg); line-height: 28px; font-weight: 600; color: var(--text-strong); }
+.page-title { font: var(--type-h1); color: var(--text-strong); }
+.section-title { font: var(--type-h2); color: var(--text-strong); }
+/* DS 20/11 — class theo vai trò chữ (typography-plan.md). Dùng thay cho cỡ chữ viết tay. */
+.t-display { font: var(--type-display); color: var(--text-strong); }
+.t-h1 { font: var(--type-h1); color: var(--text-strong); }
+.t-h1-hero { font: var(--type-h1-hero); color: var(--text-strong); }
+.t-h2 { font: var(--type-h2); color: var(--text-strong); }
+.t-h3 { font: var(--type-h3); color: var(--text-strong); }
+.t-eyebrow { font: var(--type-eyebrow); background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.t-stat { font: var(--type-stat); color: var(--text-strong); font-variant-numeric: tabular-nums; }
+.t-body-lg { font: var(--type-body-lg); color: var(--text-default); }
+.t-body { font: var(--type-body); color: var(--text-default); }
+.t-body-strong { font: var(--type-body-strong); color: var(--text-strong); }
+.t-desc { font: var(--type-body); color: var(--text-subtle); }
+.t-label { font: var(--type-label); color: var(--text-default); }
+.t-caption { font: var(--type-caption); color: var(--text-subtle); }
+.t-badge { font: var(--type-badge); }
 .hidden { display: none !important; }
 
 /* Thanh chọn trạng thái demo — chỉ có trên bản HTML local, không thuộc thiết kế */
 body.has-demo { padding-bottom: 64px; }
-.demo-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 300; box-shadow: 0 -4px 16px rgba(0,0,0,.2); background: #0f172a; color: #e2e8f0; font-size: 12px; padding: 8px 24px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.demo-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 300; box-shadow: 0 -4px 16px rgba(0,0,0,.2); background: var(--c-text-strong); color: var(--c-border); font-size: var(--fs-xs); padding: 8px 24px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
 .demo-bar b { color: var(--lime-500); font-weight: 600; margin-right: 4px; }
-.demo-bar a { color: #cbd5e1; }
+.demo-bar a { color: var(--c-border-control); }
 .demo-bar .demo-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-.demo-bar .demo-group > span { color: #94a3b8; margin-right: 4px; }
-.demo-bar button { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 3px 8px; font-size: 12px; cursor: pointer; }
-.demo-bar button[aria-pressed="true"] { background: var(--lime-500); color: #0f172a; border-color: var(--lime-500); font-weight: 600; }
+.demo-bar .demo-group > span { color: var(--c-text-muted); margin-right: 4px; }
+.demo-bar button { background: var(--c-text-strong); color: var(--c-border); border: 1px solid var(--c-text); border-radius: 6px; padding: 3px 8px; font-size: var(--fs-xs); cursor: pointer; }
+.demo-bar button[aria-pressed="true"] { background: var(--lime-500); color: var(--c-text-strong); border-color: var(--lime-500); font-weight: 600; }
 .demo-bar .demo-sep { flex: 1; }
 .demo-bar .demo-toggle { display: none; }
-.demo-bar .demo-close { font-size: 16px; line-height: 1; padding: 2px 8px; }
+.demo-bar .demo-close { font-size: var(--fs-md); line-height: 1; padding: 2px 8px; }
 /* Thu gọn: chỉ còn nút DEMO tròn góc dưới phải · Ẩn hẳn khi có popup */
 .demo-bar.is-min { left: auto; right: 16px; bottom: 16px; padding: 0; background: none; box-shadow: none; }
 .demo-bar.is-min > :not(.demo-toggle) { display: none; }
-.demo-bar.is-min .demo-toggle { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; padding: 0; background: #0f172a; color: var(--lime-500); border: 2px solid var(--lime-500); font-weight: 700; font-size: 11px; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
+.demo-bar.is-min .demo-toggle { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; padding: 0; background: var(--c-text-strong); color: var(--lime-500); border: 2px solid var(--lime-500); font-weight: 700; font-size: var(--fs-xs); box-shadow: 0 4px 16px rgba(0,0,0,.25); }
 .demo-bar.is-hidden { display: none; }
 body.has-demo.demo-min { padding-bottom: 0; }
-.demo-note { font-size: 12px; color: #94a3b8; }
+.demo-note { font-size: var(--fs-xs); color: var(--c-text-muted); }

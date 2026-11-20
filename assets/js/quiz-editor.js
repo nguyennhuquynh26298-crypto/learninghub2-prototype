@@ -370,12 +370,12 @@ B. Khi chỉ gọi 1 lần`.split('\n');
     /* ----- Chân popup ----- */
     function drawFoot() {
       const f = el.querySelector('.modal__foot');
-      if (view === 'editor') { f.innerHTML = `<button class="btn-cta btn-cta--line" data-qw-back>Huỷ</button>${ed.k < 0 ? '<button class="btn-cta btn-cta--soft" data-qe-save="more">Lưu và thêm câu khác</button>' : ''}<button class="btn-cta" data-qe-save="one">${ed.k >= 0 ? 'Lưu thay đổi' : 'Lưu câu hỏi'}</button>`; return; }
+      if (view === 'editor') { f.innerHTML = `<button class="btn-cta btn-cta--line" data-qw-back>Cancel</button>${ed.k < 0 ? '<button class="btn-cta btn-cta--soft" data-qe-save="more">Lưu và thêm câu khác</button>' : ''}<button class="btn-cta" data-qe-save="one">${ed.k >= 0 ? 'Lưu thay đổi' : 'Lưu câu hỏi'}</button>`; return; }
       if (view === 'import') { const good = im.rows ? im.rows.filter((r) => !r.errs.length).length : 0;
-        f.innerHTML = `<button class="btn-cta btn-cta--line" data-qw-back>Huỷ</button><button class="btn-cta" data-imp-ok ${good ? '' : 'disabled'}>${!im.rows ? 'Nhập câu hợp lệ' : good ? `Nhập ${good} câu hợp lệ` : 'Không có câu hợp lệ'}</button>`; return; }
+        f.innerHTML = `<button class="btn-cta btn-cta--line" data-qw-back>Cancel</button><button class="btn-cta" data-imp-ok ${good ? '' : 'disabled'}>${!im.rows ? 'Nhập câu hợp lệ' : good ? `Nhập ${good} câu hợp lệ` : 'Không có câu hợp lệ'}</button>`; return; }
       const last = cur === 3 || (cur === 2 && !W.practice);
       f.innerHTML = `<span class="grow adm-hint">${dirty() ? 'Có thay đổi chưa lưu' : ''}</span>`
-        + (cur === 1 ? '<button class="btn-cta btn-cta--line" data-qz-x="qz-wiz">Huỷ</button>' : '<button class="btn-cta btn-cta--line" data-qw-prev>Quay lại</button>')
+        + (cur === 1 ? '<button class="btn-cta btn-cta--line" data-qz-x="qz-wiz">Cancel</button>' : '<button class="btn-cta btn-cta--line" data-qw-prev>Back</button>')
         + (isNew ? '<button class="btn-cta btn-cta--soft" data-qw-draft>Lưu nháp</button>' : '<button class="btn-cta btn-cta--soft" data-qw-finish>Lưu quiz</button>')
         + (last ? `<button class="btn-cta" data-qw-finish>${isNew ? `${ICON.check}Tạo quiz` : 'Lưu quiz'}</button>` : `<button class="btn-cta" data-qw-next>Tiếp tục: ${cur === 1 ? 'Đề thi' : 'Luyện tập'}</button>`);
       if (!isNew && last) f.querySelector('.btn-cta--soft').remove();

@@ -6,19 +6,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif; background: #0f172a; color: #e2e8f0; display: grid; place-items: center; padding: 32px; }
+  body { margin: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif; background: var(--c-text-strong); color: var(--c-border); display: grid; place-items: center; padding: 32px; }
   .w { width: 100%; max-width: 880px; }
-  h1 { color: #fff; font-size: 32px; margin: 0 0 32px; display: flex; align-items: center; gap: 10px; }
-  h1 i { width: 12px; height: 12px; border-radius: 50%; background: #c1f129; }
+  h1 { color: var(--c-white); font-size: var(--fs-3xl); margin: 0 0 32px; display: flex; align-items: center; gap: 10px; }
+  h1 i { width: 12px; height: 12px; border-radius: 50%; background: var(--c-lime); }
   .apps { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .app { display: block; padding: 28px; border-radius: 16px; background: #1e293b; border: 1px solid #334155; color: #fff; text-decoration: none; transition: .15s; }
-  .app:hover { border-color: #374bfa; background: #222f4a; transform: translateY(-2px); }
-  .app b { font-size: 22px; display: block; }
-  .app span { display: block; margin-top: 10px; color: #94a3b8; font-size: 14px; line-height: 1.6; }
-  .app em { display: inline-block; margin-top: 18px; font-style: normal; font-weight: 600; color: #c1f129; }
-  .more { display: flex; gap: 24px; margin-top: 28px; font-size: 14px; flex-wrap: wrap; }
-  .more a { color: #cbd5e1; text-decoration: none; font-weight: 500; }
-  .more a:hover { color: #fff; }
+  .app { display: block; padding: 28px; border-radius: 16px; background: var(--c-text-strong); border: 1px solid var(--c-text); color: var(--c-white); text-decoration: none; transition: .15s; }
+  .app:hover { border-color: var(--c-primary); background: var(--c-text); transform: translateY(-2px); }
+  .app b { font-size: var(--fs-2xl); display: block; }
+  .app span { display: block; margin-top: 10px; color: var(--c-text-muted); font-size: var(--fs-sm); line-height: 1.6; }
+  .app em { display: inline-block; margin-top: 18px; font-style: normal; font-weight: 600; color: var(--c-lime); }
+  .more { display: flex; gap: 24px; margin-top: 28px; font-size: var(--fs-sm); flex-wrap: wrap; }
+  .more a { color: var(--c-border-control); text-decoration: none; font-weight: 500; }
+  .more a:hover { color: var(--c-white); }
 </style>
 </head>
 <body>

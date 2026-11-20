@@ -4,20 +4,21 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Exam · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1119j">
-<link rel="stylesheet" href="../assets/css/certificate.css?v=1118p"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
+<link rel="stylesheet" href="../assets/css/certificate.css?v=1118p"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1120x">
 <style>
-  .exam-line { margin-top: 6px; font-size: 14px; color: var(--gray-600); }
+  .exam-line { margin-top: 6px; font-size: var(--fs-sm); color: var(--gray-600); }
   .exam-line b { color: var(--gray-800); }
   .warn-banner { position: sticky; top: 64px; z-index: 5; margin-bottom: 16px; }
   .pr-one { display: flex; flex-direction: column; gap: 16px; }
   .pr-one__foot { display: flex; align-items: center; gap: 12px; }
   .att-table tr[data-k] { cursor: pointer; }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body>
 <!-- LH2 Đợt 1 · docs Notion 18/11/2026 — trọn luồng bài thi của học viên trên 1 trang.
-     #start    Màn bắt đầu bài thi: chỉ Exam (Practice là mục riêng trên trang khoá, BR-PR-01). Passing Score · Attempts x/3 left · Highest Score (Exam 3.1)
+     #start    Màn bắt đầu bài thi: ô Practice Mode (trái, khi bài thi bật luyện tập) + ô Exam Mode (phải) — D-167, Practice · Learner 3.1. Exam: Passing Score · Attempts x/3 left · Highest Score (Exam 3.1)
      #practice Luyện tập: từng câu, Check Answer → Correct/Incorrect + đáp án + giải thích → Next → Tổng kết (Practice · Learner 2.1, 3.3)
      #exam     Thi: lượt 1 làm cả đề. Lượt 2, 3 hiện nguyên đề + nhãn Correct/Incorrect lượt trước; câu Correct giữ sẵn lựa chọn và vẫn sửa được,
                câu Incorrect (gồm bỏ trống) xoá trắng để chọn lại; không hiện đáp án đúng (BR-EX-03). Đồng hồ không dừng khi rời trang (BR-EX-10)
@@ -25,9 +26,9 @@
                đáp án mở khi Passed hoặc hết 3 lượt (BR-EX-07); pháo hoa + Techter chỉ ngay sau lượt Passed (BR-EX-19);
                bài cuối làm khoá Completed → chỉ popup hoàn thành khoá (BR-LP-13). -->
 <div id="app"></div>
-<script src="../assets/js/components.js?v=1119j"></script>
-<script src="../assets/js/data.js?v=1118p"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1120y"></script>
 <script>
 const { LearnShell, ModeSelect, CourseContent, WebQuestion, DashMeter, QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm,
   ResultSummary, AnswerNote, ReviewFilter, PracticeSummary, Modal, Alert, Badge, toast, esc } = LH;
@@ -35,6 +36,7 @@ const D = LHData, T = D.test, EQ = D.examFull, PQ = D.practiceQuestions, N = EQ.
 const TOTAL_PTS = N, NEED = Math.ceil(T.passMark * TOTAL_PTS / 100); // mỗi câu 1 điểm → 80% của 32 = 25,6 → 26 (BR-EX-15)
 const app = document.getElementById('app');
 
+const K_PR = 'lhQuizPractice'; const practiceOn = () => localStorage.getItem(K_PR) !== 'off'; // công tắc Enable Practice for this quiz (Practice · Admin)
 const K_ATT = 'lhExamAttempts', K_RUN = 'lhExamRunning', K_OLD = 'lhExamBeforeReopen', K_LAST = 'lhExamLastLesson';
 const store = {
   get att() { return JSON.parse(localStorage.getItem(K_ATT) || '[]'); },
@@ -71,8 +73,9 @@ function viewStart() {
   const best = bestOf(A);
   const state = run ? 'in-progress' : passedAny(A) ? 'passed' : used >= MAX ? 'out' : 'default';
   const stage = `<div class="stage-bg">${ModeSelect({ title: T.name, questions: N, minutes: T.minutes, passMark: T.passMark, totalPts: TOTAL_PTS,
-    attemptsLeft: MAX - used, maxAttempts: MAX, best, state, retake: used > 0, remain: run ? mmss(Math.max(0, secLeft(run))) : '' })}</div>`;
-  const below = `<section><h2 class="t-lg fw-600">About this lesson</h2><p class="muted t-sm" style="margin-top:8px">Every exam has 3 attempts. Later attempts show your previous answers with Correct / Incorrect labels. Correct answers are revealed only after you pass or use all attempts.</p></section>
+    attemptsLeft: MAX - used, maxAttempts: MAX, best, state, retake: used > 0, remain: run ? mmss(Math.max(0, secLeft(run))) : '',
+    practice: practiceOn() ? { questions: PQ.length } : null })}</div>`;
+  const below = `<section><h2 class="t-lg fw-600">About this lesson</h2><p class="muted t-sm" style="margin-top:8px">${esc(T.desc || 'Practice set for Domain 1 — agentic architecture and orchestration.')}</p></section>
     ${used || store.old.length ? `<section><div class="row" style="margin-bottom:12px"><h2 class="t-lg fw-600 grow">Attempt History</h2><span class="t-xs muted">Click an attempt to review it</span></div>${historyTable(A, -1)}</section>` : ''}`;
   app.innerHTML = LearnShell({ course: D.course.title, pct: passedAny(A) ? 37 : 31, stage, below,
     drawer: CourseContent(D.course.sessions, { current: CURRENT, marks: D.myResult.lessons.map((m, i) => (i === CURRENT ? (passedAny(A) ? 'done' : used ? 'fail' : 'none') : m)), meta: { [CURRENT]: `${LH.ICON.fileQ}<span>${N} Questions</span>` } }) });
@@ -111,8 +114,8 @@ function viewPractice() {
   }
   app.innerHTML = `<div class="quiz-page">${QuizTopBar({ mode: 'practice', title: D.course.title, center: meter, right: '<button class="wbtn wbtn--outline" data-exit-practice>Exit</button>' })}
     <div class="stage-card"><div class="quiz">
-      <div class="quiz-head"><div class="quiz-head__t"><h1>Practice</h1><span class="quiz-badge">Practice</span></div>
-        <p>${n < PQ.length ? `Practising ${n} incorrect &amp; skipped questions` : `${PQ.length} questions`} · See answers right after each question · Does not count toward exam attempts or progress</p></div>
+      <div class="quiz-head"><div class="quiz-head__t"><h1>${esc(T.name)}</h1><span class="quiz-badge">Practice Mode</span></div>
+        <p>${n < PQ.length ? `${n} incorrect &amp; skipped questions` : `${PQ.length} questions`}</p></div>
       ${main}
     </div></div></div>`;
 }
@@ -124,7 +127,7 @@ function pChoose(k) {
 }
 function pLeave() {
   const any = P.order.some((k) => P.st[k].checked);
-  if (P.done || !any) { P = null; location.href = courseHref(); return; }
+  if (P.done || !any) { P = null; go('start'); return; }
   document.body.insertAdjacentHTML('beforeend', Modal({ id: 'exit', size: 'sm', icon: 'info', title: 'Exit practice?',
     body: '<p class="t-sm">Your progress in this session will not be saved.</p>',
     foot: '<button class="wbtn wbtn--outline" data-close>Stay</button><button class="wbtn" data-exit-confirm>Exit</button>' }));
@@ -139,7 +142,7 @@ function practiceClick(e) {
   if (e.target.closest('[data-retry-wrong]')) { P = newPractice(P.order.filter((k) => !pOk(k))); viewPractice(); return; }
   if (e.target.closest('[data-restart]')) { P = newPractice(); viewPractice(); return; }
   const j = e.target.closest('[data-jump]'); if (j) { e.preventDefault(); const k = P.order.indexOf(+j.dataset.jump - 1); if (k >= 0) { P.pos = k; P.review = true; viewPractice(); } return; }
-  if (e.target.closest('[data-back-course]') || e.target.closest('[data-exit-confirm]')) { P = null; location.href = courseHref(); return; }
+  if (e.target.closest('[data-back-course]') || e.target.closest('[data-exit-confirm]')) { P = null; document.querySelectorAll('.modal-backdrop').forEach((m) => m.remove()); go('start'); return; }
   if (e.target.closest('[data-exit-practice]')) pLeave();
 }
 /* Phím tắt: A–D / 1–4 chọn · Enter = Check rồi Next · → = Skip (hoặc Next khi đã Check) */
@@ -200,7 +203,7 @@ function viewExam() {
 function warn5() { const w = document.getElementById('warn'); if (w && !w.innerHTML) w.innerHTML = `<div class="warn-banner">${Alert({ tone: 'warning', icon: 'clock', title: '5 minutes left', text: 'Your answers will be submitted automatically when time runs out.' })}</div>`; }
 function examChrome() {
   const r = store.run; const ans = r.chosen.filter((c) => c.length).length;
-  document.getElementById('ebar').innerHTML = QuizTopBar({ mode: 'exam', title: T.name, center: `<span class="qbar__count">Answered <b>${ans}</b> / ${N}</span>`, right: '<button class="wbtn" data-submit>Submit</button>' });
+  document.getElementById('ebar').innerHTML = QuizTopBar({ mode: 'exam', title: T.name, center: `<span class="qbar__count">Answered <b>${ans}</b> / ${N}</span>`, right: '<button class="wbtn wbtn--outline" data-exit-exam>Exit</button><button class="wbtn" data-submit>Submit</button>' });
   document.getElementById('enav').innerHTML = QuestionNav(EQ.map((q, i) => navItem(r, i)), { current: cur, retake: !!r.prior, timer: ExamTimer(Math.max(0, secLeft(r))) });
   document.getElementById('efoot').textContent = `Answered ${ans}/${N}`;
   if (secLeft(r) <= 300) warn5();
@@ -214,6 +217,13 @@ function examClick(e) {
   if (o && i >= 0) { const k = +o.dataset.k, c = r.chosen[i]; cur = i;
     r.chosen[i] = EQ[i].type === 'multi' ? (c.includes(k) ? c.filter((x) => x !== k) : [...c, k]) : [k]; reQ(); return; }
   const j = e.target.closest('[data-jump]'); if (j) { e.preventDefault(); cur = +j.dataset.jump - 1; document.getElementById('q' + j.dataset.jump).scrollIntoView({ behavior: 'smooth' }); examChrome(); }
+  /* DS §3.4: Exit ở màn làm bài → hỏi; đồng hồ vẫn chạy (BR-EX-10), quay lại làm tiếp được */
+  if (e.target.closest('[data-exit-exam]')) {
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'exit-exam', size: 'sm', icon: 'info', title: 'Leave the exam?',
+      body: '<p class="t-sm">The timer keeps running. You can come back and continue before time runs out.</p>',
+      foot: '<button class="wbtn wbtn--outline" data-close>Stay</button><button class="wbtn" data-go="start">Leave</button>' }));
+    return;
+  }
   if (e.target.closest('[data-submit]')) {
     const un = r.chosen.filter((c) => !c.length).length, fl = r.flag.filter(Boolean).length;
     const changed = EQ.filter((qq, k) => navItem(r, k).st === 'changed').length;
@@ -259,7 +269,7 @@ function viewResult() {
   const list = qs.map((q, k) => ({ q, k, ok: isOk(q, q.chosen) })).filter((m) => resFilter === 'all' || (resFilter === 'correct') === m.ok);
   const celebrate = justSubmitted && idx === latest && passed(at);
   const courseDone = celebrate && localStorage.getItem(K_LAST) === '1';
-  app.innerHTML = `<div class="quiz-page">${QuizTopBar({ mode: 'review', title: T.name, right: '<button class="wbtn wbtn--outline" data-go="start">Close</button>' })}
+  app.innerHTML = `<div class="quiz-page">${QuizTopBar({ mode: 'review', title: T.name, right: '<button class="wbtn wbtn--outline" data-go="start">Exit</button>' })}
     <div class="stage-card"><div class="quiz">
       ${celebrate && !courseDone && window.LHW2 ? LHW2.passBanner({ quiz: T.name }) : ''}
       ${at.auto ? `<div style="margin-bottom:16px">${Alert({ tone: 'warning', icon: 'clock', title: 'This attempt was submitted automatically when time ran out' })}</div>` : ''}
@@ -323,10 +333,11 @@ function seed(k, hash) {
 
 LH.DemoBar('LH2 Đợt 1 · Practice · Exam · Result (docs 18/11)', [
   { label: 'Data', key: 'seed', options: [['keep', 'Keep current'], ['fresh', 'No attempts'], ['one', 'Attempt 1 · 56 (Not Passed)'], ['two', '2 attempts · 56, 78'], ['pass', 'Passed at attempt 2'], ['out', 'Failed · 3/3 used'], ['reopen', 'After Reopen Attempts']] },
+  { label: 'Practice for this quiz', key: 'pr', options: [['on', 'On · Practice Mode + Exam Mode'], ['off', 'Off · Exam Mode only']] },
   { label: 'This quiz is the last lesson', key: 'last', options: [['0', 'No'], ['1', 'Yes → Course Completed popup']] },
   { label: 'Timer', key: 'tm', options: [['', '—'], ['5min', 'Running attempt → 5 min left'], ['5s', 'Running attempt → 5 s left']] },
 ], (s) => {
-  localStorage.setItem(K_LAST, s.last);
+  localStorage.setItem(K_LAST, s.last); localStorage.setItem(K_PR, s.pr);
   if (s.seed !== 'keep') seed(s.seed);
   if ((s.tm === '5min' || s.tm === '5s') && store.run) { const r = store.run; r.endAt = Date.now() + (s.tm === '5min' ? 301 : 6) * 1000; store.run = r; }
   route();

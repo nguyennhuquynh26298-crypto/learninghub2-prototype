@@ -4,26 +4,27 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Course Review · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118w"><link rel="stylesheet" href="../assets/css/base.css?v=1118w"><link rel="stylesheet" href="../assets/css/components.css?v=1119j">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1119j"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118w">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1120x">
 <style>
   .rv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
   @media (max-width: 1100px) { .rv-grid { grid-template-columns: 1fr; } }
-  .rv-hero { border-radius: 20px; background: linear-gradient(135deg, #4757ff, #2a37c4); color: #fff; padding: 24px 28px; }
-  .rv-hero h2 { margin: 6px 0; font-size: 22px; } .rv-hero p { margin: 0; color: #dce2ff; }
+  .rv-hero { border-radius: 20px; background: linear-gradient(135deg, var(--c-brand), var(--c-brand)); color: var(--c-white); padding: 24px 28px; }
+  .rv-hero h2 { margin: 6px 0; font-size: var(--fs-2xl); } .rv-hero p { margin: 0; color: var(--c-violet-bg); }
   .rv-sec { border: 1px solid var(--adm-stroke); border-radius: 12px; margin-top: 12px; overflow: hidden; }
-  .rv-sec > b { display: block; padding: 10px 14px; background: var(--adm-side, #f5f6ff); }
-  .rv-sec div { padding: 10px 14px; border-top: 1px solid var(--adm-stroke); font-size: 14px; }
-  .kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px 12px; font-size: 14px; } .kv span { color: var(--adm-sub); }
-  .aud { background: #fffaeb; border: 1px solid #fedf89; border-radius: 12px; padding: 12px 14px; font-size: 14px; }
-  .bn { border-radius: 12px; padding: 12px 16px; font-size: 14px; margin-bottom: 16px; border: 1px solid; }
-  .bn--draft { background: #f9fafb; border-color: #eaecf0; } .bn--pending { background: #eff8ff; border-color: #b2ddff; }
-  .bn--changes { background: #fffaeb; border-color: #fedf89; } .bn--rejected { background: #fef3f2; border-color: #fecdca; }
-  .bn q { display: block; quotes: none; margin-top: 6px; color: #344054; } .bn small { display: block; color: #667085; margin-top: 4px; }
+  .rv-sec > b { display: block; padding: 10px 14px; background: var(--adm-side, var(--c-bg-page)); }
+  .rv-sec div { padding: 10px 14px; border-top: 1px solid var(--adm-stroke); font-size: var(--fs-sm); }
+  .kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px 12px; font-size: var(--fs-sm); } .kv span { color: var(--adm-sub); }
+  .aud { background: var(--c-warning-bg); border: 1px solid var(--c-warning-border); border-radius: 12px; padding: 12px 14px; font-size: var(--fs-sm); }
+  .bn { border-radius: 12px; padding: 12px 16px; font-size: var(--fs-sm); margin-bottom: 16px; border: 1px solid; }
+  .bn--draft { background: var(--c-bg-subtle); border-color: var(--c-bg-page); } .bn--pending { background: var(--c-bg-hover); border-color: var(--c-brand-200); }
+  .bn--changes { background: var(--c-warning-bg); border-color: var(--c-warning-border); } .bn--rejected { background: var(--c-danger-bg); border-color: var(--c-danger-border); }
+  .bn q { display: block; quotes: none; margin-top: 6px; color: var(--c-text); } .bn small { display: block; color: var(--c-text-subtle); margin-top: 4px; }
   .miss { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
-  .miss a { display: flex; gap: 8px; padding: 10px 12px; border: 1px solid #fecdca; border-radius: 10px; color: #b42318; text-decoration: none; font-size: 14px; }
-  .miss a:hover { background: #fef3f2; }
+  .miss a { display: flex; gap: 8px; padding: 10px 12px; border: 1px solid var(--c-danger-border); border-radius: 10px; color: var(--c-danger); text-decoration: none; font-size: var(--fs-sm); }
+  .miss a:hover { background: var(--c-danger-bg); }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body>
 <!-- Course Creator & Approval 2.1–2.3, 3.1–3.4, 3.8 · BR-CA-01…13 (Notion LH2 Product Docs No 10, Đợt 2 · Gói 6).
@@ -34,7 +35,7 @@
   <div id="banner"></div>
   <div class="rv-grid">
     <div style="display:flex;flex-direction:column;gap:20px">
-      <div class="rv-hero"><span style="font-size:13px;color:#c3cbff" id="h-count"></span><h2 id="h-title"></h2><p>Architecture, tool design, MCP and context management for production Claude solutions.</p></div>
+      <div class="rv-hero"><span style="font-size: var(--fs-xs);color:var(--c-brand-200)" id="h-count"></span><h2 id="h-title"></h2><p>Architecture, tool design, MCP and context management for production Claude solutions.</p></div>
       <section class="adm-card"><h2 class="adm-card__title">Preview — as learners will see it</h2><div id="aud"></div><div id="syl"></div></section>
     </div>
     <aside style="display:flex;flex-direction:column;gap:20px">
@@ -43,9 +44,9 @@
     </aside>
   </div>
 </main>
-<script src="../assets/js/components.js?v=1119j"></script>
-<script src="../assets/js/data.js?v=1118w"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118w"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1120y"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, Tag } = LH;
 const TITLE = 'CCAR-F Claude Certified Architect – Foundations', OWNER = 'Phạm Thanh Long';

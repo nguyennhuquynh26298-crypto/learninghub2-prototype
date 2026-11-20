@@ -8,7 +8,7 @@
     const val = v == null ? (f.value || '') : v;
     const lab = `<label>${esc(f.label)}${f.req ? ' <span class="req">*</span>' : ''}</label>`;
     const hint = f.hint ? `<span class="adm-hint">${f.hint}</span>` : '';
-    const err = `<span class="adm-hint is-error" data-err hidden>${esc(f.label)} là bắt buộc.</span>`;
+    const err = `<span class="adm-hint is-error" data-err hidden>${esc(f.label)} is required.</span>`;
     let ctl;
     if (f.type === 'textarea') ctl = `<textarea class="adm-input" name="${f.key}" placeholder="${esc(f.ph || '')}" ${f.ro ? 'readonly' : ''}>${esc(val)}</textarea>`;
     else if (f.type === 'select') ctl = `<select class="adm-input" name="${f.key}" ${f.ro ? 'disabled' : ''}><option value="">${esc(f.ph || 'Chọn')}</option>${f.options.map((o) => `<option ${o === val ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
@@ -33,10 +33,10 @@
       const tools = `<div class="adm-box__head adm-box__head--tools">
           ${cfg.boxTitle ? `<h2 class="adm-box__title" style="flex:1">${esc(cfg.boxTitle)}</h2>` : '<span style="flex:1"></span>'}
           ${(cfg.filters || []).map((f) => `<label class="filter-btn">${ICON.filter}<select data-frm-filter><option>${esc(f[0])}</option>${f[1].map((o) => `<option>${esc(o)}</option>`).join('')}</select></label>`).join('')}
-          <label class="adm-inline-search"><input data-frm-q placeholder="${esc(cfg.search || 'Tìm kiếm tại đây')}" value="${esc(S.q)}"><span>${ICON.search}</span></label></div>`;
+          <label class="adm-inline-search"><input data-frm-q placeholder="${esc(cfg.search || 'Search here')}" value="${esc(S.q)}"><span>${ICON.search}</span></label></div>`;
       const body = rows.length
         ? AdminTable(cfg.cols, rows.map((r) => `<tr>${cfg.cell(r)}<td class="t-act">${RowMenu(cfg.menu(r, S.rows.indexOf(r)))}</td></tr>`).join(''))
-        : AdminEmpty(S.data === 'empty' ? cfg.empty : { icon: 'search', title: 'Không tìm thấy kết quả', desc: 'Thử từ khoá khác.' });
+        : AdminEmpty(S.data === 'empty' ? cfg.empty : { icon: 'search', title: 'No results found', desc: 'Try another keyword.' });
       document.getElementById('frm-body').innerHTML = `<section class="adm-box">${tools}<div class="adm-card">${body}</div>
         ${cfg.note ? `<p class="adm-hint frm-note">${cfg.note}</p>` : ''}</section>`;
     }
@@ -44,13 +44,13 @@
     function renderForm(idx, ro) {
       AdminLayout({ active: cfg.active, role });
       const r = idx >= 0 ? S.rows[idx] : {};
-      const t = ro ? cfg.form.detailTitle || 'Chi tiết' : idx >= 0 ? cfg.form.editTitle : cfg.form.newTitle;
+      const t = ro ? cfg.form.detailTitle || 'Details' : idx >= 0 ? cfg.form.editTitle : cfg.form.newTitle;
       document.getElementById('frm-head').innerHTML = AdminHead({ back: '#', eyebrow: cfg.eyebrow, title: t, desc: cfg.form.desc || '' });
-      document.getElementById('frm-body').innerHTML = `<section class="adm-card"><h2 class="adm-card__title">Thông tin chung</h2>
+      document.getElementById('frm-body').innerHTML = `<section class="adm-card"><h2 class="adm-card__title">General information</h2>
         <div class="adm-form" id="frm-form">${cfg.form.fields.map((f) => field({ ...f, ro: ro || f.ro }, r[f.key])).join('')}</div>
         ${cfg.form.extra ? cfg.form.extra(r, ro) : ''}
-        <div class="adm-btn-combo">${ro ? `<button class="btn-cta btn-cta--line" data-frm-back>Quay lại</button><button class="btn-cta" data-frm-edit="${idx}">${ICON.edit}Sửa</button>`
-          : `<button class="btn-cta btn-cta--line" data-frm-back>Huỷ</button><button class="btn-cta" data-frm-save>Lưu</button>`}</div></section>`;
+        <div class="adm-btn-combo">${ro ? `<button class="btn-cta btn-cta--line" data-frm-back>Back</button><button class="btn-cta" data-frm-edit="${idx}">${ICON.edit}Edit</button>`
+          : `<button class="btn-cta btn-cta--line" data-frm-back>Cancel</button><button class="btn-cta" data-frm-save>Save</button>`}</div></section>`;
       S.mode = 'form'; S.editing = idx;
     }
 
@@ -69,7 +69,7 @@
       });
       if (!ok) return;
       if (S.editing >= 0) Object.assign(S.rows[S.editing], out); else S.rows.unshift({ ...cfg.blank, ...out });
-      S.data = 'sample'; S.mode = 'list'; renderList(); toast(S.editing >= 0 ? 'Đã lưu thay đổi' : 'Đã tạo mới');
+      S.data = 'sample'; S.mode = 'list'; renderList(); toast(S.editing >= 0 ? 'Changes saved' : 'Created');
     }
 
     document.addEventListener('click', (e) => {
@@ -83,12 +83,12 @@
         const i = +del.dataset.frmDel; const r = S.rows[i];
         const block = cfg.canDelete ? cfg.canDelete(r) : '';
         if (block) { toast(block); return; }
-        AdminConfirm({ danger: true, title: cfg.delTitle || 'Bạn chắc chắn muốn xoá?', text: cfg.delText ? cfg.delText(r) : '', ok: 'Xoá', onOk: () => { S.rows.splice(i, 1); renderList(); toast('Đã xoá'); } });
+        AdminConfirm({ danger: true, title: cfg.delTitle || 'Are you sure you want to delete?', text: cfg.delText ? cfg.delText(r) : '', ok: 'Xoá', onOk: () => { S.rows.splice(i, 1); renderList(); toast('Đã xoá'); } });
       }
     });
     document.addEventListener('input', (e) => { if (e.target.matches('[data-frm-q]')) { S.q = e.target.value; const p = e.target.selectionStart; renderList(); const n = document.querySelector('[data-frm-q]'); n.focus(); n.setSelectionRange(p, p); } });
 
-    const dataGroup = [{ label: 'Dữ liệu', key: 'data', options: [['empty', 'Chưa có dữ liệu'], ['sample', 'Dữ liệu mẫu']] }];
+    const dataGroup = [{ label: 'Data', key: 'data', options: [['empty', 'No data yet'], ['sample', 'Sample data']] }];
     const groups = [...(cfg.demoRole ? [{ label: 'Role', key: 'r', options: cfg.demoRole }] : []), ...(cfg.demoGroups || dataGroup)];
     DemoBar(cfg.demoTitle || cfg.title + ' · LH1', groups, (s) => {
       if (s.r != null) role = LH.admRole(s.r);

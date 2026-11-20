@@ -1,0 +1,148 @@
+/* =====================================================================
+ * LearningHub DS · lớp đồng bộ component (20/11/2026)
+ * Nguồn chuẩn: docs/design-system/learninghub-ui-kit.md
+ * Nạp SAU mọi CSS khác trên mỗi trang. Mọi họ class cũ cùng vai trò được ép về MỘT kiểu:
+ *   Button  ← .btn-cta · .wbtn · .btn · .cc-btn · .cel-btn
+ *   Badge   ← .badge · .stage-tag            (trạng thái, bo 6)
+ *   Tag     ← .cc-tag · .rp-tag · .diff-tag · .w2-chip · .qz-pr-on · .quiz-badge · .chip (phân loại, bo tròn)
+ *   Field   ← .input · .adm-input · .rpt-sel · .w2-field input/textarea · select
+ *   Alert   ← .alert · .bn · .aud · .qz-rule
+ *   Modal   ← .modal · .adm-popup · .w2-pop__card · .adm-confirm · .cel-card
+ * Chỉ dùng biến token. Không viết màu / cỡ chữ tay ở đây.
+ * ===================================================================== */
+
+/* ---------- Chữ theo vai trò (typography) ---------- */
+.adm-head h1, .quiz-head h1, .mode-sel h1, .back-head__t, .page-title { font: var(--type-h1); color: var(--c-text-strong); }
+.back-head__t.is-big { font: var(--type-h1-hero); }
+.adm-box__title, .adm-card__title, .rp-sec__h h2, .cd-sec > h2, .section-title, .rv-head h2 { font: var(--type-h2); color: var(--c-text-strong); }
+.course-card__title, .mode-box h2, .ch__h h3, .modal__title, .w2-pop__card h3, .adm-confirm h3, .su-sec__title, .kg__main .rp-l, .pq-head h3 { font: var(--type-h3); }
+.course-card__title { color: var(--c-text-strong); }
+.adm-head__eyebrow { font: var(--type-eyebrow); }
+.adm-head p, .adm-head__text > p { font: var(--type-body); color: var(--c-text-subtle); }
+.rp-n, .kpi-card__value, .kg__main .rp-n { font: var(--type-stat); }
+
+/* ---------- Button ---------- */
+.btn-cta, .wbtn, .btn:not(.btn--link), .cc-btn, .cel-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: var(--ds-control-md); min-height: var(--ds-control-md); padding: 0 16px;
+  border-radius: var(--ds-radius-control); border: 1px solid var(--c-primary);
+  background: var(--c-primary); color: var(--c-white); font: var(--type-button);
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.btn-cta:hover, .wbtn:hover, .btn:not(.btn--link):hover, .cc-btn:hover, .cel-btn:hover { background: var(--c-brand); border-color: var(--c-brand); text-decoration: none; }
+/* Outline (thương hiệu) */
+.btn-cta--outline, .wbtn--outline, .btn--outline, .cc-btn--outline, .cel-btn--line, .btn--secondary {
+  background: var(--c-white); color: var(--c-primary); border-color: var(--c-primary);
+}
+.btn-cta--outline:hover, .wbtn--outline:hover, .btn--outline:hover, .cc-btn--outline:hover, .cel-btn--line:hover, .btn--secondary:hover { background: var(--c-bg-selected); color: var(--c-primary); border-color: var(--c-primary); }
+/* Secondary trung tính (Cancel, Back to …) */
+.btn-cta--line, .btn--ghost {
+  background: var(--c-white); color: var(--c-text); border-color: var(--c-border-control);
+}
+.btn-cta--line:hover, .btn--ghost:hover { background: var(--c-bg-hover); color: var(--c-text-strong); border-color: var(--c-border-control); }
+/* Soft */
+.btn-cta--soft { background: var(--c-bg-selected); color: var(--c-primary); border-color: var(--c-bg-selected); }
+.btn-cta--soft:hover { background: var(--c-brand-200); border-color: var(--c-brand-200); color: var(--c-primary); }
+/* Danger */
+.btn-cta--danger, .btn--danger { background: var(--c-danger-icon); border-color: var(--c-danger-icon); color: var(--c-white); }
+.btn-cta--danger:hover, .btn--danger:hover { background: var(--c-danger); border-color: var(--c-danger); }
+/* Warn (Resume Exam) */
+.wbtn--warn { background: var(--c-warning-icon); border-color: var(--c-warning-icon); color: var(--c-white); }
+/* Size */
+.btn-cta--sm, .btn--sm { height: var(--ds-control-sm); min-height: var(--ds-control-sm); padding: 0 12px; }
+.wbtn--lg, .btn--lg { height: var(--ds-control-lg); min-height: var(--ds-control-lg); font: var(--type-button-lg); }
+/* Disabled */
+.btn-cta:disabled, .wbtn:disabled, .btn:disabled, .cc-btn:disabled, .cel-btn:disabled { opacity: .5; cursor: not-allowed; }
+/* Icon trong nút */
+.btn-cta svg, .wbtn svg, .btn svg, .cc-btn svg, .cel-btn svg { width: var(--ds-icon-sm); height: var(--ds-icon-sm); flex: none; }
+/* Link */
+.btn--link, .btn-link, .tr__btn { background: none; border: 0; padding: 0; height: auto; color: var(--c-brand); font: var(--type-label); cursor: pointer; }
+.btn--link:hover, .btn-link:hover, .tr__btn:hover { text-decoration: underline; }
+/* Focus */
+.btn-cta:focus-visible, .wbtn:focus-visible, .btn:focus-visible, .cc-btn:focus-visible, .cel-btn:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; }
+
+/* ---------- Icon button ---------- */
+.icon-btn, .su-icon, .rp-x, .row-menu > button {
+  width: var(--ds-control-sm); height: var(--ds-control-sm); border-radius: var(--ds-radius-control);
+  display: inline-grid; place-items: center; border: 0; background: transparent; color: var(--c-text-subtle); cursor: pointer;
+}
+.icon-btn:hover, .su-icon:hover, .rp-x:hover, .row-menu > button:hover { background: var(--c-bg-hover); color: var(--c-text-strong); }
+.icon-btn svg, .su-icon svg, .rp-x svg, .row-menu > button svg { width: var(--ds-icon-md); height: var(--ds-icon-md); }
+
+/* ---------- Badge (trạng thái) ---------- */
+.badge, .stage-tag {
+  display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px;
+  border-radius: var(--ds-radius-badge); font: var(--type-badge); white-space: nowrap;
+}
+.badge svg, .stage-tag svg { width: 12px; height: 12px; }
+.badge--success, .stage-tag--published { background: var(--c-success-bg); color: var(--c-success); }
+.badge--danger, .stage-tag--rejected { background: var(--c-danger-bg); color: var(--c-danger); }
+.badge--warning, .stage-tag--pending { background: var(--c-warning-bg); color: var(--c-warning); }
+.badge--info, .stage-tag--info { background: var(--c-bg-selected); color: var(--c-primary); }
+.badge--neutral, .stage-tag--draft, .stage-tag--neutral { background: var(--c-bg-hover); color: var(--c-text); }
+.badge--violet { background: var(--c-violet-bg); color: var(--c-violet); }
+
+/* ---------- Tag (phân loại) ---------- */
+.cc-tag, .rp-tag, .diff-tag, .w2-chip, .qz-pr-on, .quiz-badge {
+  display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px;
+  border-radius: var(--radius-full); font: var(--type-badge); white-space: nowrap;
+}
+.cc-tag svg, .w2-chip svg { width: 12px; height: 12px; }
+.rp-tag, .diff-tag--edit { background: var(--c-bg-hover); color: var(--c-text); }
+.rp-tag--mand, .cc-tag--fail, .diff-tag--del { background: var(--c-danger-bg); color: var(--c-danger); }
+.cc-tag--ok, .diff-tag--new { background: var(--c-success-bg); color: var(--c-success); }
+.cc-tag--upcoming, .w2-chip, .quiz-badge { background: var(--c-bg-selected); color: var(--c-primary); }
+.cc-tag--restricted { background: var(--c-text-strong); color: var(--c-white); }
+.qz-pr-on { background: var(--c-violet-bg); color: var(--c-violet); }
+
+/* ---------- Field ---------- */
+.input, .adm-input, .rpt-sel, select.input, .w2-field input, .w2-field select {
+  height: var(--ds-control-md); border: 1px solid var(--c-border-control); border-radius: var(--ds-radius-control);
+  background: var(--c-white); color: var(--c-text-strong); font: var(--type-body); padding: 0 12px;
+}
+textarea.input, textarea.adm-input, .w2-field textarea { height: auto; min-height: 96px; padding: 10px 12px; font: var(--type-body); border: 1px solid var(--c-border-control); border-radius: var(--ds-radius-control); }
+.input::placeholder, .adm-input::placeholder, .w2-field input::placeholder, .w2-field textarea::placeholder { color: var(--c-text-muted); }
+.input:focus, .adm-input:focus, .rpt-sel:focus, .w2-field input:focus, .w2-field textarea:focus { outline: none; border-color: var(--c-brand); box-shadow: 0 0 0 3px var(--c-bg-selected); }
+.input.is-error, .adm-input.is-error { border-color: var(--c-danger-icon); }
+.field__label, .adm-field > label, .w2-field > span { font: var(--type-label); color: var(--c-text); }
+.adm-hint, .field__hint, .field__error, .w2-err, .rate-err, .cs-hint, .rpt-asof, .rp-asof, .t-xs { font: var(--type-caption); }
+.field__error, .w2-err, .rate-err, .adm-hint.is-error { color: var(--c-danger); }
+
+/* ---------- Table ---------- */
+.adm-table th, .table th, .mr-t th, .tr__tbl th { font: var(--type-label); color: var(--c-text-subtle); }
+.adm-table td, .table td, .mr-t td { font: var(--type-body); }
+
+/* ---------- Tabs ---------- */
+.tabs .tab, .qz-tabs button, .su-tabs button, #tabs [role="tab"] { font: var(--type-label); }
+
+/* ---------- Alert / Banner ---------- */
+.alert, .bn, .qz-rule { border-radius: var(--ds-radius-card); padding: 12px 16px; font: var(--type-body); }
+.alert__title, .bn > b { font: var(--type-body-strong); }
+
+/* ---------- Modal / Popup ---------- */
+.modal, .adm-popup, .w2-pop__card, .adm-confirm { border-radius: var(--ds-radius-block); }
+.modal__desc, .w2-pop__card > p, .adm-confirm p { font: var(--type-body); color: var(--c-text-subtle); }
+
+/* ---------- Card ---------- */
+.mode-box, .kg, .ch, .tr, .rpt-kpi { border-radius: var(--ds-radius-card); }
+
+/* ---------- Tooltip / Toast ---------- */
+.rp-tip, .ch-tip, .sb-tip, .rpt-kpi__tip { background: var(--c-ink); color: var(--c-white); font: var(--type-caption); border-radius: var(--ds-radius-control); }
+.toast { background: var(--c-text-strong); color: var(--c-white); font: var(--type-body); border-radius: var(--ds-radius-control); }
+
+/* <small> luôn là ghi chú 12 */
+small { font-size: var(--fs-xs); }
+
+/* Footer học viên: tiêu đề = Hero 60 / 700 như web thật */
+.app-footer__h h5 { font: var(--type-display); }
+@media (max-width: 1100px) { .app-footer__h h5 { font-size: var(--fs-3xl); line-height: 36px; } }
+
+/* Bảng luôn sát mép phải khung (không chừa chỗ thanh cuộn khi không cần cuộn) */
+.adm-scroll { scrollbar-gutter: auto; }
+
+/* Bảng Admin vừa khung như web thật: rộng 100%, tên dài xuống dòng; cột ngắn (trạng thái, ngày, thời lượng, thao tác) không xuống dòng */
+.adm-table { width: 100%; min-width: 0; font-size: var(--fs-sm); }
+.adm-table td { white-space: normal; padding: 16px 12px; }
+.adm-table th { padding-left: 12px; padding-right: 12px; }
+.adm-table td .stage-tag, .adm-table td.t-dur, .adm-table td.t-act, .adm-table .dur-cell { white-space: nowrap; }

@@ -4,17 +4,18 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Course Management · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1119m">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120m">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1120z">
 <style>
   /* LH1 + Admin DNA — list tools = adm-box__head */
   .cm-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0; min-height: 40px; }
-  .cm-tools h2 { flex: 1; margin: 0; font-size: 20px; line-height: 24px; font-weight: 600; color: var(--adm-body); }
+  .cm-tools h2 { flex: 1; margin: 0; font-size: var(--fs-xl); line-height: 24px; font-weight: 600; color: var(--adm-body); }
   .cm-tools__cta { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .adm-box { gap: 16px; }
   .dur-cell { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; flex-wrap: nowrap; }
   .dur-cell svg { width: 16px; height: 16px; color: var(--adm-sub); flex: none; }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body>
 <div id="header"></div>
@@ -26,8 +27,8 @@
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1119q"></script>
-<script src="../assets/js/data.js?v=1118c"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
 <script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminTable, Tag, RowMenu, AdminConfirm } = LH; const D = LHData;
@@ -48,13 +49,13 @@ function ver(c) { return 'V' + String(c.ver || '1').replace(/^V/i, '').replace(/
  * Bấm dòng Pending → course-approval.html. Unpublish (chỉ Admin L&D) hỏi xác nhận khi còn người In Progress. */
 const ST2 = { draft: ['Draft', 'draft'], pending: ['Pending Approval', 'pending'], changes: ['Changes Requested', 'pending'], rejected: ['Rejected', 'neutral'], published: ['Published', 'published'] };
 const ROWS2 = [
-  { title: 'Kiểm thử tự động với Playwright', owner: 'Phạm Thanh Long', st: 'pending', updated: '09/11/2026 10:24', sent: '09/11/2026 10:24', k: 'new' },
+  { title: 'Automated Testing with Playwright', owner: 'Phạm Thanh Long', st: 'pending', updated: '09/11/2026 10:24', sent: '09/11/2026 10:24', k: 'new' },
   { title: 'Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', st: 'published', rev: 'pending', updated: '08/11/2026 16:02', sent: '08/11/2026 16:02', k: 'rev', inProgress: 64 },
   { title: 'AI Agent Engineering', owner: 'Lê Thị Mai', st: 'published', updated: '01/11/2026 09:10', sent: '—', inProgress: 9 },
   { title: 'ADLC Guideline: Techvify SpecKit', owner: 'Phạm Thanh Long', st: 'published', updated: '16/11/2026 14:30', sent: '15/11/2026 17:05', inProgress: 0 },
   { title: 'Corporate Onboarding 2026', owner: 'Lê Thị Mai', st: 'published', updated: '12/11/2026 08:45', sent: '—', inProgress: 120 },
-  { title: 'Clean Code cho Frontend', owner: 'Trần Văn Bình', st: 'changes', updated: '10/11/2026 11:00', sent: '07/11/2026 15:20' },
-  { title: 'Docker cơ bản', owner: 'Trần Văn Bình', st: 'rejected', updated: '05/11/2026 10:00', sent: '04/11/2026 09:30' },
+  { title: 'Clean Code for Frontend', owner: 'Trần Văn Bình', st: 'changes', updated: '10/11/2026 11:00', sent: '07/11/2026 15:20' },
+  { title: 'Docker Basics', owner: 'Trần Văn Bình', st: 'rejected', updated: '05/11/2026 10:00', sent: '04/11/2026 09:30' },
   { title: 'QA Automation Module 3', owner: 'Phạm Thanh Long', st: 'draft', updated: '18/11/2026 09:00', sent: '—' },
 ];
 let rows2 = ROWS2.map((r) => ({ ...r }));

@@ -4,25 +4,26 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Learn · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1118p"><link rel="stylesheet" href="../assets/css/base.css?v=1118p"><link rel="stylesheet" href="../assets/css/components.css?v=1119j"><link rel="stylesheet" href="../assets/css/certificate.css?v=1118p"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1118p">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1118p"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1120x">
 <style>
   .learn-stage .player { position: absolute; inset: 0; border-radius: 0; aspect-ratio: auto; }
   .player__seg { position: absolute; top: 0; bottom: 0; background: rgba(147,150,255,.55); }
-  .player__pos { position: absolute; top: -5px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transform: translateX(-50%); }
-  .player__time { position: absolute; right: 16px; bottom: 30px; font-size: 12px; color: #e2e8f0; }
-  .doc-stage { display: grid; place-items: center; min-height: 100%; background: #1e293b; color: #e2e8f0; padding: 24px; }
-  .doc-stage__paper { width: min(640px, 90%); aspect-ratio: 4/3; background: #fff; border-radius: 8px; box-shadow: 0 12px 40px rgb(0 0 0 / 0.35); display: grid; place-items: center; color: var(--text-strong); padding: 24px; text-align: center; }
+  .player__pos { position: absolute; top: -5px; width: 16px; height: 16px; border-radius: 50%; background: var(--c-white); transform: translateX(-50%); }
+  .player__time { position: absolute; right: 16px; bottom: 30px; font-size: var(--fs-xs); color: var(--c-border); }
+  .doc-stage { display: grid; place-items: center; min-height: 100%; background: var(--c-text-strong); color: var(--c-border); padding: 24px; }
+  .doc-stage__paper { width: min(640px, 90%); aspect-ratio: 4/3; background: var(--c-white); border-radius: 8px; box-shadow: 0 12px 40px rgb(0 0 0 / 0.35); display: grid; place-items: center; color: var(--text-strong); padding: 24px; text-align: center; }
   .article-stage { padding: 32px 40px; max-height: 100%; overflow: auto; text-align: left; }
-  .article-stage h2 { font-size: 22px; margin-bottom: 8px; }
+  .article-stage h2 { font-size: var(--fs-2xl); margin-bottom: 8px; }
   .stage-nav { cursor: pointer; }
 </style>
+<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body class="learn-body">
 <!-- LH1 /course/[id]/learn — video · PDF/document · article · quiz intro (ModeSelect) -->
 <div id="app"></div>
-<script src="../assets/js/components.js?v=1119j"></script>
-<script src="../assets/js/data.js?v=1118p"></script>
-<script src="../assets/js/lh2-wave2.js?v=1118p"></script>
+<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/data.js?v=1120y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1120y"></script>
 <script>
 const { ICON, LearnShell, CourseContent, ModeSelect, ProgressBreakdown, Progress, Gauge, toast, esc } = LH;
 const D = LHData; const C = D.course; const T = D.test;
