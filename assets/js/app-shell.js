@@ -54,7 +54,7 @@
         ['admin-roles.html', 'pages/admin-roles.html?r=admin', 'Roles', ''],
         ['admin-sync.html', 'pages/admin-sync.html?r=admin', 'Sync', ''],
       ] : []),
-      ['admin-reports.html', `pages/admin-reports.html?r=${r}`, 'Learning Dashboard', 'LH2'],
+      ['admin-reports.html', `pages/admin-reports.html?r=${r}`, 'Learning Report', 'LH2'],
     ];
     nav.innerHTML = `<div class="sh-role"><span>Switch role</span>
         <button data-role="admin" class="${r === 'admin' ? 'on' : ''}">Admin</button>

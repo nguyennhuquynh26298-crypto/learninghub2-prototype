@@ -430,7 +430,7 @@ select.adm-input {
 .filter-btn .adm-dd { width: auto; min-width: 160px; }
 .filter-btn .adm-dd__btn { height: 36px; font-size: 14px; box-shadow: none; }
 .rpt-sel.adm-dd__native + .adm-dd__btn,
-.adm-dd:has(> select.rpt-sel) .adm-dd__btn { height: 38px; border-radius: 10px; font-size: 14px; }
+.adm-dd:has(> select.rpt-sel) .adm-dd__btn { height: 40px; border-radius: 8px; font-size: 14px; }
 .adm-hint { font-size: 14px; color: #535862; }
 .adm-hint.is-error { color: #e7000b; }
 .adm-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -856,3 +856,15 @@ body.adm-body .btn { border-radius: 8px; }
 .qf-rte .rte__body { min-height: 80px; }
 .qf-rte.is-err .rte { border-color: #e7000b; box-shadow: 0 0 0 3px rgba(231, 0, 11, .12); }
 .qf-count.is-over { color: #e7000b; }
+
+
+/* ===== Thanh công cụ thống nhất (19/11 · D-160): mọi điều khiển trên thanh lọc / đầu trang cao 40, bo 8, chữ 14, một lớp viền =====
+ * Search (.adm-inline-search 40) · Filter (.filter-btn) · Dropdown kỳ (.rpt-sel) · Segmented (.adm-seg--sm) · nút (.btn-cta 40). */
+.filter-btn { height: 40px; padding: 0 4px 0 12px; gap: 6px; border-color: var(--adm-field-stroke); font: 500 14px Inter, sans-serif; color: var(--adm-body); box-sizing: border-box; }
+.filter-btn svg { width: 16px; height: 16px; color: var(--adm-sub); }
+.filter-btn .adm-dd { min-width: 140px; }
+.filter-btn .adm-dd__btn { height: 38px; border: 0; background: transparent; box-shadow: none; padding: 0 8px 0 4px; font-size: 14px; }
+button.filter-btn { padding: 0 14px; cursor: pointer; }
+button.filter-btn:hover { background: var(--adm-primary-50); }
+.adm-seg--sm { padding: 2px; border-color: var(--adm-field-stroke); border-radius: 8px; }
+.adm-seg--sm button { height: 34px; padding: 0 14px; border-radius: 6px; }

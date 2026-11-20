@@ -866,7 +866,7 @@ var LH_V = '1119q';
           ${r === 'admin' ? it('settings', 'shieldCheck', 'Creator ACL', 'admin-settings.html' + q, '<i>LH2</i>') : ''}
         </div></div>
         <div class="adm-side__group"><div class="adm-side__title">Reports</div><div class="adm-side__items">
-          ${it('reports', 'chart', 'Learning Dashboard', 'admin-reports.html' + q, '<i>LH2</i>')}
+          ${it('reports', 'chart', 'Learning Report', 'admin-reports.html' + q, '<i>LH2</i>')}
           ${it('logout', 'logout', 'Logout')}
         </div></div>
       </div></aside>`;
@@ -1209,7 +1209,7 @@ var LH_V = '1119q';
     }).join('');
   }
   function enhanceSelect(sel) {
-    if (!sel || sel.tagName !== 'SELECT') return;
+    if (!sel || sel.tagName !== 'SELECT' || !sel.isConnected || !sel.parentNode) return; // ô đã bị gỡ khi trang vẽ lại liên tiếp
     const host = sel.closest('.adm-dd');
     if (host) { host._admSel = sel; paintAdmDd(host); return; }
     const wrap = document.createElement('div');
