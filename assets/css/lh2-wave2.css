@@ -135,3 +135,24 @@
 .qz-pr svg { width: 14px; height: 14px; }
 .qz-pr:hover { border-color: var(--c-violet); color: var(--c-violet); }
 .qz-pr.is-on { border: 1px solid #ead8fb; background: var(--c-violet-bg); color: var(--c-violet); }
+
+/* D-173: nút trong popup chúc mừng có biểu tượng */
+.cel-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.cel-btn svg { width: 18px; height: 18px; }
+
+/* D-173: My Results — dòng chứng chỉ + đánh giá khoá */
+.mr-cert { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 16px 0 8px; border: 1px solid #ead8fb; border-radius: 12px; background: #fcf8ff; }
+.mr-cert > svg { width: 24px; height: 24px; padding: 8px; box-sizing: content-box; border-radius: 10px; background: var(--c-violet-bg); color: var(--c-violet); flex: none; }
+.mr-cert .grow { display: flex; flex-direction: column; gap: 2px; }
+.mr-cert .wbtn svg { width: 16px; height: 16px; }
+.mr-rate { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px 16px; color: var(--text-subtle); font-size: var(--fs-sm); }
+.mr-stars { color: var(--c-star, #f5a524); letter-spacing: 2px; }
+.mr-stars i { font-style: normal; color: var(--border-default); }
+/* tab Reviews: phân bố sao */
+.rv-dist { display: grid; gap: 6px; flex: 1; min-width: 180px; }
+.rv-dist div { display: grid; grid-template-columns: 28px 1fr 28px; align-items: center; gap: 8px; font-size: var(--fs-xs); color: var(--text-subtle); }
+.rv-dist span.bar { height: 6px; border-radius: 99px; background: var(--bg-page, #f3f4f6); overflow: hidden; }
+.rv-dist span.bar i { display: block; height: 100%; background: var(--c-star, #f5a524); border-radius: 99px; }
+
+.aside-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box; }
+.aside-btn svg { width: 18px; height: 18px; }

@@ -582,7 +582,8 @@ var LH_V = '1119q';
     if (result) {
       const review = state === 'completed' || state === 'failed';
       body = `<button class="cta-card__pg" data-pop>${WebProgress(result.pct, 'Progress')}<span class="cta-card__sub">Videos ${result.video[0]}/${result.video[1]} · Quizzes ${result.test[0]}/${result.test[1]}</span></button>`;
-      const cert = state === 'completed' && certHref ? `<a class="aside-btn" href="${esc(certHref)}" style="margin-bottom:8px">${ICON.award}View Certificate</a>` : '';
+      /* D-173: khoá Completed — xem và tải chứng chỉ ngay trên trang khoá */
+      const cert = state === 'completed' && certHref ? `<a class="aside-btn" href="${esc(certHref)}" style="margin-bottom:8px">${ICON.award}View Certificate</a><button class="aside-btn aside-btn--outline" data-cert-dl style="margin-bottom:8px">${ICON.download}Download Certificate</button>` : '';
       btn = `${cert}<button class="aside-btn ${review ? 'aside-btn--outline' : ''}" data-continue>${review ? 'Review Course' : 'Continue Learning'}</button>`;
     } else {
       body = mandatory ? '<span class="cta-card__sub">This mandatory course doesn\'t count toward your 3 elective courses.</span>' : `<div>${EnrollSlotPanel({ used: slots, limit, mandatory: mandatoryN })}</div>`;

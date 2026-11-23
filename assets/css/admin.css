@@ -429,8 +429,6 @@ select.adm-input {
 .adm-dd__opt.is-sel { background: var(--primary-50, var(--c-bg-subtle)); color: var(--primary-900, var(--c-primary)); font-weight: 600; }
 .filter-btn .adm-dd { width: auto; min-width: 160px; }
 .filter-btn .adm-dd__btn { height: 36px; font-size: var(--fs-sm); box-shadow: none; }
-.rpt-sel.adm-dd__native + .adm-dd__btn,
-.adm-dd:has(> select.rpt-sel) .adm-dd__btn { height: 40px; border-radius: 8px; font-size: var(--fs-sm); }
 .adm-hint { font-size: var(--fs-sm); color: var(--c-text-subtle); }
 .adm-hint.is-error { color: var(--c-danger-icon); }
 .adm-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -859,7 +857,7 @@ body.adm-body .btn { border-radius: 8px; }
 
 
 /* ===== Thanh công cụ thống nhất (19/11 · D-160): mọi điều khiển trên thanh lọc / đầu trang cao 40, bo 8, chữ 14, một lớp viền =====
- * Search (.adm-inline-search 40) · Filter (.filter-btn) · Dropdown kỳ (.rpt-sel) · Segmented (.adm-seg--sm) · nút (.btn-cta 40). */
+ * Search (.adm-inline-search 40) · Filter (.filter-btn) · Chọn kỳ (.lh-pp) · Segmented (.adm-seg--sm) · nút (.btn-cta 40). */
 .filter-btn { height: 40px; padding: 0 4px 0 12px; gap: 6px; border-color: var(--adm-field-stroke); font: 500 var(--fs-sm) Inter, sans-serif; color: var(--adm-body); box-sizing: border-box; }
 .filter-btn svg { width: 16px; height: 16px; color: var(--adm-sub); }
 .filter-btn .adm-dd { min-width: 140px; }
@@ -868,6 +866,63 @@ button.filter-btn { padding: 0 14px; cursor: pointer; }
 button.filter-btn:hover { background: var(--adm-primary-50); }
 .adm-seg--sm { padding: 2px; border-color: var(--adm-field-stroke); border-radius: 8px; }
 .adm-seg--sm button { height: 34px; padding: 0 14px; border-radius: 6px; }
+
+/* ===== Period picker (23/11) — chọn kỳ Tuần / Tháng · trigger 40 cùng hàng .adm-seg--sm + .btn-cta =====
+ * Khối: [‹][📅 nhãn · Current ▾][›] · Popover Month = lưới 3×4 theo năm · Week = lịch tháng, chọn cả hàng Thứ Hai → Chủ Nhật, cột Wk = số tuần ISO. */
+.lh-pp { position: relative; display: inline-flex; align-items: stretch; flex: none; height: 40px; box-sizing: border-box; border: 1px solid var(--adm-field-stroke); border-radius: 8px; background: var(--c-white); box-shadow: 0 1px 2px rgba(10, 13, 18, .04); }
+.lh-pp:focus-within, .lh-pp.is-open { border-color: var(--adm-primary); box-shadow: 0 0 0 3px var(--adm-primary-soft); }
+.lh-pp button { appearance: none; border: 0; background: transparent; font: inherit; color: inherit; cursor: pointer; }
+.lh-pp button:focus-visible { outline: 2px solid var(--adm-primary); outline-offset: -2px; }
+.lh-pp__step { width: 36px; display: grid; place-items: center; color: var(--adm-sub); }
+.lh-pp__step:first-child { border-radius: 7px 0 0 7px; border-right: 1px solid var(--adm-side-line) !important; }
+.lh-pp__step:nth-child(3) { border-radius: 0 7px 7px 0; border-left: 1px solid var(--adm-side-line) !important; }
+.lh-pp__step svg { width: 16px; height: 16px; }
+.lh-pp__step:hover { background: var(--adm-primary-50); color: var(--adm-primary); }
+.lh-pp__step[aria-disabled="true"] { color: var(--adm-field-stroke); cursor: not-allowed; background: transparent; }
+.lh-pp__btn { display: inline-flex; align-items: center; gap: 8px; padding: 0 10px 0 12px; font: 500 var(--fs-sm)/20px Inter, sans-serif !important; color: var(--adm-text) !important; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lh-pp--month .lh-pp__btn { min-width: 172px; }
+.lh-pp--week .lh-pp__btn { min-width: 246px; }
+.lh-pp__btn:hover { background: var(--adm-primary-50); }
+.lh-pp__btn > svg { width: 16px; height: 16px; flex: none; color: var(--adm-sub); }
+.lh-pp__btn > svg:last-child { margin-left: auto; transition: transform .15s; }
+.lh-pp.is-open .lh-pp__btn > svg:last-child { transform: rotate(180deg); color: var(--adm-primary); }
+.lh-pp__lbl { flex: none; }
+.lh-pp__cur { padding: 1px 6px; border-radius: 999px; background: var(--adm-primary-50); color: var(--adm-active-ink); font: 600 var(--fs-xs)/16px Inter, sans-serif; }
+.lh-pp__pop { position: absolute; top: calc(100% + 8px); right: 0; z-index: 90; width: 296px; padding: 12px; box-sizing: border-box; background: var(--c-white); border: 1px solid var(--adm-side-line); border-radius: 12px; box-shadow: var(--shadow-pop, 0 10px 38px -10px rgba(15, 23, 42, .25)); font-family: Inter, sans-serif; color: var(--adm-text); }
+.lh-pp--week .lh-pp__pop { width: 320px; }
+.lh-pp__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.lh-pp__head b { font: 600 var(--fs-sm)/20px Inter, sans-serif; }
+.lh-pp__nav { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--adm-sub); }
+.lh-pp__nav svg { width: 16px; height: 16px; }
+.lh-pp__nav:hover:not([disabled]) { background: var(--adm-primary-50); color: var(--adm-primary); }
+.lh-pp__nav[disabled] { color: var(--adm-field-stroke); cursor: not-allowed; }
+/* Month: lưới 3 × 4 */
+.lh-pp__months { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.lh-pp__m { height: 40px; border-radius: 8px; font: 500 var(--fs-sm)/20px Inter, sans-serif !important; color: var(--adm-body) !important; }
+.lh-pp__m:hover { background: var(--adm-primary-50); color: var(--adm-primary) !important; }
+.lh-pp__m.is-cur { box-shadow: inset 0 0 0 1px var(--adm-primary); color: var(--adm-primary) !important; }
+.lh-pp__m.is-sel { background: var(--adm-primary); color: var(--c-white) !important; font-weight: 600 !important; box-shadow: none; }
+/* Week: lịch tháng, 1 hàng = 1 nút */
+.lh-pp__weeks { display: flex; flex-direction: column; gap: 2px; }
+.lh-pp__dow, .lh-pp__w { display: grid; grid-template-columns: 32px repeat(7, 1fr); align-items: center; }
+.lh-pp__dow span { height: 28px; display: grid; place-items: center; font: 500 var(--fs-xs)/16px Inter, sans-serif; color: var(--adm-sub); }
+.lh-pp__dow span:first-child, .lh-pp__wn { color: var(--adm-placeholder); font-size: 11px !important; }
+.lh-pp__w { height: 36px; padding: 0; border-radius: 8px; }
+.lh-pp__wn { display: grid; place-items: center; height: 100%; border-right: 1px solid var(--adm-side-line); font: 500 11px/16px Inter, sans-serif; font-variant-numeric: tabular-nums; }
+.lh-pp__d { position: relative; height: 32px; display: grid; place-items: center; font: 400 var(--fs-sm)/20px Inter, sans-serif; color: var(--adm-body); font-variant-numeric: tabular-nums; }
+.lh-pp__d.is-out { color: var(--adm-placeholder); }
+.lh-pp__d.is-today::after { content: ""; position: absolute; bottom: 3px; left: 50%; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--adm-primary); }
+.lh-pp__w:hover { background: var(--adm-primary-50); }
+.lh-pp__w.is-cur .lh-pp__wn { color: var(--adm-primary); font-weight: 600; }
+.lh-pp__w.is-sel { background: var(--adm-primary-soft); }
+.lh-pp__w.is-sel .lh-pp__d { color: var(--adm-active-ink); font-weight: 500; }
+.lh-pp__w.is-sel .lh-pp__d:nth-child(2), .lh-pp__w.is-sel .lh-pp__d:last-child { background: var(--adm-primary); color: var(--c-white); font-weight: 600; border-radius: 8px; }
+.lh-pp__w.is-sel .lh-pp__d.is-today::after { background: currentColor; }
+.lh-pp [aria-disabled="true"].lh-pp__m, .lh-pp [aria-disabled="true"].lh-pp__w { background: transparent; cursor: not-allowed; box-shadow: none; }
+.lh-pp [aria-disabled="true"].lh-pp__m, .lh-pp [aria-disabled="true"] .lh-pp__d, .lh-pp [aria-disabled="true"] .lh-pp__wn { color: #c4c8cf !important; }
+.lh-pp__foot { display: flex; justify-content: flex-end; margin: 10px -12px -12px; padding: 8px 12px; border-top: 1px solid var(--adm-side-line); }
+.lh-pp__today { height: 32px; padding: 0 10px !important; border-radius: 8px; color: var(--adm-primary) !important; font: 600 var(--fs-sm)/20px Inter, sans-serif !important; }
+.lh-pp__today:hover { background: var(--adm-primary-50) !important; }
 
 /* ===== 20/11 · Sidebar chép đúng web thật (shadcn, đo trên learninghub.techvify.com/dashboard/settings/*) =====
    Expanded 256 · Collapsed 72 · 0.3s · nhãn nhóm 18/400 #959595 · mục 40 / đệm 8 / bo 10 / chữ 14 · active + hover #EEF0FE / #4757FF.

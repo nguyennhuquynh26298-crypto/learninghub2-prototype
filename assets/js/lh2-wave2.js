@@ -4,8 +4,9 @@
  *                                     Tạm thời: Figma TECHTER (5.5 Mascot & Usage) chưa có tư thế cử nhân vỗ tay → design vẽ biến thể, brand duyệt (D-148).
  * LHW2.fireworks()                 → pháo hoa toàn màn ~3 giây, không lặp, không chặn bấm.
  * LHW2.passBanner({ quiz })        → băng chúc mừng cho màn Kết quả bài thi khi lượt vừa nộp Passed (Exam 3.3, BR-EX-19).
- * LHW2.courseCompleted({ learner, course, completedAt, certNo, certHref, onClose })
- *                                  → popup chúc mừng hoàn thành khoá + hình chứng chỉ (Learning Progress 3.3, BR-LP-13).
+ * LHW2.courseCompleted({ learner, course, completedAt, certNo, certHref, rate, onRated, onClose })
+ *                                  → popup chúc mừng hoàn thành khoá: pháo hoa + Techter + chứng chỉ, nút Download Certificate
+ *                                    (Learning Progress 3.3, BR-LP-13). Đóng popup → mở Rate this course nếu rate !== false (D-173).
  * LHW2.rateCourse({ course, onSubmit }) → popup Rate this course (Learner Experience 3.6, BR-LP-11).
  * LHW2.pop({ title, desc, body, ok, cancel, danger, onOk }) → popup chung; onOk trả false để giữ popup (báo lỗi field).
  */
@@ -54,7 +55,7 @@
     `<section class="cel-pass" role="status">${ttGrad()}<div><h2>Congratulations! You passed ${esc(quiz)}.</h2><p>Correct answers and explanations are now available. This exam is complete.</p></div></section>`;
 
   /* Popup hoàn thành khoá — một lần cho mỗi học viên mỗi khoá (BR-LP-13); Close / bấm ngoài / Esc để đóng */
-  function courseCompleted({ learner = 'Hara Nguyen', course = 'Course', completedAt = '2026-11-20T09:00:00', certNo = 'LH-QA-M1-2026', certHref = 'certificate.html', onClose } = {}) {
+  function courseCompleted({ learner = 'Hara Nguyen', course = 'Course', completedAt = '2026-11-20T09:00:00', certNo = 'LH-QA-M1-2026', certHref = 'certificate.html', rate = true, onRated, onClose } = {}) {
     const el = document.createElement('div'); el.className = 'cel-modal';
     el.innerHTML = `<div class="cel-card" role="dialog" aria-modal="true" aria-labelledby="cel-t">
       <button class="cel-card__x" data-cel-close aria-label="Close">×</button>
@@ -62,15 +63,19 @@
       <h2 id="cel-t">Congratulations, ${esc(learner)}!</h2>
       <p>You have completed <b>${esc(course)}</b>.</p>
       <div class="cel-cert"><div class="cel-cert__in">${LH.CertificateSheet({ learnerName: learner, courseTitle: course, completedAt, certificateNumber: certNo })}</div></div>
-      <div class="cel-card__foot"><button class="cel-btn cel-btn--line" data-cel-close>Close</button><a class="cel-btn" style="display:inline-grid;place-items:center;text-decoration:none" href="${esc(certHref)}">View Certificate</a></div></div>`;
+      <div class="cel-card__foot"><a class="cel-btn cel-btn--line" style="display:inline-grid;place-items:center;text-decoration:none" href="${esc(certHref)}">View Certificate</a><button class="cel-btn" data-cel-dl>${LH.ICON.download || ''}Download Certificate</button></div></div>`;
     document.body.appendChild(el);
     const fit = () => { const box = el.querySelector('.cel-cert'), inn = el.querySelector('.cel-cert__in'); const k = (box.clientWidth - 24) / 1122; inn.style.transform = `scale(${k})`; box.style.height = (inn.scrollHeight * k + 24) + 'px'; };
     fit(); addEventListener('resize', fit);
-    const close = () => { el.remove(); removeEventListener('resize', fit); removeEventListener('keydown', esc_); if (onClose) onClose(); };
+    /* D-173: đóng popup chúc mừng → mở Rate this course (một lần, bỏ qua được bằng Later) */
+    const close = () => { el.remove(); removeEventListener('resize', fit); removeEventListener('keydown', esc_); if (onClose) onClose(); if (rate) rateCourse({ course, onSubmit: onRated }); };
     const esc_ = (e) => { if (e.key === 'Escape') close(); };
     addEventListener('keydown', esc_);
-    el.addEventListener('click', (e) => { if (e.target === el || e.target.closest('[data-cel-close]')) close(); });
-    el.querySelector('.cel-btn').focus({ preventScroll: true });
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('[data-cel-dl]')) { toast(`Certificate downloaded · Certificate_${certNo}.pdf`); return; }
+      if (e.target === el || e.target.closest('[data-cel-close]')) close();
+    });
+    el.querySelector('[data-cel-dl]').focus({ preventScroll: true });
     fireworks();
     return el;
   }

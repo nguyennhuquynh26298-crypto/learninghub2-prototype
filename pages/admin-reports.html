@@ -5,7 +5,7 @@
 <title>Learning Report · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1121b">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1123pp"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123b">
 <style>
 /* Learning Report v1.3 (19/11) — KPI board: số trước, accent brand, featured Active Learners soft · không cầu vồng */
 .rp-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -18,8 +18,6 @@ main > .rp-sec + .rp-sec { margin-top: -4px; }
 .rp-sec { display: flex; flex-direction: column; gap: 12px; }
 .rp-sec__h { display: flex; align-items: center; gap: 12px; min-height: 36px; }
 .rp-sec__h h2 { flex: 1; margin: 0; font-size: var(--fs-md); line-height: 24px; font-weight: 600; color: var(--adm-text); }
-.rp-bar .rpt-sel { width: 240px; height: 40px; }
-.rp-bar .adm-dd { width: 240px; flex: none; }
 .rp-asof { font-size: var(--fs-xs); color: var(--adm-sub); }
 .rp-asof b { font-weight: 500; color: var(--adm-body); }
 .rp-group { background: var(--c-white); border: 1px solid var(--adm-stroke); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
@@ -119,10 +117,11 @@ main > .rp-sec + .rp-sec { margin-top: -4px; }
   <section class="rp-sec"><div class="kg-grid" id="kpis"></div></section>
   <section class="rp-sec"><div class="rp-sec__h rp-tbl-h"><h2>By Course</h2><label class="adm-inline-search"><input id="q" placeholder="Search course" autocomplete="off"><span id="q-ic"></span></label></div><div class="adm-card" id="table"></div></section>
 </main>
-<script src="../assets/js/components.js?v=1121b"></script>
+<script src="../assets/js/components.js?v=1123a"></script>
 <script src="../assets/js/data.js?v=1120y"></script>
 <script src="../assets/js/export-modal.js?v=1118w"></script>
-<script src="../assets/js/lh2-wave2.js?v=1120y"></script>
+<script src="../assets/js/lh2-wave2.js?v=1123b"></script>
+<script src="../assets/js/period-picker.js?v=1123pp"></script>
 <script>
 const { ICON, esc, AdminLayout, AdminHead, AdminTable, AdminEmpty, toast } = LH;
 const HEADCOUNT = 400;           // nhân viên đang làm việc (THRM) tại ngày chốt
@@ -154,13 +153,10 @@ const UNIQUE_CREATOR = { 'm:2026-11': 82, 'm:2026-10': 58, 'm:2026-09': 6, 'w:20
 /* Giờ học chỉ có từ ngày phát hành 01/11/2026; CSAT chỉ có từ khi có đánh giá khoá (BR-RPT-10) */
 const BEFORE_RELEASE = ['m:2026-10', 'm:2026-09', 'w:2026-10-26'];
 
-const PERIODS = {
-  month: [['m:2026-11', '11/2026'], ['m:2026-10', '10/2026'], ['m:2026-09', '09/2026']],
-  week: [['w:2026-11-16', 'Week 16/11 – 22/11/2026'], ['w:2026-11-09', 'Week 09/11 – 15/11/2026'], ['w:2026-11-02', 'Week 02/11 – 08/11/2026'], ['w:2026-10-26', 'Week 26/10 – 01/11/2026']],
-};
-const CURRENT = ['m:2026-11', 'w:2026-11-16'];
-const AS_OF = '20/11/2026';
-const endOf = { 'm:2026-10': '31/10/2026', 'm:2026-09': '30/09/2026', 'w:2026-11-09': '15/11/2026', 'w:2026-11-02': '08/11/2026', 'w:2026-10-26': '01/11/2026' };
+/* Kỳ báo cáo: từ tháng có khoá Publish sớm nhất tới kỳ hiện tại (BR-DSH-05) · tuần Thứ Hai → Chủ Nhật */
+const P = LH.period;
+const TODAY = '2026-11-20', MIN_DATE = '2026-09-01';
+const AS_OF = P.dmy(P.parse(TODAY));
 
 let role = 'admin', type = 'month', per = 'm:2026-11';
 const dash = '—';
@@ -170,7 +166,7 @@ function compute(pp = per) {
   const per_ = pp;
   const mine = COURSES.filter((c) => role === 'admin' || c.owner === CREATOR); // BR-RPT-03
   const D = DATA[per_] || {}, pre = BEFORE_RELEASE.includes(per_);
-  const monthKey = per_.startsWith('m:') ? per_.slice(2) : '2026-11';
+  const monthKey = per_.startsWith('m:') ? per_.slice(2) : P.convert(per_, 'month', TODAY).slice(2);
   const running = mine.filter((c) => c.pub <= monthKey);
   const rows = running.map((c) => ({ c, v: D[c.id] || [0, 0, 0, 0, 0, 0, 0, 0] }))
     .filter(({ c, v }) => v.some((x) => x) || (per_.startsWith('m:') && c.pub === monthKey))
@@ -199,13 +195,13 @@ let q = '';
 
 function render() {
   AdminLayout({ active: 'reports', role });
-  const s = compute(), label = PERIODS[type].find(([k]) => k === per)[1], cur = CURRENT.includes(per);
+  const s = compute(), cur = P.isCurrent(per, TODAY);
   /* Một dải đầu trang: tiêu đề + "As of" bên trái · kỳ + Export bên phải (BR-RPT-02) */
   document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Reports', title: 'Learning Report',
-    desc: `As of <b>${cur ? AS_OF : endOf[per]}</b>${cur ? ' · current period' : ''}${role === 'admin' ? '' : ' · Courses you own'}`,
+    desc: `As of <b>${cur ? AS_OF : P.dmy(P.end(per))}</b>${role === 'admin' ? '' : ' · Courses you own'}`,
     right: `<div class="rp-bar" id="bar">
       <div class="adm-seg adm-seg--sm" role="group" aria-label="Period Type"><button type="button" data-type="week" class="${type === 'week' ? 'is-active' : ''}" aria-pressed="${type === 'week'}">Week</button><button type="button" data-type="month" class="${type === 'month' ? 'is-active' : ''}" aria-pressed="${type === 'month'}">Month</button></div>
-      <select class="rpt-sel" id="per" aria-label="Period">${PERIODS[type].map(([k, t]) => `<option value="${k}" ${k === per ? 'selected' : ''}>${t}</option>`).join('')}</select>
+      ${LH.PeriodPicker({ id: 'per', type, value: per, min: MIN_DATE, today: TODAY })}
       <button class="btn-cta" id="xls">${ICON.download}Export Excel</button></div>` });
 
   const A = s.active, PRE = 'Available from release date';
@@ -258,12 +254,12 @@ function render() {
 
 const fileName = () => per.startsWith('m:') ? `LearningReport_Month-${per.slice(7)}${per.slice(2, 6)}.xlsx` : `LearningReport_Week-${per.slice(10)}${per.slice(7, 9)}${per.slice(2, 6)}.xlsx`;
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('[data-type]'); if (t) { type = t.dataset.type; per = PERIODS[type][0][0]; render(); return; }
+  const t = e.target.closest('.adm-seg [data-type]'); if (t) { if (t.dataset.type !== type) { per = P.convert(per, t.dataset.type, TODAY); type = t.dataset.type; render(); } return; }
   if (e.target.closest('#xls')) { toast(`${fileName()} downloaded · sheets KPIs · By Course · Info`); return; }
   const r = e.target.closest('tr[data-course]');
   if (r) { const c = COURSES.find((x) => x.id === r.dataset.course); LHExport.open({ course: c.title, code: c.code, limited: c.scope === 'Restricted', period: per.startsWith('m:') ? per.slice(2) : '', source: 'Learning Report' }); }
 });
-document.addEventListener('change', (e) => { if (e.target.id === 'per') { per = e.target.value; render(); } });
+document.addEventListener('lh-pp-change', (e) => { per = e.detail.value; render(); });
 document.addEventListener('input', (e) => { if (e.target.id === 'q') { q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('q'); el.value = q; el.focus(); el.setSelectionRange(pos, pos); } });
 
 LH.DemoBar('LH2 · Learning Report (Đợt 2 · Gói 4)', [

@@ -10,6 +10,7 @@
   .my-result { display: flex; gap: 24px; align-items: center; padding: 20px; border-radius: 20px; border: 1px solid var(--neutral-200); background: var(--bg-aside); margin-bottom: 16px; }
   .cd-tags { position: absolute; left: 20px; top: 20px; display: flex; gap: 8px; }
 </style>
+<link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123b">
 <link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
 </head>
 <body class="bg-white">
@@ -31,9 +32,10 @@
   </div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1120z"></script>
+<script src="../assets/js/components.js?v=1123a"></script>
 <script src="../assets/js/data.js?v=1120y"></script>
 <script src="../assets/js/enroll-limit.js?v=1118q"></script>
+<script src="../assets/js/lh2-wave2.js?v=1123b"></script>
 <script>
 const { ICON, AppHeader, AppFooter, BackLink, LessonsAccordion, WebProgress, Badge, AccessNotice, SlotMeter, toast, ProgressBreakdown, CompletionRing, CourseCta, PracticeEntry, esc } = LH;
 const D = LHData; const C = D.course;
@@ -102,6 +104,8 @@ function renderResult(R, locked) {
       <div class="stack gap-8"><span class="t-xs muted">Completion Rate</span>
         <b class="t-xl">${R.failed ? 'Failed' : R.pct === 100 ? `Completed ${R.done}` : 'In Progress'}</b>${R.failed ? `<span class="t-xs muted">${esc(R.failNote || 'Tool Design & MCP Integration · 3/3 attempts used · Highest Score 62')}</span>` : ''}
         <span class="fw-600 t-sm">Videos ${R.video[0]}/${R.video[1]} · Quizzes ${R.test[0]}/${R.test[1]} · Documents ${R.doc[0]}/${R.doc[1]}</span></div></div>
+    ${R.pct === 100 && !R.failed ? `<div class="mr-cert">${ICON.award}<div class="grow"><b>Certificate</b><span class="t-xs muted">No. ${esc(R.certNo || 'LH-CCAR-F-2026-0142')} · Issued ${esc(R.done)}</span></div><a class="wbtn wbtn--outline" style="height:36px" href="certificate.html">View</a><button class="wbtn" style="height:36px" data-cert-dl>${ICON.download}Download</button></div>
+      <div class="mr-rate">${rated ? `<span>Your rating</span><b class="mr-stars">${'★'.repeat(rated)}<i>${'★'.repeat(5 - rated)}</i></b>` : '<span>How was this course?</span><button class="wbtn wbtn--outline" style="height:36px" data-rate>Rate Course</button>'}</div>` : ''}
     <table class="table"><thead><tr><th>Quiz</th><th>Highest Score</th><th>Attempts</th><th>Result</th><th></th></tr></thead><tbody>
       ${R.tests.map((t) => `<tr><td><b>${esc(t.name)}</b><div class="t-xs muted">${esc(t.session)}</div></td><td>${t.best == null ? '—' : `<b>${t.best}</b>/100`}</td><td>${t.tries}</td><td>${Badge(...RES[t.res])}</td>
         <td style="text-align:right">${t.best != null && !locked ? `<a class="wbtn wbtn--outline" style="height:32px" href="test-result.html">Review</a>` : ''}</td></tr>`).join('')}
@@ -119,7 +123,7 @@ const slots = () => (APPL ? D.catalog.filter((c) => c.st === 'learning').length 
 function render() {
   const locked = S === 'restricted' || S === 'removed';
   const R = result();
-  document.getElementById('hero-badges').innerHTML = ((APPL ? S === 'restricted' : !['all', 'limit', 'upcoming', 'overdue'].includes(S)) ? `<span class="cc-tag" style="position:static">${ICON.lock}Restricted</span>` : '') + (S === 'failed' ? `<span class="cc-tag cc-tag--fail" style="position:static">${ICON.x}Failed</span>` : '') + (MAND && !locked ? `<span class="cc-tag cc-tag--upcoming" style="position:static">${ICON.shield}Mandatory</span>` : '');
+  document.getElementById('hero-badges').innerHTML = ((APPL ? S === 'restricted' : ['restricted', 'removed'].includes(S)) ? `<span class="cc-tag" style="position:static">${ICON.lock}Restricted</span>` : '') + (S === 'failed' ? `<span class="cc-tag cc-tag--fail" style="position:static">${ICON.x}Failed</span>` : '') + (MAND && !locked ? `<span class="cc-tag cc-tag--upcoming" style="position:static">${ICON.shield}Mandatory</span>` : '');
   document.getElementById('syllabus').innerHTML = LessonsAccordion(C.sessions, { open: [0], locked, status: R ? (i, k) => lessonStatus(R.lessons[i], k) : () => '' });
   renderResult(R, locked);
   const cta = document.getElementById('cta');
@@ -136,7 +140,13 @@ function render() {
   /* D-139: chỉ báo x/3 = khoá tự chọn Đang học. Khoá bắt buộc không tính suất — không gắn "+1 mandatory" giả vào chip khi xem khoá thường. */
   cta.innerHTML = CourseCta({ state, sched, slots: slots(), result: R, startDate: '25/11/2026', certHref, mandatory: MAND, mandatoryN: 0 });
 }
+/* D-173: tải chứng chỉ (PDF như màn View Certificate) · đánh giá khoá một lần sau khi Completed (BR-LP-11) */
+let rated = 0;
+const certNo = 'LH-CCAR-F-2026-0142';
+const celebrate = () => LHW2.courseCompleted({ learner: 'Hara Nguyen', course: CC ? CC.title : C.title, completedAt: '2026-11-23T09:00:00', certNo, certHref: 'certificate.html', onRated: ({ stars }) => { rated = stars; render(); } });
 document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-cert-dl]')) { toast(`Certificate downloaded · Certificate_${certNo}.pdf`); return; }
+  if (e.target.closest('[data-rate]')) { LHW2.rateCourse({ course: CC ? CC.title : C.title, onSubmit: ({ stars }) => { rated = stars; render(); } }); return; }
   if (e.target.closest('[data-continue]')) { location.href = 'lesson-learn.html'; return; }
   if (!e.target.closest('#start')) return;
   if (S === 'limit' && !MAND) { // BR-ENR-10: khoá bắt buộc luôn đăng ký được, không kiểm giới hạn
@@ -147,9 +157,14 @@ document.addEventListener('click', (e) => {
   toast('Enrolled'); S = 'learning'; render();
 });
 LH.DemoBar('LH2 Đợt 1 · Course page (Enrollment · Audience · Practice · Progress)', [
-  { label: 'Trạng thái', key: 's', options: [['all', 'Có quyền, còn suất'], ['limit', 'Đang học 3/3 khoá tự chọn'], ['learning', 'Đang học 31%'], ['completed', 'Hoàn thành'], ['restricted', 'Ngoài đối tượng'], ['removed', 'Bị gỡ giữa khoá'], ['failed', 'Không đạt (trượt 3 lượt)'], ['upcoming', 'Chưa tới Start Date'], ['overdue', 'Quá hạn, chưa xong']] },
+  { label: 'Trạng thái', key: 's', options: [['all', 'Có quyền, còn suất'], ['limit', 'Đang học 3/3 khoá tự chọn'], ['learning', 'Đang học 31%'], ['justdone', 'Vừa hoàn thành → chúc mừng'], ['completed', 'Hoàn thành'], ['rated', 'Hoàn thành · đã đánh giá'], ['restricted', 'Ngoài đối tượng'], ['removed', 'Bị gỡ giữa khoá'], ['failed', 'Không đạt (trượt 3 lượt)'], ['upcoming', 'Chưa tới Start Date'], ['overdue', 'Quá hạn, chưa xong']] },
   { label: 'Khoá bắt buộc', key: 'm', options: [['0', 'Không'], ['1', 'Mandatory với tôi']] },
-], (s) => { S = APPL ? appS() : s.s; MAND = s.m === '1'; render(); });
+], (s) => {
+  document.querySelectorAll('.cel-modal, .w2-pop').forEach((m) => m.remove());
+  S = APPL ? appS() : ['justdone', 'rated'].includes(s.s) ? 'completed' : s.s; MAND = s.m === '1';
+  rated = s.s === 'rated' ? 5 : 0; render();
+  if (s.s === 'justdone') celebrate();
+});
 </script>
 </body>
 </html>
