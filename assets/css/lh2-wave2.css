@@ -4,13 +4,12 @@
 /* ===== Celebrate — pháo hoa toàn màn (≈3 giây, không lặp, không chặn bấm) ===== */
 .cel-fx { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
 
-/* Techter cử nhân — ảnh mascot chuẩn + áo choàng, mũ (SVG phủ). Vỗ tay = nhún + tia vỗ tay hai bên. */
+/* Techter cử nhân — ảnh mascot chuẩn (không vẽ đè thân) + mũ SVG + tia lấp lánh cạnh tay vẫy; nhún nhẹ khi vào */
 .tt-grad { position: relative; display: block; aspect-ratio: 317 / 494; width: 120px; flex: none; }
 .tt-grad img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 8px 10px rgba(16, 24, 40, .18)); }
-.tt-grad .gown { position: absolute; inset: 0; width: 100%; height: 100%; }
 .tt-grad .cap { position: absolute; left: 8%; top: -13%; width: 62%; transform: rotate(-8deg); transform-origin: 50% 80%; }
 .tt-grad .cap svg { width: 100%; display: block; overflow: visible; }
-.tt-grad .clap { position: absolute; top: 18%; right: -14%; width: 44%; overflow: visible; }
+.tt-grad .clap { position: absolute; top: 6%; right: -16%; width: 40%; overflow: visible; }
 .tt-grad .clap path { stroke: var(--c-gold); stroke-width: 6; stroke-linecap: round; fill: none; }
 .tt-grad--play { animation: tt-bounce .5s ease-in-out 6; }
 .tt-grad--play .clap { animation: tt-clap .5s ease-in-out 6; }

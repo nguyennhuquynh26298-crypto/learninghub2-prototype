@@ -1,6 +1,7 @@
 /* LH2 · Đợt 2 + Chúc mừng — module riêng, nạp sau components.js. Không sửa components.js (phiên Đợt 1 đang sửa).
  *
- * LHW2.ttGrad({ play })            → HTML Techter mặc áo cử nhân, đội mũ, vỗ tay (mascot chuẩn TECHVIFY + áo, mũ phủ SVG).
+ * LHW2.ttGrad({ play })            → HTML Techter đội mũ cử nhân, vẫy tay (ảnh mascot chuẩn TECHVIFY + mũ SVG + tia lấp lánh).
+ *                                     23/11: bỏ áo choàng vẽ đè lên ảnh (che tay, lệch tay áo, lòi chân) — chờ brand có ảnh Techter mặc áo cử nhân thì thay IMG.
  *                                     Tạm thời: Figma TECHTER (5.5 Mascot & Usage) chưa có tư thế cử nhân vỗ tay → design vẽ biến thể, brand duyệt (D-148).
  * LHW2.fireworks()                 → pháo hoa toàn màn ~3 giây, không lặp, không chặn bấm.
  * LHW2.passBanner({ quiz })        → băng chúc mừng cho màn Kết quả bài thi khi lượt vừa nộp Passed (Exam 3.3, BR-EX-19).
@@ -13,17 +14,11 @@
 (function () {
   const { esc, toast } = window.LH;
   const IMG = '../assets/img/techter-climb.webp';
-  const GOWN = '<svg class="gown" viewBox="0 0 317 494" aria-hidden="true"><defs><linearGradient id="w2gw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0e1330"/><stop offset=".5" stop-color="#1d2550"/><stop offset="1" stop-color="#0e1330"/></linearGradient></defs>'
-    + '<path d="M0 222 Q22 198 62 192 Q128 182 214 188 L240 224 L214 296 L202 424 Q112 446 12 428 L26 334 L0 306Z" fill="url(#w2gw)"/>'
-    + '<path d="M196 186 L256 166 L288 190 L240 238Z" fill="url(#w2gw)"/>'
-    + '<path d="M256 166 L288 190M0 306 L26 334" stroke="#f2bf3f" stroke-width="5" stroke-linecap="round"/>'
-    + '<polygon points="102,190 152,190 127,240" fill="#fff"/>'
-    + '<polygon points="94,189 110,189 100,336 82,334" fill="#f2bf3f"/><polygon points="144,189 160,189 170,334 152,336" fill="#f2bf3f"/></svg>';
   const CAP = '<svg viewBox="0 0 100 64"><path d="M26 28v14q24 14 48 0V28L50 38Z" fill="#232838"/><polygon points="50,4 98,21 50,38 2,21" fill="#151a28" stroke="#3b4258" stroke-width="1.5"/><circle cx="50" cy="21" r="3.2" fill="#f2bf3f"/><path d="M50 21 L84 27 L84 46" stroke="#f2bf3f" stroke-width="2.6" fill="none" stroke-linecap="round"/><rect x="80" y="44" width="8" height="12" rx="2" fill="#f2bf3f"/></svg>';
   const CLAP = '<svg class="clap" viewBox="0 0 60 60" aria-hidden="true"><path d="M10 30 L2 26M14 18 L8 8M26 14 L28 2M38 18 L46 10"/></svg>';
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const ttGrad = ({ play = true } = {}) => `<span class="tt-grad ${play ? 'tt-grad--play' : ''}" role="img" aria-label="Techter, the TECHVIFY mascot, in a graduation gown clapping"><img src="${IMG}" alt="" draggable="false">${GOWN}<span class="cap">${CAP}</span>${CLAP}</span>`;
+  const ttGrad = ({ play = true } = {}) => `<span class="tt-grad ${play ? 'tt-grad--play' : ''}" role="img" aria-label="Techter, the TECHVIFY mascot, in a graduation cap waving"><img src="${IMG}" alt="" draggable="false"><span class="cap">${CAP}</span>${CLAP}</span>`;
 
   /* Pháo hoa: 3 chùm nổ + pháo giấy rơi, dừng hẳn sau ~3 giây */
   function fireworks() {
@@ -55,7 +50,10 @@
     `<section class="cel-pass" role="status">${ttGrad()}<div><h2>Congratulations! You passed ${esc(quiz)}.</h2><p>Correct answers and explanations are now available. This exam is complete.</p></div></section>`;
 
   /* Popup hoàn thành khoá — một lần cho mỗi học viên mỗi khoá (BR-LP-13); Close / bấm ngoài / Esc để đóng */
-  function courseCompleted({ learner = 'Hara Nguyen', course = 'Course', completedAt = '2026-11-20T09:00:00', certNo = 'LH-QA-M1-2026', certHref = 'certificate.html', rate = true, onRated, onClose } = {}) {
+  function courseCompleted({ learner = 'Hara Nguyen', course = 'Course', completedAt = '2026-11-20T09:00:00', certNo = 'LH-QA-M1-2026-0118', certHref = 'certificate.html', rate = true, onRated, onClose } = {}) {
+    /* Cùng một bản ghi chứng chỉ với màn View Certificate → ngày, số khớp nhau */
+    if (!/[?&]c=/.test(certHref)) certHref += (certHref.includes('?') ? '&' : '?') + 'c=' + encodeURIComponent(course); // mở đúng khoá vừa xong
+    if (window.LHCert) { const c = LHCert.get(course) || LHCert.mint({ courseTitle: course, completedAt: new Date(completedAt).toISOString(), certificateNumber: certNo }); completedAt = c.completedAt; certNo = c.certificateNumber; learner = c.learnerName || learner; }
     const el = document.createElement('div'); el.className = 'cel-modal';
     el.innerHTML = `<div class="cel-card" role="dialog" aria-modal="true" aria-labelledby="cel-t">
       <button class="cel-card__x" data-cel-close aria-label="Close">×</button>
@@ -66,6 +64,7 @@
       <div class="cel-card__foot"><a class="cel-btn cel-btn--line" style="display:inline-grid;place-items:center;text-decoration:none" href="${esc(certHref)}">View Certificate</a><button class="cel-btn" data-cel-dl>${LH.ICON.download || ''}Download Certificate</button></div></div>`;
     document.body.appendChild(el);
     const fit = () => { const box = el.querySelector('.cel-cert'), inn = el.querySelector('.cel-cert__in'); const k = (box.clientWidth - 24) / 1122; inn.style.transform = `scale(${k})`; box.style.height = (inn.scrollHeight * k + 24) + 'px'; };
+    if (LH.fitCertText) { LH.fitCertText(el); if (document.fonts) document.fonts.ready.then(() => LH.fitCertText(el)); }
     fit(); addEventListener('resize', fit);
     /* D-173: đóng popup chúc mừng → mở Rate this course (một lần, bỏ qua được bằng Later) */
     const close = () => { el.remove(); removeEventListener('resize', fit); removeEventListener('keydown', esc_); if (onClose) onClose(); if (rate) rateCourse({ course, onSubmit: onRated }); };

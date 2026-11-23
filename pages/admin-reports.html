@@ -5,7 +5,7 @@
 <title>Learning Report · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1123pp"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123b">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1123pp"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123c">
 <style>
 /* Learning Report v1.3 (19/11) — KPI board: số trước, accent brand, featured Active Learners soft · không cầu vồng */
 .rp-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -44,9 +44,23 @@ main > .rp-sec + .rp-sec { margin-top: -4px; }
 .rp-stars { color: var(--c-star); letter-spacing: 1px; font-size: var(--fs-sm); }
 .rp-stars .off { color: var(--c-border); }
 .rp-tbl-h { display: flex; align-items: center; gap: 12px; }
-.rp-tbl-h .adm-inline-search input { width: 220px; }
+.rp-tbl-h h2 { display: flex; align-items: baseline; gap: 10px; }
+.rp-count { font-size: var(--fs-sm); font-weight: 500; color: var(--adm-sub); }
+/* Ô lọc trong bảng (khác ô tìm kiếm toàn trang trên header): kính lúp xám bên trái, không nút xanh, bo 8, có nút xoá */
+.rp-filter { position: relative; display: flex; align-items: center; width: 280px; height: 40px; box-sizing: border-box; border: 1px solid var(--adm-field-stroke); border-radius: 8px; background: var(--c-white); transition: border-color .15s, box-shadow .15s; }
+.rp-filter:focus-within { border-color: var(--adm-primary); box-shadow: 0 0 0 3px var(--adm-primary-50); }
+.rp-filter__ic { position: absolute; left: 12px; display: grid; place-items: center; color: var(--adm-sub); pointer-events: none; }
+.rp-filter__ic svg { width: 16px; height: 16px; }
+.rp-filter input { flex: 1; min-width: 0; height: 100%; padding: 0 34px 0 36px; border: 0; outline: 0; background: none; font: 400 var(--fs-sm)/20px Inter, sans-serif; color: var(--adm-text); }
+.rp-filter input::placeholder { color: var(--adm-placeholder); opacity: 1; }
+.rp-filter input::-webkit-search-cancel-button { display: none; }
+.rp-filter__x { position: absolute; right: 6px; width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--adm-sub); cursor: pointer; }
+.rp-filter__x:hover { background: var(--adm-primary-50); color: var(--adm-primary); }
+.rp-filter__x svg { width: 14px; height: 14px; }
+.rp-filter__x[hidden] { display: none; }
 .rp-count { font-size: var(--fs-sm); color: var(--adm-sub); }
-#table .adm-table { width: 100%; min-width: 0; table-layout: fixed; }
+#table .adm-table { width: 100%; min-width: 900px; table-layout: fixed; } /* cột Course luôn ≥ ~230px; khung hẹp (< 1280) thì cuộn ngang thay vì ép Course về 0 */
+#table .adm-card, #table > div { overflow-x: auto; }
 #table .adm-table th, #table .adm-table td { font-size: var(--fs-sm); }
 #table .adm-table th.num, #table .adm-table td.num { padding-left: 12px; width: 88px; text-align: right; font-variant-numeric: tabular-nums; }
 #table .adm-table th.w-pass, #table .adm-table td.w-pass { width: 140px; }
@@ -115,12 +129,12 @@ main > .rp-sec + .rp-sec { margin-top: -4px; }
 <main>
   <div id="head"></div>
   <section class="rp-sec"><div class="kg-grid" id="kpis"></div></section>
-  <section class="rp-sec"><div class="rp-sec__h rp-tbl-h"><h2>By Course</h2><label class="adm-inline-search"><input id="q" placeholder="Search course" autocomplete="off"><span id="q-ic"></span></label></div><div class="adm-card" id="table"></div></section>
+  <section class="rp-sec"><div class="rp-sec__h rp-tbl-h"><h2>By Course <span class="rp-count" id="q-count" aria-live="polite"></span></h2><label class="rp-filter"><span class="rp-filter__ic" id="q-ic" aria-hidden="true"></span><input id="q" type="search" placeholder="Filter by course name or code" aria-label="Filter courses in this table" autocomplete="off" maxlength="100"><button type="button" class="rp-filter__x" id="q-x" aria-label="Clear filter" hidden></button></label></div><div class="adm-card" id="table"></div></section>
 </main>
-<script src="../assets/js/components.js?v=1123a"></script>
-<script src="../assets/js/data.js?v=1120y"></script>
+<script src="../assets/js/components.js?v=1123d"></script>
+<script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/export-modal.js?v=1118w"></script>
-<script src="../assets/js/lh2-wave2.js?v=1123b"></script>
+<script src="../assets/js/lh2-wave2.js?v=1123d"></script>
 <script src="../assets/js/period-picker.js?v=1123pp"></script>
 <script>
 const { ICON, esc, AdminLayout, AdminHead, AdminTable, AdminEmpty, toast } = LH;
@@ -242,13 +256,17 @@ function render() {
   const th = (short, full, cls = 'num') => [`<abbr title="${full}">${short}</abbr>`, cls];
   const head = ['Course', [`<abbr title="New Enrollments · sorted high to low">Enrollments</abbr><span class="rp-sort" aria-label="sorted descending">↓</span>`, 'num c-enr'], th('Active', 'Active Learners', 'num c-act'), th('Completions', 'Completions', 'num c-comp'), th('1st-attempt pass', 'First-Attempt Passed / Submitted', 'num w-pass'), th('Hours', 'Learning Hours', 'num c-hrs'), th('CSAT', 'Average rating (1–5)', 'num c-csat'), ['', 't-act']];
   const nq = LH.norm(q.trim());
-  const rows = s.rows.filter(({ c }) => !nq || LH.norm(c.title).includes(nq));
+  const rows = s.rows.filter(({ c }) => !nq || LH.norm(c.title).includes(nq) || LH.norm(c.code).includes(nq));
   document.getElementById('q-ic').innerHTML = ICON.search;
+  document.getElementById('q-x').innerHTML = ICON.x;
+  document.getElementById('q-x').hidden = !q;
+  const nC = (n) => `${n} course${n === 1 ? '' : 's'}`;
+  document.getElementById('q-count').textContent = s.rows.length ? (nq ? `${rows.length} of ${nC(s.rows.length)}` : nC(s.rows.length)) : '';
   const tipOf = (c) => [c.sched ? `Schedule ${c.sched}` : '', role === 'admin' ? `Owner: ${c.owner}` : ''].filter(Boolean).join(' · ');
   const body = rows.length ? rows.map(({ c, v }) => `<tr data-course="${c.id}" class="${v.some((x) => x) ? '' : 'is-idle'}"><td class="rp-course"><b title="${esc([c.title, tipOf(c)].filter(Boolean).join(' — '))}">${esc(c.title)}</b><div class="rp-tags"><span class="rp-tag">${c.scope}</span>${c.mand ? '<span class="rp-tag rp-tag--mand">Mandatory</span>' : ''}</div></td>
       <td class="num c-enr">${v[0]}</td><td class="num c-act">${v[1]}</td><td class="num c-comp">${v[2]}</td><td class="num w-pass">${v[4] ? `${Math.round(v[3] / v[4] * 100)}% <span class="adm-hint">(${v[3]}/${v[4]})</span>` : dash}</td><td class="num c-hrs">${s.pre ? dash : f1(v[5])}</td><td class="num c-csat">${s.pre || !v[7] ? dash : f1(v[6] / v[7])}</td>
       <td class="t-act"><button type="button" class="rp-x" data-xrow="${c.id}" title="Export learner data" aria-label="Export learner data of ${esc(c.title)}">${ICON.download}</button></td></tr>`).join('')
-    : `<tr><td colspan="8">${AdminEmpty({ icon: s.rows.length ? 'search' : 'bookOpen', title: s.rows.length ? 'No courses match your search.' : 'No learning activity in this period.', compact: true })}</td></tr>`;
+    : `<tr><td colspan="8">${AdminEmpty({ icon: s.rows.length ? 'search' : 'bookOpen', title: s.rows.length ? `No courses match “${q.trim()}”.` : 'No learning activity in this period.', cta: s.rows.length ? '<button type="button" class="btn-cta btn-cta--outline" data-q-clear>Clear filter</button>' : '', compact: true })}</td></tr>`;
   document.getElementById('table').innerHTML = AdminTable(head, body);
 }
 
@@ -260,6 +278,9 @@ document.addEventListener('click', (e) => {
   if (r) { const c = COURSES.find((x) => x.id === r.dataset.course); LHExport.open({ course: c.title, code: c.code, limited: c.scope === 'Restricted', period: per.startsWith('m:') ? per.slice(2) : '', source: 'Learning Report' }); }
 });
 document.addEventListener('lh-pp-change', (e) => { per = e.detail.value; render(); });
+const clearQ = () => { q = ''; render(); const el = document.getElementById('q'); el.value = ''; el.focus(); };
+document.addEventListener('click', (e) => { if (e.target.closest('#q-x, [data-q-clear]')) clearQ(); });
+document.addEventListener('keydown', (e) => { if (e.target.id === 'q' && e.key === 'Escape' && q) { e.preventDefault(); clearQ(); } });
 document.addEventListener('input', (e) => { if (e.target.id === 'q') { q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('q'); el.value = q; el.focus(); el.setSelectionRange(pos, pos); } });
 
 LH.DemoBar('LH2 · Learning Report (Đợt 2 · Gói 4)', [

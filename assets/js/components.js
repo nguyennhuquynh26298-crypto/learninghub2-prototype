@@ -645,27 +645,100 @@ var LH_V = '1119q';
     return out + (on ? '</mark>' : '');
   }
 
-  /** Certificate / Sheet — khớp CertificateSheet LH1 (scale trong .cert-scale) */
-  function CertificateSheet({ learnerName, courseTitle, completedAt, certificateNumber, showMascot = true }) {
+  /** Certificate / Sheet (23/11 · mẫu navy + vàng, cân giữa, tone TECHVIFY) — 1122×793 = A4 ngang.
+   *  Vùng: dải navy chữ V + dải vàng · TECHVIFY / LearningHub · CERTIFICATE / OF COMPLETION · con dấu (logo V + năm)
+   *  · PROUDLY PRESENTED TO + tên chữ viết tay · tên khoá · chân: ngày | số chứng chỉ | chức danh người ký.
+   *  showMascot giữ cho tương thích chỗ gọi cũ, không còn dùng (mascot chỉ ở popup chúc mừng). */
+  /* Logo chữ V TECHVIFY (chữ "Vi" trong wordmark): thanh ngang xiên + vạch "i" + chữ V nét dày, cùng nằm trong tam giác ngược.
+   * Đo theo wordmark TECHVIFY (23/11). viewBox 32 × 25. */
+  const TV_MARK = (cls = '', fill = 'currentColor') => `<svg class="${cls}" viewBox="0 0 32 25" aria-hidden="true" fill="${fill}">
+      <polygon points="0,0 25.2,0 22.26,4.6 2.94,4.6"/>
+      <polygon points="27.4,0 32,0 29.06,4.6 24.46,4.6"/>
+      <polygon points="4.1,6.4 9.6,6.4 16,16.4 22.4,6.4 27.9,6.4 16,25"/>
+    </svg>`;
+  function certChevron() {
+    return `<svg class="cert-sheet__bg" viewBox="0 0 1122 793" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="cs-navy" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2c72"/><stop offset=".55" stop-color="#132058"/><stop offset="1" stop-color="#0f1845"/></linearGradient>
+        <linearGradient id="cs-gold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a8841c"/><stop offset=".25" stop-color="#f2d27a"/><stop offset=".5" stop-color="#c9a227"/><stop offset=".75" stop-color="#f2d27a"/><stop offset="1" stop-color="#a8841c"/></linearGradient>
+        <linearGradient id="cs-mist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6eaf3"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+      </defs>
+      <polygon points="0,176 561,322 1122,176 1122,430 0,430" fill="url(#cs-mist)"/>
+      <polygon points="0,0 1122,0 1122,150 561,300 0,150" fill="url(#cs-navy)"/>
+      <polygon points="0,150 561,300 1122,150 1122,164 561,316 0,164" fill="url(#cs-gold)"/>
+      <polygon points="0,170 561,322 1122,170 1122,173 561,325 0,173" fill="#c9a227" opacity=".55"/>
+    </svg>`;
+  }
+  function certSeal(year) {
+    const pts = [];
+    for (let i = 0; i < 48; i++) { const r = i % 2 ? 55 : 60, a = (Math.PI * 2 * i) / 48; pts.push(`${(60 + r * Math.sin(a)).toFixed(1)},${(60 - r * Math.cos(a)).toFixed(1)}`); }
+    const leaf = (x, y, rot) => `<ellipse cx="${x}" cy="${y}" rx="2.4" ry="5.2" transform="rotate(${rot} ${x} ${y})" fill="#e2bd57"/>`;
+    const laurel = (side) => [0, 1, 2, 3, 4].map((k) => { const a = (200 + k * 22) * Math.PI / 180, x = 60 + side * 33 * Math.cos(a) * -1, y = 66 + 33 * Math.sin(a) * -1; return leaf(x.toFixed(1), y.toFixed(1), side * (k * 22 - 20)); }).join('');
+    return `<svg class="cert-sheet__seal" viewBox="0 0 120 120" role="img" aria-label="TECHVIFY seal ${esc(year)}">
+      <defs><linearGradient id="cs-seal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6dc8c"/><stop offset=".5" stop-color="#c9a227"/><stop offset="1" stop-color="#9c7a18"/></linearGradient></defs>
+      <polygon points="${pts.join(' ')}" fill="url(#cs-seal)"/>
+      <circle cx="60" cy="60" r="47" fill="#0f1845" stroke="#f2d27a" stroke-width="2"/>
+      <circle cx="60" cy="60" r="41" fill="none" stroke="#c9a227" stroke-width=".8" stroke-dasharray="2 2.4"/>
+      ${laurel(1)}${laurel(-1)}
+      <g transform="translate(42 33) scale(1.125)" fill="#ffffff"><polygon points="0,0 25.2,0 22.26,4.6 2.94,4.6"/><polygon points="27.4,0 32,0 29.06,4.6 24.46,4.6"/><polygon points="4.1,6.4 9.6,6.4 16,16.4 22.4,6.4 27.9,6.4 16,25"/></g>
+      <text x="60" y="84" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="1.5" fill="#f2d27a">${esc(year)}</text>
+    </svg>`;
+  }
+  function CertificateSheet({ learnerName, courseTitle, completedAt, certificateNumber }) {
     const date = typeof completedAt === 'string' ? (window.LHCert ? LHCert.fmtDate(completedAt) : completedAt) : '';
+    const d = new Date(completedAt), year = isNaN(d) ? String(new Date().getFullYear()) : String(d.getFullYear());
     return `<section class="cert-sheet" aria-label="Certificate of Completion">
-      <div class="cert-sheet__frame"></div>
-      <div class="cert-sheet__banner"><span class="cert-sheet__brand">TECHVIFY</span></div>
-      <div class="cert-sheet__badge"><span class="cert-sheet__badge-t">Certificate of Completion</span></div>
-      ${showMascot ? '<div class="cert-sheet__mascot" aria-hidden="true"></div>' : ''}
-      <div class="cert-sheet__body">
-        <p class="cert-sheet__lead">This is to certify that</p>
-        <h1 class="cert-sheet__name">${esc(learnerName)}</h1>
-        <p class="cert-sheet__lead">has successfully completed the course</p>
-        <h2 class="cert-sheet__course">${esc(courseTitle)}</h2>
-      </div>
-      <div class="cert-sheet__facts">
-        <div class="cert-sheet__fact">${ICON.clock}<div><b>${esc(date)}</b><span>Date of completion</span></div></div>
-        <i class="cert-sheet__sep"></i>
-        <div class="cert-sheet__fact">${ICON.award}<div><b>${esc(certificateNumber)}</b><span>Certificate number</span></div></div>
+      ${certChevron()}
+      <div class="cert-sheet__frame" aria-hidden="true"></div>
+      <div class="cert-sheet__brand"><b aria-label="TECHVIFY">TECH${TV_MARK('cert-sheet__vi')}FY</b><span>LearningHub</span></div>
+      <div class="cert-sheet__title"><h1>Certificate</h1><p>of Completion</p></div>
+      ${certSeal(year)}
+      <div class="cert-sheet__main">
+        <div class="cert-sheet__who">
+          <p class="cert-sheet__kicker">Proudly presented to</p>
+          <h2 class="cert-sheet__name">${esc(learnerName)}</h2>
+          <i class="cert-sheet__rule" aria-hidden="true"></i>
+        </div>
+        <div class="cert-sheet__what">
+          <p class="cert-sheet__kicker cert-sheet__kicker--sm">For successfully completing the course</p>
+          <h3 class="cert-sheet__course" title="${esc(courseTitle)}">${esc(courseTitle)}</h3>
+        </div>
+        <div class="cert-sheet__foot">
+          <div class="cert-sheet__sign"><b>${esc(date)}</b><i></i><span>Date of completion</span></div>
+          <div class="cert-sheet__no">Certificate No.<b>${esc(certificateNumber)}</b></div>
+          <div class="cert-sheet__sign"><b class="is-blank" aria-hidden="true">&nbsp;</b><i></i><span>Head of Learning &amp; Development<br>TECHVIFY</span></div>
+        </div>
       </div>
     </section>`;
   }
+  /** Co chữ cho vừa: tên 1 dòng (68 → 44px, rộng ≤ 820), tên khoá ≤ 2 dòng (26 → 18px) */
+  function fitCertText(root = document) {
+    root.querySelectorAll('.cert-sheet').forEach((sh) => {
+      const n = sh.querySelector('.cert-sheet__name'), c = sh.querySelector('.cert-sheet__course');
+      if (n) { let f = 68; n.style.fontSize = f + 'px'; while (n.scrollWidth > 820 && f > 44) { f -= 2; n.style.fontSize = f + 'px'; } }
+      if (c) {
+        let f = 26; c.classList.remove('is-clamp'); c.style.fontSize = f + 'px';
+        const two = () => c.getBoundingClientRect().height / (sh.getBoundingClientRect().height / 793) <= f * 1.3 * 2 + 1;
+        while (!two() && f > 18) { f -= 1; c.style.fontSize = f + 'px'; }
+        if (!two()) c.classList.add('is-clamp');
+      }
+    });
+  }
+
+  /** Thu tấm chứng chỉ 1122×793 vừa khung .cert-scale (không cuộn ngang); gọi lại khi đổi cỡ cửa sổ */
+  function fitCertScale(root = document) {
+    fitCertText(root);
+    if (document.fonts && !fitCertScale._wait) { fitCertScale._wait = true; document.fonts.ready.then(() => { fitCertScale._wait = false; fitCertText(root); }); }
+    root.querySelectorAll('.cert-scale').forEach((box) => {
+      const inn = box.querySelector('.cert-scale__in'); if (!inn) return;
+      const cs = getComputedStyle(box), padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight), padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      const k = Math.min(1, (box.clientWidth - padX) / 1122);
+      inn.style.transform = k < 1 ? `scale(${k})` : '';
+      inn.style.marginLeft = k < 1 ? Math.max(0, (box.clientWidth - padX - 1122 * k) / 2) + 'px' : '';
+      box.style.height = (793 * k + padY) + 'px';
+    });
+  }
+  if (!window.__lhCertFit) { window.__lhCertFit = true; addEventListener('resize', () => fitCertScale()); }
 
   /* ---------- Demo bar helper ---------- */
   /** groups: [{ label, key, options: [[value, text]], value }] ; onChange(state) */
@@ -1354,7 +1427,7 @@ var LH_V = '1119q';
   window.LH = { App, goBack, discardThen, url, ICON, esc, reqGuard, Button, Badge, Alert, Progress, Avatar, AppHeader, Modal, toast, CourseCard, EmptySlotCard, CourseCta, AccessNotice, ModeCard, QuestionCard, ScoreRing, SlotMeter, EnrollSlotPanel, DemoBar,
     RichboxBar, Richbox, wireRichbox,
     admRole, ADM_USER, AdminLayout, AdminSidebar, AdminToolbar, AdminHead, AdminFilter, AdminTable, StageTag, Tag, RowMenu, AdminEmpty, AdminConfirm, TrendKpi,
-    ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight, enhanceSelect, enhanceSelects,
+    fitCertScale, fitCertText, ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight, enhanceSelect, enhanceSelects,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
     QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary, CertificateSheet, AnswerNote, PracticeEntry };
 })();
