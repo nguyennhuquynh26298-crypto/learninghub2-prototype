@@ -5,7 +5,7 @@
 <title>Course setup · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123c">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1124d">
 <style>
   /* Details — Figma nested Section → Lesson → Content */
   .su-panel { min-height: 200px; display: flex; flex-direction: column; gap: 24px; padding: 28px 32px; width: 100%; box-sizing: border-box; }
@@ -22,6 +22,10 @@
   .su-les { background: var(--c-white); border: 1px solid var(--c-bg-selected); border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(16,24,40,.06); display: flex; flex-direction: column; gap: 12px; }
   .su-les__row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .su-les__title { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-md); font-weight: 600; color: var(--adm-text); flex: 1; min-width: 140px; }
+  /* D-186: dòng Quiz — nhãn trạng thái gom thành 1 cụm chữ nhỏ ngay sau tên Quiz; cụm nút ở bên phải */
+  .su-les--quiz .su-les__title { flex: 0 1 auto; }
+  .qz-status { flex: 1; display: inline-flex; align-items: center; gap: 0; min-width: 0; flex-wrap: wrap; }
+  .qz-status > * + *::before { content: "·"; margin: 0 8px; color: var(--adm-sub); font-weight: 400; text-decoration: none; display: inline-block; }
   .su-les__title svg { width: 18px; height: 18px; color: var(--adm-primary); flex: none; }
   .su-les__acts { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
   .btn-add-les { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--adm-primary); background: var(--adm-primary-soft); color: var(--adm-primary); font: 500 var(--fs-sm) Inter, sans-serif; cursor: pointer; width: fit-content; }
@@ -89,9 +93,9 @@
   <div class="adm-seg" id="tabs" role="tablist"></div>
   <div id="panel"></div>
 </main>
-<script src="../assets/js/components.js?v=1123d"></script>
+<script src="../assets/js/components.js?v=1124a"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/setup-lh2.js?v=1120p"></script>
+<script src="../assets/js/setup-lh2.js?v=1124d"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminConfirm, Modal, Richbox, wireRichbox } = LH; const D = LHData;
 wireRichbox();
@@ -284,7 +288,7 @@ function lessonCard(l, si, li) {
   const qErr = isQuiz ? (l.questions || []).filter((q) => LHSetup.dupErr('exam', q.text, -1)).length : 0;
   const quizMeta = isQuiz ? (qn
     ? `<span class="quiz-meta">${qn} question${qn === 1 ? '' : 's'} · ${qp} point${qp === 1 ? '' : 's'}</span>${qErr ? `<span class="qz-sum__err">${ICON.alert}${qErr} with errors</span>` : ''}`
-    : `<span class="quiz-meta is-warn" title="The course can't be published until this quiz has questions.">${ICON.alert}0 questions</span>`) + (() => { const b = bankOf(key); return `<button type="button" class="qz-pr ${b.on ? 'is-on' : ''}" data-pq-open="${key}" title="Open Practice Questions">${ICON.dumbbell || ''}Practice: ${b.on ? 'On' : 'Off'}${b.n ? ` · ${b.n}` : ''}</button>`; })() : '';
+    : `<span class="quiz-meta is-warn" title="The course can't be published until this quiz has questions.">${ICON.alert}0 questions</span>`) + (() => { const b = bankOf(key); return `<button type="button" class="qz-pr ${b.on ? 'is-on' : ''}" data-pq-open="${key}" title="Open Practice Questions">${ICON.dumbbell || ''}${b.on ? `Practice on · ${b.n}` : b.n ? `Practice off · ${b.n}` : 'No practice questions'}</button>`; })() : '';
   const ic = isQuiz ? ICON.lightbulb : ICON.book;
   const addContent = editable && l.type === 'lecture' && !l.content && !l.picking
     ? `<button type="button" class="btn-cta btn-cta--outline btn-cta--sm" data-content="${si}:${li}">${ICON.plus}Add Content</button>`
@@ -302,7 +306,7 @@ function lessonCard(l, si, li) {
       <span class="su-les__title">${esc(label)} · ${ic}${editingLes === key
         ? `<input class="adm-input" id="les-ren" value="${esc(l.name)}" style="max-width:240px;height:36px"><button type="button" class="btn-cta btn-cta--sm" data-les-ren-save="${key}">Save</button>`
         : `<span>${esc(l.name)}</span>`}</span>
-      ${quizMeta}${addContent}${quizActs}
+      ${isQuiz ? `<span class="qz-status">${quizMeta}</span>` : ''}${addContent}${quizActs}
       ${editable ? (formAdd
         ? `<span class="su-les__acts"><button type="button" class="su-icon" data-qf-cancel aria-label="Close">${ICON.x}</button></span>`
         : `<span class="su-les__acts">
@@ -341,7 +345,7 @@ function sectionUi(s, si) {
         <div class="adm-field"><label>Time Limit</label><select class="adm-input" id="qz-time-${si}">${TIMES.map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select></div>
         <div class="adm-field"><label>Passing Score (%) <span class="req">*</span></label><input class="adm-input" id="qz-pass-${si}" type="number" min="1" max="100" value="80"><p class="adm-err" id="qz-pass-err-${si}"></p></div>
       </div>
-      <p class="quiz-note">Every exam has 3 attempts. Later attempts show the previous answers with Correct / Incorrect labels. Correct answers are revealed only after the learner passes or uses all attempts.</p>
+      <p class="quiz-note">Every exam has 3 attempts. Each attempt starts with all questions blank. Correct answers are revealed only after the learner passes or uses all attempts.</p>
       <div class="su-inline__row">
         <button type="button" class="btn-cta btn-cta--sm" data-quiz-save="${si}">Save</button>
         <button type="button" class="btn-link" data-les-cancel="${si}">Cancel</button>
@@ -466,16 +470,18 @@ function editorBackUrl(tabName) {
   return `course-editor.html?${new URLSearchParams({ r: role, st, t: title, tab: tabName || tab })}`;
 }
 /* Form câu thi ngay tại chỗ (kế thừa web QuestionForm) — Save lưu ngay vào Quiz */
-function openExamForm(si, li, index) {
+function openExamForm(si, li, index, type = null) {
   const L = sections[si].lessons[li];
   if (index < 0) L.open = false; else L.open = true;
-  LHSetup.qfOpen(`${si}:${li}`, { index, q: index >= 0 ? L.questions[index] : null, withScore: true, bank: 'exam',
-    onSave: (out, idx) => {
+  LHSetup.qfOpen(`${si}:${li}`, { index, q: index >= 0 ? L.questions[index] : null, withScore: true, bank: 'exam', type,
+    onSave: (out, idx, again) => {
       L.questions = L.questions || [];
       if (idx >= 0) L.questions[idx] = out; else L.questions.push(out);
       L.open = true; L.fresh = [idx >= 0 ? idx : L.questions.length - 1];
       LHSetup.writePracticeStore({ sectionsSnapshot: sections, course: title });
-      drawDetails(); toast(idx >= 0 ? `Question ${idx + 1} updated` : `Question ${L.questions.length} added`);
+      toast(idx >= 0 ? `Question ${idx + 1} updated` : `Question ${L.questions.length} added`);
+      if (again) { L.fresh = []; openExamForm(si, li, -1, again); return; } // D-187: Save & Add Another
+      drawDetails();
     },
     onClose: () => drawDetails() });
   drawDetails(); document.getElementById('qf-text')?.focus();
@@ -659,6 +665,11 @@ document.addEventListener('click', (e) => {
 
   if (e.target.closest('[data-pq-soft]')) { openPracticeQuiz(); tab = 'details'; render(); return; }
   const po = e.target.closest('[data-pq-open]'); if (po) { openPractice(po.dataset.pqOpen); drawDetails(); document.querySelector(`[data-les="${po.dataset.pqOpen}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+  /* D-187: "+ Add Question" cuối danh sách câu — mở form ngay, không phải cuộn lên dòng Quiz */
+  const qra = e.target.closest('[data-qr-add]'); if (qra) { const ns = qra.dataset.qrAdd;
+    if (ns === 'p') document.querySelector('[data-pq-host] [data-pq-add]')?.click();
+    else { const [si, li] = ns.split(':').map(Number); openExamForm(si, li, -1); }
+    return; }
   const qt = e.target.closest('[data-qtab]'); if (qt) { const [k, v] = qt.dataset.qtab.split('|'); const [si, li] = k.split(':').map(Number); if (v === 'practice') openPractice(k); else sections[si].lessons[li].qtab = v; drawDetails(); return; }
   if (e.target.closest('[data-pq-demo]')) { toast('Prototype: the demo practice set is on the first quiz of the course.'); return; }
   /* Dòng câu thi (component chung LHSetup.questionRows, ns = "si:li"): Delete hỏi xác nhận rồi lưu ngay · Edit mở trang soạn câu */

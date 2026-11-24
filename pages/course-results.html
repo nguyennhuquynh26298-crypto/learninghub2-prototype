@@ -5,7 +5,7 @@
 <title>My Results · Reviews · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&subset=vietnamese&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1124d">
 <style>
   .mr { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   @media (max-width: 900px) { .mr { grid-template-columns: 1fr; } }
@@ -29,9 +29,9 @@
   <div class="mr"><section class="mr-box" id="results"></section><section class="mr-box" id="reviews"></section></div>
 </main>
 <div id="footer"></div>
-<script src="../assets/js/components.js?v=1123d"></script>
+<script src="../assets/js/components.js?v=1124a"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/lh2-wave2.js?v=1123d"></script>
+<script src="../assets/js/lh2-wave2.js?v=1124a"></script>
 <script>
 const { AppHeader, AppFooter, BackLink, esc } = LH;
 const COURSE = 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION';
@@ -67,7 +67,7 @@ function renderResults() {
   document.getElementById('results').innerHTML = `<h2>My Results <span class="badge badge--${tone}">${t}</span></h2>
     <div class="mr-kpi"><div><b>${s.p}%</b><span>Completion Rate</span></div><div><b>${s.v[0]}/${s.v[1]}</b><span>Videos</span></div><div><b>${s.q[0]}/${s.q[1]}</b><span>Quizzes</span></div></div>
     <table class="mr-t"><thead><tr><th>Quiz</th><th>Highest Score</th><th>Attempts</th><th>Result</th><th></th></tr></thead><tbody>
-    ${s.quizzes.map(([n, sc, a, r]) => `<tr><td>${esc(n)}</td><td>${sc == null ? '—' : `<b>${sc}</b>`}</td><td>${a}/3</td><td>${r}</td><td>${a && !locked ? '<a href="test-result.html">Review</a>' : ''}</td></tr>`).join('')}</tbody></table>
+    ${s.quizzes.map(([n, sc, a, r]) => `<tr><td>${esc(n)}</td><td>${sc == null ? '—' : `<b>${Math.round(sc * 20 / 100)}</b>/20`}</td><td>${a}/3</td><td>${r}</td><td>${a && !locked ? '<a href="test-result.html">Review</a>' : ''}</td></tr>`).join('')}</tbody></table>
     ${s.st === 'done' ? `<div class="mr-cert">${LH.ICON.award}<div class="grow"><b>Certificate</b><span class="t-xs muted">No. ${s.cert} · Issued ${s.done}</span></div><a class="wbtn wbtn--outline" style="height:36px" href="certificate.html">View</a><button class="wbtn" style="height:36px" data-cert-dl>${LH.ICON.download}Download</button></div>
       <div class="mr-rate">${rated ? `<span>Your rating</span><b class="mr-stars">${'★'.repeat(rated)}<i>${'★'.repeat(5 - rated)}</i></b>` : '<span>How was this course?</span><button class="wbtn wbtn--outline" style="height:36px" data-rate>Rate Course</button>'}</div>` : ''}`;
 }

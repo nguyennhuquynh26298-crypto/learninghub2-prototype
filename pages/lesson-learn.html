@@ -5,10 +5,11 @@
 <title>Learn · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&subset=vietnamese&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1124d">
 <style>
   .learn-stage .player { position: absolute; inset: 0; border-radius: 0; aspect-ratio: auto; }
   .player__seg { position: absolute; top: 0; bottom: 0; background: rgba(147,150,255,.55); }
+  .player__bar { cursor: pointer; }
   .player__pos { position: absolute; top: -5px; width: 16px; height: 16px; border-radius: 50%; background: var(--c-white); transform: translateX(-50%); }
   .player__time { position: absolute; right: 16px; bottom: 30px; font-size: var(--fs-xs); color: var(--c-border); }
   .doc-stage { display: grid; place-items: center; min-height: 100%; background: var(--c-text-strong); color: var(--c-border); padding: 24px; }
@@ -22,9 +23,9 @@
 <body class="learn-body">
 <!-- LH1 /course/[id]/learn — video · PDF/document · article · quiz intro (ModeSelect) -->
 <div id="app"></div>
-<script src="../assets/js/components.js?v=1123d"></script>
+<script src="../assets/js/components.js?v=1124a"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/lh2-wave2.js?v=1123d"></script>
+<script src="../assets/js/lh2-wave2.js?v=1124a"></script>
 <script>
 const { ICON, LearnShell, CourseContent, ModeSelect, ProgressBreakdown, Progress, Gauge, toast, esc } = LH;
 const D = LHData; const C = D.course; const T = D.test;
@@ -66,7 +67,7 @@ function stageHtml() {
     return `<div class="stage-bg">${ModeSelect({
       title: L.n, questions: T.questions, minutes: T.minutes, passMark: T.passMark, totalPts: T.questions,
       attemptsLeft: T.maxAttempts - e.rows.length, maxAttempts: T.maxAttempts, state: e.state, retake: e.rows.length > 0,
-      best: e.rows.length ? Math.max(...e.rows.map((x) => x.score)) : null,
+      best: e.rows.length ? `${Math.max(...e.rows.map((x) => x.right))}/${T.questions}` : null, // D-182: điểm dạng x/y
     })}</div>`;
   }
   const isArticle = /guide|exam guide/i.test(L.n);
@@ -87,14 +88,13 @@ function belowHtml() {
     return `<div class="watch-meter" id="meter"></div>
       <div class="row gap-8" id="ctrl">
         <button class="wbtn wbtn--outline" data-play="60">Play 1 minute</button>
-        <button class="wbtn wbtn--outline" data-seek="0.8">Skip to 80%</button>
-        <button class="wbtn wbtn--outline" data-seek="0.98">Skip to end</button>
-        <button class="wbtn wbtn--outline" data-seek="0">Back to start</button>
-        <span class="grow"></span><span class="t-xs muted">Demo · skipped parts don't count (BR-LP-02)</span></div>`;
+        <button class="wbtn wbtn--outline" data-skip="10">Forward 10s</button>
+        <button class="wbtn wbtn--outline" data-seek="0.8">Drag to 80%</button>
+        <button class="wbtn wbtn--outline" data-seek="0">Back to start</button></div>`;
   }
   if (L.k === 'quiz') {
     return `<section><h2 class="t-lg fw-600">About this lesson</h2>
-      <p class="muted t-sm" style="margin-top:8px">Every exam has 3 attempts. Later attempts show your previous answers with Correct / Incorrect labels. Correct answers are revealed only after you pass or use all attempts.</p></section>`;
+      <p class="muted t-sm" style="margin-top:8px">Every exam has 3 attempts. Each attempt starts with all questions blank. Correct answers are revealed only after you pass or use all attempts.</p></section>`;
   }
   return `<section><h2 class="t-xl fw-700">${esc(L.n)}</h2><p class="t-sm muted" style="margin-top:4px">${esc(L.session)}</p></section>`;
 }
@@ -119,6 +119,17 @@ function renderShell() {
   renderPlayer();
   const g = document.querySelector('.learn-hd__pg .gauge');
   if (g) g.outerHTML = Gauge(s.pct);
+}
+/* BR-LP-16 (D-184): tua tới phần chưa xem tối đa 10 giây mỗi lần; tua lùi và tua trong đoạn đã xem tự do */
+const SKIP_MAX = 10;
+function seekTo(target) {
+  target = Math.max(0, Math.min(DUR, Math.floor(target)));
+  if (target > pos && !seen[target] && lessons[CUR] !== 'done') {
+    const capped = Math.min(target, Math.floor(pos) + SKIP_MAX);
+    if (capped < target) toast('You can skip ahead up to 10 seconds at a time.');
+    target = capped;
+  }
+  pos = target; renderPlayer();
 }
 function play(sec) {
   const end = Math.min(DUR, pos + sec);
@@ -153,10 +164,13 @@ document.addEventListener('click', (e) => {
   const sec = e.target.closest('.stage-nav--l'); if (sec) { goLesson(CUR - 1); return; }
   const secR = e.target.closest('.stage-nav--r'); if (secR) { goLesson(CUR + 1); return; }
   const lesson = e.target.closest('.cc-lesson[href]'); if (lesson) { e.preventDefault(); const i = +new URL(lesson.href).searchParams.get('i'); if (!Number.isNaN(i)) goLesson(i); return; }
+  const bar = e.target.closest('.player__bar');
+  if (bar) { const r = bar.getBoundingClientRect(); seekTo((e.clientX - r.left) / r.width * DUR); return; }
   const ctrl = e.target.closest('#ctrl'); if (!ctrl) return;
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.play) play(+b.dataset.play);
-  else { pos = Math.floor(DUR * +b.dataset.seek); renderPlayer(); }
+  else if (b.dataset.skip) seekTo(pos + +b.dataset.skip);
+  else seekTo(DUR * +b.dataset.seek);
 });
 document.addEventListener('click', (e) => {
   const pop = document.querySelector('.popover'); const b = e.target.closest('[data-pop]');

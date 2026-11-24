@@ -6,7 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&subset=vietnamese&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1123c">
+<link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1124d">
 <style>
   .exam-line { margin-top: 6px; font-size: var(--fs-sm); color: var(--gray-600); }
   .exam-line b { color: var(--gray-800); }
@@ -27,9 +27,9 @@
                đáp án mở khi Passed hoặc hết 3 lượt (BR-EX-07); pháo hoa + Techter chỉ ngay sau lượt Passed (BR-EX-19);
                bài cuối làm khoá Completed → chỉ popup hoàn thành khoá (BR-LP-13). -->
 <div id="app"></div>
-<script src="../assets/js/components.js?v=1123d"></script>
+<script src="../assets/js/components.js?v=1124a"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/lh2-wave2.js?v=1123d"></script>
+<script src="../assets/js/lh2-wave2.js?v=1124a"></script>
 <script>
 const { LearnShell, ModeSelect, CourseContent, WebQuestion, DashMeter, QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm,
   ResultSummary, AnswerNote, ReviewFilter, PracticeSummary, Modal, Alert, Badge, toast, esc } = LH;
@@ -49,7 +49,10 @@ const store = {
 };
 const isOk = (q, c) => c.length === q.correct.length && c.every((x) => q.correct.includes(x));
 const passed = (x) => x.right >= NEED;
-const bestOf = (A) => A.length ? Math.max(...A.map((x) => x.score)) : null;
+/* D-182: điểm hiện dạng số điểm / tổng điểm đề (mỗi câu 1 điểm trong demo) */
+const pts = (x) => x.right;
+const fmt = (p) => `${p}/${TOTAL_PTS}`;
+const bestOf = (A) => A.length ? Math.max(...A.map(pts)) : null;
 const passedAny = (A) => A.some(passed);
 const locked = (A) => A.length >= MAX || passedAny(A);
 const secLeft = (run) => Math.round((run.endAt - Date.now()) / 1000);
@@ -62,9 +65,9 @@ function checkExpired() { const r = store.run; if (r && secLeft(r) <= 0) { finis
 
 /* Attempt History — Exam 3.3: thứ tự · ngày nộp · điểm · Passed/Not Passed; lượt trước Reopen có nhãn "Before reopen" */
 function historyTable(A, sel) {
-  const lock = locked(A), best = bestOf(A), bestK = A.findIndex((x) => x.score === best);
-  const old = store.old.map((x, k) => `<tr class="is-old"><td>${k + 1}</td><td>${fmtAt(x.at)}</td><td><b>${x.score}</b></td><td>${passed(x) ? Badge('Passed', 'success') : Badge('Not Passed', 'danger')}</td><td>${Badge('Before reopen', 'neutral')}</td></tr>`).join('');
-  const rows = A.map((x, k) => `<tr data-k="${k}" class="${k === sel ? 'is-sel' : ''}"><td>${k + 1}</td><td>${fmtAt(x.at)}</td><td><b>${x.score}</b></td><td>${passed(x) ? Badge('Passed', 'success') : Badge('Not Passed', 'danger')}</td><td>${lock && k === bestK ? Badge('Final Score', 'info') : ''}${x.auto ? Badge('Auto-submitted', 'warning') : ''}</td></tr>`).join('');
+  const lock = locked(A), best = bestOf(A), bestK = A.findIndex((x) => pts(x) === best);
+  const old = store.old.map((x, k) => `<tr class="is-old"><td>${k + 1}</td><td>${fmtAt(x.at)}</td><td><b>${fmt(pts(x))}</b></td><td>${passed(x) ? Badge('Passed', 'success') : Badge('Not Passed', 'danger')}</td><td>${Badge('Before reopen', 'neutral')}</td></tr>`).join('');
+  const rows = A.map((x, k) => `<tr data-k="${k}" class="${k === sel ? 'is-sel' : ''}"><td>${k + 1}</td><td>${fmtAt(x.at)}</td><td><b>${fmt(pts(x))}</b></td><td>${passed(x) ? Badge('Passed', 'success') : Badge('Not Passed', 'danger')}</td><td>${lock && k === bestK ? Badge('Final Score', 'info') : ''}${x.auto ? Badge('Auto-submitted', 'warning') : ''}</td></tr>`).join('');
   return `<table class="table att-table"><thead><tr><th>Attempt</th><th>Submitted</th><th>Score</th><th>Result</th><th></th></tr></thead><tbody>${old}${rows}</tbody></table>`;
 }
 
@@ -74,7 +77,7 @@ function viewStart() {
   const best = bestOf(A);
   const state = run ? 'in-progress' : passedAny(A) ? 'passed' : used >= MAX ? 'out' : 'default';
   const stage = `<div class="stage-bg">${ModeSelect({ title: T.name, questions: N, minutes: T.minutes, passMark: T.passMark, totalPts: TOTAL_PTS,
-    attemptsLeft: MAX - used, maxAttempts: MAX, best, state, retake: used > 0, remain: run ? mmss(Math.max(0, secLeft(run))) : '',
+    attemptsLeft: MAX - used, maxAttempts: MAX, best: best == null ? null : fmt(best), state, retake: used > 0, remain: run ? mmss(Math.max(0, secLeft(run))) : '',
     practice: practiceOn() ? { questions: PQ.length } : null })}</div>`;
   const below = `<section><h2 class="t-lg fw-600">About this lesson</h2><p class="muted t-sm" style="margin-top:8px">${esc(T.desc || 'Practice set for Domain 1 — agentic architecture and orchestration.')}</p></section>
     ${used || store.old.length ? `<section><div class="row" style="margin-bottom:12px"><h2 class="t-lg fw-600 grow">Attempt History</h2><span class="t-xs muted">Click an attempt to review it</span></div>${historyTable(A, -1)}</section>` : ''}`;
@@ -178,17 +181,16 @@ function viewExam() {
   let run = store.run;
   if (!run) {
     const prev = A.length ? A[A.length - 1].chosen : null;
-    /* BR-EX-03: câu Correct lượt trước giữ sẵn lựa chọn; câu Incorrect / bỏ trống xoá trắng */
-    const chosen = EQ.map((q, i) => (prev && (prev[i] || []).length && isOk(q, prev[i]) ? [...prev[i]] : []));
-    run = { chosen, flag: EQ.map(() => false), prior: prev, endAt: Date.now() + T.minutes * 60000, startAt: Date.now() }; store.run = run;
+    /* BR-EX-03 (D-183): mọi lượt làm lại toàn bộ đề, mọi câu trống, không mang nhãn của lượt trước */
+    const chosen = EQ.map(() => []);
+    run = { chosen, flag: EQ.map(() => false), prior: null, endAt: Date.now() + T.minutes * 60000, startAt: Date.now() }; store.run = run;
   }
   const no = A.length + 1;
-  const redo = run.prior ? EQ.filter((q, i) => priorOf(run, i).result !== 'correct').length : 0;
   app.innerHTML = `<div class="quiz-page"><div id="ebar"></div><div class="stage-card"><div class="exam-wrap">
     <div class="quiz">
       <div id="warn"></div>
       <div class="quiz-head"><div class="quiz-head__t"><h1>${esc(T.name)}</h1><span class="quiz-badge quiz-badge--exam">Exam</span></div>
-        <p class="exam-line">${run.prior ? `<b>Attempt ${no}/${MAX}</b> · ${redo} incorrect questions to redo. Your correct answers are pre-filled and can still be changed.` : `<b>Attempt ${no}/${MAX}</b>`}</p>
+        <p class="exam-line"><b>Attempt ${no}/${MAX}</b></p>
         <p class="exam-line">Passing Score: <b>${T.passMark}% (${NEED}/${TOTAL_PTS})</b> · ${N} Questions · ${T.minutes} Minutes</p></div>
       <div class="wq-list" id="eqs">${EQ.map((q, i) => WebQuestion({ n: i + 1, ...q, chosen: run.chosen[i], state: 'exam', flagged: run.flag[i], prior: priorOf(run, i) })).join('')}</div>
       <div class="quiz-foot"><button class="wbtn" data-submit>Submit</button><span class="t-sm muted" id="efoot"></span><button class="wbtn wbtn--outline" data-leave style="margin-left:auto">Leave Exam</button></div>
@@ -243,7 +245,7 @@ function finishExam(r, auto) {
   clearInterval(tick);
   const right = EQ.filter((q, i) => isOk(q, r.chosen[i])).length, blank = r.chosen.filter((c) => !c.length).length;
   const end = Math.min(Date.now(), r.endAt);
-  /* BR-EX-04: điểm = điểm đúng ÷ tổng × 100, làm tròn xuống */
+  /* BR-EX-04 (D-182): màn hình hiện số điểm right/TOTAL_PTS; score % chỉ giữ cho dữ liệu cũ */
   store.att = [...store.att, { score: Math.floor(right / TOTAL_PTS * 100), right, wrong: N - right - blank, blank, chosen: r.chosen,
     minutes: Math.max(1, Math.round((end - r.startAt) / 60000)), at: new Date(end).toISOString(), auto }];
   store.run = null; resSel = null; resFilter = 'all'; justSubmitted = true;
@@ -274,9 +276,9 @@ function viewResult() {
     <div class="stage-card"><div class="quiz">
       ${celebrate && !courseDone && window.LHW2 ? LHW2.passBanner({ quiz: T.name }) : ''}
       ${at.auto ? `<div style="margin-bottom:16px">${Alert({ tone: 'warning', icon: 'clock', title: 'This attempt was submitted automatically when time ran out' })}</div>` : ''}
-      ${ResultSummary({ score: at.score, passMark: T.passMark, totalPts: TOTAL_PTS, right, wrong: N - right - blank, blank, total: N, minutes: at.minutes,
+      ${ResultSummary({ score: pts(at), passMark: T.passMark, totalPts: TOTAL_PTS, right, wrong: N - right - blank, blank, total: N, minutes: at.minutes,
         attemptNo: idx + 1, maxAttempts: MAX, used, result: passed(at) ? 'pass' : 'fail', canRetry: !reveal && idx === latest, isLatest: idx === latest, best })}
-      <div style="margin-bottom:24px">${AnswerNote({ state: done ? 'passed' : reveal ? 'out' : 'hidden', left: MAX - used, best })}</div>
+      <div style="margin-bottom:24px">${AnswerNote({ state: done ? 'passed' : reveal ? 'out' : 'hidden', left: MAX - used, best: fmt(best) })}</div>
       <section><div class="row" style="margin-bottom:12px"><b class="grow">Attempt History</b><span class="t-xs muted">Click an attempt to review it</span></div>${historyTable(A, idx)}</section>
       <section id="review"><div class="rv-head"><h2>Review Answers · Attempt ${idx + 1}</h2>${ReviewFilter(resFilter, { all: N, correct: right, incorrect: N - right })}</div>
         <div class="wq-list">${list.map(({ q, k }) => WebQuestion({ n: k + 1, ...q, state: reveal ? 'review-revealed' : 'review-hidden' })).join('') || '<div class="empty"><p>No questions.</p></div>'}</div></section>

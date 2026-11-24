@@ -515,19 +515,20 @@ var LH_V = '1119q';
       foot: `${warn ? '<button class="wbtn wbtn--outline" data-close data-review-empty>Review Questions</button>' : '<button class="wbtn wbtn--outline" data-close>Cancel</button>'}<button class="wbtn" data-submit-now>Submit</button>` });
   }
   /** Assessment / Result summary — Exam 3.3. Passed / Not Passed theo lượt; Failed khi hết 3 lượt; Final Score = điểm cao nhất */
-  function ResultSummary({ score, passMark = 80, totalPts, right, wrong, blank = 0, total, minutes, attemptNo, maxAttempts = 3, used, result, canRetry, isLatest = true, best = score }) {
-    const pass = result === 'pass'; const done = best >= passMark; const final = used >= maxAttempts || done; const left = maxAttempts - used;
-    const need = totalPts ? Math.ceil(passMark * totalPts / 100) : null;
+  /* D-182: điểm là số điểm đạt được / tổng điểm đề ("17/20"), không dùng thang 100. score, best = số điểm */
+  function ResultSummary({ score, passMark = 80, totalPts = 100, right, wrong, blank = 0, total, minutes, attemptNo, maxAttempts = 3, used, result, canRetry, isLatest = true, best = score }) {
+    const need = Math.ceil(passMark * totalPts / 100);
+    const pass = result === 'pass'; const done = best >= need; const final = used >= maxAttempts || done; const left = maxAttempts - used;
     const failed = isLatest && final && !done;
     const c = pass ? 'var(--green-600)' : 'var(--red-600)';
     const r = 50, C = 2 * Math.PI * r;
     const title = failed ? 'Failed' : pass ? 'Passed' : 'Not Passed';
     return `<div class="rsum rsum--${pass ? 'pass' : 'fail'}">
-      <div class="rsum__ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--neutral-100)" stroke-width="10"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${c}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - score / 100)}" transform="rotate(-90 60 60)"/></svg><div><b style="color:${c}">${score}</b><span>/ 100</span></div></div>
+      <div class="rsum__ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--neutral-100)" stroke-width="10"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${c}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - score / totalPts)}" transform="rotate(-90 60 60)"/></svg><div><b style="color:${c}">${score}</b><span>/ ${totalPts}</span></div></div>
       <div class="rsum__body">
         <div class="rsum__t"><h1>${isLatest ? title : `Attempt ${attemptNo}: ${pass ? 'Passed' : 'Not Passed'}`}</h1></div>
         <div class="rsum__stats"><div class="is-ok"><b>${right}</b><span>Correct</span></div><div class="is-bad"><b>${wrong}</b><span>Incorrect</span></div><div><b>${blank}</b><span>Unanswered</span></div><div><b>${total}</b><span>Total</span></div></div>
-        <div class="rsum__meta"><span>Attempt ${attemptNo}/${maxAttempts}</span>${minutes ? `<span>${minutes} min</span>` : ''}<span>Passing Score: ${passMark}%${need ? ` (${need}/${totalPts})` : ''}</span>${final ? `<span>Final Score: <b>${best}</b></span>` : ''}</div>
+        <div class="rsum__meta"><span>Attempt ${attemptNo}/${maxAttempts}</span>${minutes ? `<span>${minutes} min</span>` : ''}<span>Passing Score: ${passMark}% (${need}/${totalPts})</span>${final ? `<span>Final Score: <b>${best}/${totalPts}</b></span>` : ''}</div>
         <div class="rsum__act">${canRetry ? `<button class="wbtn" data-retry>Retake Exam (${left} attempt${left > 1 ? 's' : ''} left)</button>` : ''}<button class="wbtn wbtn--outline" data-review>Review Answers</button><button class="wbtn wbtn--outline" data-go="start">Back to Quiz</button></div>
       </div></div>`;
   }

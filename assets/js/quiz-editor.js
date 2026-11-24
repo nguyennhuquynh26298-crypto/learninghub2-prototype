@@ -1,6 +1,6 @@
 /* LearningHub · Quiz trong Soạn khoá — Figma section Quiz 1249:5427 (Manage Question 1265:7417, Popup xoá 1273:8970 / 1273:8997).
- * [KT] Notion Quiz: Tên* · Mô tả · Giới hạn thời gian (Không giới hạn) · Điểm đạt 80% · Trộn câu · Quản lý câu hỏi (Thêm/Sửa/Xoá, điểm từng câu, tổng điểm).
- * [SỬA] D-55: bỏ Số lượt + toggle "Hiện đáp án sau khi nộp" — Exam cố định 3 lượt, đáp án mở khi Đạt hoặc hết lượt. D-58: 2–4 lựa chọn A–D, Đúng/Sai, trộn câu chỉ Exam.
+ * [KT] Notion Quiz: Tên* · Mô tả · Giới hạn thời gian (Không giới hạn) · Điểm đạt 80% · Quản lý câu hỏi (Thêm/Sửa/Xoá, điểm từng câu, tổng điểm).
+ * [SỬA] D-55: bỏ Số lượt + toggle "Hiện đáp án sau khi nộp" — Exam cố định 3 lượt, đáp án mở khi Đạt hoặc hết lượt. D-58: 2–4 lựa chọn A–D, Đúng/Sai. D-128: không trộn câu.
  * [MỚI] D-01/D-04: toggle Cho phép luyện tập (bài cũ tắt). Tab Exam | Practice, mỗi tab Thêm/Sửa/Xoá/Nhập file.
  *        BR-ASM-03/07: chặn trùng 2 chiều. D-59: sửa Exam khi đang có người làm → phiên bản đề mới. D-18: Creator sửa khoá đang chạy → vào bản sửa, gửi duyệt.
  * Phần 1: kiểm tra câu + nhập file. Phần 2 (cuối file): giao diện. */
@@ -225,7 +225,7 @@ B. Khi chỉ gọi 1 lần`.split('\n');
     el.addEventListener('click', (e) => { if (e.target.closest(`[data-qz-x="${id}"]`)) el.dispatchEvent(new CustomEvent('qz-close')); });
     return el;
   }
-  const newQuiz = () => ({ title: '', desc: '', minutes: 30, noLimit: false, pass: 80, shuffle: true, practice: false, exam: [], practice_q: [] });
+  const newQuiz = () => ({ title: '', desc: '', minutes: 30, noLimit: false, pass: 80, practice: false, exam: [], practice_q: [] });
   const MAX_TITLE = 60;
 
   /** Popup xoá quiz — Figma 1273:8997 */
@@ -290,7 +290,6 @@ B. Khi chỉ gọi 1 lần`.split('\n');
           <label class="check"><input type="checkbox" id="qf-nolimit" ${W.noLimit ? 'checked' : ''}><span>Không giới hạn</span></label>${e.minutes ? `<span class="adm-hint is-error">${e.minutes}</span>` : ''}</div>
         <div class="adm-field"><label for="qf-pass">Điểm đạt (%) <span class="req">*</span></label><input class="adm-input ${e.pass ? 'is-error' : ''}" id="qf-pass" type="number" min="1" max="100" value="${W.pass}">
           ${e.pass ? `<span class="adm-hint is-error">${e.pass}</span>` : ''}<span class="adm-hint qw-rule">${ICON.info}Exam cố định 3 lượt · đáp án hiện khi Đạt hoặc hết lượt (D-55).</span></div>
-        <div class="adm-field full"><label class="switch"><input type="checkbox" id="qf-shuffle" ${W.shuffle ? 'checked' : ''}><span class="switch__track"></span>Trộn thứ tự câu hỏi <span class="adm-hint">· chỉ áp cho Exam (D-58)</span></label></div>
         <div class="adm-field full"><label class="switch"><input type="checkbox" id="qf-practice" ${W.practice ? 'checked' : ''}><span class="switch__track"></span>Cho phép luyện tập (Practice) <span class="stage-tag stage-tag--info">LH2</span></label>
           <span class="adm-hint" id="qf-practice-hint">${practiceHint()}</span></div>
       </div>`;
@@ -304,7 +303,7 @@ B. Khi chỉ gọi 1 lần`.split('\n');
       if (!exam && !W.practice) return AdminEmpty({ icon: 'dumbbell', title: 'Chế độ luyện tập đang tắt', desc: 'Bật để soạn bộ câu luyện tập riêng cho học viên. Bài có từ trước LearningHub 2 mặc định tắt.', cta: '<button class="btn-cta" data-qw-on>Bật Cho phép luyện tập</button>', compact: true });
       const errAt = L.map((q, k) => C.check(q, b, banks(), k));
       const head = exam
-        ? qmBanner([['Lượt làm', '3 lượt'], ['Điểm đạt', W.pass + '%'], ['Thời gian', W.noLimit ? 'Không giới hạn' : W.minutes + ' phút'], ['Trộn câu', W.shuffle ? 'Bật' : 'Tắt'], ['Tổng điểm', C.total(L) + ' điểm', 'Bằng tổng điểm các câu', true]])
+        ? qmBanner([['Lượt làm', '3 lượt'], ['Điểm đạt', W.pass + '%'], ['Thời gian', W.noLimit ? 'Không giới hạn' : W.minutes + ' phút'], ['Tổng điểm', C.total(L) + ' điểm', 'Bằng tổng điểm các câu', true]])
         : qmBanner([['Lượt làm', 'Không giới hạn'], ['Tính điểm / tiến độ', 'Không'], ['Đáp án', 'Hiện ngay'], ['Trùng đề thi', 'Không cho phép']]);
       const flags = (exam && ctx.inProgress ? `<div class="qm-flag qm-flag--warn">${ICON.alert}<span><b>${ctx.inProgress} học viên đang làm dở đề này.</b> Lưu thay đổi sẽ tạo đề phiên bản v${(W.version || 1) + 1}; người đang dở làm tiếp đề v${W.version || 1} (D-59).</span></div>` : '')
         + (ctx.creatorLive ? `<div class="qm-flag">${ICON.info}<span>Khoá đang chạy: thay đổi được lưu vào <b>bản sửa</b>, học viên vẫn làm đề cũ tới khi Admin L&amp;D duyệt (D-18).</span></div>` : '')
@@ -440,7 +439,6 @@ B. Khi chỉ gọi 1 lần`.split('\n');
     el.addEventListener('change', (e) => {
       const t = e.target;
       if (t.id === 'qf-nolimit') { W.noLimit = t.checked; el.querySelector('#qf-min').disabled = t.checked; return; }
-      if (t.id === 'qf-shuffle') { W.shuffle = t.checked; return; }
       if (t.id === 'qf-practice') { W.practice = t.checked; el.querySelector('#qf-practice-hint').textContent = practiceHint(); drawSteps(); drawFoot(); return; }
       if (t.id === 'imp-file') { handle(t.files[0]); return; }
       if (view === 'editor' && t.dataset.c != null) { const i = +t.dataset.c, d = ed.draft;

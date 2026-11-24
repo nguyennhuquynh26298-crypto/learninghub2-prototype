@@ -64,7 +64,7 @@
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1123d"></script>
+<script src="../assets/js/components.js?v=1124a"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
@@ -94,12 +94,12 @@ const slug = (n) => n.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, '
 function quizOf(status, pct, i) {
   return QUIZZES.map((title, k) => {
     const total = k === 2 ? 32 : 10, need = Math.ceil(0.8 * total);
-    if (status === 'done') return { title, used: 1 + ((i + k) % 3), best: 80 + ((i * 7 + k * 5) % 20), result: 'Passed' };
-    if (status === 'failed' && k === 1) return { title, used: 3, best: 70, result: 'Failed' };
+    if (status === 'done') return { title, tot: total, used: 1 + ((i + k) % 3), best: 80 + ((i * 7 + k * 5) % 20), result: 'Passed' };
+    if (status === 'failed' && k === 1) return { title, tot: total, used: 3, best: 70, result: 'Failed' };
     const tried = k < (pct >= 60 ? 2 : pct > 0 ? 1 : 0);
     if (!tried) return { title, used: 0, best: null, result: 'Not Attempted' };
     const used = 1 + ((i + k) % 2), best = 50 + ((i * 11 + k * 13) % 45), pass = Math.round(best / 100 * total) >= need;
-    return { title, used, best, result: pass ? 'Passed' : `Not Passed (${3 - used} attempts left)` };
+    return { title, tot: total, used, best, result: pass ? 'Passed' : `Not Passed (${3 - used} attempts left)` };
   });
 }
 const learners = SEED.map(([name, dept, pct, enrolled, force], i) => {
@@ -126,7 +126,7 @@ function kpis() {
 }
 function quizSub(r) {
   return `<div class="qsub"><h3>Quiz results</h3><div class="adm-scroll"><table><thead><tr><th>Quiz</th><th>Attempts Used / 3</th><th>Final Score</th><th>Result</th></tr></thead><tbody>${r.quiz.map((z) => `<tr>
-    <td>${esc(z.title)}</td><td>${z.used}/3${r.reopened && z.result === 'Not Attempted' ? ' · reopened' : ''}</td><td>${z.best == null ? '—' : z.best}</td>
+    <td>${esc(z.title)}</td><td>${z.used}/3${r.reopened && z.result === 'Not Attempted' ? ' · reopened' : ''}</td><td>${z.best == null ? '—' : `${Math.round(z.best / 100 * z.tot)}/${z.tot}`}</td>
     <td>${Tag(z.result, z.result === 'Passed' ? 'published' : z.result === 'Failed' ? 'pending' : z.result === 'Not Attempted' ? 'neutral' : 'info')}</td></tr>`).join('')}</tbody></table></div></div>`;
 }
 function actions(r, i) {

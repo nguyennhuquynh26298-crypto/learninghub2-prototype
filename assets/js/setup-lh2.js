@@ -74,7 +74,7 @@
         <div class="qr__main"><div class="qr__line"><span class="qr__q" title="${esc(q.text)}">${esc(q.text)}</span><span class="qr__type">${TYPE[q.type] || TYPE.single}</span>${withScore ? `<span class="qr__pt">${pt} point${pt > 1 ? 's' : ''}</span>` : ''}</div>
           ${err ? `<div class="qr__err">${ICON.alert}<span>${esc(err)}</span></div>` : ''}</div>
         ${editable ? `<span class="qr__acts"><button type="button" data-qr-edit="${ns}|${i}" title="Edit" aria-label="Edit question ${i + 1}">${ICON.edit}</button><button type="button" class="is-del" data-qr-del="${ns}|${i}" title="Delete" aria-label="Delete question ${i + 1}">${ICON.trash}</button></span>` : ''}
-      </div>`; }).join('')}</div>`;
+      </div>`; }).join('')}${editable && list.length ? `<button type="button" class="qr-add" data-qr-add="${ns}">${ICON.plus}Add Question</button>` : ''}</div>`;
   }
 
   /* ---------- Form câu hỏi ngay tại chỗ — kế thừa web (QuestionForm hiện dưới dòng Quiz, không mở trang khác).
@@ -82,8 +82,10 @@
    * Mỗi lần 1 câu, Save là lưu ngay. Luật chung D-152: Save tắt tới khi đủ trường bắt buộc; field trống báo đỏ khi rời field.
    * key: 'p' (tab Practice) | 'si:li' (Quiz). index -1 = thêm mới. */
   const QF = { key: null, index: -1, v: null, withScore: false, bank: 'practice', touched: {}, err: {}, onSave: null, onClose: null };
-  function qfOpen(key, { index = -1, q = null, withScore = false, bank = 'practice', onSave, onClose } = {}) {
+  function qfOpen(key, { index = -1, q = null, withScore = false, bank = 'practice', type = null, onSave, onClose } = {}) {
     const v = cloneQ(q || blankQuestion(withScore));
+    /* D-187: Save & Add Another mở câu mới giữ loại câu vừa chọn */
+    if (!q && type) { v.type = type; if (type === 'tf') v.options = ['True', 'False']; }
     if (withScore) v.score = [0.5, 1].includes(+v.score) ? +v.score : 1; else delete v.score;
     Object.assign(QF, { key, index, v, withScore, bank, touched: {}, err: {}, onSave, onClose, init: JSON.stringify(v) });
   }
@@ -102,7 +104,7 @@
         ${v.type === 'tf' ? '' : `<button type="button" class="su-icon su-icon--del" data-qf-optdel="${i}" aria-label="Remove option ${KEYS[i]}" ${v.options.length <= 2 ? 'disabled' : ''}>${ICON.trash}</button>`}</div>`).join('');
     const addDis = v.type === 'tf' || v.options.length >= 4;
     return `<div class="qf" id="qf">
-      <div class="qf__head"><b>Question</b><span class="qf__pill">${TYPE[v.type]}</span>${ws ? `<span class="qf__pt">${v.score} point${v.score > 1 ? 's' : ''}</span>` : ''}</div>
+      <div class="qf__head"><b>${QF.key === 'p' ? (QF.index >= 0 ? `Edit Practice Question ${QF.index + 1}` : 'New Practice Question') : 'Question'}</b><span class="qf__pill">${TYPE[v.type]}</span>${ws ? `<span class="qf__pt">${v.score} point${v.score > 1 ? 's' : ''}</span>` : ''}</div>
       <div class="adm-field"><label for="qf-type">Question Type</label><select class="adm-input" id="qf-type">${Object.entries(TYPE).map(([k, l]) => `<option value="${k}" ${v.type === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       <div class="adm-field qf-rte ${textErr ? 'is-err' : ''}"><label for="qf-text">Question Content <span class="req">*</span></label>${LH.Richbox({ ph: 'Enter question content', html: v.html != null ? v.html : esc(v.text), bodyAttrs: 'id="qf-text"' })}<span class="adm-hint qf-count ${v.text.length > 1000 ? 'is-over' : ''}" id="qf-count">${v.text.length}/1000</span>${textErr ? `<p class="adm-err">${esc(textErr)}</p>` : ''}</div>
       ${ws ? `<div class="adm-field qf-score"><label for="qf-score">Score (Points)</label><select class="adm-input" id="qf-score">${[0.5, 1].map((n) => `<option value="${n}" ${+v.score === n ? 'selected' : ''}>${n}</option>`).join('')}</select></div>` : ''}
@@ -111,7 +113,7 @@
         ${addDis ? '' : '<button type="button" class="qf-addopt" data-qf-addopt>+ Add more Answer Option</button>'}
         ${optErr ? `<p class="adm-err">${esc(optErr)}</p>` : ''}</div>
       <div class="adm-field qf-rte"><label for="qf-explain">Explanation (optional)</label>${LH.Richbox({ ph: 'Explain why the correct answer is correct. Shown to learners after they answer.', html: v.explainHtml != null ? v.explainHtml : esc(v.explain || ''), bodyAttrs: 'id="qf-explain"' })}</div>
-      <div class="qf__foot"><button type="button" class="btn-cta btn-cta--line btn-cta--sm" data-qf-cancel>Cancel</button><button type="button" class="btn-cta btn-cta--sm" data-qf-save ${qfReady() ? '' : 'disabled title="Fill in the required fields"'}>Save</button></div>
+      <div class="qf__foot"><button type="button" class="btn-cta btn-cta--line btn-cta--sm" data-qf-cancel>Cancel</button>${QF.index < 0 ? `<button type="button" class="btn-cta btn-cta--outline btn-cta--sm" data-qf-save-again ${qfReady() && !qfAtLimit() ? '' : `disabled title="${qfAtLimit() ? 'This practice set will reach the 500-question limit.' : 'Fill in the required fields'}"`}>Save &amp; Add Another</button>` : ''}<button type="button" class="btn-cta btn-cta--sm" data-qf-save ${qfReady() ? '' : 'disabled title="Fill in the required fields"'}>Save</button></div>
     </div>`;
   }
   function qfRepaint(focusSel) {
@@ -119,7 +121,9 @@
     el.outerHTML = qfHtml();
     if (focusSel) { const f = document.querySelector(focusSel); if (f) { f.focus(); if (f.setSelectionRange && f.value != null) f.setSelectionRange(f.value.length, f.value.length); } }
   }
-  function qfSave() {
+  /* BR-PQ-14: thêm câu này mà đề luyện tập chạm 500 thì không mở câu kế tiếp */
+  const qfAtLimit = () => QF.bank === 'practice' && P.draft.length + 1 >= P_MAX;
+  function qfSave(again = false) {
     const v = QF.v;
     const prac = QF.bank === 'practice' ? P.draft : P.saved;
     const res = validateQuestion(v, { bank: QF.bank, index: QF.index, withScore: QF.withScore, practiceList: prac });
@@ -129,7 +133,7 @@
     if (v.html != null) out.html = v.html; if (v.explainHtml != null) out.explainHtml = v.explainHtml;
     const cb = QF.onSave, idx = QF.index;
     Object.assign(QF, { key: null, onClose: null });
-    cb && cb(out, idx);
+    cb && cb(out, idx, again && idx < 0 ? v.type : null);
   }
   /* BR-PQ-15: mỗi lúc 1 form; còn nội dung chưa lưu thì mọi thao tác làm đóng form đều hỏi Discard trước */
   const QF_LEAVE = '[data-q-add], [data-qr-edit], [data-qr-del], [data-q-import], [data-pq-add], [data-pq-import], [data-tab], [data-les-del], [data-sec-del], [data-publish], a[href]';
@@ -154,6 +158,7 @@
     else return;
     QF.err = {};
     const sv = document.querySelector('#qf [data-qf-save]'); if (sv) { sv.disabled = !qfReady(); sv.title = qfReady() ? '' : 'Fill in the required fields'; }
+    const sa = document.querySelector('#qf [data-qf-save-again]'); if (sa) { sa.disabled = !qfReady() || qfAtLimit(); sa.title = sa.disabled ? 'Fill in the required fields' : ''; }
   });
   document.addEventListener('change', (e) => {
     if (!QF.v || !e.target.closest('#qf')) return;
@@ -177,6 +182,7 @@
     /* Practice · Admin 3.4: Cancel khi đã nhập → hỏi Discard unsaved changes? (Keep editing · Discard) */
     if (e.target.closest('[data-qf-cancel]')) { if (!qfHasInput()) { qfClose(); return; } AdminConfirm({ title: 'Discard unsaved changes?', ok: 'Discard', cancel: 'Keep editing', danger: true, onOk: qfClose }); return; }
     if (e.target.closest('#qf [data-qf-save]')) { qfSave(); }
+    if (e.target.closest('#qf [data-qf-save-again]')) { qfSave(true); }
   });
   /* Lưu ngay từng thao tác trên đề luyện tập (Add / Edit / Import / Delete) — câu trùng vẫn lưu nhưng hiện đỏ, Publish sẽ chặn */
   function commitPractice(list) {
@@ -204,11 +210,11 @@
     const lockOn = !n && !P.enabled;
     el.innerHTML = `<div class="adm-card su-panel lh2-tab pq-tab" id="practice-strip">
       <div class="pq-switch">
-        <label class="switch ${lockOn ? 'is-locked' : ''}" ${lockOn ? 'title="Add at least 1 practice question before enabling Practice."' : ''}><input type="checkbox" id="pq-on" ${P.enabled ? 'checked' : ''} ${cfg.editable && !lockOn ? '' : 'disabled'}><span class="switch__track"></span><span><b>Enable Practice for this quiz</b></span></label>
+        <label class="switch ${lockOn ? 'is-locked' : ''}" ${lockOn ? 'title="Add at least 1 practice question to turn on Practice."' : ''}><input type="checkbox" id="pq-on" ${P.enabled ? 'checked' : ''} ${cfg.editable && !lockOn ? '' : 'disabled'}><span class="switch__track"></span><span><b>Enable Practice for this quiz</b></span></label>
       </div>
       <div class="pq-head"><h3>Practice Questions <span>${n}</span></h3>${errN ? `<span class="qz-sum__err">${ICON.alert}${errN} with errors</span>` : ''}<span class="grow"></span>${acts}</div>
       ${formOn ? qfHtml() : n ? questionRows({ list: P.draft, ns: 'p', errOf: (q, i) => P.rowErr[i] || '', editable: cfg.editable, fresh: pFresh })
-        : '<p class="qz-empty">No questions yet. Add your first question!</p>'}
+        : '<p class="qz-empty">No practice questions yet. Add at least 1 question to turn on Practice.</p>'}
     </div>`;
     const first = [...pFresh][0];
     if (first != null) {
@@ -660,9 +666,10 @@
   }
 
   /* Tab Practice: Add / Edit mở form ngay trong tab (như web), Save lưu ngay */
-  function openPracticeForm(i) {
-    qfOpen('p', { index: i, q: i >= 0 ? P.draft[i] : null, withScore: false, bank: 'practice',
-      onSave: (out, idx) => { const next = P.draft.slice(); if (idx >= 0) next[idx] = out; else next.push(out); commitPractice(next); pFresh = new Set([idx >= 0 ? idx : next.length - 1]); redraw(); toast(idx >= 0 ? `Question ${idx + 1} updated` : `Question ${next.length} added`); },
+  function openPracticeForm(i, type = null) {
+    qfOpen('p', { index: i, q: i >= 0 ? P.draft[i] : null, withScore: false, bank: 'practice', type,
+      onSave: (out, idx, again) => { const next = P.draft.slice(); if (idx >= 0) next[idx] = out; else next.push(out); commitPractice(next); pFresh = again ? new Set() : new Set([idx >= 0 ? idx : next.length - 1]); toast(idx >= 0 ? `Question ${idx + 1} updated` : `Question ${next.length} added`);
+        if (again) { openPracticeForm(-1, again); return; } redraw(); },
       onClose: () => redraw() });
     redraw(); document.getElementById('qf-text')?.focus();
   }

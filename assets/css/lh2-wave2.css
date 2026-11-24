@@ -129,11 +129,11 @@
 .qz-body .pq-head { display: none; }
 .qz-body .pq-switch { margin: 4px 0 8px; }
 
-/* D-172: chip Practice trên mọi dòng Quiz (kể cả khi thu gọn) — bấm mở thẳng tab Practice Questions của Quiz đó */
-.qz-pr { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 10px; border-radius: 999px; border: 1px dashed var(--border-strong, #d1d5db); background: var(--c-white); color: var(--text-subtle); font-family: inherit; font-size: var(--fs-xs); line-height: 16px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+/* D-172 + D-185: nhãn trạng thái Practice trên dòng Quiz — chữ + biểu tượng, không viền / nền kiểu công tắc; bấm mở tab Practice Questions */
+.qz-pr { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 4px; border: 0; border-radius: 6px; background: none; color: var(--text-subtle); font-family: inherit; font-size: var(--fs-xs); line-height: 16px; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .qz-pr svg { width: 14px; height: 14px; }
-.qz-pr:hover { border-color: var(--c-violet); color: var(--c-violet); }
-.qz-pr.is-on { border: 1px solid #ead8fb; background: var(--c-violet-bg); color: var(--c-violet); }
+.qz-pr:hover { color: var(--c-violet); text-decoration: underline; text-underline-offset: 2px; }
+.qz-pr.is-on { color: var(--c-violet); font-weight: 600; }
 
 /* D-173: nút trong popup chúc mừng có biểu tượng */
 .cel-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
@@ -155,3 +155,15 @@
 
 .aside-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box; }
 .aside-btn svg { width: 18px; height: 18px; }
+
+/* D-186: tab Practice trong dòng Quiz — công tắc sát nội dung bên dưới, không khoảng trống thừa */
+.qz-body .pq-tab { gap: 12px; padding-top: 4px; }
+.qz-body .pq-switch { margin: 0; }
+.qz-body .pq-tab .qf { margin-top: 0; }
+
+/* D-187: "+ Add Question" cuối danh sách câu (đề thi + đề luyện tập) — nút dạng chữ, thẳng hàng số thứ tự */
+.qr-add { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 4px; padding: 6px 8px; border: 0; border-radius: 8px; background: none; color: var(--adm-primary, #374BFA); font-family: inherit; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.qr-add svg { width: 16px; height: 16px; }
+.qr-add:hover { background: var(--primary-100, #eef0fe); }
+.qf__foot { gap: 8px; }
+.qr-list .qr-add { align-self: stretch; justify-content: flex-start; margin: 0; padding: 10px 16px; border-top: 1px solid var(--adm-stroke); border-radius: 0; }
