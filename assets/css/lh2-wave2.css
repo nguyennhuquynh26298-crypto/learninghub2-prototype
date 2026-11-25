@@ -167,3 +167,7 @@
 .qr-add:hover { background: var(--primary-100, #eef0fe); }
 .qf__foot { gap: 8px; }
 .qr-list .qr-add { align-self: stretch; justify-content: flex-start; margin: 0; padding: 10px 16px; border-top: 1px solid var(--adm-stroke); border-radius: 0; }
+
+/* 24/11 Hara: popup Import — nhãn "Prototype · try other files" ở trên, các file mẫu xếp hàng ngay bên dưới (không đổi logic) */
+.imp-demo { flex-direction: column; align-items: flex-start; gap: 8px; flex-wrap: nowrap; }
+.imp-demo__chips { display: flex; flex-wrap: wrap; gap: 8px; }
