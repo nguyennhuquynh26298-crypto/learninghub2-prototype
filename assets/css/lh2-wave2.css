@@ -144,6 +144,23 @@
 .mr-cert > svg { width: 24px; height: 24px; padding: 8px; box-sizing: content-box; border-radius: 10px; background: var(--c-violet-bg); color: var(--c-violet); flex: none; }
 .mr-cert .grow { display: flex; flex-direction: column; gap: 2px; }
 .mr-cert .wbtn svg { width: 16px; height: 16px; }
+/* D-201 · 25/11: bảng bài thi ở My Results bo góc + viền (Hara) */
+.mr-table { border: 1px solid var(--neutral-200, #e2e8f0); border-radius: 12px; overflow: hidden; background: var(--c-white, #fff); }
+.mr-table .table { margin: 0; }
+.mr-table .table tbody tr:last-child td { border-bottom: 0; }
+.mr-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.mr-count { font-size: var(--fs-sm); color: var(--text-subtle); } .mr-count b { color: var(--neutral-900); font-weight: 600; }
+.mr-table .table td { padding: 10px 12px; height: 44px; } .mr-table .table th { padding: 10px 12px; white-space: nowrap; } .mr-table .table td:first-child, .mr-table .table th:first-child { padding-left: 16px; }
+.mr-table .num { text-align: right; white-space: nowrap; }
+.mr-table .table { table-layout: fixed; width: 100%; }
+.mr-q { display: flex; align-items: baseline; gap: 8px; min-width: 0; } .mr-q b { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .mr-q span { font-size: var(--fs-xs); color: var(--text-subtle); white-space: nowrap; }
+.mr-act { width: 80px; text-align: right; }
+.mr-link { font-weight: 600; color: var(--primary-700, #4757ff); text-decoration: none; } .mr-link:hover { text-decoration: underline; }
+.mr-table.is-all:not(.is-open) thead { display: none; }
+.mr-pass { display: none; } .mr-table.is-open .mr-pass { display: table-row; }
+.mr-toggle td { padding: 0 !important; height: auto !important; background: var(--bg-subtle, #f8fafc); }
+.mr-toggle button { display: flex; align-items: center; gap: 6px; width: 100%; padding: 10px 16px; border: 0; background: none; font: inherit; font-size: var(--fs-sm); font-weight: 600; color: var(--primary-700, #4757ff); cursor: pointer; text-align: left; }
+.mr-toggle svg { width: 16px; height: 16px; transition: transform .15s; } .mr-table.is-open .mr-toggle svg { transform: rotate(180deg); }
 .mr-rate { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px 16px; color: var(--text-subtle); font-size: var(--fs-sm); }
 .mr-stars { color: var(--c-star, #f5a524); letter-spacing: 2px; }
 .mr-stars i { font-style: normal; color: var(--border-default); }

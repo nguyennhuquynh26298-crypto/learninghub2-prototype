@@ -11,7 +11,7 @@
   .my-result { display: flex; gap: 24px; align-items: center; padding: 20px; border-radius: 20px; border: 1px solid var(--neutral-200); background: var(--bg-aside); margin-bottom: 16px; }
   .cd-tags { position: absolute; left: 20px; top: 20px; display: flex; gap: 8px; }
 </style>
-<link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
+<link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125m3">
 <link rel="stylesheet" href="../assets/css/ds.css?v=1125b">
 </head>
 <body class="bg-white">
@@ -103,13 +103,22 @@ function renderResult(R, locked) {
   if (!R) { el.innerHTML = ''; el.style.display = 'none'; return; }
   el.style.display = '';
   /* D-201: bỏ thẻ tóm tắt (vòng %, Completion Rate, Videos · Quizzes · Documents) — trùng thẻ bên phải; giữ bảng bài thi (yêu cầu #7) */
-  el.innerHTML = `<h2>My Results</h2>
+  /* 25/11 (Hara chọn): dòng gọn 1 hàng; bài chưa đạt / chưa làm lên trước theo thứ tự mục lục; bài đã đạt thu vào "Show passed quizzes (k)";
+     đạt hết → chỉ dòng "All n quizzes passed · Show details" */
+  const passed = R.tests.filter((t) => t.res === 'pass'), todo = R.tests.filter((t) => t.res !== 'pass');
+  const row = (t, cls = '') => `<tr class="${cls}"><td><span class="mr-q" title="${esc(t.name)} · ${esc(t.session)}"><b>${esc(t.name)}</b><span>${esc(t.session)}</span></span></td><td class="num">${t.best == null ? '—' : ptsOf(t)}</td><td class="num">${t.tries}</td>
+      <td>${t.res === 'fail' && t.tries === '3/3' ? Badge('Failed', 'danger') : Badge(...RES[t.res])}</td>
+      <td class="mr-act">${t.best != null && !locked ? '<a class="mr-link" href="test-result.html">Review</a>' : ''}</td></tr>`;
+  const toggleLabel = (open) => (todo.length ? (open ? `Hide passed quizzes` : `Show passed quizzes (${passed.length})`) : (open ? `All ${passed.length} quizzes passed · Hide details` : `All ${passed.length} quizzes passed · Show details`));
+  el.innerHTML = `<div class="mr-head"><h2>My Results</h2><span class="mr-count">Quizzes passed <b>${passed.length}/${R.tests.length}</b></span></div>
     ${R.pct === 100 && !R.failed ? `<div class="mr-cert">${ICON.award}<div class="grow"><b>Certificate</b><span class="t-xs muted">No. ${esc(R.certNo || 'LH-CCAR-F-2026-0142')} · Issued ${esc(R.done)}</span></div><a class="wbtn wbtn--outline" style="height:36px" href="certificate.html">View</a><button class="wbtn" style="height:36px" data-cert-dl>${ICON.download}Download</button></div>
       <div class="mr-rate">${rated ? `<span>Your rating</span><b class="mr-stars">${'★'.repeat(rated)}<i>${'★'.repeat(5 - rated)}</i></b>` : '<span>How was this course?</span><button class="wbtn wbtn--outline" style="height:36px" data-rate>Rate Course</button>'}</div>` : ''}
-    <table class="table"><thead><tr><th>Quiz</th><th>Highest Score</th><th>Attempts Used</th><th>Result</th><th></th></tr></thead><tbody>
-      ${R.tests.map((t) => `<tr><td><b>${esc(t.name)}</b><div class="t-xs muted">${esc(t.session)}</div></td><td>${t.best == null ? '—' : ptsOf(t)}</td><td>${t.tries}</td><td>${t.res === 'fail' && t.tries === '3/3' ? Badge('Failed', 'danger') : Badge(...RES[t.res])}</td>
-        <td style="text-align:right">${t.best != null && !locked ? `<a class="wbtn wbtn--outline" style="height:32px" href="test-result.html">Review</a>` : ''}</td></tr>`).join('')}
-    </tbody></table>`;
+    <div class="mr-table ${todo.length ? '' : 'is-all'}"><table class="table"><colgroup><col><col style="width:112px"><col style="width:112px"><col style="width:132px"><col style="width:76px"></colgroup><thead><tr><th>Quiz</th><th class="num">Highest Score</th><th class="num">Attempts Used</th><th>Result</th><th></th></tr></thead><tbody>
+      ${todo.map((t) => row(t)).join('')}${passed.map((t) => row(t, 'mr-pass')).join('')}
+      ${passed.length ? `<tr class="mr-toggle"><td colspan="5"><button type="button" data-mr-toggle aria-expanded="false">${ICON.chevronD}<span>${toggleLabel(false)}</span></button></td></tr>` : ''}
+    </tbody></table></div>`;
+  const tg = el.querySelector('[data-mr-toggle]');
+  if (tg) tg.addEventListener('click', () => { const box = el.querySelector('.mr-table'); const open = box.classList.toggle('is-open'); tg.setAttribute('aria-expanded', open); tg.querySelector('span').textContent = toggleLabel(open); });
 }
 document.addEventListener('click', (e) => {
   const pop = document.querySelector('.popover');

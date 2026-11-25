@@ -5,7 +5,7 @@
 <title>My Results · Reviews · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&subset=vietnamese&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1125sh"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1125sh"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125m3">
 <style>
   .mr { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   @media (max-width: 900px) { .mr { grid-template-columns: 1fr; } }
@@ -64,10 +64,19 @@ let s;
 function renderResults() {
   const [t, tone] = STATUS_TAG[s.st];
   const locked = ['removed', 'closed'].includes(s.st);
-  document.getElementById('results').innerHTML = `<h2>My Results <span class="badge badge--${tone}">${t}</span></h2>
-    <div class="mr-kpi"><div><b>${s.p}%</b><span>Completion Rate</span></div><div><b>${s.v[0]}/${s.v[1]}</b><span>Videos</span></div><div><b>${s.q[0]}/${s.q[1]}</b><span>Quizzes</span></div></div>
-    <table class="mr-t"><thead><tr><th>Quiz</th><th>Highest Score</th><th>Attempts</th><th>Result</th><th></th></tr></thead><tbody>
-    ${s.quizzes.map(([n, sc, a, r]) => `<tr><td>${esc(n)}</td><td>${sc == null ? '—' : `<b>${Math.round(sc * 20 / 100)}</b>/20`}</td><td>${a}/3</td><td>${r}</td><td>${a && !locked ? '<a href="test-result.html">Review</a>' : ''}</td></tr>`).join('')}</tbody></table>
+  /* D-201 (25/11): bỏ ô Completion Rate / Videos / Quizzes (đã có ở thẻ bên phải trang khoá); bảng gọn như trang khoá:
+     đếm "Quizzes passed x/n", bài chưa đạt lên trước, bài đã đạt thu vào "Show passed quizzes (k)", cột Attempts Used, Review dạng link */
+  const Q = s.quizzes.map(([n, sc, a, r]) => ({ n, sc, a, r, ok: r === 'Passed' }));
+  const passed = Q.filter((q) => q.ok), todo = Q.filter((q) => !q.ok);
+  const TONE = { Passed: 'success', 'Not Passed': 'danger', Failed: 'danger', 'Not Attempted': 'neutral' };
+  const row = (q, cls = '') => `<tr class="${cls}"><td><span class="mr-q" title="${esc(q.n)}"><b>${esc(q.n)}</b></span></td><td class="num">${q.sc == null ? '—' : `<b>${Math.round(q.sc * 20 / 100)}</b>/20`}</td><td class="num">${q.a}/3</td><td>${LH.Badge(q.r, TONE[q.r])}</td><td class="mr-act">${q.a && !locked ? '<a class="mr-link" href="test-result.html">Review</a>' : ''}</td></tr>`;
+  const lbl = (open) => (todo.length ? (open ? 'Hide passed quizzes' : `Show passed quizzes (${passed.length})`) : (open ? `All ${passed.length} quizzes passed · Hide details` : `All ${passed.length} quizzes passed · Show details`));
+  document.getElementById('results').innerHTML = `<div class="mr-head"><h2>My Results <span class="badge badge--${tone}">${t}</span></h2><span class="mr-count">Quizzes passed <b>${passed.length}/${Q.length}</b></span></div>
+    <div class="mr-table ${todo.length ? '' : 'is-all'}"><table class="table"><colgroup><col><col style="width:112px"><col style="width:112px"><col style="width:132px"><col style="width:76px"></colgroup>
+      <thead><tr><th>Quiz</th><th class="num">Highest Score</th><th class="num">Attempts Used</th><th>Result</th><th></th></tr></thead><tbody>
+      ${todo.map((q) => row(q)).join('')}${passed.map((q) => row(q, 'mr-pass')).join('')}
+      ${passed.length ? `<tr class="mr-toggle"><td colspan="5"><button type="button" data-mr-toggle aria-expanded="false">${LH.ICON.chevronD}<span>${lbl(false)}</span></button></td></tr>` : ''}
+    </tbody></table></div>
     ${s.st === 'done' ? `<div class="mr-cert">${LH.ICON.award}<div class="grow"><b>Certificate</b><span class="t-xs muted">No. ${s.cert} · Issued ${s.done}</span></div><a class="wbtn wbtn--outline" style="height:36px" href="certificate.html">View</a><button class="wbtn" style="height:36px" data-cert-dl>${LH.ICON.download}Download</button></div>
       <div class="mr-rate">${rated ? `<span>Your rating</span><b class="mr-stars">${'★'.repeat(rated)}<i>${'★'.repeat(5 - rated)}</i></b>` : '<span>How was this course?</span><button class="wbtn wbtn--outline" style="height:36px" data-rate>Rate Course</button>'}</div>` : ''}`;
 }
@@ -85,6 +94,7 @@ const ask = () => LHW2.rateCourse({ course: COURSE, onSubmit: ({ stars, comment 
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-rate]')) ask();
   if (e.target.closest('[data-more]')) { shown += 5; renderReviews(); }
+  const tg = e.target.closest('[data-mr-toggle]'); if (tg) { const box = tg.closest('.mr-table'); const open = box.classList.toggle('is-open'); tg.setAttribute('aria-expanded', open); tg.querySelector('span').textContent = (box.classList.contains('is-all') ? (open ? `All ${box.querySelectorAll('.mr-pass').length} quizzes passed · Hide details` : `All ${box.querySelectorAll('.mr-pass').length} quizzes passed · Show details`) : (open ? 'Hide passed quizzes' : `Show passed quizzes (${box.querySelectorAll('.mr-pass').length})`)); }
   if (e.target.closest('[data-cert-dl]')) LH.toast(`Certificate downloaded · Certificate_${s.cert}.pdf`);
 });
 LH.DemoBar('LH2 · My Results + Rating (Đợt 2 · Gói 5)', [
