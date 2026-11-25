@@ -101,9 +101,6 @@
   .mail__foot { margin-top: 8px; padding: 20px 32px; background: #f3f4f6; display: flex; align-items: center; gap: 12px; font-size: 12px; line-height: 1.6; color: #4b5563; }
   .mail__foot img { width: 28px; height: 28px; flex: none; }
   .mail__foot a { color: #384bfc; font-weight: 600; text-decoration: none; }
-  .mail__course { margin: 4px 0 18px; padding: 12px 16px; border: 1px solid #e5e7eb; border-left: 3px solid #384bfc; border-radius: 8px; }
-  .mail__course b { display: block; font-size: 15px; line-height: 1.35; }
-  .mail__course span { display: block; margin-top: 4px; font-size: 13px; color: #6b7280; }
   .mail__pre { display: none; }
 
   @media (max-width: 1340px) { .ol-body { grid-template-columns: 48px 56px 300px minmax(0, 1fr); } .ol-folders { padding: 10px 4px; } .ol-acct, .ol-folder span, .ol-folder b { display: none; } .ol-folder { justify-content: center; padding: 0; } }
@@ -128,40 +125,35 @@
 <script>
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const COURSE = 'QA Automation – Module 2: Fundamental Testing';
-/* Thẻ khoá học trong thân thư (email về khoá) — không ảnh bìa (Hara 25/11); nút chính mở đúng màn trên web (href) */
-const card = (meta) => `<div class="mail__course"><b>${esc(COURSE)}</b><span>${meta}</span></div>`;
-/* Màu dòng nhỏ theo loại email (trên nền navy) */
+/* Thân thư không có ô thông tin khoá (Hara 25/11); nút chính mở đúng màn trên web (href).
+   Màu dòng nhỏ theo loại email (trên nền navy) */
 const TONE = { lime: '#c2f229', green: '#86efac', amber: '#fcd34d', red: '#fca5a5', gray: '#cbd5e1' };
 /* Mỗi email: nhóm · tên · Subject · To · Trigger · pre (dòng xem trước ở hộp thư) · tone · hero (eyebrow, title, sub) · body (HTML) · CTA */
 const EMAILS = [
   { group: 'Course Audience', key: 'invite', href: '../hoc-vien.html#/pages/course-detail.html?c=0', name: 'Invitation', when: 'Save with Send invitation email ticked', tone: 'lime',
     subject: `[LearningHub] You're invited: ${COURSE}`, to: 'Learners who get access for the first time from this save (BR-AUD-10)', trigger: 'Course Audience 3.3 · Send invitation email',
-    pre: 'Mandatory · complete by 30/11/2026 · 12 lessons · 2 quizzes',
+    pre: 'Mandatory course · complete it by 30/11/2026',
     eyebrow: 'New course for you', title: COURSE, sub: 'Schedule: 10/11/2026 – 30/11/2026 · Mandatory',
-    body: `<p>Hi <b>Trần Minh Anh</b>,</p><p>You have been added to a new course. This is a mandatory course: please complete it by <b>30/11/2026</b>.</p>
-      ${card('12 lessons · 2 quizzes · Schedule: 10/11/2026 – 30/11/2026')}`,
+    body: `<p>Hi <b>Trần Minh Anh</b>,</p><p>You have been added to a new course. This is a mandatory course: please complete it by <b>30/11/2026</b>.</p>`,
     cta: 'Start Course', note: 'No schedule: the schedule and the "complete it by" sentence are hidden. Not mandatory: no "mandatory course" sentence. Before Start Date: sentence "The course opens on dd/mm/yyyy." and button "View Course". Course not published yet when saved: the email is sent when the course is published (BR-AUD-10).' },
   { group: 'Course Audience', key: 'schedule', href: '../hoc-vien.html#/pages/course-detail.html?c=0', name: 'Schedule change', when: 'Save with Notify learners of schedule change ticked', tone: 'lime',
     subject: `[LearningHub] Schedule updated: ${COURSE}`, to: 'Learners with access who have not completed the course (Course Audience 3.2)', trigger: 'Course Audience 3.2 · Notify learners of schedule change',
     pre: 'End Date moved to 15/12/2026 · your progress is kept',
     eyebrow: 'Schedule updated', title: COURSE, sub: 'New schedule: 10/11/2026 – 15/12/2026',
     body: `<p>Hi <b>Trần Minh Anh</b>,</p><p>The schedule of this course has changed. Your progress is kept.</p>
-      ${card('12 lessons · 2 quizzes · Your progress: 40%')}
       <div class="mail__kv"><div><span>Start Date</span><b>10/11/2026</b></div><div><span>End Date</span><b><s>30/11/2026</s> → 15/12/2026</b></div></div>`,
-    cta: 'Continue Learning', note: 'Learners who have not enrolled yet: "Your progress" is hidden and the button is "View Course".' },
+    cta: 'Continue Learning', note: 'Learners who have not enrolled yet: no "Your progress is kept." sentence and the button is "View Course".' },
   { group: 'Course Creator & Approval', key: 'submit', href: '../admin.html#/pages/course-approval.html?w=admin&k=new', name: 'Submitted for approval', when: 'Course Creator clicks Submit for Approval / Resubmit', tone: 'lime',
     subject: `[LearningHub] Nguyễn Văn An submitted ${COURSE} for approval`, to: 'Every L&D Admin', trigger: 'Course Creator & Approval 3.4 · Submit for Approval',
     pre: 'New course from Nguyễn Văn An is waiting for your review',
     eyebrow: 'Approval needed', title: COURSE, sub: 'New course · submitted by Nguyễn Văn An',
-    body: `<p>Hi <b>Lê Thị Mai</b>,</p><p><b>Nguyễn Văn An</b> submitted a new course for approval. Review it, then approve, request changes or reject.</p>
-      ${card('New Course · submitted at 14:20, 25/11/2026')}`,
-    cta: 'Review Course', note: 'Changes to a published course: sub "Edit of published course", sentence "submitted changes to …", card shows "Edit of Published Course".' },
+    body: `<p>Hi <b>Lê Thị Mai</b>,</p><p><b>Nguyễn Văn An</b> submitted a new course for approval at <b>14:20, 25/11/2026</b>. Review it, then approve, request changes or reject.</p>`,
+    cta: 'Review Course', note: 'Changes to a published course: sub "Edit of published course", sentence "submitted changes to …".' },
   { group: 'Course Creator & Approval', key: 'approved', href: '../admin.html#/pages/course-editor.html?r=creator&st=published', name: 'Approved', when: 'L&D Admin clicks Approve', tone: 'green',
     subject: `[LearningHub] ${COURSE} has been approved and published`, to: 'Course Creator (owner)', trigger: 'Course Creator & Approval 3.4 · Approve',
     pre: 'Approved by Lê Thị Mai · now live for 34 learners',
     eyebrow: 'Approved', title: COURSE, sub: 'Published · 34 learners',
-    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p>Good news: your course has been approved by <b>Lê Thị Mai</b> and is now published to its learners.</p>
-      ${card('Published · 34 learners')}`,
+    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p>Good news: your course has been approved by <b>Lê Thị Mai</b> and is now published to its learners.</p>`,
     cta: 'Open Course' },
   { group: 'Course Creator & Approval', key: 'changes', href: '../admin.html#/pages/course-editor.html?r=creator&st=draft', name: 'Changes requested', when: 'L&D Admin clicks Request Changes', tone: 'amber',
     subject: `[LearningHub] Changes requested for ${COURSE}`, to: 'Course Creator (owner)', trigger: 'Course Creator & Approval 3.4 · Request Changes',
@@ -181,8 +173,7 @@ const EMAILS = [
     subject: `[LearningHub] ${COURSE} has been unpublished`, to: 'Course Creator (owner)', trigger: 'Course Creator & Approval 3.4 · Unpublish (BR-CA-16)',
     pre: 'Back to Draft · edit and submit again when ready',
     eyebrow: 'Unpublished', title: COURSE, sub: 'Back to Draft',
-    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p><b>Lê Thị Mai</b> unpublished this course at <b>16:00, 25/11/2026</b>. It is now a Draft. Learners in progress can no longer open it; their progress is kept.</p>
-      ${card('Draft · unpublished at 16:00, 25/11/2026')}<p>You can edit the course and submit it for approval again.</p>`,
+    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p><b>Lê Thị Mai</b> unpublished this course at <b>16:00, 25/11/2026</b>. It is now a Draft. Learners in progress can no longer open it; their progress is kept.</p><p>You can edit the course and submit it for approval again.</p>`,
     cta: 'Open Course' },
   { group: 'Course Creator & Approval', key: 'creator', href: '../admin.html#/pages/admin-courses.html?r=creator', name: 'Course Creator access granted', when: 'L&D Admin adds a Course Creator in Settings › Permissions', tone: 'green',
     subject: '[LearningHub] You are now a Course Creator', to: 'The employee who was granted access', trigger: 'Course Creator & Approval 2.4 · Add Course Creator',
