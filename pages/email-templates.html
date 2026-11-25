@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email Templates · Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x">
+<style>
+  /* Review 25/11 (#7): khung email chung theo mẫu email My Techvify (Hara gửi 25/11) — dải navy + logo + dòng nhỏ xanh lá + tiêu đề lớn + Techter;
+     thân: lời chào, nội dung, nút CTA xanh lá; chân: email tự động. 8 email của Course Audience và Course Creator & Approval. Chữ email tiếng Anh.
+     Góp ý 25/11 (lần 2): xem trước trong khung hộp thư Outlook giả lập; Techter đội mũ cử nhân (ảnh ghép tạm, designer vẽ bản chính thức); logo to hơn.
+     Khung Outlook chỉ để trình bày, không phải màn của LearningHub. */
+  body { background: var(--neutral-50, #f5f6f8); color: var(--gray-800, #1f2937); font-family: Inter, system-ui, sans-serif; }
+  .et { max-width: 1400px; margin: 0 auto; padding: 32px 24px 64px; }
+  .et-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+  .et-head h1 { margin: 0; font-size: 24px; font-weight: 700; }
+  .et-head p { margin: 4px 0 0; font-size: 14px; color: var(--gray-600, #4b5563); }
+  .et-meta-card { margin-top: 16px; background: #fff; border: 1px solid var(--gray-200, #e5e7eb); border-radius: 12px; padding: 16px 20px; }
+  .et-meta-card h2 { margin: 0 0 12px; font-size: 14px; font-weight: 600; }
+  .et-meta { margin: 0; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px 16px; font-size: 14px; }
+  .et-meta dt { color: var(--gray-500, #6b7280); }
+  .et-meta dd { margin: 0; color: var(--gray-800, #1f2937); }
+
+  /* ---------- Cửa sổ Outlook giả lập ---------- */
+  .ol { --ol-blue: #0f6cbd; --ol-line: #e1dfdd; --ol-sub: #605e5c; --ol-text: #242424; --ol-sel: #e5f1fb;
+    height: 780px; display: grid; grid-template-rows: 44px 52px minmax(0, 1fr); border-radius: 10px; overflow: hidden; background: #f3f2f1;
+    border: 1px solid #d1d1d1; box-shadow: 0 8px 28px rgba(15, 23, 42, .12); font-family: 'Segoe UI', Inter, system-ui, sans-serif; color: var(--ol-text); font-size: 13px; }
+  .ol svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .ol-top { background: var(--ol-blue); display: grid; grid-template-columns: 120px minmax(0, 1fr) 120px; align-items: center; padding: 0 14px; }
+  .ol-dots { display: flex; gap: 8px; } .ol-dots i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; } .ol-dots i:nth-child(2) { background: #febc2e; } .ol-dots i:nth-child(3) { background: #28c840; }
+  .ol-search { justify-self: center; width: min(560px, 100%); height: 30px; border-radius: 6px; background: rgba(255,255,255,.16); color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; }
+  .ol-tools { background: #fff; border-bottom: 1px solid var(--ol-line); display: flex; align-items: center; gap: 4px; padding: 0 12px; overflow: hidden; white-space: nowrap; }
+  .ol-new { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 16px; margin-right: 12px; border-radius: 6px; background: var(--ol-blue); color: #fff; font-weight: 600; font-size: 14px; }
+  .ol-tool { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 4px; color: var(--ol-text); font-size: 14px; }
+  .ol-body { display: grid; grid-template-columns: 48px 210px 320px minmax(0, 1fr); min-height: 0; }
+  .ol-rail { background: #f3f2f1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 10px; color: var(--ol-sub); }
+  .ol-rail span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 6px; } .ol-rail span.is-on { background: #fff; color: var(--ol-blue); }
+  .ol-folders { background: #f3f2f1; padding: 10px 8px; overflow: hidden; }
+  .ol-acct { display: flex; align-items: center; gap: 6px; padding: 8px 8px 6px; font-weight: 600; font-size: 13px; min-width: 0; }
+  .ol-acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ol-acct svg { width: 14px; height: 14px; }
+  .ol-folder { display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 10px 0 22px; border-radius: 4px; color: var(--ol-text); white-space: nowrap; }
+  .ol-folder b { margin-left: auto; font-weight: 600; color: var(--ol-blue); font-size: 12px; }
+  .ol-folder.is-on { background: #fff; font-weight: 600; }
+  .ol-list { background: #fff; border-left: 1px solid var(--ol-line); border-right: 1px solid var(--ol-line); display: flex; flex-direction: column; min-height: 0; }
+  .ol-list__head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--ol-line); }
+  .ol-tabs { display: inline-flex; background: #f3f2f1; border-radius: 16px; padding: 3px; }
+  .ol-tabs span { padding: 4px 14px; border-radius: 14px; font-size: 13px; color: var(--ol-sub); } .ol-tabs span.is-on { background: #fff; color: var(--ol-blue); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .ol-list__scroll { overflow-y: auto; min-height: 0; }
+  .ol-grp { display: flex; align-items: center; gap: 6px; padding: 10px 12px 4px; font-size: 12px; font-weight: 600; color: var(--ol-sub); }
+  .ol-grp svg { width: 12px; height: 12px; }
+  .ol-row { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; width: 100%; padding: 10px 12px 10px 18px; border: 0; border-bottom: 1px solid #f3f2f1; background: #fff; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+  .ol-row:hover { background: #f5f5f5; }
+  .ol-row.is-on { background: var(--ol-sel); }
+  .ol-row.is-on::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--ol-blue); }
+  .ol-row.is-unread::after { content: ''; position: absolute; left: 7px; top: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--ol-blue); }
+  .ol-av { width: 36px; height: 36px; border-radius: 50%; background: #fff; border: 1px solid #e1dfdd; display: grid; place-items: center; }
+  .ol-av img { width: 22px; height: 22px; }
+  .ol-row__l1, .ol-row__l2 { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .ol-row__from { font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ol-row__subj { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ol-text); }
+  .ol-row__date { font-size: 12px; color: var(--ol-sub); white-space: nowrap; }
+  .ol-row__prev { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ol-sub); }
+  .ol-row.is-unread .ol-row__from, .ol-row.is-unread .ol-row__subj { font-weight: 600; } .ol-row.is-unread .ol-row__subj, .ol-row.is-unread .ol-row__date { color: var(--ol-blue); }
+  .ol-read { background: #fff; overflow-y: auto; min-height: 0; padding: 18px 24px 32px; }
+  .ol-read__subj { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 14px; font-size: 18px; font-weight: 600; }
+  .ol-read__acts { display: flex; gap: 14px; color: var(--ol-sub); }
+  .ol-from { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: start; margin-bottom: 16px; }
+  .ol-from .ol-av { width: 44px; height: 44px; } .ol-from .ol-av img { width: 26px; height: 26px; }
+  .ol-from__name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ol-from__name span { font-weight: 400; color: var(--ol-sub); }
+  .ol-from__to { margin-top: 4px; color: var(--ol-sub); } .ol-from__to b { font-weight: 400; color: var(--ol-text); }
+  .ol-from__date { font-size: 12px; color: var(--ol-sub); white-space: nowrap; }
+  .ol-mailwrap { display: flex; justify-content: center; padding: 8px 0; }
+
+  /* ---------- Khung email (rộng 600px như email thật) ---------- */
+  .mail { width: 600px; max-width: 100%; background: #fff; border: 1px solid #edebe9; border-radius: 4px; overflow: hidden; font-family: Inter, Arial, sans-serif; color: #1f2937; }
+  .mail__hero { position: relative; background: linear-gradient(135deg, #0b1f6b 0%, #12309e 100%); color: #fff; padding: 26px 32px 30px; min-height: 230px; overflow: hidden; }
+  .mail__hero::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 2px, transparent 2px 10px); pointer-events: none; }
+  .mail__brand { display: flex; align-items: center; gap: 10px; font-size: 21px; white-space: nowrap; font-weight: 600; letter-spacing: .01em; position: relative; z-index: 1; }
+  .mail__brand img { width: 36px; height: 36px; }
+  .mail__brand .mail__tvf { width: auto; height: 15px; }
+  .mail__div { width: 1px; height: 26px; margin: 0 6px; background: rgba(255,255,255,.35); }
+  .mail__brand i { width: 6px; height: 6px; border-radius: 50%; background: #c2f229; display: inline-block; }
+  /* Vòng xanh chanh của LearningHub (ảnh footer.png) sau Techter */
+  .mail__hero::before { content: ''; position: absolute; right: -46px; top: 34px; width: 230px; height: 230px; border-radius: 50%; border: 28px solid rgba(194, 242, 41, .2); pointer-events: none; }
+  .mail__eyebrow { margin: 22px 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tone, #c2f229); position: relative; z-index: 1; }
+  .mail__title { margin: 0; max-width: 390px; font-size: 26px; line-height: 1.25; font-weight: 700; position: relative; z-index: 1; }
+  .mail__sub { margin: 10px 0 0; max-width: 390px; font-size: 14px; color: #c7d2fe; position: relative; z-index: 1; }
+  .mail__techter { position: absolute; right: 26px; bottom: 0; height: 200px; z-index: 1; }
+  .mail__body { padding: 28px 32px 8px; font-size: 15px; line-height: 1.6; }
+  .mail__body p { margin: 0 0 14px; }
+  .mail__body b { font-weight: 600; }
+  .mail__kv { margin: 4px 0 18px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+  .mail__kv div { display: grid; grid-template-columns: 140px 1fr; gap: 12px; padding: 10px 14px; font-size: 14px; }
+  .mail__kv div + div { border-top: 1px solid #f1f5f9; }
+  .mail__kv span { color: #6b7280; }
+  .mail__kv s { color: #9ca3af; }
+  .mail__note { margin: 4px 0 18px; padding: 12px 14px; border-left: 3px solid #384bfc; background: #f8fafc; border-radius: 0 8px 8px 0; font-size: 14px; }
+  .mail__note small { display: block; margin-top: 6px; color: #6b7280; font-size: 12px; }
+  .mail__cta { display: inline-block; margin: 6px 0 22px; padding: 12px 28px; border-radius: 8px; background: #384bfc; color: #fff !important; font-size: 15px; font-weight: 600; text-decoration: none; }
+  .mail__foot { margin-top: 8px; padding: 20px 32px; background: #f3f4f6; display: flex; align-items: center; gap: 12px; font-size: 12px; line-height: 1.6; color: #4b5563; }
+  .mail__foot img { width: 28px; height: 28px; flex: none; }
+  .mail__foot a { color: #384bfc; font-weight: 600; text-decoration: none; }
+  .mail__course { margin: 4px 0 18px; padding: 12px 16px; border: 1px solid #e5e7eb; border-left: 3px solid #384bfc; border-radius: 8px; }
+  .mail__course b { display: block; font-size: 15px; line-height: 1.35; }
+  .mail__course span { display: block; margin-top: 4px; font-size: 13px; color: #6b7280; }
+  .mail__pre { display: none; }
+
+  @media (max-width: 1340px) { .ol-body { grid-template-columns: 48px 56px 300px minmax(0, 1fr); } .ol-folders { padding: 10px 4px; } .ol-acct, .ol-folder span, .ol-folder b { display: none; } .ol-folder { justify-content: center; padding: 0; } }
+  @media (max-width: 1100px) { .ol-body { grid-template-columns: 48px 280px minmax(0, 1fr); } .ol-folders { display: none; } .ol-tool:nth-child(n+6) { display: none; } }
+</style>
+</head>
+<body>
+<main class="et">
+  <div class="et-head"><div><h1>Email Templates</h1><p>One layout for every LearningHub email, previewed in an Outlook inbox. Pick an email in the message list; its sending rules are below the window.</p></div></div>
+  <div class="ol" aria-label="Outlook preview">
+    <div class="ol-top"><div class="ol-dots"><i></i><i></i><i></i></div><div class="ol-search" id="ol-search"></div><div></div></div>
+    <div class="ol-tools" id="ol-tools"></div>
+    <div class="ol-body">
+      <div class="ol-rail" id="ol-rail"></div>
+      <nav class="ol-folders" id="ol-folders"></nav>
+      <div class="ol-list"><div class="ol-list__head"><div class="ol-tabs"><span class="is-on">Focused</span><span>Other</span></div><span id="ol-filter" style="color:#605e5c"></span></div><div class="ol-list__scroll" id="nav" role="listbox" aria-label="Emails"></div></div>
+      <section class="ol-read" id="read"></section>
+    </div>
+  </div>
+  <section class="et-meta-card"><h2>Email details</h2><dl class="et-meta" id="meta"></dl></section>
+</main>
+<script>
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const COURSE = 'QA Automation – Module 2: Fundamental Testing';
+/* Thẻ khoá học trong thân thư (email về khoá) — không ảnh bìa (Hara 25/11); nút chính mở đúng màn trên web (href) */
+const card = (meta) => `<div class="mail__course"><b>${esc(COURSE)}</b><span>${meta}</span></div>`;
+/* Màu dòng nhỏ theo loại email (trên nền navy) */
+const TONE = { lime: '#c2f229', green: '#86efac', amber: '#fcd34d', red: '#fca5a5', gray: '#cbd5e1' };
+/* Mỗi email: nhóm · tên · Subject · To · Trigger · pre (dòng xem trước ở hộp thư) · tone · hero (eyebrow, title, sub) · body (HTML) · CTA */
+const EMAILS = [
+  { group: 'Course Audience', key: 'invite', href: '../hoc-vien.html#/pages/course-detail.html?c=0', name: 'Invitation', when: 'Save with Send invitation email ticked', tone: 'lime',
+    subject: `[LearningHub] You're invited: ${COURSE}`, to: 'Learners who get access for the first time from this save (BR-AUD-10)', trigger: 'Course Audience 3.3 · Send invitation email',
+    pre: 'Mandatory · complete by 30/11/2026 · 12 lessons · 2 quizzes',
+    eyebrow: 'New course for you', title: COURSE, sub: 'Schedule: 10/11/2026 – 30/11/2026 · Mandatory',
+    body: `<p>Hi <b>Trần Minh Anh</b>,</p><p>You have been added to a new course. This is a mandatory course: please complete it by <b>30/11/2026</b>.</p>
+      ${card('12 lessons · 2 quizzes · Schedule: 10/11/2026 – 30/11/2026')}`,
+    cta: 'Start Course', note: 'No schedule: the schedule and the "complete it by" sentence are hidden. Not mandatory: no "mandatory course" sentence. Before Start Date: sentence "The course opens on dd/mm/yyyy." and button "View Course". Course not published yet when saved: the email is sent when the course is published (BR-AUD-10).' },
+  { group: 'Course Audience', key: 'schedule', href: '../hoc-vien.html#/pages/course-detail.html?c=0', name: 'Schedule change', when: 'Save with Notify learners of schedule change ticked', tone: 'lime',
+    subject: `[LearningHub] Schedule updated: ${COURSE}`, to: 'Learners with access who have not completed the course (Course Audience 3.2)', trigger: 'Course Audience 3.2 · Notify learners of schedule change',
+    pre: 'End Date moved to 15/12/2026 · your progress is kept',
+    eyebrow: 'Schedule updated', title: COURSE, sub: 'New schedule: 10/11/2026 – 15/12/2026',
+    body: `<p>Hi <b>Trần Minh Anh</b>,</p><p>The schedule of this course has changed. Your progress is kept.</p>
+      ${card('12 lessons · 2 quizzes · Your progress: 40%')}
+      <div class="mail__kv"><div><span>Start Date</span><b>10/11/2026</b></div><div><span>End Date</span><b><s>30/11/2026</s> → 15/12/2026</b></div></div>`,
+    cta: 'Continue Learning', note: 'Learners who have not enrolled yet: "Your progress" is hidden and the button is "View Course".' },
+  { group: 'Course Creator & Approval', key: 'submit', href: '../admin.html#/pages/course-approval.html?w=admin&k=new', name: 'Submitted for approval', when: 'Course Creator clicks Submit for Approval / Resubmit', tone: 'lime',
+    subject: `[LearningHub] Nguyễn Văn An submitted ${COURSE} for approval`, to: 'Every L&D Admin', trigger: 'Course Creator & Approval 3.4 · Submit for Approval',
+    pre: 'New course from Nguyễn Văn An is waiting for your review',
+    eyebrow: 'Approval needed', title: COURSE, sub: 'New course · submitted by Nguyễn Văn An',
+    body: `<p>Hi <b>Lê Thị Mai</b>,</p><p><b>Nguyễn Văn An</b> submitted a new course for approval. Review it, then approve, request changes or reject.</p>
+      ${card('New Course · submitted at 14:20, 25/11/2026')}`,
+    cta: 'Review Course', note: 'Changes to a published course: sub "Edit of published course", sentence "submitted changes to …", card shows "Edit of Published Course".' },
+  { group: 'Course Creator & Approval', key: 'approved', href: '../admin.html#/pages/course-editor.html?r=creator&st=published', name: 'Approved', when: 'L&D Admin clicks Approve', tone: 'green',
+    subject: `[LearningHub] ${COURSE} has been approved and published`, to: 'Course Creator (owner)', trigger: 'Course Creator & Approval 3.4 · Approve',
+    pre: 'Approved by Lê Thị Mai · now live for 34 learners',
+    eyebrow: 'Approved', title: COURSE, sub: 'Published · 34 learners',
+    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p>Good news: your course has been approved by <b>Lê Thị Mai</b> and is now published to its learners.</p>
+      ${card('Published · 34 learners')}`,
+    cta: 'Open Course' },
+  { group: 'Course Creator & Approval', key: 'changes', href: '../admin.html#/pages/course-editor.html?r=creator&st=draft', name: 'Changes requested', when: 'L&D Admin clicks Request Changes', tone: 'amber',
+    subject: `[LearningHub] Changes requested for ${COURSE}`, to: 'Course Creator (owner)', trigger: 'Course Creator & Approval 3.4 · Request Changes',
+    pre: 'Lê Thị Mai asked for changes · update and resubmit',
+    eyebrow: 'Changes requested', title: COURSE, sub: 'Update the course, then resubmit',
+    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p><b>Lê Thị Mai</b> asked for changes before this course can be published.</p>
+      <div class="mail__note">Please add an explanation to every question in Quiz 2 and replace the video in Lesson 3 with the updated recording.<small>Lê Thị Mai · 15:05, 25/11/2026</small></div>`,
+    cta: 'Edit Course' },
+  { group: 'Course Creator & Approval', key: 'rejected', href: '../admin.html#/pages/course-editor.html?r=creator&st=published', name: 'Rejected', when: 'L&D Admin clicks Reject', tone: 'red',
+    subject: `[LearningHub] ${COURSE} has been rejected`, to: 'Course Creator (owner)', trigger: 'Course Creator & Approval 3.4 · Reject',
+    pre: 'Lê Thị Mai rejected this course · see the comment',
+    eyebrow: 'Rejected', title: COURSE, sub: 'This course will not be published',
+    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p><b>Lê Thị Mai</b> rejected this course. You can view it but no longer edit or resubmit it. To try again, create a new course.</p>
+      <div class="mail__note">The topic is already covered by the QA Automation track. Please talk to L&amp;D before creating a new course.<small>Lê Thị Mai · 15:10, 25/11/2026</small></div>`,
+    cta: 'View Course', note: 'Rejected edit of a published course: sentence "rejected your changes. The published version stays unchanged."' },
+  { group: 'Course Creator & Approval', key: 'unpublished', href: '../admin.html#/pages/course-editor.html?r=creator&st=draft', name: 'Unpublished', when: 'L&D Admin unpublishes a course owned by a Course Creator', tone: 'gray',
+    subject: `[LearningHub] ${COURSE} has been unpublished`, to: 'Course Creator (owner)', trigger: 'Course Creator & Approval 3.4 · Unpublish (BR-CA-16)',
+    pre: 'Back to Draft · edit and submit again when ready',
+    eyebrow: 'Unpublished', title: COURSE, sub: 'Back to Draft',
+    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p><b>Lê Thị Mai</b> unpublished this course at <b>16:00, 25/11/2026</b>. It is now a Draft. Learners in progress can no longer open it; their progress is kept.</p>
+      ${card('Draft · unpublished at 16:00, 25/11/2026')}<p>You can edit the course and submit it for approval again.</p>`,
+    cta: 'Open Course' },
+  { group: 'Course Creator & Approval', key: 'creator', href: '../admin.html#/pages/admin-courses.html?r=creator', name: 'Course Creator access granted', when: 'L&D Admin adds a Course Creator in Settings › Permissions', tone: 'green',
+    subject: '[LearningHub] You are now a Course Creator', to: 'The employee who was granted access', trigger: 'Course Creator & Approval 2.4 · Add Course Creator',
+    pre: 'You can now create courses for your team',
+    eyebrow: 'New role', title: 'You are now a Course Creator', sub: 'Build courses for your team on LearningHub',
+    body: `<p>Hi <b>Nguyễn Văn An</b>,</p><p><b>Lê Thị Mai</b> gave you Course Creator access. You can now create courses for your team. L&amp;D reviews each course before it reaches learners.</p>`,
+    cta: 'Create a Course' },
+];
+/* Hộp thư mẫu: người nhận + giờ gửi mẫu cho từng email (dữ liệu demo) */
+const PEOPLE = { 'Trần Minh Anh': 'anh.tranminh@techvify.com.vn', 'Lê Thị Mai': 'mai.lethi@techvify.com.vn', 'Nguyễn Văn An': 'an.nguyenvan@techvify.com.vn' };
+const SENDER = 'no-reply@techvify.com.vn';
+const SENT = { invite: ['09:05', 'Wednesday, 25 November 2026 at 09:05'], schedule: ['10:30', 'Wednesday, 25 November 2026 at 10:30'], submit: ['14:20', 'Wednesday, 25 November 2026 at 14:20'],
+  approved: ['15:00', 'Wednesday, 25 November 2026 at 15:00'], changes: ['15:05', 'Wednesday, 25 November 2026 at 15:05'], rejected: ['15:10', 'Wednesday, 25 November 2026 at 15:10'],
+  unpublished: ['16:00', 'Wednesday, 25 November 2026 at 16:00'], creator: ['16:30', 'Wednesday, 25 November 2026 at 16:30'] };
+const I = {
+  search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>',
+  mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>',
+  cal: '<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  people: '<svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6"/><circle cx="17" cy="9.5" r="2.5"/><path d="M16.5 14.5c2.2.2 3.6 1.6 4 4"/></svg>',
+  star: '<svg viewBox="0 0 24 24"><path d="m12 4 2.4 5 5.4.6-4 3.7 1.1 5.3L12 15.9 7.1 18.6l1.1-5.3-4-3.7 5.4-.6z"/></svg>',
+  edit: '<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m14 6 4 4"/></svg>',
+  trash: '<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></svg>',
+  archive: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4" rx="1"/><path d="M5 8.5V19h14V8.5M10 12h4"/></svg>',
+  shield: '<svg viewBox="0 0 24 24"><path d="M12 3.5 5 6v5.5c0 4.2 3 7.5 7 9 4-1.5 7-4.8 7-9V6z"/></svg>',
+  move: '<svg viewBox="0 0 24 24"><path d="M3.5 7.5v10.5h17V9.5H12L10 7H3.5z"/><path d="M11 13.5h6m-2-2 2 2-2 2"/></svg>',
+  flag: '<svg viewBox="0 0 24 24"><path d="M5 21V4m0 0h12l-2.5 4.5L17 13H5"/></svg>',
+  unread: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="15" height="13" rx="2"/><path d="m3.5 7.5 7 5 7-5"/><circle cx="19.5" cy="5.5" r="2.5" fill="currentColor"/></svg>',
+  inbox: '<svg viewBox="0 0 24 24"><path d="M3.5 13.5 6 5h12l2.5 8.5V19h-17z"/><path d="M3.5 13.5h5l1 2h5l1-2h5"/></svg>',
+  draft: '<svg viewBox="0 0 24 24"><path d="M14 4H6v16h12V8z"/><path d="M14 4v4h4M9 15l5-5 1.5 1.5-5 5H9z"/></svg>',
+  sent: '<svg viewBox="0 0 24 24"><path d="m3.5 11 17-7-6 17-3-7z"/><path d="m11.5 14 9-10"/></svg>',
+  chev: '<svg viewBox="0 0 24 24"><path d="m7 9.5 5 5 5-5"/></svg>',
+  filter: '<svg viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg>',
+  reply: '<svg viewBox="0 0 24 24"><path d="M10 7 5 12l5 5"/><path d="M5 12h9c3 0 5 2 5 5"/></svg>',
+  replyAll: '<svg viewBox="0 0 24 24"><path d="M11 7 6 12l5 5"/><path d="M7 7l-5 5 5 5"/><path d="M6 12h8c3 0 5 2 5 5"/></svg>',
+  fwd: '<svg viewBox="0 0 24 24"><path d="m14 7 5 5-5 5"/><path d="M19 12h-9c-3 0-5 2-5 5"/></svg>',
+};
+const rcptOf = (e) => (e.body.match(/^<p>Hi <b>([^<]+)<\/b>/) || [, 'Trần Minh Anh'])[1];
+const LOGO = '<img src="../assets/img/logo.png" alt="">';
+let cur = new URLSearchParams(location.search).get('e') || 'invite';
+const seen = new Set();
+document.getElementById('ol-search').innerHTML = `${I.search}Search`;
+document.getElementById('ol-tools').innerHTML = `<span class="ol-new">${I.edit}New Email</span>` + [[I.trash, 'Delete'], [I.archive, 'Archive'], [I.shield, 'Report'], [I.move, 'Move'], [I.flag, 'Flag'], [I.unread, 'Mark as Unread']].map(([ic, t]) => `<span class="ol-tool">${ic}${t}</span>`).join('');
+document.getElementById('ol-rail').innerHTML = `<span class="is-on">${I.mail}</span><span>${I.cal}</span><span>${I.people}</span><span>${I.star}</span>`;
+document.getElementById('ol-filter').innerHTML = I.filter;
+function render() {
+  const e = EMAILS.find((x) => x.key === cur) || EMAILS[0];
+  seen.add(e.key);
+  const rcpt = rcptOf(e); const [, longDate] = SENT[e.key];
+  const groups = [...new Set(EMAILS.map((x) => x.group))];
+  document.getElementById('ol-folders').innerHTML = `<div class="ol-acct" title="${esc(PEOPLE[rcpt] || '')}">${I.chev}<span>${esc(PEOPLE[rcpt] || '')}</span></div>`
+    + [[I.inbox, 'Inbox', EMAILS.length - seen.size || ''], [I.draft, 'Drafts', ''], [I.sent, 'Sent', ''], [I.archive, 'Archive', ''], [I.trash, 'Deleted Items', '']]
+      .map(([ic, t, n], i) => `<div class="ol-folder ${i ? '' : 'is-on'}" title="${t}">${ic}<span>${t}</span>${n ? `<b>${n}</b>` : ''}</div>`).join('');
+  document.getElementById('nav').innerHTML = groups.map((g) => `<div class="ol-grp">${I.chev}${esc(g)}</div>${EMAILS.filter((x) => x.group === g).map((x) => `
+    <button type="button" role="option" aria-selected="${x.key === e.key}" class="ol-row ${x.key === e.key ? 'is-on' : ''} ${seen.has(x.key) ? '' : 'is-unread'}" data-e="${x.key}" title="${esc(x.name)} · ${esc(x.when)}">
+      <span class="ol-av">${LOGO}</span>
+      <span><span class="ol-row__l1"><span class="ol-row__from">LearningHub</span></span>
+        <span class="ol-row__l2"><span class="ol-row__subj">${esc(x.subject)}</span><span class="ol-row__date">${SENT[x.key][0]}</span></span>
+        <span class="ol-row__prev">${esc(x.pre)}</span></span>
+    </button>`).join('')}`).join('');
+  document.getElementById('meta').innerHTML = `<dt>Email</dt><dd><b>${esc(e.name)}</b> · ${esc(e.group)}</dd><dt>Subject</dt><dd>${esc(e.subject)}</dd><dt>Preview text</dt><dd>${esc(e.pre)}</dd><dt>To</dt><dd>${esc(e.to)}</dd><dt>Sent when</dt><dd>${esc(e.when)}</dd><dt>Doc</dt><dd>${esc(e.trigger)}</dd>${e.note ? `<dt>Variants</dt><dd>${esc(e.note)}</dd>` : ''}<dt>Sample data</dt><dd>Sender address, recipient and sending time in the inbox are sample data.</dd>`;
+  document.getElementById('read').innerHTML = `
+    <h2 class="ol-read__subj"><span>${esc(e.subject)}</span><span class="ol-read__acts">${I.reply}${I.replyAll}${I.fwd}</span></h2>
+    <div class="ol-from"><span class="ol-av">${LOGO}</span>
+      <div style="min-width:0"><div class="ol-from__name">LearningHub <span>&lt;${SENDER}&gt;</span></div><div class="ol-from__to">To: <b>${esc(rcpt)}</b></div></div>
+      <div class="ol-from__date">${longDate}</div></div>
+    <div class="ol-mailwrap"><div class="mail">
+      <span class="mail__pre">${esc(e.pre)}</span>
+      <div class="mail__hero" style="--tone:${TONE[e.tone]}"><div class="mail__brand"><img class="mail__tvf" src="../assets/img/techvify-logo.svg" alt="TECHVIFY"><span class="mail__div"></span><img src="../assets/img/logo.png" alt="">Learning<i></i>Hub</div>
+        <p class="mail__eyebrow">${esc(e.eyebrow)}</p><h2 class="mail__title">${esc(e.title)}</h2><p class="mail__sub">${esc(e.sub)}</p>
+        <img class="mail__techter" src="../assets/img/techter-grad.png" alt=""></div>
+      <div class="mail__body">${e.body}<a class="mail__cta" href="${e.href}" target="_blank" rel="noopener">${esc(e.cta)}</a></div>
+      <div class="mail__foot"><img src="../assets/img/logo.png" alt=""><div>TECHVIFY · Learning &amp; Development · <a href="../hoc-vien.html" target="_blank" rel="noopener">Open LearningHub</a><br>This email was sent automatically by LearningHub. Please do not reply.</div></div></div></div>`;
+  document.getElementById('read').scrollTop = 0;
+}
+document.addEventListener('click', (ev) => { const b = ev.target.closest('[data-e]'); if (b) { cur = b.dataset.e; history.replaceState(null, '', `?e=${cur}`); render(); } });
+render();
+</script>
+</body>
+</html>

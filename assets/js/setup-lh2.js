@@ -424,35 +424,51 @@
     });
   }
 
-  /* ---------- Popup Import Questions (Docs §3.4 · Figma pick layout) ----------
-   * 25/11: không có khối "try other files" trên màn. File giả lập khi bấm vùng chọn file đổi bằng DEMO (key imp) → setImportFile */
-  let impFile = 'good';
+  /* ---------- Popup Import Questions (Practice · Admin 3.3 · D-190) ----------
+   * Link Download template: file .xlsx 2 sheet Exam (có Score) · Practice. File có sheet Exam / Practice → đọc cả 2, màn kiểm tra chia tab theo sheet,
+   * một lần nhập thêm câu thi + câu luyện tập của cùng Quiz. File tự do → đọc sheet đầu vào tab đang mở (D-129 giữ cho file tự do).
+   * File giả lập khi bấm vùng chọn file đổi bằng DEMO (key imp) → setImportFile */
+  let impFile = 'tpl';
+  const TPL_HREF = '../assets/files/LearningHub_Question_Template.xlsx';
   const DEMO_FILES = {
-    good: { name: 'QA_Automation_questions.xlsx', note: '' },
+    tpl: { name: 'QA_Automation_template.xlsx', sheets: true },
+    good: { name: 'QA_Automation_questions.xlsx', note: 'No sheet named Exam or Practice: we read the first sheet into the tab you opened.' },
     word: { name: 'questions.docx', fileErr: 'Only Excel files (.xlsx, .xls) are supported.' },
     nohead: { name: 'bank_no_header.xlsx', fileErr: 'Column "Answer" not found. Add a header row and upload again.' },
     big: { name: 'full_bank_2025.xlsx', fileErr: 'This file has 236 questions, over the 200-question limit. Split it into several files.' },
   };
-  function importRows(bank) {
+  function importRows(bank, { sheets = false } = {}) {
     const ex = cfg.getExam()[0];
     const withScore = bank === 'exam';
     const rows = [
       { row: 2, q: '1+1 bằng mấy?', type: 'single', opts: ['1', '2', '3'], ans: '2 → B', score: 1, parsed: { type: 'single', text: '1+1 bằng mấy?', options: ['1', '2', '3'], correct: [1], explain: '', score: 1 } },
       { row: 3, q: 'Unit test kiểm tra phạm vi nào?', type: 'single', opts: ['Một hàm / module', 'Cả hệ thống', 'Giao diện', 'Hạ tầng'], ans: 'a → A', score: 1, parsed: { type: 'single', text: 'Unit test kiểm tra phạm vi nào?', options: ['Một hàm / module', 'Cả hệ thống', 'Giao diện', 'Hạ tầng'], correct: [0], explain: 'Unit test cô lập từng đơn vị nhỏ.', score: 1 } },
       { row: 4, q: 'Trái đất tròn', type: 'tf', opts: ['True', 'False'], ans: 't → True', score: 1, parsed: { type: 'tf', text: 'Trái đất tròn', options: ['True', 'False'], correct: [0], explain: '', score: 1 } },
-      { row: 5, q: 'Những công cụ nào dùng cho test tự động?', type: 'multi', opts: ['Playwright', 'Selenium', 'Figma', 'Cypress'], ans: 'A, B; D', score: 2, parsed: { type: 'multi', text: 'Những công cụ nào dùng cho test tự động?', options: ['Playwright', 'Selenium', 'Figma', 'Cypress'], correct: [0, 1, 3], explain: '', score: 2 } },
-      { row: 6, q: 'Regression test chạy khi nào?', type: 'single', opts: ['Sau mỗi thay đổi', 'Chỉ khi release', 'Không bao hours'], ans: '', err: 'Missing correct answer.' },
+      { row: 5, q: 'Những công cụ nào dùng cho test tự động?', type: 'multi', opts: ['Playwright', 'Selenium', 'Figma', 'Cypress'], ans: 'A, B; D', score: 0.5, parsed: { type: 'multi', text: 'Những công cụ nào dùng cho test tự động?', options: ['Playwright', 'Selenium', 'Figma', 'Cypress'], correct: [0, 1, 3], explain: '', score: 0.5 } },
+      { row: 6, q: 'Regression test chạy khi nào?', type: 'single', opts: ['Sau mỗi thay đổi', 'Chỉ khi release', 'Không bao giờ'], ans: '', err: 'Missing correct answer.' },
       { row: 7, q: 'Bug severity khác priority ở điểm nào?', type: 'single', opts: ['Mức ảnh hưởng vs thứ tự xử lý', 'Giống nhau'], ans: 'E', err: 'Answer "E" has no matching option.' },
     ];
     if (bank === 'practice' && ex) rows.push({ row: 8, q: ex.text, type: 'single', opts: ['…'], ans: 'B', err: `Duplicate of question ${ex.n} in quiz "${ex.quiz}". Please write a different question.` });
     rows.push({ row: 9, q: '1+1 bằng mấy?', type: 'single', opts: ['1', '2', '3'], ans: 'B', err: 'Duplicate of row 2 in this file.' });
+    if (sheets) {
+      /* File mẫu: dòng mẫu chưa sửa bị bỏ qua, không tính lỗi; câu luyện tập trùng một dòng của sheet Exam trong cùng file → lỗi (BR-PQ-03) */
+      rows.unshift({ row: 2, q: '(Sample) What does a unit test check?', type: 'single', opts: ['…', '…', '…', '…'], ans: 'A', sample: true });
+      rows.slice(1).forEach((r) => { r.row += 1; });
+      if (bank === 'practice') {
+        rows.splice(1, 0, { row: 3, q: 'Practice: unit test có cần mock database không?', type: 'single', opts: ['Có, để cô lập', 'Không bao giờ'], ans: 'A', parsed: { type: 'single', text: 'Practice: unit test có cần mock database không?', options: ['Có, để cô lập', 'Không bao giờ'], correct: [0], explain: '' } });
+        const dup = rows.find((r) => r.q === '1+1 bằng mấy?' && !r.err); if (dup) { dup.err = 'Duplicate of row 3 in sheet "Exam". Please write a different question.'; delete dup.parsed; }
+        rows.forEach((r, k) => { r.row = k + 2; });
+      }
+    }
     if (!withScore) rows.forEach((r) => { if (r.parsed) delete r.parsed.score; delete r.score; });
     return rows;
   }
-  function importModal({ bank = 'practice', onImport, room = Infinity }) {
-    const id = 'm-imp'; let file = null; let busy = false;
-    const withScore = bank === 'exam';
-    /* UI 19/11: bước 1/2 rõ ràng · vùng kéo-thả lớn · cách đọc file tóm 3 dòng · file demo tách xuống chân, chữ nhỏ */
+  /* bank: tab đang mở. other: { onImport, room, locked } cho sheet còn lại khi file có 2 sheet (exam ↔ practice của cùng Quiz) */
+  function importModal({ bank = 'practice', onImport, room = Infinity, other = null }) {
+    const id = 'm-imp'; let file = null; let busy = false; let sheet = bank;
+    const BANKS = { [bank]: { onImport, room, locked: false } };
+    if (other) BANKS[bank === 'exam' ? 'practice' : 'exam'] = other;
+    const NAME = { exam: 'Exam', practice: 'Practice' };
     const steps = (n) => `<ol class="imp-steps">${['Choose file', 'Check questions', 'Import'].map((t, i) => `<li class="${i < n ? 'is-done' : i === n ? 'is-on' : ''}"><span>${i < n ? ICON.check : i + 1}</span>${t}</li>`).join('')}</ol>`;
     const pickHtml = () => `<div class="imp-pick">
       ${steps(0)}
@@ -463,38 +479,60 @@
         <span class="imp-drop__chips"><i>.xlsx, .xls</i><i>Max 5 MB</i><i>Up to 200 questions</i></span>
       </button>
       <p class="adm-err imp-err" id="imp-err"></p>
+      <div class="imp-tpl">${ICON.sheet}<div class="imp-tpl__txt"><b>Question template</b><span>2 sheets: Exam (with Score) and Practice. One question per row.</span></div>
+        <a class="btn-cta btn-cta--line imp-tpl__btn" href="${TPL_HREF}" download="LearningHub_Question_Template.xlsx" data-imp-tpl>${ICON.download}Download template</a></div>
     </div>`;
     const loadingHtml = (name) => `<div class="imp-loading"><span class="imp-loading__spin" aria-hidden="true"></span><b>Reading ${esc(name)}…</b></div>`;
-    const previewHtml = (rows, name, note) => {
-      const ok = rows.filter((r) => !r.err).length;
-      const bad = rows.length - ok;
-      const pts = withScore ? rows.filter((r) => !r.err).reduce((a, r) => a + (+r.score || 1), 0) : 0;
+    const okOf = (rows) => rows.filter((r) => !r.err && !r.sample).length;
+    const tableHtml = (rows, withScore) => `<div class="imp-wrap"><table class="imp-table"><thead><tr><th>Row</th><th>Question</th><th>Type</th><th class="num">Options</th><th>Answer</th>${withScore ? '<th class="num">Score</th>' : ''}<th>Result</th></tr></thead><tbody>
+      ${rows.map((r) => `<tr class="${r.err ? 'is-err' : r.sample ? 'is-sample' : ''}"><td>${r.row}</td><td>${esc(r.q)}</td><td class="nw">${TYPE[r.type] || '—'}</td><td class="num">${r.opts ? r.opts.length : '—'}</td><td class="nw">${esc(r.ans || '—')}</td>${withScore ? `<td class="num">${r.err || r.sample ? '—' : (r.score || 1)}</td>` : ''}<td>${r.err ? `<span class="imp-bad">${esc(r.err)}</span>` : r.sample ? '<span class="imp-skip">Sample row · skipped</span>' : '<span class="imp-ok">Valid</span>'}</td></tr>`).join('')}
+      </tbody></table></div>`;
+    const sumHtml = (b, rows) => {
+      const ok = okOf(rows), bad = rows.filter((r) => r.err).length, smp = rows.filter((r) => r.sample).length;
+      const pts = b === 'exam' ? rows.filter((r) => !r.err && !r.sample).reduce((a, r) => a + (+r.score || 1), 0) : 0;
+      return `<div class="imp-sum"><b>${ok} valid</b><span>·</span><b class="is-bad">${bad} with errors</b><span>(will be skipped)</span>${smp ? `<span>·</span><span>${smp} sample row${smp > 1 ? 's' : ''} skipped</span>` : ''}${b === 'exam' && ok ? `<span>·</span><b>+${pts} points</b>` : ''}</div>`;
+    };
+    const blockOf = (b) => {
+      const B = BANKS[b]; if (!B) return 'This tab can\'t receive questions here.';
+      if (B.locked) return 'Exam questions can\'t be changed while the course is published. Click Edit to create a draft version first. This sheet will be skipped.';
+      const ok = okOf(file.sheets[b]);
+      if (ok > B.room) return `Only ${B.room} more practice question${B.room === 1 ? '' : 's'} can be added (500-question limit). Remove some rows and upload again.`;
+      return '';
+    };
+    const countOf = (b) => (blockOf(b) ? 0 : okOf(file.sheets[b]));
+    const previewHtml = () => {
+      const keys = Object.keys(file.sheets);
+      const tabs = keys.length > 1 ? `<div class="imp-tabs" role="tablist">${keys.map((b) => { const rows = file.sheets[b], blk = blockOf(b);
+        return `<button type="button" role="tab" class="${b === sheet ? 'is-active' : ''}" data-imp-sheet="${b}" aria-selected="${b === sheet}"><b>${blk ? ICON.alert : ''}${NAME[b]} sheet</b><span>${BANKS[b]?.locked ? 'Skipped' : `${okOf(rows)} valid · ${rows.filter((r) => r.err).length} errors`}</span></button>`; }).join('')}</div>` : '';
+      const blk = blockOf(sheet);
       return `<div class="imp-preview">
         ${steps(1)}
-        <div class="imp-file">${ICON.sheet}<div class="imp-file__txt"><b>${esc(name)}</b>${note ? `<span>${esc(note)}</span>` : ''}</div></div>
-        <div class="imp-sum"><b>${ok} valid</b><span>·</span><b class="is-bad">${bad} with errors</b><span>(will be skipped)</span>${withScore && ok ? `<span>·</span><b>+${pts} points</b>` : ''}</div>
-        <div class="imp-wrap"><table class="imp-table"><thead><tr><th>Row</th><th>Question</th><th>Type</th><th>Options</th><th>Answer</th>${withScore ? '<th>Score</th>' : ''}<th>Result</th></tr></thead><tbody>
-        ${rows.map((r) => `<tr class="${r.err ? 'is-err' : ''}"><td>${r.row}</td><td>${esc(r.q)}</td><td>${TYPE[r.type] || '—'}</td><td>${r.opts ? r.opts.length : '—'}</td><td>${esc(r.ans || '—')}</td>${withScore ? `<td>${r.err ? '—' : (r.score || 1)}</td>` : ''}<td>${r.err ? `<span class="imp-bad">${esc(r.err)}</span>` : '<span class="imp-ok">Valid</span>'}</td></tr>`).join('')}
-        </tbody></table></div>
+        <div class="imp-file">${ICON.sheet}<div class="imp-file__txt"><b>${esc(file.name)}</b><span>${keys.length > 1 ? 'Sheets Exam and Practice found. Each sheet is checked and imported into its own question list of this quiz.' : esc(file.note || '')}</span></div></div>
+        ${tabs}
+        ${blk ? `<div class="imp-block">${ICON.alert}<span>${esc(blk)}</span></div>` : ''}
+        ${sumHtml(sheet, file.sheets[sheet])}
+        ${tableHtml(file.sheets[sheet], sheet === 'exam')}
       </div>`;
     };
+    const footHtml = () => {
+      const keys = Object.keys(file.sheets);
+      const total = keys.reduce((a, b) => a + countOf(b), 0);
+      const label = keys.length > 1 ? `Import ${total} Question${total === 1 ? '' : 's'} (${countOf('exam')} exam · ${countOf('practice')} practice)` : `Import ${total} Valid Question${total === 1 ? '' : 's'}`;
+      return `<button type="button" class="btn-cta btn-cta--line" data-imp-again>Choose Another File</button><button type="button" class="btn-cta" data-imp-go ${total ? '' : 'disabled'}>${label}</button>`;
+    };
     const showPick = () => {
-      file = null; busy = false;
+      file = null; busy = false; sheet = bank;
       m.querySelector('.modal__body').innerHTML = pickHtml();
       m.querySelector('.modal__foot').innerHTML = '<button type="button" class="btn-cta btn-cta--line" data-imp-x>Cancel</button>';
       const box = m.querySelector('.modal'); if (box) { box.classList.remove('modal--lg'); box.classList.add('modal--md'); }
     };
-    const showPreview = (rows) => {
-      file = { ok: rows.filter((r) => !r.err).length, rows };
-      /* BR-PQ-14: lần nhập làm vượt 500 câu bị chặn cả lần */
-      const over = file.ok > room;
-      m.querySelector('.modal__body').innerHTML = previewHtml(rows, DEMO_FILES.good.name, DEMO_FILES.good.note)
-        + (over ? `<p class="adm-err imp-err" style="margin-top:12px">Only ${room} more question${room === 1 ? '' : 's'} can be added (500-question limit). Remove some rows and upload again.</p>` : '');
-      m.querySelector('.modal__foot').innerHTML = `<button type="button" class="btn-cta btn-cta--line" data-imp-again>Choose Another File</button><button type="button" class="btn-cta" data-imp-go ${file.ok && !over ? '' : 'disabled'}>Import ${file.ok} Valid Questions</button>`;
-      if (over) file.ok = 0;
+    const showPreview = () => {
+      m.querySelector('.modal__body').innerHTML = previewHtml();
+      m.querySelector('.modal__foot').innerHTML = footHtml();
       const box = m.querySelector('.modal'); if (box) { box.classList.remove('modal--md'); box.classList.add('modal--lg'); }
       busy = false;
     };
+    const toParsed = (rows, b) => rows.filter((r) => !r.err && !r.sample).map((r) => { const q = { ...r.parsed }; if (b === 'exam' && q.score == null) q.score = 1; if (b !== 'exam') delete q.score; return q; });
 
     document.getElementById(id)?.remove();
     document.body.insertAdjacentHTML('beforeend', Modal({
@@ -505,33 +543,29 @@
     m.classList.add('imp-modal');
     m.addEventListener('click', (e) => {
       if (e.target.closest('[data-imp-x]') || e.target.closest('[data-close]')) { m.remove(); return; }
+      if (e.target.closest('[data-imp-tpl]')) { toast('Template downloaded · LearningHub_Question_Template.xlsx'); return; }
       if (e.target.closest('[data-imp-again]')) { showPick(); return; }
-      if (e.target.closest('[data-imp-go]') && file && file.ok) {
-        const add = file.rows.filter((r) => !r.err).map((r) => {
-          const q = { ...r.parsed };
-          if (withScore && q.score == null) q.score = 1;
-          if (!withScore) delete q.score;
-          return q;
-        });
-        const [a, b] = onImport(add) || [1, add.length];
+      const sh = e.target.closest('[data-imp-sheet]'); if (sh) { sheet = sh.dataset.impSheet; showPreview(); return; }
+      if (e.target.closest('[data-imp-go]') && file) {
+        const done = [];
+        Object.keys(file.sheets).forEach((b) => { if (!countOf(b)) return; const qs = toParsed(file.sheets[b], b); BANKS[b].onImport(qs); done.push(`${qs.length} ${b}`); });
         m.remove();
-        toast(add.length === 1 ? `1 question imported (question ${a})` : `${add.length} questions imported (questions ${a}–${b})`);
+        toast(`Imported ${done.join(' · ')} question${done.length === 1 && done[0].startsWith('1 ') ? '' : 's'}`);
         return;
       }
       const pk = e.target.closest('[data-imp-pick]'); if (!pk || busy) return;
       e.preventDefault();
-      const key = pk.dataset.impPick;
-      const f = DEMO_FILES[key];
+      const f = DEMO_FILES[pk.dataset.impPick] || DEMO_FILES.tpl;
       const errEl = m.querySelector('#imp-err');
-      if (f.fileErr) {
-        if (errEl) errEl.textContent = `${f.name}: ${f.fileErr}`;
-        return;
-      }
+      if (f.fileErr) { if (errEl) errEl.textContent = `${f.name}: ${f.fileErr}`; return; }
       if (errEl) errEl.textContent = '';
       busy = true;
       m.querySelector('.modal__body').innerHTML = loadingHtml(f.name);
       m.querySelector('.modal__foot').innerHTML = '<button type="button" class="btn-cta btn-cta--line" data-imp-x disabled>Cancel</button>';
-      setTimeout(() => showPreview(importRows(bank)), 700);
+      setTimeout(() => {
+        file = { name: f.name, note: f.note, sheets: f.sheets ? { exam: importRows('exam', { sheets: true }), practice: importRows('practice', { sheets: true }) } : { [bank]: importRows(bank) } };
+        sheet = bank; showPreview();
+      }, 700);
     });
   }
 
@@ -705,7 +739,8 @@
     /* Tab Practice — lưu ngay từng thao tác */
     if (e.target.closest('[data-pq-add]')) { openPracticeForm(-1); return; }
     if (e.target.closest('[data-pq-import]')) {
-      importModal({ bank: 'practice', room: P_MAX - P.draft.length, onImport: (qs) => { const a = P.draft.length; commitPractice(P.draft.concat(qs)); pFresh = new Set(qs.map((_, k) => a + k)); redraw(); return [a + 1, P.draft.length]; } });
+      importModal({ bank: 'practice', room: P_MAX - P.draft.length, onImport: (qs) => { const a = P.draft.length; commitPractice(P.draft.concat(qs)); pFresh = new Set(qs.map((_, k) => a + k)); redraw(); return [a + 1, P.draft.length]; },
+        other: cfg.importExam ? { onImport: cfg.importExam, room: Infinity, locked: cfg.examLocked ? cfg.examLocked() : false } : null });
       return;
     }
     const pd = e.target.closest('[data-qr-del^="p|"]'); if (pd) {
@@ -773,7 +808,7 @@
   });
 
   window.LHSetup = {
-    setImportFile(k) { impFile = DEMO_FILES[k] ? k : 'good'; },
+    setImportFile(k) { impFile = DEMO_FILES[k] ? k : 'tpl'; },
     init(c) { cfg = { ...cfg, ...c }; },
     seedPractice, seedAudience,
     readPracticeStore, writePracticeStore, restorePractice,

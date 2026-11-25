@@ -407,7 +407,9 @@ var LH_V = '1119q';
   /** Assessment / Exam intro (màn bắt đầu bài thi) — Exam 3.1, Practice · Learner 3.2.
    *  Chỉ còn Exam (Practice là mục riêng trên trang khoá, BR-PR-01). State: default | in-progress | passed | out */
   /* D-167 (20/11): practice = { questions } → ô Practice Mode bên trái ô Exam Mode, cùng cỡ (Practice · Learner 3.1). Không truyền = chỉ Exam Mode */
-  function ModeSelect({ title, questions, minutes, passMark = 80, totalPts, maxAttempts = 3, attemptsLeft = 3, best = null, state = 'default', remain = '', retake = false, desc = '', practice = null }) {
+  function ModeSelect({ title, questions, minutes, passMark = 80, totalPts, maxAttempts = 3, attemptsLeft = 3, best = null, state = 'default', remain = '', retake = false, desc = '', practice = null, lastResult = false }) {
+    /* Review 25/11: màn tổng quan không có bảng Attempt History; lịch sử lượt ở màn Kết quả. Còn lượt mà đã nộp ≥ 1 lượt → link "View last result" dưới nút chính */
+    const more = lastResult && state === 'default' ? '<button type="button" class="mode-link" data-go="result">View last result</button>' : '';
     const need = totalPts ? Math.ceil(passMark * totalPts / 100) : null;
     const meta = [[ICON.list, `${questions} Questions`], [ICON.clock, minutes ? `${minutes} Minutes` : 'No time limit']]
       .map(([i, t]) => `<span>${i}${esc(t)}</span>`).join('');
@@ -431,12 +433,12 @@ var LH_V = '1119q';
         return `<div class="mode-pair">
           <section class="mode-box mode-box--practice"><h2>${ICON.dumbbell}Practice</h2>
             ${row('Questions', practice.questions)}${row('Time', 'No limit')}${row('Attempts', 'Unlimited')}
-            <button class="wbtn wbtn--outline wbtn--lg" data-go="practice">Start Practice</button></section>
+            <button class="wbtn wbtn--outline wbtn--lg" data-go="practice">Start Practice</button>${more ? '<span class="mode-link is-ghost" aria-hidden="true">View last result</span>' : ''}</section>
           <section class="mode-box mode-box--exam"><h2>${ICON.award}Exam</h2>
             ${row('Questions', questions)}${row('Time', minutes ? `${minutes} min` : 'No limit')}${row('Passing Score', `${passMark}%${need ? ` (${need}/${totalPts})` : ''}`)}${row('Attempts', `${attemptsLeft}/${maxAttempts} left`)}${best != null ? row('Highest Score', best) : ''}
-            <button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button></section>
+            <button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button>${more}</section>
         </div>`; })() : `<div class="exam-intro"><span class="exam-intro__h">${ICON.award}Exam Mode</span>${lines.map((l) => `<span>${l}</span>`).join('')}</div>
-      <div class="mode-sel__btns is-single"><div class="mode-sel__opt"><button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button></div></div>`}
+      <div class="mode-sel__btns is-single"><div class="mode-sel__opt"><button class="wbtn wbtn--lg ${btn[2]}" ${btn[1]}>${esc(btn[0])}</button>${more}</div></div>`}
     </div></div>`;
   }
 
@@ -506,6 +508,16 @@ var LH_V = '1119q';
       <div class="qnav__grid">${list.map((x, i) => `<a href="#q${no(i)}" class="qnav__i qnav__i--${x.st} ${x.flag ? 'is-flag' : ''} ${current === i ? 'is-cur' : ''}" data-jump="${no(i)}">${no(i)}</a>`).join('')}</div>
       <div class="qnav__lg">${lg}</div></div>`;
   }
+  /** Assessment / Answer map — bản đồ câu sau khi làm (Exam 3.4 màn Kết quả · Practice · Learner lưới câu hỏi).
+   *  items: 'ok' | 'bad' | 'blank' | 'skip' | 'todo' cho từng câu. legend: [[state, label]] — chỉ hiện trạng thái có trong legend.
+   *  Bấm ô → data-jump = số câu. hidden: số câu đang bị bộ lọc ẩn (ô mờ). */
+  function AnswerMap(items, { current = -1, title = 'Questions', legend = [], nums, dim = [] } = {}) {
+    const no = (i) => (nums ? nums[i] : i + 1);
+    const n = (k) => items.filter((x) => x === k).length;
+    return `<div class="qnav amap"><div class="qnav__h">${esc(title)}</div>
+      <div class="qnav__grid">${items.map((x, i) => `<a href="#q${no(i)}" class="qnav__i amap__i--${x} ${current === i ? 'is-cur' : ''} ${dim.includes(i) ? 'is-dim' : ''}" data-jump="${no(i)}" aria-label="Question ${no(i)}">${no(i)}</a>`).join('')}</div>
+      <div class="qnav__lg">${legend.map(([k, t]) => `<span><i class="qnav__sw amap__sw--${k}"></i>${esc(t)} ${n(k)}</span>`).join('')}</div></div>`;
+  }
   /** Assessment / Submit confirm — Exam 3.2 */
   function SubmitConfirm({ unanswered = 0, flagged = 0, left = 3, max = 3, changed = 0 }) {
     const warn = unanswered || flagged || changed;
@@ -530,7 +542,7 @@ var LH_V = '1119q';
         <div class="rsum__t"><h1>${isLatest ? title : `Attempt ${attemptNo}: ${pass ? 'Passed' : 'Not Passed'}`}</h1></div>
         <div class="rsum__stats"><div class="is-ok"><b>${right}</b><span>Correct</span></div><div class="is-bad"><b>${wrong}</b><span>Incorrect</span></div><div><b>${blank}</b><span>Unanswered</span></div><div><b>${total}</b><span>Total</span></div></div>
         <div class="rsum__meta"><span>Attempt ${attemptNo}/${maxAttempts}</span>${minutes ? `<span>${minutes} min</span>` : ''}<span>Passing Score: ${passMark}% (${need}/${totalPts})</span>${final ? `<span>Final Score: <b>${best}/${totalPts}</b></span>` : ''}</div>
-        <div class="rsum__act">${canRetry ? `<button class="wbtn" data-retry>Retake Exam (${left} attempt${left > 1 ? 's' : ''} left)</button>` : ''}<button class="wbtn wbtn--outline" data-review>Review Answers</button><button class="wbtn wbtn--outline" data-go="start">Back to Quiz</button></div>
+        <div class="rsum__act">${canRetry ? `<button class="wbtn" data-retry>Retake Exam (${left} attempt${left > 1 ? 's' : ''} left)</button>` : ''}<button class="wbtn wbtn--outline" data-go="start">Back to Quiz</button></div>
       </div></div>`;
   }
   /** Assessment / Answer note — Exam 3.3 Dòng thông báo đáp án. State: hidden | passed | out */
@@ -1428,5 +1440,5 @@ var LH_V = '1119q';
     admRole, ADM_USER, AdminLayout, AdminSidebar, AdminToolbar, AdminHead, AdminFilter, AdminTable, StageTag, Tag, RowMenu, AdminEmpty, AdminConfirm, TrendKpi,
     fitCertScale, fitCertText, ProgressBreakdown, CompletionRing, CourseStatus, ApprovalBanner, norm, highlight, enhanceSelect, enhanceSelects,
     CategoryNav, AppFooter, BackLink, SectionHead, FilterDropdown, SearchPanel, SearchResultItem, WebProgress, LessonsAccordion, CourseContent, LearnShell, ModeSelect, WebQuestion, DashMeter, Gauge,
-    QuizTopBar, ExamTimer, QuestionNav, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary, CertificateSheet, AnswerNote, PracticeEntry };
+    QuizTopBar, ExamTimer, QuestionNav, AnswerMap, SubmitConfirm, ResultSummary, ReviewFilter, PracticeSummary, CertificateSheet, AnswerNote, PracticeEntry };
 })();

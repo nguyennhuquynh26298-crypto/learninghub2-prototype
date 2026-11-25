@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Course setup · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1125qd"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1125an">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1125nc"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
 <style>
   /* Details — Figma nested Section → Lesson → Content */
   .su-panel { min-height: 200px; display: flex; flex-direction: column; gap: 24px; padding: 28px 32px; width: 100%; box-sizing: border-box; }
@@ -103,9 +103,9 @@
   <div class="adm-seg" id="tabs" role="tablist"></div>
   <div id="panel"></div>
 </main>
-<script src="../assets/js/components.js?v=1125d"></script>
+<script src="../assets/js/components.js?v=1125ai"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/setup-lh2.js?v=1125qd"></script>
+<script src="../assets/js/setup-lh2.js?v=1125nc"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminConfirm, Modal, Richbox, wireRichbox } = LH; const D = LHData;
 wireRichbox();
@@ -496,8 +496,21 @@ function openExamForm(si, li, index, type = null) {
     onClose: () => drawDetails() });
   drawDetails(); document.getElementById('qf-text')?.focus();
 }
+/* Import (D-190): thêm câu thi vào Quiz si:li · thêm câu luyện tập vào đề luyện tập của Quiz k (Quiz đang mở tab Practice hoặc Quiz khác) */
+function addExamQuestions(si, li, qs) {
+  const L = sections[si].lessons[li]; L.questions = L.questions || []; const a = L.questions.length + 1;
+  L.questions.push(...qs.map((q) => ({ ...q, score: q.score != null ? q.score : 1 }))); L.open = true; L.fresh = qs.map((_, k) => a - 1 + k);
+  LHSetup.writePracticeStore({ sectionsSnapshot: sections, course: title }); drawDetails(); return [a, L.questions.length];
+}
+function addPracticeQuestions(k, qs) {
+  if (k === activePQ()) { LHSetup.commitPractice(LHSetup.practiceDraft().concat(qs)); }
+  else { const b = banks[k] || { questions: [], enabled: false }; b.questions = b.questions.concat(qs); banks[k] = b; }
+  drawDetails();
+}
 LHSetup.init({
   editable: true,
+  importExam: (qs) => { const [si, li] = activePQ().split(':').map(Number); return addExamQuestions(si, li, qs); },
+  examLocked: () => !editable,
   getTitle: () => title,
   getExam: () => sections.flatMap((s) => s.lessons.filter((l) => l.type === 'quiz').flatMap((l) => (l.questions || []).map((q, k) => ({ quiz: l.name, n: k + 1, text: q.text })))),
   onChange: () => { renderTop(); if (tab === 'details') drawDetails(); },
@@ -700,7 +713,10 @@ document.addEventListener('click', (e) => {
   }
   const qi = e.target.closest('[data-q-import]'); if (qi) {
     const [si, li] = qi.dataset.qImport.split(':').map(Number);
-    LHSetup.importModal({ bank: 'exam', onImport: (qs) => { const L = sections[si].lessons[li]; L.questions = L.questions || []; const a = L.questions.length + 1; L.questions.push(...qs.map((q) => ({ ...q, score: q.score != null ? q.score : 1 }))); L.open = true; L.fresh = qs.map((_, k) => a - 1 + k); LHSetup.writePracticeStore({ sectionsSnapshot: sections, course: title }); drawDetails(); return [a, L.questions.length]; } }); return;
+    /* D-190: file mẫu 2 sheet → sheet Practice vào đề luyện tập của chính Quiz này */
+    const qk = `${si}:${li}`;
+    LHSetup.importModal({ bank: 'exam', onImport: (qs) => addExamQuestions(si, li, qs),
+      other: { room: 500 - bankOf(qk).n, onImport: (qs) => addPracticeQuestions(qk, qs) } }); return;
   }
 
   if (e.target.closest('[data-thumb]')) {
@@ -735,7 +751,7 @@ LH.DemoBar('Course setup · Details Figma', [
   { label: 'Practice (first quiz)', key: 'pq', options: [['empty', 'Off · chưa có câu (bài thi cũ)'], ['off', 'Off · có 4 câu'], ['on', 'On · 4 câu'], ['dup', 'On · có câu trùng đề thi'], ['full', 'On · 498 câu (gần giới hạn 500)']] },
   { label: 'Audience', key: 'aud', options: [['all', 'All Company'], ['restricted', 'Restricted · QA, QC Automation'], ['mandatory', 'Restricted QA · Mandatory'], ['empty', 'Restricted · chưa chọn ai']] },
   { label: 'Thumbnail', key: 'thumb', options: [['', 'None'], ['1', 'Uploaded']] },
-  { label: 'Import file', key: 'imp', options: [['good', 'Valid Excel'], ['word', 'Word file (.docx)'], ['nohead', 'Excel without header'], ['big', 'Over 200 questions']] },
+  { label: 'Import file', key: 'imp', options: [['tpl', 'Template · 2 sheets'], ['good', 'Free-form Excel · 1 sheet'], ['word', 'Word file (.docx)'], ['nohead', 'Excel without header'], ['big', 'Over 200 questions']] },
 ], (s) => {
   LHSetup.setImportFile(s.imp);
   role = LH.admRole(s.r); st = s.st; hasThumb = !!s.thumb;

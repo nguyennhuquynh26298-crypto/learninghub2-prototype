@@ -682,10 +682,9 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .wq-res svg { width: 16px; height: 16px; flex: none; }
 .wq-res--correct { background: var(--green-100); color: var(--green-700); }
 .wq-res--incorrect, .wq-res--blank { background: var(--red-100); color: var(--red-700); }
-.wq-opt.is-mine { border-color: var(--gray-500); background: var(--c-white); }
-.wq-opt.is-mine .wq-dot.is-on { border-color: var(--gray-600); } .wq-opt.is-mine .wq-dot i { background: var(--gray-600); }
-.wq-opt.is-mine .wq-dot--box.is-on { background: var(--gray-600); }
-.wq-tag--mine { color: var(--gray-600); }
+/* Review 25/11: "Your answer" khi ẩn đáp án dùng cùng màu xanh như lúc làm Exam / Practice (is-chosen), không dùng xám đen */
+.wq-opt.is-mine { border-color: var(--primary-500); background: var(--primary-50); }
+.wq-tag--mine { color: var(--primary-700); }
 .wq-tag--prior { color: var(--gray-600); }
 .wq-opt.is-prior { border-color: var(--neutral-300); background: var(--neutral-50); }
 .wq-flag { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px; border: 1px solid var(--border-shell); border-radius: 6px; background: var(--c-white); font-size: var(--fs-xs); color: var(--gray-600); cursor: pointer; }
@@ -713,6 +712,31 @@ body.has-demo .learn-drawer { height: calc(100vh - 60px - 52px); }
 .qnav__sw { width: 10px; height: 10px; border-radius: 3px; border: 1px solid var(--gray-300); }
 .qnav__sw--answered { background: var(--primary-900); border-color: var(--primary-900); }
 .qnav__sw--flag { background: var(--amber-600); border-color: var(--amber-600); border-radius: 50%; }
+/* Answer map — Correct xanh · Incorrect đỏ · Unanswered / Skipped viền gạch · chưa làm trắng (Exam 3.4, Practice · Learner) */
+/* Review 25/11: bản đồ câu Practice + màn Kết quả cùng kiểu Exam — ô tô đặc, chữ trắng; chưa làm / bỏ trống = ô trắng như "Not answered" */
+.amap__i--ok, .amap__sw--ok { background: var(--green-700); border-color: var(--green-700); color: var(--c-white); }
+.amap__i--bad, .amap__sw--bad { background: var(--red-600); border-color: var(--red-600); color: var(--c-white); }
+.amap__i--skip, .amap__sw--skip { background: var(--gray-200); border-color: var(--gray-200); color: var(--gray-600); }
+.amap__i--blank, .amap__sw--blank, .amap__i--todo, .amap__sw--todo { background: var(--c-white); border-color: var(--gray-200); color: var(--gray-600); }
+.amap__sw--blank, .amap__sw--todo { border-color: var(--gray-300); }
+.qnav__i.is-dim { opacity: .35; }
+.mode-link { align-self: center; margin-top: 8px; padding: 4px 8px; border: 0; background: none; color: var(--primary-700, var(--c-primary)); font-size: var(--fs-sm); font-weight: 500; cursor: pointer; }
+.mode-link:hover { text-decoration: underline; }
+.mode-link.is-ghost { visibility: hidden; } /* giữ 2 nút Practice / Exam thẳng hàng khi ô Exam có link */
+.rv-side { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 96px); overflow-y: auto; }
+.rv-hist { background: var(--c-white); border: 1px solid var(--border-shell); border-radius: 10px; }
+.rv-hist > summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.rv-hist > summary::-webkit-details-marker { display: none; }
+.rv-hist > summary svg { width: 16px; height: 16px; margin-left: auto; color: var(--gray-500); transition: transform .15s; }
+.rv-hist[open] > summary svg { transform: rotate(90deg); }
+.rv-hist__list { display: flex; flex-direction: column; padding: 0 8px 8px; }
+.rv-hist__row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; width: 100%; padding: 8px; border: 0; border-radius: 8px; background: none; text-align: left; font-size: var(--fs-xs); color: var(--gray-700); cursor: pointer; }
+.rv-hist__row:hover { background: var(--neutral-100, var(--c-bg-hover)); }
+.rv-hist__row.is-sel { background: var(--primary-50, var(--c-bg-subtle)); }
+.rv-hist__row b { font-size: var(--fs-sm); color: var(--gray-800); }
+.rv-hist__row small { grid-column: 1 / -1; color: var(--gray-500); }
+.rv-hist__row.is-old { cursor: default; opacity: .7; }
+@media (max-width: 1024px) { .exam-wrap.rv-wrap { flex-direction: column-reverse; } .exam-wrap.rv-wrap .exam-side { position: static; width: 100%; max-height: none; } }
 .exam-side__note { margin-top: 12px; font-size: var(--fs-xs); color: var(--gray-500); line-height: 1.5; }
 .sc-line { padding: 8px 12px; border-radius: 6px; background: var(--gray-50); }
 .sc-line--warn { background: var(--amber-50); color: var(--amber-800); }
