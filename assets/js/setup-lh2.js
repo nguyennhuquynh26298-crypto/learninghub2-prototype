@@ -540,21 +540,38 @@
     ['Trần Minh Anh', 'QA', 'In Progress'], ['Lê Hoàng Nam', 'QC Automation', 'Completed'], ['Phạm Thu Trang', 'QA', 'Not Enrolled'],
     ['Đỗ Quang Huy', 'Development', 'In Progress'], ['Vũ Ngọc Lan', 'QA', 'Failed'], ['Ngô Đức Thịnh', 'QC Automation', 'Not Enrolled'],
     ['Hoàng Thu Hà', 'QA', 'In Progress'], ['Bùi Văn Khoa', 'QC Automation', 'Unenrolled'],
-  ].map(([name, dept, status]) => { const s = name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().split(' '); return { name, dept, status, email: `${s.slice(-1)[0]}.${s.slice(0, -1).join('')}@techvify.com.vn` }; }).map((p, i) => ({ ...p, id: `TVF${String(1021 + i * 37).padStart(5, '0')}` }));
+  ].map(([name, dept, status]) => ({ name, dept, status, jobTitle: { QA: 'Tester', 'QC Automation': 'Automation Tester', Development: 'Developer' }[dept] }))
+    .map(({ name, ...rest }) => { const s = name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().split(' '); return { name, ...rest, email: `${s.slice(-1)[0]}.${s.slice(0, -1).join('')}@techvify.com.vn` }; }).map((p, i) => ({ ...p, id: `TVF${String(1021 + i * 37).padStart(5, '0')}` }));
   const DEPT_SIZE = { QA: 18, 'QC Automation': 9, Development: 42, BA: 11, Design: 6, HR: 5, Sales: 14, 'L&D': 4 };
+  /* Course Audience 3.1 (D-191): danh mục Job Title từ THRM. byDept = số người của job title đó trong từng phòng ban — dùng để đếm "N learners" không trùng */
+  const JOBS = {
+    Tester: { size: 24, byDept: { QA: 14, 'QC Automation': 2, Development: 8 } },
+    'Automation Tester': { size: 11, byDept: { QA: 4, 'QC Automation': 7 } },
+    Developer: { size: 34, byDept: { Development: 34 } },
+    'Business Analyst': { size: 11, byDept: { BA: 11 } },
+    'UI/UX Designer': { size: 6, byDept: { Design: 6 } },
+    'Project Manager': { size: 7, byDept: {} },
+    'HR Executive': { size: 5, byDept: { HR: 5 } },
+    'Sales Executive': { size: 14, byDept: { Sales: 14 } },
+  };
   const COMPANY = 412;
-  const A = { scope: 'all', depts: [], indiv: [], mandatory: false, start: '', end: '', invite: false, notify: false, excluded: [], q: '', err: {}, saved: null, published: true };
-  const snap = () => JSON.stringify({ scope: A.scope, depts: A.depts, indiv: A.indiv, mandatory: A.mandatory, start: A.start, end: A.end, excluded: A.excluded });
+  const A = { scope: 'all', jobs: [], depts: [], indiv: [], mandatory: false, start: '', end: '', invite: false, notify: false, excluded: [], q: '', err: {}, saved: null, published: true };
+  const snap = () => JSON.stringify({ scope: A.scope, jobs: A.jobs, depts: A.depts, indiv: A.indiv, mandatory: A.mandatory, start: A.start, end: A.end, excluded: A.excluded });
   function seedAudience(kind) {
-    Object.assign(A, { scope: 'all', depts: [], indiv: [], mandatory: false, start: '', end: '', invite: false, notify: false, excluded: [], q: '', err: {} });
-    if (kind === 'restricted') Object.assign(A, { scope: 'restricted', depts: ['QA', 'QC Automation'], indiv: ['Đỗ Quang Huy'], start: '10/11/2026', end: '30/11/2026', excluded: [{ name: 'Bùi Thanh Tùng', dept: 'QA', email: 'tung.buithanh@techvify.com.vn' }] });
+    Object.assign(A, { scope: 'all', jobs: [], depts: [], indiv: [], mandatory: false, start: '', end: '', invite: false, notify: false, excluded: [], q: '', err: {} });
+    if (kind === 'restricted') Object.assign(A, { scope: 'restricted', jobs: ['Business Analyst'], depts: ['QA', 'QC Automation'], indiv: ['Đỗ Quang Huy'], start: '10/11/2026', end: '30/11/2026', excluded: [{ name: 'Bùi Thanh Tùng', dept: 'QA', email: 'tung.buithanh@techvify.com.vn' }] });
     if (kind === 'mandatory') Object.assign(A, { scope: 'restricted', depts: ['QA'], mandatory: true, start: '10/11/2026', end: '30/11/2026' });
     if (kind === 'empty') Object.assign(A, { scope: 'restricted' });
     A.saved = snap();
   }
-  const count = () => (A.scope === 'all' ? COMPANY : A.depts.reduce((a, d) => a + (DEPT_SIZE[d] || 0), 0) + A.indiv.filter((n) => !PEOPLE.find((p) => p.name === n && A.depts.includes(p.dept))).length) - A.excluded.length;
-  const learners = () => PEOPLE.filter((p) => !A.excluded.find((x) => x.name === p.name) && (A.scope === 'all' || A.depts.includes(p.dept) || A.indiv.includes(p.name)))
-    .map((p) => ({ ...p, source: A.scope === 'all' ? 'All Company' : A.depts.includes(p.dept) ? `Department: ${p.dept}` : 'Individual' }));
+  const audList = (k) => (k === 'j' ? A.jobs : k === 'd' ? A.depts : A.indiv);
+  const inGroups = (p) => A.jobs.includes(p.jobTitle) || A.depts.includes(p.dept);
+  const count = () => (A.scope === 'all' ? COMPANY
+    : A.depts.reduce((a, d) => a + (DEPT_SIZE[d] || 0), 0)
+      + A.jobs.reduce((a, j) => { const J = JOBS[j]; if (!J) return a; const inDepts = A.depts.reduce((b, d) => b + (J.byDept[d] || 0), 0); return a + J.size - inDepts; }, 0)
+      + A.indiv.filter((n) => !PEOPLE.find((p) => p.name === n && inGroups(p))).length) - A.excluded.length;
+  const learners = () => PEOPLE.filter((p) => !A.excluded.find((x) => x.name === p.name) && (A.scope === 'all' || inGroups(p) || A.indiv.includes(p.name)))
+    .map((p) => ({ ...p, source: A.scope === 'all' ? 'All Company' : A.jobs.includes(p.jobTitle) ? `Job Title: ${p.jobTitle}` : A.depts.includes(p.dept) ? `Department: ${p.dept}` : 'Individual' }));
   const parseD = (s) => { const m = String(s).match(/^(\d{2})\/(\d{2})\/(\d{4})$/); return m ? new Date(+m[3], +m[2] - 1, +m[1]) : null; };
   const ST_TONE = { 'In Progress': 'info', Completed: 'published', Failed: 'pending', 'Not Enrolled': 'neutral', 'Access Removed': 'draft', Unenrolled: 'neutral', Closed: 'neutral' };
 
@@ -565,11 +582,12 @@
   let ms = { open: null, q: '' };
   function msOptions(key) {
     const q = LH.norm(ms.q);
-    if (key === 'd') return D.hr.departments.filter((d) => !A.depts.includes(d) && (!q || LH.norm(d).includes(q)))
-      .map((d) => ({ v: d, main: d, sub: `${DEPT_SIZE[d] || 0} people` }));
-    /* Course Audience 3.1: tìm theo tên (không dấu cũng được), email, mã nhân viên */
+    /* D-191: gợi ý Job Titles và Departments chỉ hiện tên, không hiện số người */
+    if (key === 'j') return Object.keys(JOBS).filter((j) => !A.jobs.includes(j) && (!q || LH.norm(j).includes(q))).map((j) => ({ v: j, main: j, sub: '' }));
+    if (key === 'd') return D.hr.departments.filter((d) => !A.depts.includes(d) && (!q || LH.norm(d).includes(q))).map((d) => ({ v: d, main: d, sub: '' }));
+    /* Course Audience 3.1 · Quy định chung: tìm theo mã nhân sự, email, Display name (không dấu cũng được); gợi ý = Display name + "Mã · Email" một hàng */
     return PEOPLE.filter((p) => !A.indiv.includes(p.name) && (!q || LH.norm(p.name + ' ' + p.email + ' ' + p.id).includes(q)))
-      .map((p) => ({ v: p.name, main: p.name, sub: `${p.id} · ${p.email} · ${p.dept}` }));
+      .map((p) => ({ v: p.name, main: p.name, sub: `${p.id} · ${p.email}` }));
   }
   function msField(key, label, ph, arr) {
     const ro = !cfg.editable;
@@ -579,7 +597,7 @@
       <div class="aud-ms ${open ? 'is-open' : ''} ${A.err.scope ? 'is-req-err' : ''}" data-aud-ms="${key}">
         ${arr.map((v) => `<span class="aud-chip">${esc(v)}${ro ? '' : `<button type="button" data-aud-rm="${key}:${esc(v)}" aria-label="Remove ${esc(v)}">${ICON.x}</button>`}</span>`).join('')}
         <input id="aud-ms-${key}" autocomplete="off" placeholder="${arr.length ? '' : ph}" value="${open ? esc(ms.q) : ''}" ${ro ? 'disabled' : ''}>
-        ${open ? `<div class="aud-ms__menu" role="listbox">${opts.length ? opts.map((o) => `<button type="button" role="option" data-aud-pick="${key}:${esc(o.v)}"><b>${esc(o.main)}</b><span>${esc(o.sub)}</span></button>`).join('') : '<p class="aud-ms__none">No results</p>'}</div>` : ''}
+        ${open ? `<div class="aud-ms__menu" role="listbox">${opts.length ? opts.map((o) => `<button type="button" role="option" data-aud-pick="${key}:${esc(o.v)}" title="${esc(o.sub ? `${o.main} · ${o.sub}` : o.main)}"><b>${esc(o.main)}</b>${o.sub ? `<span>${esc(o.sub)}</span>` : ''}</button>`).join('') : '<p class="aud-ms__none">No results</p>'}</div>` : ''}
       </div></div>`;
   }
   function drawAudience(el) {
@@ -595,6 +613,7 @@
           <label class="aud-opt ${A.scope === 'restricted' ? 'is-on' : ''}"><input type="radio" name="aud-scope" value="restricted" ${A.scope === 'restricted' ? 'checked' : ''} ${ro}><b>Restricted</b>${A.scope === 'restricted' ? `<span class="aud-opt__meta">${ICON.users}${n} learners${A.published ? `<a href="${vl}">View Learners${ICON.chevronR}</a>` : ''}</span>` : ''}</label>
         </div>
         ${A.scope === 'restricted' ? `<div class="cc-row aud-pick">
+          ${msField('j', 'Job Titles', 'Search job titles', A.jobs)}
           ${msField('d', 'Departments', 'Search departments', A.depts)}
           ${msField('i', 'Individuals', 'Search by name, email or employee ID', A.indiv)}
         </div>${A.err.scope ? `<p class="adm-err">${A.err.scope}</p>` : ''}` : ''}
@@ -612,7 +631,7 @@
   }
   function validateAudience() {
     A.err = {};
-    if (A.scope === 'restricted' && !A.depts.length && !A.indiv.length) A.err.scope = 'Please select at least one department or individual.';
+    if (A.scope === 'restricted' && !A.jobs.length && !A.depts.length && !A.indiv.length) A.err.scope = 'Please select at least one job title, department or individual.';
     const s = parseD(A.start), e = parseD(A.end);
     if (A.end && s && e && e < s) A.err.end = 'End Date must be on or after Start Date.';
     else if (A.end && e && A.end !== JSON.parse(A.saved).end && e < new Date(2026, 10, 18)) A.err.end = 'End Date cannot be in the past.';
@@ -622,7 +641,7 @@
     if (!validateAudience()) { drawAudience(el); return; }
     const before = JSON.parse(A.saved);
     /* Lần lưu làm người đã đăng ký mất quyền → hỏi xác nhận kèm số người (BR-AUD-05) */
-    const lost = before.scope === 'all' && A.scope === 'restricted' ? 23 : before.depts.filter((d) => !A.depts.includes(d)).length * 4 + before.indiv.filter((x) => !A.indiv.includes(x)).length;
+    const lost = before.scope === 'all' && A.scope === 'restricted' ? 23 : ((before.jobs || []).filter((j) => !A.jobs.includes(j)).length + before.depts.filter((d) => !A.depts.includes(d)).length) * 4 + before.indiv.filter((x) => !A.indiv.includes(x)).length;
     const done = () => { A.saved = snap(); drawAudience(el); toast(`Audience updated · ${count()} learners${A.invite ? ' · invitation emails sent to new learners' : ''}`); A.invite = false; };
     if (lost > 0 && A.published) AdminConfirm({ cancel: 'Cancel', title: 'Save audience?', text: `${lost} enrolled learners will lose access to this course. Their progress is kept. Continue?`, ok: 'Continue', danger: true, onOk: done });
     else done();
@@ -650,7 +669,7 @@
       const n = (l.questions || []).filter((q) => dupErr('exam', q.text, -1)).length;
       if (n) miss.push([`Quiz "${l.name}" has ${n} question${n === 1 ? ' that duplicates' : 's that duplicate'} practice questions.`, 'details']);
     }));
-    if (A.scope === 'restricted' && !A.depts.length && !A.indiv.length) miss.push(['Audience is Restricted but no department or individual is selected.', 'audience']);
+    if (A.scope === 'restricted' && !A.jobs.length && !A.depts.length && !A.indiv.length) miss.push(['Audience is Restricted but no job title, department or individual is selected.', 'audience']);
     if (miss.length) {
       document.getElementById('m-cant')?.remove();
       document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-cant', size: 'md', icon: 'alert', iconTone: 'warning', title: 'Cannot publish yet', desc: 'Fix these items, then publish again. Click an item to go there.',
@@ -701,8 +720,8 @@
     }
     const pe = e.target.closest('[data-qr-edit^="p|"]'); if (pe) { openPracticeForm(+pe.dataset.qrEdit.split('|')[1]); return; }
     /* Audience */
-    const rm = e.target.closest('[data-aud-rm]'); if (rm) { const [k, v] = rm.dataset.audRm.split(/:(.*)/s); if (k === 'd') A.depts = A.depts.filter((x) => x !== v); else A.indiv = A.indiv.filter((x) => x !== v); redraw(); return; }
-    const pk = e.target.closest('[data-aud-pick]'); if (pk) { const [k, v] = pk.dataset.audPick.split(/:(.*)/s); (k === 'd' ? A.depts : A.indiv).push(v); A.err = {}; ms.q = ''; redraw(); document.getElementById(`aud-ms-${k}`)?.focus(); return; }
+    const rm = e.target.closest('[data-aud-rm]'); if (rm) { const [k, v] = rm.dataset.audRm.split(/:(.*)/s); const arr = audList(k); arr.splice(arr.indexOf(v), 1); redraw(); return; }
+    const pk = e.target.closest('[data-aud-pick]'); if (pk) { const [k, v] = pk.dataset.audPick.split(/:(.*)/s); audList(k).push(v); A.err = {}; ms.q = ''; redraw(); document.getElementById(`aud-ms-${k}`)?.focus(); return; }
     const box = e.target.closest('[data-aud-ms]'); if (box && !box.querySelector('input').disabled) { if (ms.open !== box.dataset.audMs) { ms = { open: box.dataset.audMs, q: '' }; redraw(); } document.getElementById(`aud-ms-${box.dataset.audMs}`)?.focus(); return; }
     if (e.target.closest('[data-aud-save]')) { saveAudience(host); cfg.onChange(); return; }
     if (e.target.closest('[data-aud-cancel]')) { if (snap() === A.saved) return; AdminConfirm({ cancel: 'Cancel', title: 'Discard unsaved changes?', ok: 'Discard', danger: true, onOk: () => { Object.assign(A, JSON.parse(A.saved)); A.err = {}; redraw(); } }); return; }
@@ -729,8 +748,8 @@
       redraw();
     }
     if (t.name === 'aud-scope') {
-      if (t.value === 'all' && A.scope === 'restricted' && (A.depts.length || A.indiv.length)) {
-        AdminConfirm({ cancel: 'Cancel', title: 'Change to All Company?', text: 'All employees will be able to see and enroll. Your selected departments and individuals are kept but not applied.', ok: 'Change', onOk: () => { A.scope = 'all'; redraw(); } });
+      if (t.value === 'all' && A.scope === 'restricted' && (A.jobs.length || A.depts.length || A.indiv.length)) {
+        AdminConfirm({ cancel: 'Cancel', title: 'Change to All Company?', text: 'All employees will be able to see and enroll. Your selected job titles, departments and individuals are kept but not applied.', ok: 'Change', onOk: () => { A.scope = 'all'; redraw(); } });
         t.checked = false; host.querySelector('input[name="aud-scope"][value="restricted"]').checked = true; return;
       }
       A.scope = t.value; A.err = {}; redraw();
@@ -742,7 +761,7 @@
     if (t.id === 'aud-notify') A.notify = t.checked;
   });
   document.addEventListener('input', (e) => {
-    const m = host && e.target.id && e.target.id.match(/^aud-ms-(d|i)$/); if (!m) return;
+    const m = host && e.target.id && e.target.id.match(/^aud-ms-(j|d|i)$/); if (!m) return;
     ms = { open: m[1], q: e.target.value }; drawAudience(host);
     const q = document.getElementById(e.target.id); q.focus(); q.setSelectionRange(ms.q.length, ms.q.length);
   });
@@ -750,7 +769,7 @@
     if (!host || !ms.open || !e.target.id?.startsWith('aud-ms-')) return;
     if (e.key === 'Escape') { ms = { open: null, q: '' }; drawAudience(host); }
     if (e.key === 'Enter') { e.preventDefault(); host.querySelector('[data-aud-pick]')?.click(); }
-    if (e.key === 'Backspace' && !e.target.value) { const k = ms.open; const arr = k === 'd' ? A.depts : A.indiv; if (arr.length) { arr.pop(); redraw(); document.getElementById(`aud-ms-${k}`)?.focus(); } }
+    if (e.key === 'Backspace' && !e.target.value) { const k = ms.open; const arr = audList(k); if (arr.length) { arr.pop(); redraw(); document.getElementById(`aud-ms-${k}`)?.focus(); } }
   });
 
   window.LHSetup = {

@@ -32,12 +32,12 @@
 }
 .btn-cta:hover, .wbtn:hover, .btn:not(.btn--link):hover, .cc-btn:hover, .cel-btn:hover { background: var(--c-brand); border-color: var(--c-brand); text-decoration: none; }
 /* Outline (thương hiệu) */
-.btn-cta--outline, .wbtn--outline, .btn--outline, .cc-btn--outline, .cel-btn--line, .btn--secondary {
+.btn-cta--outline, .wbtn--outline, .btn.btn--outline, .cc-btn--outline, .cel-btn--line, .btn.btn--secondary {
   background: var(--c-white); color: var(--c-primary); border-color: var(--c-primary);
 }
-.btn-cta--outline:hover, .wbtn--outline:hover, .btn--outline:hover, .cc-btn--outline:hover, .cel-btn--line:hover, .btn--secondary:hover { background: var(--c-bg-selected); color: var(--c-primary); border-color: var(--c-primary); }
+.btn-cta--outline:hover, .wbtn--outline:hover, .btn.btn--outline:hover, .cc-btn--outline:hover, .cel-btn--line:hover, .btn.btn--secondary:hover { background: var(--c-bg-selected); color: var(--c-primary); border-color: var(--c-primary); }
 /* Secondary trung tính (Cancel, Back to …) */
-.btn-cta--line, .btn--ghost {
+.btn-cta--line, .btn.btn--ghost {
   background: var(--c-white); color: var(--c-text); border-color: var(--c-border-control);
 }
 .btn-cta--line:hover, .btn--ghost:hover { background: var(--c-bg-hover); color: var(--c-text-strong); border-color: var(--c-border-control); }

@@ -34,17 +34,15 @@
   function body() {
     const n = estimate(), err = dateErr();
     const html = `<div class="stack gap-16">
-      ${s.source ? `<div class="t-xs muted">Filters prefilled from ${esc(s.source)} · you can change them before exporting</div>` : ''}
       <div class="field"><span class="field__label">Course</span><div class="input" style="display:flex;align-items:center;background:var(--bg-subtle)">${esc(s.course)}</div></div>
-      <div class="field"><span class="field__label">Section <span class="t-xs muted">· optional, default All (whole course)</span></span>${multi('sections', D.course.sessions, s.sections, 'All sections')}
-        ${s.sections.length ? '<span class="t-xs muted">The Quizzes sheet only includes quizzes in the selected Sections. The Learners sheet adds "Progress in selected Sections (%)".</span>' : ''}</div>
-      <div class="field"><span class="field__label">Enrollment Date <span class="t-xs muted">· optional</span></span>
+      <div class="field"><span class="field__label">Section</span>${multi('sections', D.course.sessions, s.sections, 'All sections')}</div>
+      <div class="field"><span class="field__label">Enrollment Date</span>
         <div class="row gap-8"><input class="input" data-ex-from placeholder="dd/mm/yyyy" value="${esc(s.from)}" style="flex:1"><span class="muted">–</span><input class="input" data-ex-to placeholder="dd/mm/yyyy" value="${esc(s.to)}" style="flex:1"></div>
-        ${err ? `<span class="field__error">${ICON.alert}${err}</span>` : s.limited && (s.from || s.to) ? '<span class="t-xs muted">With an Enrollment Date range, Not Enrolled learners are not included.</span>' : ''}</div>
+        ${err ? `<span class="field__error">${ICON.alert}${err}</span>` : ''}</div>
       <div class="field"><span class="field__label">Department</span>${multi('depts', D.hr.departments, s.depts, 'All departments')}</div>
       <div class="field"><span class="field__label">Learning Status</span>${multi('statuses', opts(), s.statuses, 'All statuses')}</div>
       ${n === 0 ? `<div class="estimate" style="background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-text)">${ICON.alert}No learners match the selected filters.</div>`
-        : `<div class="estimate">${ICON.users}<span class="grow">Estimated: <b>${n}</b> learners</span><span class="t-xs muted">.xlsx · sheets Learners, Quizzes, Info</span></div>`}
+        : `<div class="estimate">${ICON.users}<span class="grow">Estimated: <b>${n}</b> learners</span></div>`}
     </div>`;
     return { html, disabled: !!err || n === 0, n };
   }
@@ -57,9 +55,8 @@
   function open(o = {}) {
     reset(o);
     document.getElementById('m-export')?.remove();
-    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-export', size: 'md', icon: 'download', iconTone: 'info', title: 'Export Data',
-      desc: 'Progress and exam results at the time of export. Practice results are not included.', body: '',
-      foot: Button({ label: 'Cancel', variant: 'secondary', attrs: 'data-close' }) + Button({ label: 'Export', icon: 'download', attrs: 'id="ex-go"' }) }));
+    document.body.insertAdjacentHTML('beforeend', Modal({ id: 'm-export', size: 'md', icon: 'download', iconTone: 'info', title: 'Export Data', body: '',
+      foot: Button({ label: 'Cancel', variant: 'outline', attrs: 'data-close' }) + Button({ label: 'Export', icon: 'download', attrs: 'id="ex-go"' }) }));
     paint();
   }
   const today = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth() + 1).padStart(2, '0')}${d.getFullYear()}`; };

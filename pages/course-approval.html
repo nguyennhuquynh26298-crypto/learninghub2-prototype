@@ -5,7 +5,7 @@
 <title>Course Review · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1125qd"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
 <style>
   .rv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
   @media (max-width: 1100px) { .rv-grid { grid-template-columns: 1fr; } }
@@ -24,7 +24,7 @@
   .miss a { display: flex; gap: 8px; padding: 10px 12px; border: 1px solid var(--c-danger-border); border-radius: 10px; color: var(--c-danger); text-decoration: none; font-size: var(--fs-sm); }
   .miss a:hover { background: var(--c-danger-bg); }
 </style>
-<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
+<link rel="stylesheet" href="../assets/css/ds.css?v=1125b">
 </head>
 <body>
 <!-- Course Creator & Approval 2.1–2.3, 3.1–3.4, 3.8 · BR-CA-01…13 (Notion LH2 Product Docs No 10, Đợt 2 · Gói 6).
@@ -44,7 +44,7 @@
     </aside>
   </div>
 </main>
-<script src="../assets/js/components.js?v=1125c"></script>
+<script src="../assets/js/components.js?v=1125d"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/lh2-wave2.js?v=1124a"></script>
 <script>
@@ -91,7 +91,7 @@ function render() {
   const n = SYL.reduce((a, s) => a + s[1].filter((l) => l[1] !== 'del').length, 0);
   document.getElementById('h-count').textContent = `${SYL.length} sections · ${n} lessons`;
   document.getElementById('h-title').textContent = TITLE;
-  document.getElementById('aud').innerHTML = edit ? '<div class="aud"><b>Audience Changes</b><br>Scope: All Company → Restricted · Departments: +QA, −BA · Estimated 20 learners (was 350)</div>' : '';
+  document.getElementById('aud').innerHTML = edit ? '<div class="aud"><b>Audience Changes</b><br>Scope: All Company → Restricted · Job Titles: +Tester · Departments: +QA, −BA · Estimated 34 learners (was 350)</div>' : '';
   document.getElementById('syl').innerHTML = SYL.map(([s, ls]) => `<div class="rv-sec"><b>${s}</b>${ls.map(([l, t]) => `<div class="${edit && t === 'del' ? 'lesson-del' : ''}">${edit || t !== 'del' ? l : ''}${edit && t ? `<span class="diff-tag diff-tag--${TAGS[t][1]}">${TAGS[t][0]}</span>` : ''}</div>`).filter((h) => !h.includes('<div class=""></div>')).join('')}</div>`).join('');
   document.getElementById('info').innerHTML = `<span>Course Title</span><b>${esc(TITLE)}</b><span>Owner</span><b>${OWNER}</b><span>Type</span><b>${edit ? 'Edit of Published Course' : 'New Course'}</b><span>Submitted At</span><b>${v.status === 'draft' ? '—' : '09:12 · 24/11/2026'}</b>`;
   document.getElementById('hist').innerHTML = v.hist.length ? histHtml(v.hist) : '<li><div><small>No history yet.</small></div></li>';

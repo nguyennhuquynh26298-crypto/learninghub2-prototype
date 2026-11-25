@@ -702,8 +702,9 @@ body.adm-body .btn { border-radius: 8px; }
 .aud-opt__meta a { display: inline-flex; align-items: center; gap: 2px; color: var(--adm-primary); font-weight: 500; text-decoration: none; }
 .aud-opt__meta a:hover { text-decoration: underline; }
 .aud-opt__meta a svg { width: 14px; height: 14px; }
-.cc-row.aud-pick { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; } /* Departments / Individuals cân nhau */
-.aud-pick .adm-field { min-width: 0; }
+.cc-row.aud-pick { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: stretch; } /* Job Titles / Departments / Individuals cân nhau (D-191) */
+.aud-pick .adm-field { min-width: 0; display: flex; flex-direction: column; }
+.aud-pick .aud-ms { flex: 1; align-content: flex-start; } /* 3 ô luôn cao bằng nhau, chip bám mép trên */
 .aud-opt:not(:has(.aud-opt__meta)) > b { grid-row: 1 / -1; } /* ô chưa chọn: chữ căn giữa theo nút tròn */
 @media (max-width: 720px) { .cc-row.aud-pick { grid-template-columns: 1fr; } }
 .aud-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 240px)); gap: 16px; }
@@ -718,6 +719,8 @@ body.adm-body .btn { border-radius: 8px; }
 .aud-ms__menu button.is-sel b { color: var(--primary-900, var(--c-primary)); font-weight: 600; }
 .aud-ms__menu b { font-size: var(--fs-sm); font-weight: 500; color: var(--adm-text); }
 .aud-ms__menu span { font-size: var(--fs-sm); color: var(--adm-sub); }
+.aud-ms__menu button { min-width: 0; }
+.aud-ms__menu b, .aud-ms__menu span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* gợi ý luôn 1 hàng mỗi dòng, dài thì cắt "…" (Quy định chung 3.1) */
 .aud-ms__none { margin: 0; padding: 10px 12px; font-size: var(--fs-sm); color: var(--adm-sub); }
 .aud-chip { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 6px 0 10px; border-radius: 999px; background: var(--adm-primary-50); color: var(--adm-active-ink); font-size: var(--fs-sm); font-weight: 500; }
 .aud-chip button { border: 0; background: none; color: inherit; cursor: pointer; display: grid; place-items: center; padding: 2px; }

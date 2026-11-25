@@ -750,7 +750,7 @@ var LH_V = '1119q';
     const role = App.role();
     const def = APP === 'admin' ? { r: role, role: role === 'admin' ? 'Admin' : 'Creator' } : {};
     const state = Object.fromEntries(groups.map((g) => [g.key, q.get(g.key) ?? def[g.key] ?? g.value ?? g.options[0][0]]));
-    if (APP) { const set = (k, v) => { state[k] = v; onChange({ ...state }); }; onChange({ ...state }); return { state, set }; }
+    if (APP || q.get('rec')) { const set = (k, v) => { state[k] = v; onChange({ ...state }); }; onChange({ ...state }); return { state, set }; } // rec=1: quay video, ẩn nút DEMO
     /* Thu gọn mặc định thành nút DEMO góc dưới phải (nhớ trạng thái) · tự ẩn khi có popup để thấy trọn popup */
     const KEY = 'lh-demo-open';
     const setMin = (min) => { bar.classList.toggle('is-min', min); document.body.classList.toggle('demo-min', min); localStorage.setItem(KEY, min ? '0' : '1'); };

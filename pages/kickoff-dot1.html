@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kick-off Đợt 1 · LearningHub 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Trang nội bộ cho buổi kick-off: tự chạy qua các màn thật của prototype, phụ đề tiếng Việt. Không phải UI sản phẩm. */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0b1020; font-family: Inter, system-ui, sans-serif; color: #fff; overflow: hidden; }
+  .stage { position: absolute; inset: 0 0 112px 0; display: grid; place-items: center; }
+  .screen { width: 1440px; height: 900px; border: 0; background: #fff; border-radius: 12px; transform-origin: center; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .card { position: absolute; inset: 0 0 112px 0; display: none; place-items: center; text-align: center; padding: 40px; }
+  .card.on { display: grid; }
+  .card h1 { font-size: 56px; margin: 0 0 16px; letter-spacing: -.02em; }
+  .card p { font-size: 24px; color: #c7cdf5; margin: 0; max-width: 960px; line-height: 1.5; }
+  .card .tag { display: inline-block; margin-bottom: 20px; padding: 6px 14px; border-radius: 999px; background: #374bfa; font-size: 14px; font-weight: 600; letter-spacing: .04em; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 112px; display: flex; align-items: center; gap: 24px; padding: 0 32px; background: #121833; border-top: 1px solid #222b52; }
+  .cap { flex: 1; min-width: 0; }
+  .cap b { display: block; font-size: 24px; margin-bottom: 6px; }
+  .cap span { display: block; font-size: 18px; color: #c7cdf5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ctl { display: flex; gap: 8px; align-items: center; }
+  .ctl button { height: 44px; min-width: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #2c3766; background: #1b2347; color: #fff; font: 600 15px Inter, sans-serif; cursor: pointer; }
+  .ctl button.main { background: #374bfa; border-color: #374bfa; min-width: 96px; }
+  .ctl button:hover { filter: brightness(1.15); }
+  .count { font-size: 14px; color: #8d96c9; min-width: 56px; text-align: right; }
+  .prog { position: absolute; left: 0; bottom: 112px; height: 4px; background: #374bfa; width: 0; transition: width .2s linear; }
+</style>
+</head>
+<body>
+<div class="stage"><iframe class="screen" id="scr" title="Màn prototype"></iframe></div>
+<div class="card" id="card"><div><span class="tag" id="ctag">LEARNINGHUB 2</span><h1 id="ct"></h1><p id="cs"></p></div></div>
+<div class="prog" id="prog"></div>
+<div class="bar">
+  <div class="cap"><b id="t"></b><span id="s"></span></div>
+  <span class="count" id="n"></span>
+  <div class="ctl"><button id="prev" title="Màn trước (←)">‹</button><button class="main" id="play">▶ Play</button><button id="next" title="Màn sau (→)">›</button><button id="fs" title="Toàn màn hình (F)">⛶</button></div>
+</div>
+<script>
+/* Mỗi cảnh: [màn (hoặc 'card'), tiêu đề, một dòng nghiệp vụ, số giây]. Màn mở kèm rec=1 để ẩn nút DEMO. */
+const SCENES = [
+  ['card', 'LearningHub 2 · Đợt 1', '9 task · Doc trên Notion là luật, prototype .dev là bản thiết kế chuẩn', 6],
+  ['card', 'Phần 1 · Admin', 'Tạo khoá → soạn bài thi và đề luyện tập → đối tượng học → quản lý học viên', 5],
+  ['course-create.html?r=admin&sc=new', '1. Tạo khoá', 'Save as Draft chỉ cần Course Title · đủ 7 trường mới Publish được', 9],
+  ['course-editor.html?r=admin&st=published&tab=practice&pq=on', '2. Bài thi và đề luyện tập', 'Mỗi Quiz có 2 tab Exam Questions · Practice Questions · đề luyện tập không được trùng đề thi', 10],
+  ['course-editor.html?r=admin&st=published&tab=practice&pq=empty', 'Quiz chưa có câu luyện tập', 'Công tắc Practice khoá tới khi có ít nhất 1 câu · thêm câu bằng Import Excel hoặc Add Question', 9],
+  ['course-editor.html?r=admin&st=draft&tab=audience&aud=restricted', '3. Đối tượng học', 'All Company / Restricted (phòng ban, cá nhân từ THRM) · Mandatory · lịch học · email mời', 10],
+  ['admin-course-learners.html?r=admin&data=full', '4. View Learners', 'Remove · Re-add · Unenroll · Reopen Attempts · Export Data', 9],
+  ['card', 'Phần 2 · Học viên', 'Đăng ký → học → luyện tập → thi → hoàn thành', 5],
+  ['home.html?f=1', '5. Giới hạn 3 khoá', 'Tối đa 3 khoá tự chọn học cùng lúc · khoá bắt buộc không tính', 9],
+  ['course-detail.html?s=restricted', 'Khoá giới hạn đối tượng', 'Người ngoài đối tượng chỉ xem giới thiệu, có người phụ trách để liên hệ', 8],
+  ['lesson-learn.html?i=5&v=part', '6. Học bài', 'Video xong khi xem đủ 90% · tua tới tối đa 10 giây mỗi lần · không khoá bài theo thứ tự', 10],
+  ['assessment.html?seed=fresh&pr=on#start', '7. Luyện tập và thi', 'Ô Practice cạnh ô Exam · luyện không giới hạn, không tính điểm, không trừ lượt thi', 9],
+  ['assessment.html?seed=fresh&pr=on#practice', 'Màn luyện tập', 'Check Answer thấy ngay đúng / sai và giải thích · được Skip · có tổng kết cuối lượt', 9],
+  ['assessment.html?seed=two&pr=on#exam', 'Bài thi 3 lượt', 'Mỗi lượt làm lại toàn bộ đề, mọi câu để trống', 9],
+  ['assessment.html?seed=two&pr=on#result', 'Kết quả lượt thi', 'Điểm dạng 25/32 · đáp án đúng chỉ hiện khi Đạt hoặc đã hết 3 lượt', 10],
+  ['assessment.html?seed=out&pr=on#result', 'Hết 3 lượt chưa đạt', 'Bài thi Failed · Admin mở lại 3 lượt mới bằng Reopen Attempts', 9],
+  ['course-detail.html?s=justdone', '8. Hoàn thành khoá', 'Pháo hoa · popup chúc mừng · Download Certificate', 10],
+  ['card', 'Bắt đầu Đợt 1', 'Mỗi task có link Doc + Prototype · đọc ô đỏ "Thay đổi 23/11" đầu doc · điền Story Point và Estimate', 8],
+];
+const $ = (id) => document.getElementById(id);
+const scr = $('scr');
+let i = 0, playing = false, timer = null, t0 = 0;
+const src = (u) => { const [b, h] = u.split('#'); return b + (b.includes('?') ? '&' : '?') + 'rec=1' + (h ? '#' + h : ''); };
+function fit() { const w = innerWidth - 48, h = innerHeight - 112 - 32; const k = Math.min(w / 1440, h / 900, 1); scr.style.transform = `scale(${k})`; }
+function show(k) {
+  i = (k + SCENES.length) % SCENES.length;
+  const [u, t, s] = SCENES[i];
+  const card = u === 'card';
+  $('card').classList.toggle('on', card); scr.parentNode.style.visibility = card ? 'hidden' : 'visible';
+  if (card) { $('ct').textContent = t; $('cs').textContent = s; } else { try { localStorage.clear(); } catch (_) {} scr.src = src(u); }
+  $('t').textContent = card ? '' : t; $('s').textContent = card ? '' : s;
+  $('n').textContent = `${i + 1} / ${SCENES.length}`;
+  t0 = Date.now(); tick();
+}
+function tick() { const d = SCENES[i][3] * 1000; $('prog').style.width = playing ? Math.min(100, (Date.now() - t0) / d * 100) + '%' : '0'; }
+function loop() { clearInterval(timer); timer = setInterval(() => { tick(); if (Date.now() - t0 >= SCENES[i][3] * 1000) { if (i === SCENES.length - 1) { setPlay(false); return; } show(i + 1); } }, 200); }
+function setPlay(on) { playing = on; $('play').textContent = on ? '❚❚ Pause' : '▶ Play'; if (on) { t0 = Date.now(); loop(); } else { clearInterval(timer); tick(); } }
+$('play').onclick = () => setPlay(!playing);
+$('next').onclick = () => show(i + 1);
+$('prev').onclick = () => show(i - 1);
+$('fs').onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
+addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') show(i + 1); if (e.key === 'ArrowLeft') show(i - 1); if (e.key === ' ') { e.preventDefault(); setPlay(!playing); } if (e.key === 'f') $('fs').click(); });
+addEventListener('resize', fit);
+fit(); show(0);
+</script>
+</body>
+</html>

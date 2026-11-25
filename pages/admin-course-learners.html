@@ -5,7 +5,7 @@
 <title>View Learners · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120z">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1125qd">
 <style>
   .vl-ex { cursor: pointer; }
   .adm-box__head .adm-inline-search input { width: 230px; }
@@ -48,7 +48,7 @@
   .pager__btns button:disabled { opacity: .4; cursor: default; }
   .pager__btns svg { width: 16px; height: 16px; }
 </style>
-<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
+<link rel="stylesheet" href="../assets/css/ds.css?v=1125b">
 </head>
 <body>
 <div id="header"></div>
@@ -64,9 +64,9 @@
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1125c"></script>
+<script src="../assets/js/components.js?v=1125d"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/export-modal.js?v=1118p"></script>
+<script src="../assets/js/export-modal.js?v=1125a"></script>
 <script>
 /* View Learners — LH1 /learners + LH2 Đợt 1 (docs Notion 18/11/2026)
  * Course Audience 3.4: Learning Status = Not Enrolled · In Progress · Completed · Failed · Access Removed · Closed · Unenrolled (bỏ Not Started).
@@ -88,7 +88,9 @@ const SEED = [
   ['Mai Anh Quân', 'Development', 100, '21/10/2026'], ['Trịnh Thảo Vy', 'QA', 33, '25/10/2026'],
   ['Phan Minh Tú', 'QA', 0, '—', 'none'], ['Cao Thị Yến', 'Design', 0, '—', 'none'],
 ];
-/* Source (Course Audience 3.4): khoá Restricted chọn phòng QA, Development, BA + vài cá nhân */
+/* Source (Course Audience 3.4, D-191): khoá Restricted chọn job title UI/UX Designer, phòng QA, Development, BA + vài cá nhân.
+   Job title không có cột riêng nên Source ghi kèm tên job title; tên phòng đã ở cột Department */
+const SRC_JOBS = { Design: 'UI/UX Designer' };
 const SRC_DEPTS = ['QA', 'Development', 'BA'];
 const slug = (n) => n.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().split(' ');
 function quizOf(status, pct, i) {
@@ -105,7 +107,7 @@ function quizOf(status, pct, i) {
 const learners = SEED.map(([name, dept, pct, enrolled, force], i) => {
   const s = slug(name);
   const status = force || (pct === 100 ? 'done' : 'progress');
-  const source = SRC_DEPTS.includes(dept) ? 'Department' : 'Individual'; // tên phòng đã ở cột Department
+  const source = SRC_JOBS[dept] ? `Job Title: ${SRC_JOBS[dept]}` : SRC_DEPTS.includes(dept) ? 'Department' : 'Individual';
   return { name, email: `${s.slice(-1)[0]}.${s.slice(0, -1).join('')}@techvify.com.vn`, dept, pct, enrolled, status, source, quiz: quizOf(status, pct, i), reopened: false };
 });
 

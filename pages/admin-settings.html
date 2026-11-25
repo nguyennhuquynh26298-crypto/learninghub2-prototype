@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Permissions · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
-<link rel="stylesheet" href="../assets/css/ds.css?v=1121a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/admin.css?v=1125qd"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
+<link rel="stylesheet" href="../assets/css/ds.css?v=1125b">
 </head>
 <body>
 <!-- Course Creator & Approval 2.4 + 3.6 · BR-RP-01…07, BR-CA-11 (Notion LH2 Product Docs No 10, Đợt 2 · Gói 6).
@@ -16,7 +16,7 @@
   <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Course Creators</h2><button class="btn-cta" id="add" type="button">+ Add Course Creator</button></div>
     <div class="adm-card" id="list"></div></section>
 </main>
-<script src="../assets/js/components.js?v=1125c"></script>
+<script src="../assets/js/components.js?v=1125d"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/lh2-wave2.js?v=1124a"></script>
 <script>
@@ -48,10 +48,10 @@ function addPopup() {
   const taken = new Set(creators.map((c) => c.name));
   const pool = EMP.filter((e) => !taken.has(e[0]) && e[4] !== 'admin');
   const picked = new Set();
-  const list = (q) => { const n = LH.norm(q); return pool.filter((e) => !n || LH.norm(e.slice(0, 4).join(' ')).includes(n))
-    .map((e) => `<label><input type="checkbox" value="${esc(e[0])}" ${picked.has(e[0]) ? 'checked' : ''}>${Avatar(e[0], 'sm')}<span>${esc(e[0])}<br><small>${esc(e[1])} · ${esc(e[2])} · ${e[3]}</small></span></label>`).join('') || '<p class="adm-hint" style="padding:12px">No matching employees.</p>'; };
-  const el = LHW2.pop({ title: 'Add Course Creator', desc: 'Select employees by name, email or employee code. They will receive an email and see Create new course in Course Management.',
-    body: `<div class="w2-field"><span>Employees <span class="req">*</span></span><input data-q placeholder="Search name, email, employee code"><div class="w2-list" data-l>${list('')}</div><div class="w2-err" data-err hidden>Please select at least 1 employee.</div></div>`,
+  const list = (q) => { const n = LH.norm(q); return pool.filter((e) => !n || LH.norm([e[0], e[1], e[3]].join(' ')).includes(n)) /* Quy định chung Course Audience 3.1: mã nhân sự, email, Display name */
+    .map((e) => `<label><input type="checkbox" value="${esc(e[0])}" ${picked.has(e[0]) ? 'checked' : ''}>${Avatar(e[0], 'sm')}<span>${esc(e[0])}<br><small>${esc(e[3])} · ${esc(e[1])}</small></span></label>`).join('') || '<p class="adm-hint" style="padding:12px">No matching employees.</p>'; };
+  const el = LHW2.pop({ title: 'Add Course Creator', desc: 'Select employees by name, email or employee ID. They will receive an email and see Create new course in Course Management.',
+    body: `<div class="w2-field"><span>Employees <span class="req">*</span></span><input data-q placeholder="Search by name, email or employee ID"><div class="w2-list" data-l>${list('')}</div><div class="w2-err" data-err hidden>Please select at least 1 employee.</div></div>`,
     ok: 'Save', onOk: (p) => {
       if (!picked.size) { p.querySelector('[data-err]').hidden = false; return false; }
       [...picked].forEach((n) => { const e = EMP.find((x) => x[0] === n); creators.push({ name: e[0], email: e[1], dept: e[2], code: e[3], courses: 0, since: '20/11/2026' }); });
