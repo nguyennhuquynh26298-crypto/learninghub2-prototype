@@ -5,7 +5,7 @@
 <title>Learn · Learning Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&subset=vietnamese&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1124e">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x"><link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
 <style>
   .learn-stage .player { position: absolute; inset: 0; border-radius: 0; aspect-ratio: auto; }
   .player__seg { position: absolute; top: 0; bottom: 0; background: rgba(147,150,255,.55); }
@@ -14,7 +14,9 @@
   .player__time { position: absolute; right: 16px; bottom: 30px; font-size: var(--fs-xs); color: var(--c-border); }
   .doc-stage { display: grid; place-items: center; min-height: 100%; background: var(--c-text-strong); color: var(--c-border); padding: 24px; }
   .doc-stage__paper { width: min(640px, 90%); aspect-ratio: 4/3; background: var(--c-white); border-radius: 8px; box-shadow: 0 12px 40px rgb(0 0 0 / 0.35); display: grid; place-items: center; color: var(--text-strong); padding: 24px; text-align: center; }
-  .article-stage { padding: 32px 40px; max-height: 100%; overflow: auto; text-align: left; }
+  /* 25/11 rà UI: bài Article đọc trên nền trắng trong khung học (trước đây chữ tối trên nền đen) */
+  .article-stage { position: absolute; inset: 0; padding: 32px 40px; overflow: auto; text-align: left; background: var(--c-white); color: var(--text-strong); font-size: var(--fs-md); line-height: 1.6; }
+  .article-stage ul { padding-left: 20px; }
   .article-stage h2 { font-size: var(--fs-2xl); margin-bottom: 8px; }
   .stage-nav { cursor: pointer; }
 </style>
@@ -23,7 +25,7 @@
 <body class="learn-body">
 <!-- LH1 /course/[id]/learn — video · PDF/document · article · quiz intro (ModeSelect) -->
 <div id="app"></div>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/lh2-wave2.js?v=1124a"></script>
 <script>
@@ -37,6 +39,7 @@ let lessons = [...D.myResult.lessons];
 /* Video player state (chỉ bài video) */
 const DUR = 600, NEED = 0.9;
 let seen = new Array(DUR + 1).fill(0), pos = 0;
+let playing = false, timer = null; // trình phát demo chạy thật (25/11)
 
 const pctSeen = () => Math.floor(seen.reduce((a, x) => a + x, 0) / DUR * 100);
 const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -73,12 +76,12 @@ function stageHtml() {
   const isArticle = /guide|exam guide/i.test(L.n);
   if (isArticle) {
     return `<div class="article-stage"><h2>${esc(L.n)}</h2><p class="muted t-sm" style="margin-bottom:16px">${esc(L.session)}</p>
-      <p>Reference article. Opening an Article completes the lesson (BR-LP-02).</p>
+      <p>This guide explains how the CCAR-F exam is organised, how much time to plan for each domain and how to use practice before each exam.</p>
       <ul style="margin-top:16px;line-height:1.6"><li>CCAR-F exam format and time per domain</li><li>Passing Score ${T.passMark}% · ${T.maxAttempts} attempts per exam</li><li>Practice does not count toward progress</li></ul></div>`;
   }
   return `<div class="doc-stage"><div class="doc-stage__paper"><div>
     <b class="t-lg">${esc(L.n)}</b>
-    <p class="t-sm muted" style="margin-top:8px">PDF viewer · opening a Document completes the lesson (BR-LP-02)</p>
+    <p class="t-sm muted" style="margin-top:8px">${esc(L.session)}</p>
   </div></div></div>`;
 }
 function belowHtml() {
@@ -86,15 +89,11 @@ function belowHtml() {
   if (L.k === 'video') {
     const done = lessons[CUR] === 'done', p = pctSeen();
     return `<div class="watch-meter" id="meter"></div>
-      <div class="row gap-8" id="ctrl">
-        <button class="wbtn wbtn--outline" data-play="60">Play 1 minute</button>
-        <button class="wbtn wbtn--outline" data-skip="10">Forward 10s</button>
-        <button class="wbtn wbtn--outline" data-seek="0.8">Drag to 80%</button>
-        <button class="wbtn wbtn--outline" data-seek="0">Back to start</button></div>`;
+`;
   }
   if (L.k === 'quiz') {
     return `<section><h2 class="t-lg fw-600">About this lesson</h2>
-      <p class="muted t-sm" style="margin-top:8px">Every exam has 3 attempts. Each attempt starts with all questions blank. Correct answers are revealed only after you pass or use all attempts.</p></section>`;
+      <p class="muted t-sm" style="margin-top:8px">${esc(T.desc || 'Practice set for Domain 1 — agentic architecture and orchestration.')}</p></section>`;
   }
   return `<section><h2 class="t-xl fw-700">${esc(L.n)}</h2><p class="t-sm muted" style="margin-top:4px">${esc(L.session)}</p></section>`;
 }
@@ -102,7 +101,7 @@ function renderPlayer() {
   if (LESSONS[CUR].k !== 'video') return;
   const p = pctSeen();
   const el = document.getElementById('player'); if (!el) return;
-  el.innerHTML = `<div class="player__play">${ICON.play}</div><span class="player__time">${fmt(pos)} / ${fmt(DUR)}</span>
+  el.innerHTML = `<button type="button" class="player__play" data-player-toggle aria-label="${playing ? 'Pause' : 'Play'}">${playing ? ICON.pause : ICON.play}</button><span class="player__time">${fmt(pos)} / ${fmt(DUR)}</span>
     <div class="player__bar">${segments().map(([a, b]) => `<i class="player__seg" style="left:${a / DUR * 100}%;width:${(b - a) / DUR * 100}%"></i>`).join('')}<span class="player__pos" style="left:${pos / DUR * 100}%"></span></div>`;
   const meter = document.getElementById('meter'); if (!meter) return;
   const done = lessons[CUR] === 'done';
@@ -149,6 +148,7 @@ function complete(i) {
   }
 }
 function goLesson(i) {
+  playing = false; clearInterval(timer);
   if (i < 0 || i >= LESSONS.length) return;
   CUR = i;
   if (LESSONS[i].k !== 'video' && LESSONS[i].k !== 'quiz') { setTimeout(() => complete(i), 400); }
@@ -166,12 +166,18 @@ document.addEventListener('click', (e) => {
   const lesson = e.target.closest('.cc-lesson[href]'); if (lesson) { e.preventDefault(); const i = +new URL(lesson.href).searchParams.get('i'); if (!Number.isNaN(i)) goLesson(i); return; }
   const bar = e.target.closest('.player__bar');
   if (bar) { const r = bar.getBoundingClientRect(); seekTo((e.clientX - r.left) / r.width * DUR); return; }
-  const ctrl = e.target.closest('#ctrl'); if (!ctrl) return;
-  const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.play) play(+b.dataset.play);
-  else if (b.dataset.skip) seekTo(pos + +b.dataset.skip);
-  else seekTo(DUR * +b.dataset.seek);
+  if (e.target.closest('[data-player-toggle]')) togglePlay();
 });
+/* 25/11: trình phát chạy thật (không có nút thử). Play / Pause; demo chạy nhanh: mỗi 0,25 giây = 5 giây video.
+   Bấm hoặc kéo thanh thời gian để tua theo BR-LP-16 */
+function togglePlay() {
+  playing = !playing; clearInterval(timer);
+  if (playing) timer = setInterval(() => { if (LESSONS[CUR].k !== 'video' || pos >= DUR) { playing = false; clearInterval(timer); renderPlayer(); return; } play(5); }, 250);
+  renderPlayer();
+}
+let dragBar = null;
+document.addEventListener('pointerdown', (e) => { dragBar = e.target.closest('.player__bar'); });
+document.addEventListener('pointerup', (e) => { if (!dragBar) return; const r = dragBar.getBoundingClientRect(); dragBar = null; if (e.target.closest('.player__bar')) return; seekTo(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * DUR); });
 document.addEventListener('click', (e) => {
   const pop = document.querySelector('.popover'); const b = e.target.closest('[data-pop]');
   if (pop && !e.target.closest('.popover')) pop.remove();

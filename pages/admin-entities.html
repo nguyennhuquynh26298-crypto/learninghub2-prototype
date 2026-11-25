@@ -17,10 +17,9 @@
       <label class="adm-inline-search"><input id="q" placeholder="Search entities"><span></span></label>
       <button class="btn-cta" id="btn-new" type="button"></button></div>
     <div class="adm-card" id="tbl"></div>
-    <p class="adm-hint frm-note">Org units sync from HRM. Sample rows mirror Techvify delivery structure.</p>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, Tag, RowMenu, Modal, Button } = LH;
@@ -65,7 +64,7 @@ function render() {
       <td class="t-name"><b>${esc(r.name)}</b></td><td>${esc(r.code)}</td><td>${esc(r.parent)}</td>
       <td>${Tag(r.status, r.status === 'Active' ? 'published' : 'neutral')}</td><td>${esc(r.updated)}</td>
       <td class="t-act">${RowMenu([{ label: 'Edit', icon: 'edit', attrs: `data-ed="${i}"` }])}</td></tr>`).join(''))
-    : AdminEmpty({ icon: 'building', title: 'No entities', desc: 'Switch Demo to sample data or run Sync Data.', compact: true });
+    : AdminEmpty({ icon: 'building', title: 'No entities', desc: 'Run Sync Data to load entities from HRM.', compact: true });
 }
 document.getElementById('btn-new').onclick = () => openModal(null);
 document.addEventListener('click', (e) => {

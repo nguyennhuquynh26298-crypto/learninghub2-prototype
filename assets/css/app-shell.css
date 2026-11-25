@@ -26,3 +26,4 @@ body { display: flex; flex-direction: column; background: var(--c-text-strong); 
 .sh-menu a:hover { background: var(--c-bg-hover); }
 .sh-menu a.on { background: var(--c-bg-selected); color: var(--c-primary-deep); font-weight: 600; }
 .sh-role i, .sh-menu i { font-style: normal; font-size: var(--fs-xs); font-weight: 600; color: var(--c-text-subtle); background: var(--c-bg-hover); border-radius: 999px; padding: 1px 8px; }
+.sh-seg--sm a { padding: 4px 10px; font-size: 12px; cursor: pointer; }

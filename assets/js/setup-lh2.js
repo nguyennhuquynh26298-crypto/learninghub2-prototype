@@ -424,9 +424,11 @@
     });
   }
 
-  /* ---------- Popup Import Questions (Docs §3.4 · Figma pick layout) ---------- */
+  /* ---------- Popup Import Questions (Docs §3.4 · Figma pick layout) ----------
+   * 25/11: không có khối "try other files" trên màn. File giả lập khi bấm vùng chọn file đổi bằng DEMO (key imp) → setImportFile */
+  let impFile = 'good';
   const DEMO_FILES = {
-    good: { name: 'QA_Automation_questions.xlsx', note: 'Columns found: STT (ignored) · Nội dung câu hỏi · A · B · C · D · Đáp án · Giải thích' },
+    good: { name: 'QA_Automation_questions.xlsx', note: '' },
     word: { name: 'questions.docx', fileErr: 'Only Excel files (.xlsx, .xls) are supported.' },
     nohead: { name: 'bank_no_header.xlsx', fileErr: 'Column "Answer" not found. Add a header row and upload again.' },
     big: { name: 'full_bank_2025.xlsx', fileErr: 'This file has 236 questions, over the 200-question limit. Split it into several files.' },
@@ -454,23 +456,22 @@
     const steps = (n) => `<ol class="imp-steps">${['Choose file', 'Check questions', 'Import'].map((t, i) => `<li class="${i < n ? 'is-done' : i === n ? 'is-on' : ''}"><span>${i < n ? ICON.check : i + 1}</span>${t}</li>`).join('')}</ol>`;
     const pickHtml = () => `<div class="imp-pick">
       ${steps(0)}
-      <button type="button" class="imp-drop" data-imp-pick="good">
+      <button type="button" class="imp-drop" data-imp-pick="${impFile}">
         <span class="imp-drop__ic">${ICON.upload}</span>
         <b>Drag &amp; drop your Excel file here</b>
         <span class="imp-drop__or">or <u>browse your computer</u></span>
         <span class="imp-drop__chips"><i>.xlsx, .xls</i><i>Max 5 MB</i><i>Up to 200 questions</i></span>
       </button>
       <p class="adm-err imp-err" id="imp-err"></p>
-      <div class="imp-demo"><span class="imp-demo__lab">Prototype · try other files:</span><span class="imp-demo__chips">${Object.entries(DEMO_FILES).filter(([k]) => k !== 'good').map(([k, f]) => `<button type="button" class="imp-demo__chip" data-imp-pick="${k}">${ICON.file}${esc(f.name)}</button>`).join('')}</span></div>
     </div>`;
-    const loadingHtml = (name) => `<div class="imp-loading"><span class="imp-loading__spin" aria-hidden="true"></span><b>Reading ${esc(name)}…</b><span class="adm-hint">Detecting columns and validating questions</span></div>`;
+    const loadingHtml = (name) => `<div class="imp-loading"><span class="imp-loading__spin" aria-hidden="true"></span><b>Reading ${esc(name)}…</b></div>`;
     const previewHtml = (rows, name, note) => {
       const ok = rows.filter((r) => !r.err).length;
       const bad = rows.length - ok;
       const pts = withScore ? rows.filter((r) => !r.err).reduce((a, r) => a + (+r.score || 1), 0) : 0;
       return `<div class="imp-preview">
         ${steps(1)}
-        <div class="imp-file">${ICON.sheet}<div class="imp-file__txt"><b>${esc(name)}</b><span>${esc(note)}</span></div></div>
+        <div class="imp-file">${ICON.sheet}<div class="imp-file__txt"><b>${esc(name)}</b>${note ? `<span>${esc(note)}</span>` : ''}</div></div>
         <div class="imp-sum"><b>${ok} valid</b><span>·</span><b class="is-bad">${bad} with errors</b><span>(will be skipped)</span>${withScore && ok ? `<span>·</span><b>+${pts} points</b>` : ''}</div>
         <div class="imp-wrap"><table class="imp-table"><thead><tr><th>Row</th><th>Question</th><th>Type</th><th>Options</th><th>Answer</th>${withScore ? '<th>Score</th>' : ''}<th>Result</th></tr></thead><tbody>
         ${rows.map((r) => `<tr class="${r.err ? 'is-err' : ''}"><td>${r.row}</td><td>${esc(r.q)}</td><td>${TYPE[r.type] || '—'}</td><td>${r.opts ? r.opts.length : '—'}</td><td>${esc(r.ans || '—')}</td>${withScore ? `<td>${r.err ? '—' : (r.score || 1)}</td>` : ''}<td>${r.err ? `<span class="imp-bad">${esc(r.err)}</span>` : '<span class="imp-ok">Valid</span>'}</td></tr>`).join('')}
@@ -753,6 +754,7 @@
   });
 
   window.LHSetup = {
+    setImportFile(k) { impFile = DEMO_FILES[k] ? k : 'good'; },
     init(c) { cfg = { ...cfg, ...c }; },
     seedPractice, seedAudience,
     readPracticeStore, writePracticeStore, restorePractice,

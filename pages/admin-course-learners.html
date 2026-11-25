@@ -64,7 +64,7 @@
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
@@ -117,12 +117,13 @@ document.querySelector('.adm-box__title').textContent = 'Learner Progress';
 
 function kpis() {
   const n = (k) => rows.filter((r) => r.status === k).length, tot = rows.filter((r) => r.status !== 'removed').length;
-  const card = (key, label, value, sub, icon, tone) => `<button type="button" class="kpi-card kpi-card--trend ${tone ? 'kpi-card--' + tone : ''} ${st === key ? 'is-active' : ''}" data-kpi="${key}" aria-pressed="${st === key}">
-    <span class="kpi-card__text"><span class="kpi-card__label">${label}</span><span class="kpi-card__value">${value}</span><span class="kpi-card__sub">${sub}</span></span><span class="kpi-card__ic">${ICON[icon]}</span></button>`;
-  $('kpis').innerHTML = card('all', 'Total Learners', tot, 'with access to this course', 'usersRound', '')
+  /* 25/11 rà UI: thẻ chỉ số chỉ còn nhãn + số (Course Audience 3.4); câu giải thích chuyển vào chú thích rê chuột */
+  const card = (key, label, value, sub, icon, tone) => `<button type="button" class="kpi-card kpi-card--trend ${tone ? 'kpi-card--' + tone : ''} ${st === key ? 'is-active' : ''}" data-kpi="${key}" aria-pressed="${st === key}" title="${sub}">
+    <span class="kpi-card__text"><span class="kpi-card__label">${label}</span><span class="kpi-card__value">${value}</span></span><span class="kpi-card__ic">${ICON[icon]}</span></button>`;
+  $('kpis').innerHTML = card('all', 'Total Learners', tot, 'Learners with access to this course', 'usersRound', '')
     + card('done', 'Completed', n('done'), `${tot ? Math.round(n('done') / tot * 100) : 0}% completion rate`, 'award', 'success')
-    + card('progress', 'In Progress', n('progress'), 'enrolled, not finished yet', 'play', 'info')
-    + card('failed', 'Failed', n('failed'), 'used all 3 exam attempts', 'x', 'warning');
+    + card('progress', 'In Progress', n('progress'), 'Enrolled, not finished yet', 'play', 'info')
+    + card('failed', 'Failed', n('failed'), 'Used all 3 exam attempts without passing', 'x', 'warning');
 }
 function quizSub(r) {
   return `<div class="qsub"><h3>Quiz results</h3><div class="adm-scroll"><table><thead><tr><th>Quiz</th><th>Attempts Used / 3</th><th>Final Score</th><th>Result</th></tr></thead><tbody>${r.quiz.map((z) => `<tr>

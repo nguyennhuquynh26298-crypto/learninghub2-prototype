@@ -25,6 +25,14 @@
     } catch (e) { /* file:// chặn đọc iframe — bỏ qua */ }
   });
 
+  /* 25/11: đổi vai ở thanh prototype (thay menu avatar trong màn) */
+  const roles = document.getElementById('roles');
+  if (roles) {
+    const mark = () => roles.querySelectorAll('[data-role]').forEach((a) => a.classList.toggle('on', a.dataset.role === normRole(roleOf())));
+    roles.addEventListener('click', (e) => { const a = e.target.closest('[data-role]'); if (!a) return; e.preventDefault();
+      sessionStorage.setItem('lhRole', a.dataset.role); mark(); frame.src = 'pages/admin-courses.html?r=' + a.dataset.role; });
+    mark();
+  }
   document.getElementById('reset').addEventListener('click', () => {
     ['lhL', 'lhCur', 'lhAdminCourse', 'lhNewCourse'].forEach((k) => sessionStorage.removeItem(k));
     ['lhExamAttempts', 'lhExamRunning', 'lhRecentSearch'].forEach((k) => localStorage.removeItem(k));

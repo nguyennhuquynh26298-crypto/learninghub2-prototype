@@ -19,7 +19,7 @@
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, Tag, RowMenu, Modal, Button } = LH;
@@ -90,7 +90,7 @@ function render() {
         <td>${r.desc ? esc(r.desc) : '<span class="adm-hint">—</span>'}</td>
         <td class="t-act">${RowMenu([{ label: 'Edit', icon: 'edit', attrs: `data-ed="${i}"` }])}</td></tr>`;
     }).join(''))
-    : AdminEmpty({ icon: 'list', title: 'No categories yet', desc: 'Create a category or switch Demo to sample data.', compact: true });
+    : AdminEmpty({ icon: 'list', title: 'No categories yet', desc: 'Create your first category to group courses.', compact: true });
 }
 document.getElementById('btn-new').onclick = () => openModal(null);
 document.addEventListener('click', (e) => {

@@ -6,7 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&subset=vietnamese&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1124e">
+<link rel="stylesheet" href="../assets/css/certificate.css?v=1123d"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
 <style>
   .exam-line { margin-top: 6px; font-size: var(--fs-sm); color: var(--gray-600); }
   .exam-line b { color: var(--gray-800); }
@@ -27,7 +27,7 @@
                đáp án mở khi Passed hoặc hết 3 lượt (BR-EX-07); pháo hoa + Techter chỉ ngay sau lượt Passed (BR-EX-19);
                bài cuối làm khoá Completed → chỉ popup hoàn thành khoá (BR-LP-13). -->
 <div id="app"></div>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/lh2-wave2.js?v=1124a"></script>
 <script>
@@ -80,7 +80,7 @@ function viewStart() {
     attemptsLeft: MAX - used, maxAttempts: MAX, best: best == null ? null : fmt(best), state, retake: used > 0, remain: run ? mmss(Math.max(0, secLeft(run))) : '',
     practice: practiceOn() ? { questions: PQ.length } : null })}</div>`;
   const below = `<section><h2 class="t-lg fw-600">About this lesson</h2><p class="muted t-sm" style="margin-top:8px">${esc(T.desc || 'Practice set for Domain 1 — agentic architecture and orchestration.')}</p></section>
-    ${used || store.old.length ? `<section><div class="row" style="margin-bottom:12px"><h2 class="t-lg fw-600 grow">Attempt History</h2><span class="t-xs muted">Click an attempt to review it</span></div>${historyTable(A, -1)}</section>` : ''}`;
+    ${used || store.old.length ? `<section><div class="row" style="margin-bottom:12px"><h2 class="t-lg fw-600 grow">Attempt History</h2></div>${historyTable(A, -1)}</section>` : ''}`;
   app.innerHTML = LearnShell({ course: D.course.title, pct: passedAny(A) ? 37 : 31, stage, below,
     drawer: CourseContent(D.course.sessions, { current: CURRENT, marks: D.myResult.lessons.map((m, i) => (i === CURRENT ? (passedAny(A) ? 'done' : used ? 'fail' : 'none') : m)), meta: { [CURRENT]: `${LH.ICON.fileQ}<span>${N} Questions</span>` } }) });
   if (run) tick = setInterval(() => { const r = store.run; if (!r) return; const s = secLeft(r); if (s <= 0) { checkExpired(); viewStart(); return; }
@@ -114,7 +114,7 @@ function viewPractice() {
       <div class="pr-one__foot"><span class="grow"></span><button class="wbtn" data-back-summary>Back to Summary</button></div></div>`;
   } else {
     main = `<div class="pr-one">${WebQuestion({ n: i + 1, ...PQ[i], chosen: s.chosen, state: s.checked ? 'checked' : 'answering', showCheck: true })}
-      ${s.checked ? `<div class="pr-one__foot"><span class="grow t-sm muted">${pOk(i) ? 'Correct — well done.' : 'Not quite. See the correct answer above.'}</span><button class="wbtn" data-next>${last ? 'See Summary' : 'Next'}</button></div>` : ''}</div>`;
+      ${s.checked ? `<div class="pr-one__foot"><span class="grow"></span><button class="wbtn" data-next>${last ? 'See Summary' : 'Next'}</button></div>` : ''}</div>`;
   }
   app.innerHTML = `<div class="quiz-page">${QuizTopBar({ mode: 'practice', title: D.course.title, center: meter, right: '<button class="wbtn wbtn--outline" data-exit-practice>Exit</button>' })}
     <div class="stage-card"><div class="quiz">
@@ -279,7 +279,7 @@ function viewResult() {
       ${ResultSummary({ score: pts(at), passMark: T.passMark, totalPts: TOTAL_PTS, right, wrong: N - right - blank, blank, total: N, minutes: at.minutes,
         attemptNo: idx + 1, maxAttempts: MAX, used, result: passed(at) ? 'pass' : 'fail', canRetry: !reveal && idx === latest, isLatest: idx === latest, best })}
       <div style="margin-bottom:24px">${AnswerNote({ state: done ? 'passed' : reveal ? 'out' : 'hidden', left: MAX - used, best: fmt(best) })}</div>
-      <section><div class="row" style="margin-bottom:12px"><b class="grow">Attempt History</b><span class="t-xs muted">Click an attempt to review it</span></div>${historyTable(A, idx)}</section>
+      <section><div class="row" style="margin-bottom:12px"><b class="grow">Attempt History</b></div>${historyTable(A, idx)}</section>
       <section id="review"><div class="rv-head"><h2>Review Answers · Attempt ${idx + 1}</h2>${ReviewFilter(resFilter, { all: N, correct: right, incorrect: N - right })}</div>
         <div class="wq-list">${list.map(({ q, k }) => WebQuestion({ n: k + 1, ...q, state: reveal ? 'review-revealed' : 'review-hidden' })).join('') || '<div class="empty"><p>No questions.</p></div>'}</div></section>
     </div></div></div>`;

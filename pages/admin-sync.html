@@ -13,12 +13,11 @@
 <!-- Figma: Setting/ sync data 464:3450 (chọn mục → Sync) · Setting/ Details 461:4285 (lịch sử). Notion Sync Data: lấy phòng ban, nhân viên, dự án từ HRM. -->
 <main>
   <div id="head"></div>
-  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Data from HRM</h2><span class="adm-hint" id="sel-hint"></span><button class="btn-cta" id="do-sync" disabled>Sync</button></div>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title" style="flex:1">Data from HRM</h2><button class="btn-cta" id="do-sync" disabled>Sync</button></div>
     <div class="adm-card" id="items"></div></section>
-  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title">Sync history</h2></div><div class="adm-card" id="history"></div>
-    <p class="adm-hint frm-note">Department and position groups in Course Audience use the data synced here.</p></section>
+  <section class="adm-box"><div class="adm-box__head"><h2 class="adm-box__title">Sync history</h2></div><div class="adm-card" id="history"></div></section>
 </main>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script>
 const { ICON, esc, Tag, toast, AdminLayout, AdminHead, AdminTable, AdminEmpty, AdminConfirm } = LH;
@@ -36,7 +35,7 @@ function render() {
       <td>${h ? h.date : '<span class="adm-hint">Never synced</span>'}</td><td>${h ? Tag(h.ok ? 'Success' : 'Failed', h.ok ? 'published' : 'pending') : Tag('No data yet')}</td></tr>`; }).join(''));
   document.getElementById('all').checked = sel.size === ITEMS.length;
   const b = document.getElementById('do-sync'); b.disabled = !sel.size; b.innerHTML = `${ICON.repeat}Sync${sel.size ? ` (${sel.size})` : ''}`;
-  document.getElementById('sel-hint').textContent = sel.size ? '' : 'Select at least 1 item';
+  b.title = sel.size ? '' : 'Select at least 1 item'; // D-154: lý do nút tắt nằm ở chú thích rê chuột
   const modOf = (name) => { const hit = ITEMS.find(([, n]) => n === name); return hit ? hit[0] : 'emp'; };
   document.getElementById('history').innerHTML = hist.length
     ? AdminTable(['Item', 'Time', 'Status', 'Run by', ['Actions', 't-act']], hist.map((h, i) => `<tr><td><b><a href="admin-sync-detail.html?m=${modOf(h.item)}">${esc(h.item)}</a></b></td><td>${h.date}</td><td>${Tag(h.ok ? 'Success' : 'Failed', h.ok ? 'published' : 'pending')}</td><td>${esc(h.by)}</td>

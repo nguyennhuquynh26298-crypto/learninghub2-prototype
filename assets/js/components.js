@@ -18,6 +18,7 @@ var LH_V = '1119q';
     clock: P('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'),
     list: P('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),
     repeat: P('<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>'),
+    pause: P('<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'),
     dumbbell: P('<path d="M6.5 6.5 17.5 17.5M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/>'),
     award: P('<circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/>'),
     users: P('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>'),
@@ -466,10 +467,10 @@ var LH_V = '1119q';
     const verdict = livePrior || (!result ? '' : `<span class="wq-res wq-res--${result}">${result === 'correct' ? ICON.check + 'Correct' : result === 'blank' ? 'Unanswered' : ICON.x + 'Incorrect'}</span>`);
     const foot = reveal && explain ? `<div class="wq-foot"><div class="wq-explain"><p>Explanation</p><div>${esc(explain)}</div></div></div>`
       : changed ? `<div class="wq-changed">${ICON.alert}You changed this answer. It was correct in the previous attempt.</div>`
-      : showCheck && state === 'answering' ? `<div class="wq-acts"><button class="wbtn wq-check" data-check ${blank ? 'disabled' : ''}>Check Answer</button><button class="wbtn wbtn--ghost" data-skip>Skip</button><span class="wq-keys">A–D to choose · Enter to check · → to skip</span></div>` : '';
+      : showCheck && state === 'answering' ? `<div class="wq-acts"><button class="wbtn wq-check" data-check ${blank ? 'disabled' : ''}>Check Answer</button><button class="wbtn wbtn--outline" data-skip>Skip</button><span class="wq-keys">A–D to choose · Enter to check · → to skip</span></div>` : '';
     const flag = state === 'exam' ? `<button class="wq-flag ${flagged ? 'is-on' : ''}" data-flag title="Mark for review">${ICON.flag}${flagged ? 'Marked for review' : 'Mark for review'}</button>` : '';
     return `<div class="wq ${flagged ? 'is-flagged' : ''} ${changed ? 'is-changed' : ''}" id="q${n}" data-n="${n}" data-state="${state}" data-result="${result || (prior && prior.result) || ''}">
-      <div class="wq-head"><div class="wq-head__l"><span class="wq-num">Question ${n}</span>${verdict}</div><div class="wq-badges"><span class="wq-type">${TYPE_UI[type] || TYPE_UI.single}</span><span class="wq-pt">${points} point${points > 1 ? 's' : ''}</span>${flag}</div></div>
+      <div class="wq-head"><div class="wq-head__l"><span class="wq-num">Question ${n}</span>${verdict}</div><div class="wq-badges"><span class="wq-type">${TYPE_UI[type] || TYPE_UI.single}</span>${state === 'answering' || state === 'checked' ? '' : `<span class="wq-pt">${points} point${points > 1 ? 's' : ''}</span>`}${flag}</div></div>
       <h2 class="wq-text">${esc(text)}</h2>${multi && live ? '<p class="wq-hint">Select all correct answers</p>' : ''}
       <div class="wq-opts">${opts}</div>${foot}</div>`;
   }
@@ -999,10 +1000,7 @@ var LH_V = '1119q';
         <button type="button" class="adm-round" aria-label="Notifications" data-out="Notifications">${ICON.bell2}</button>
         <button type="button" class="adm-round adm-round--opt" aria-label="Apps" data-out="Apps">${ICON.grid}</button>
         <div class="adm-user"><button type="button" data-adm-user aria-expanded="false" title="${esc(name)}"><span class="adm-user__av">${initials(name)}</span><span class="adm-user__name"><b>${esc(name)}</b></span>${ICON.chevronD}</button>
-          <div class="adm-user__menu" hidden><span>Switch role (demo)</span>
-            <button type="button" data-adm-role="admin" class="${r === 'admin' ? 'is-on' : ''}">${ICON.shieldCheck}Admin</button>
-            <button type="button" data-adm-role="editor" class="${r === 'editor' ? 'is-on' : ''}">${ICON.edit}Editor</button>
-            <button type="button" data-adm-role="employee" class="${r === 'employee' ? 'is-on' : ''}">${ICON.user}Employee</button>
+          <div class="adm-user__menu" hidden>
             <button type="button" data-out="Logout">${ICON.logout}Logout</button></div></div>
       </div></div>`;
   }

@@ -5,7 +5,7 @@
 <title>Course setup · LearningHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/tokens.css?v=1120x"><link rel="stylesheet" href="../assets/css/base.css?v=1120x"><link rel="stylesheet" href="../assets/css/components.css?v=1120x">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1124e">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1120z"><link rel="stylesheet" href="../assets/css/lh2-wave2.css?v=1125b">
 <style>
   /* Details — Figma nested Section → Lesson → Content */
   .su-panel { min-height: 200px; display: flex; flex-direction: column; gap: 24px; padding: 28px 32px; width: 100%; box-sizing: border-box; }
@@ -103,9 +103,9 @@
   <div class="adm-seg" id="tabs" role="tablist"></div>
   <div id="panel"></div>
 </main>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/setup-lh2.js?v=1124d"></script>
+<script src="../assets/js/setup-lh2.js?v=1125a"></script>
 <script>
 const { ICON, esc, toast, AdminLayout, AdminHead, AdminConfirm, Modal, Richbox, wireRichbox } = LH; const D = LHData;
 wireRichbox();
@@ -534,19 +534,6 @@ function hydrateFromQuestionEditor() {
   try { sessionStorage.removeItem('lh2-q-editor'); } catch (_) {}
 }
 
-function modalImport(si, li) {
-  openModal(Modal({
-    id: 'm-import', size: 'md', title: 'Import Questions from Excel',
-    body: `<div class="stack" style="display:flex;flex-direction:column;gap:12px">
-      <p class="adm-hint">Template columns: Question Type, Question Text, Score, Answer Options (1–4), Correct Answer indices. No Explanation column.</p>
-      <button type="button" class="btn-cta btn-cta--line" data-dl-tpl style="align-self:flex-start">${ICON.download}Download Template</button>
-      <div class="adm-field"><label>Excel File</label>
-        <label class="dropzone"><input type="file" id="imp-file" accept=".xlsx,.xls,.csv" hidden>
-          <span class="dropzone__ic">${ICON.upload}</span><b>Choose Excel file</b><span>.xlsx / .csv</span></label></div>
-    </div>`,
-    foot: `<button type="button" class="btn-cta btn-cta--line" data-close>Cancel</button><button type="button" class="btn-cta" data-imp-run="${si}:${li}">Import</button>`,
-  }));
-}
 
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-close]') || e.target.classList.contains('modal-backdrop')) { closeModal(); return; }
@@ -715,17 +702,6 @@ document.addEventListener('click', (e) => {
     const [si, li] = qi.dataset.qImport.split(':').map(Number);
     LHSetup.importModal({ bank: 'exam', onImport: (qs) => { const L = sections[si].lessons[li]; L.questions = L.questions || []; const a = L.questions.length + 1; L.questions.push(...qs.map((q) => ({ ...q, score: q.score != null ? q.score : 1 }))); L.open = true; L.fresh = qs.map((_, k) => a - 1 + k); LHSetup.writePracticeStore({ sectionsSnapshot: sections, course: title }); drawDetails(); return [a, L.questions.length]; } }); return;
   }
-  if (e.target.closest('[data-dl-tpl]')) { toast('Template downloaded (demo)'); return; }
-  const ir = e.target.closest('[data-imp-run]'); if (ir) {
-    const [si, li] = ir.dataset.impRun.split(':').map(Number);
-    if (!$('imp-file')?.files?.[0]) { toast('Please choose an Excel file'); return; }
-    if (!sections[si].lessons[li].questions) sections[si].lessons[li].questions = [];
-    sections[si].lessons[li].questions.push(
-      { type: 'single', text: 'Imported sample question 1', score: 1, options: ['A', 'B', 'C', 'D'], correct: 0, explain: '' },
-      { type: 'tf', text: 'Imported true/false sample', score: 1, options: ['True', 'False'], correct: 0, explain: '' },
-    );
-    closeModal(); drawDetails(); toast('Questions imported successfully'); return;
-  }
 
   if (e.target.closest('[data-thumb]')) {
     if (!editable) return;
@@ -759,7 +735,9 @@ LH.DemoBar('Course setup · Details Figma', [
   { label: 'Practice (first quiz)', key: 'pq', options: [['empty', 'Off · chưa có câu (bài thi cũ)'], ['off', 'Off · có 4 câu'], ['on', 'On · 4 câu'], ['dup', 'On · có câu trùng đề thi'], ['full', 'On · 498 câu (gần giới hạn 500)']] },
   { label: 'Audience', key: 'aud', options: [['all', 'All Company'], ['restricted', 'Restricted · QA, QC Automation'], ['mandatory', 'Restricted QA · Mandatory'], ['empty', 'Restricted · chưa chọn ai']] },
   { label: 'Thumbnail', key: 'thumb', options: [['', 'None'], ['1', 'Uploaded']] },
+  { label: 'Import file', key: 'imp', options: [['good', 'Valid Excel'], ['word', 'Word file (.docx)'], ['nohead', 'Excel without header'], ['big', 'Over 200 questions']] },
 ], (s) => {
+  LHSetup.setImportFile(s.imp);
   role = LH.admRole(s.r); st = s.st; hasThumb = !!s.thumb;
   tab = !window.__pqRestored && !P.get('tab') && tab === 'practice' ? 'practice' : s.tab; // giữ tab Practice khi mở bằng link cũ ?focus=practice
   editable = st === 'draft' || st === 'rev-draft';

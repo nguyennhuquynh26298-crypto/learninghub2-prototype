@@ -27,7 +27,7 @@
     <div class="adm-card" id="tbl"></div>
   </section>
 </main>
-<script src="../assets/js/components.js?v=1124a"></script>
+<script src="../assets/js/components.js?v=1125c"></script>
 <script src="../assets/js/data.js?v=1123c"></script>
 <script src="../assets/js/export-modal.js?v=1118p"></script>
 <script>
@@ -62,7 +62,7 @@ let rows2 = ROWS2.map((r) => ({ ...r }));
 function renderD2() {
   AdminLayout({ active: 'courses', collapsed: false, role });
   const admin = role === 'admin';
-  document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Create and management your educational content', title: 'Course Management' });
+  document.getElementById('head').innerHTML = AdminHead({ eyebrow: 'Create and manage your educational content', title: 'Course Management' });
   document.getElementById('new').innerHTML = `<a class="btn-cta" href="course-create.html?r=${role}">Create new course</a>`;
   const pend = rows2.filter((c) => c.st === 'pending' || c.rev === 'pending').length;
   const tabs = [['all', 'All'], ...(admin ? [['pending', `Pending Approval (${pend})`]] : []), ['draft', 'Draft'], ['changes', 'Changes Requested'], ['rejected', 'Rejected'], ['published', 'Published']];
@@ -86,7 +86,7 @@ function render() {
   if (wave === 'd2') { renderD2(); return; }
   AdminLayout({ active: 'courses', collapsed: false, role });
   document.getElementById('head').innerHTML = AdminHead({
-    eyebrow: 'Create and management your educational content',
+    eyebrow: 'Create and manage your educational content',
     title: 'Course Management',
   });
   document.getElementById('new').innerHTML = `<a class="btn-cta" href="course-create.html?r=${role}">Create new course</a>`;

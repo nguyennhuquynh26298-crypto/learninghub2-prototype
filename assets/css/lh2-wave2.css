@@ -171,3 +171,12 @@
 /* 24/11 Hara: popup Import — nhãn "Prototype · try other files" ở trên, các file mẫu xếp hàng ngay bên dưới (không đổi logic) */
 .imp-demo { flex-direction: column; align-items: flex-start; gap: 8px; flex-wrap: nowrap; }
 .imp-demo__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* 25/11: nút Play / Pause của trình phát là nút thật */
+.player__play { border: 0; cursor: pointer; padding: 0; }
+.player__play:hover { background: rgba(255,255,255,.2); }
+.player__play:focus-visible { outline: 2px solid var(--c-white); outline-offset: 2px; }
+
+/* 25/11 rà UI: dòng phụ của thẻ khoá — mỗi thông tin một dòng, không chen / rớt hàng (Videos · Quizzes · Schedule · Completed) */
+.cc-sub { flex-direction: column; justify-content: flex-start; gap: 2px; }
+.cc-sub > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
