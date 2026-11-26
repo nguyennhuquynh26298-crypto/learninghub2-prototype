@@ -30,8 +30,8 @@
 </main>
 <div id="footer"></div>
 <script src="../assets/js/components.js?v=1125ai"></script>
-<script src="../assets/js/data.js?v=1123c"></script>
-<script src="../assets/js/lh2-wave2.js?v=1124a"></script>
+<script src="../assets/js/data.js?v=1126cn"></script>
+<script src="../assets/js/lh2-wave2.js?v=1126cn"></script>
 <script>
 const { AppHeader, AppFooter, BackLink, esc } = LH;
 const COURSE = 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION';
@@ -40,7 +40,7 @@ document.getElementById('footer').innerHTML = AppFooter();
 document.getElementById('back').innerHTML = BackLink(COURSE, { href: 'course-detail.html' });
 const STATUS_TAG = { learning: ['In Progress', 'info'], done: ['Completed', 'success'], fail: ['Failed', 'danger'], removed: ['Access Removed', 'neutral'], closed: ['Closed', 'neutral'] };
 const SCEN = {
-  done: { st: 'done', p: 100, v: [10, 10], q: [4, 4], done: '18/11/2026', cert: 'LH-QA-M1-2026-0087', quizzes: [['Java Basics Test', 85, 2, 'Passed'], ['OOP Test', 90, 1, 'Passed'], ['Git Test', 80, 3, 'Passed'], ['Final Test', 92, 1, 'Passed']] },
+  done: { st: 'done', p: 100, v: [10, 10], q: [4, 4], done: '18/11/2026', cert: 'LH-2B9D-6E10-A4F7', quizzes: [['Java Basics Test', 85, 2, 'Passed'], ['OOP Test', 90, 1, 'Passed'], ['Git Test', 80, 3, 'Passed'], ['Final Test', 92, 1, 'Passed']] },
   learning: { st: 'learning', p: 33, v: [3, 10], q: [1, 4], quizzes: [['Java Basics Test', 85, 2, 'Passed'], ['OOP Test', 56, 1, 'Not Passed'], ['Git Test', null, 0, 'Not Attempted'], ['Final Test', null, 0, 'Not Attempted']] },
   fail: { st: 'fail', p: 50, v: [6, 8], q: [1, 2], quizzes: [['Java Basics Test', 85, 1, 'Passed'], ['Final Test', 69, 3, 'Failed']] },
   removed: { st: 'removed', p: 45, v: [4, 8], q: [1, 2], quizzes: [['Java Basics Test', 80, 1, 'Passed'], ['Final Test', null, 0, 'Not Attempted']] },

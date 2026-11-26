@@ -78,6 +78,7 @@ main > .rp-sec + .rp-sec { margin-top: -4px; }
 .rp-tags { display: flex; gap: 6px; margin-top: 6px; }
 .rp-tag { font-size: var(--fs-xs); font-weight: 500; padding: 2px 8px; border-radius: 999px; background: var(--c-bg-page); color: var(--c-text-subtle); }
 .rp-tag--mand { background: var(--c-warning-bg); color: var(--c-warning); }
+.rp-tag--off { background: var(--c-bg-page); color: var(--c-text-muted); border: 1px dashed var(--c-border); }
 .rp-x { width: 32px; height: 32px; border: 0; border-radius: 8px; background: none; color: var(--adm-sub); cursor: pointer; display: grid; place-items: center; }
 .rp-x:hover { background: var(--adm-primary-50); color: var(--adm-primary); }
 .rp-x svg { width: 18px; height: 18px; }
@@ -123,8 +124,9 @@ main > .rp-sec + .rp-sec { margin-top: -4px; }
 <link rel="stylesheet" href="../assets/css/ds.css?v=1125b">
 </head>
 <body>
-<!-- Learning Report v1.0 — Notion LH2 Product Docs · No 8 (Đợt 2 · Gói 4). 10 chỉ số theo sheet "chỉ số báo cáo" của L&D.
-     BR-RPT-01…10: ngày chốt kỳ · Creator chỉ khoá mình · "—" khi không có dữ liệu · giờ học, CSAT chỉ có từ khi phát hành. -->
+<!-- Learning Report v1.12 (nháp 26/11) — Notion LH2 Product Docs · No 8 (Đợt 2 · Gói 4). 10 chỉ số theo sheet "chỉ số báo cáo" của L&D.
+     BR-RPT-01…11, 13, 14 (không dùng 12): ngày chốt kỳ · Creator chỉ khoá mình · "—" khi không có dữ liệu · giờ học, CSAT từ khi phát hành ·
+     khoá Unpublished có hoạt động vẫn có dòng, không vào Total Course · tổng cột bảng khớp thẻ · tỷ lệ 1 chữ số thập phân. D-203 → D-207. -->
 <div id="header"></div>
 <main>
   <div id="head"></div>
@@ -132,42 +134,45 @@ main > .rp-sec + .rp-sec { margin-top: -4px; }
   <section class="rp-sec"><div class="rp-sec__h rp-tbl-h"><h2>By Course <span class="rp-count" id="q-count" aria-live="polite"></span></h2><label class="rp-filter"><span class="rp-filter__ic" id="q-ic" aria-hidden="true"></span><input id="q" type="search" placeholder="Filter by course name or code" aria-label="Filter courses in this table" autocomplete="off" maxlength="100"><button type="button" class="rp-filter__x" id="q-x" aria-label="Clear filter" hidden></button></label></div><div class="adm-card" id="table"></div></section>
 </main>
 <script src="../assets/js/components.js?v=1125ai"></script>
-<script src="../assets/js/data.js?v=1123c"></script>
+<script src="../assets/js/data.js?v=1126cn"></script>
 <script src="../assets/js/export-modal.js?v=1125a"></script>
-<script src="../assets/js/lh2-wave2.js?v=1124a"></script>
+<script src="../assets/js/lh2-wave2.js?v=1126cn"></script>
 <script src="../assets/js/period-picker.js?v=1123pp"></script>
 <script>
 const { ICON, esc, AdminLayout, AdminHead, AdminTable, AdminEmpty, toast } = LH;
 const HEADCOUNT = 400;           // nhân viên đang làm việc (THRM) tại ngày chốt
 const CREATOR = 'Phạm Thanh Long';
 
-/* Khoá Đang chạy. mand = Mandatory Course · sched = Schedule · pub = Publish lần đầu */
+/* mand = Mandatory Course · sched = Schedule · end = Ngày kết thúc · pub = ngày Publish lần đầu · unpub = ngày Unpublish (BR-RPT-13) */
 const COURSES = [
-  { id: 'qa1', code: 'QA-M1', title: 'QA AUTOMATION _ MODULE 1: INTRODUCTION', owner: 'Phạm Thanh Long', scope: 'Restricted', mand: true, sched: '01/11 – 30/11/2026', pub: '2026-10' },
-  { id: 'qa2', code: 'QA-M2', title: 'QA AUTOMATION _ MODULE 2: FUNDAMENTAL TESTING', owner: 'Phạm Thanh Long', scope: 'Restricted', mand: true, sched: '15/11 – 15/12/2026', pub: '2026-11' },
-  { id: 'ccar', code: 'CCAR-F', title: 'CCAR-F Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', scope: 'All Company', mand: false, sched: '', pub: '2026-10' },
-  { id: 'git', code: 'GIT', title: 'Git for Beginners', owner: 'Nguyễn Thu Hà', scope: 'All Company', mand: false, sched: '', pub: '2026-09' },
-  { id: 'sql', code: 'SQL', title: 'SQL for Testers', owner: 'Phạm Thanh Long', scope: 'All Company', mand: false, sched: '', pub: '2026-09' },
-  { id: 'aiae', code: 'AIAE', title: 'AI Agent Engineering', owner: 'Lê Thị Mai', scope: 'All Company', mand: false, sched: '', pub: '2026-09' },
-  { id: 'k8s', code: 'K8S', title: 'Kubernetes Basics', owner: 'Lê Thị Mai', scope: 'All Company', mand: false, sched: '', pub: '2026-11' },
+  { id: 'qa1', code: 'QA-M1', title: 'QA AUTOMATION _ MODULE 1: INTRODUCTION', owner: 'Phạm Thanh Long', scope: 'Restricted', mand: true, sched: '01/11 – 30/11/2026', end: '2026-11-30', pub: '2026-10-20' },
+  { id: 'qa2', code: 'QA-M2', title: 'QA AUTOMATION _ MODULE 2: FUNDAMENTAL TESTING', owner: 'Phạm Thanh Long', scope: 'Restricted', mand: true, sched: '15/11 – 15/12/2026', end: '2026-12-15', pub: '2026-11-03' },
+  { id: 'ccar', code: 'CCAR-F', title: 'CCAR-F Claude Certified Architect – Foundations', owner: 'Nguyễn Thu Hà', scope: 'All Company', mand: false, sched: '', pub: '2026-10-06' },
+  { id: 'git', code: 'GIT', title: 'Git for Beginners', owner: 'Nguyễn Thu Hà', scope: 'All Company', mand: false, sched: '', pub: '2026-09-02' },
+  { id: 'sql', code: 'SQL', title: 'SQL for Testers', owner: 'Phạm Thanh Long', scope: 'All Company', mand: false, sched: '', pub: '2026-09-08' },
+  { id: 'aiae', code: 'AIAE', title: 'AI Agent Engineering', owner: 'Lê Thị Mai', scope: 'All Company', mand: false, sched: '', pub: '2026-09-21' },
+  { id: 'k8s', code: 'K8S', title: 'Kubernetes Basics', owner: 'Lê Thị Mai', scope: 'All Company', mand: false, sched: '', pub: '2026-11-18' },
+  { id: 'pyq', code: 'PY-QA', title: 'Python for QA Engineers', owner: 'Phạm Thanh Long', scope: 'All Company', mand: false, sched: '', pub: '2026-09-15', unpub: '2026-11-12' },
 ];
 /* Số theo khoá và kỳ: [New Enrollments, Active Learners, Completions, First-Attempt Passed, First-Attempt Submitted, Learning Hours, CSAT sum, ratings] */
 const DATA = {
-  'm:2026-11': { qa1: [42, 58, 19, 21, 30, 96.5, 52, 12], qa2: [35, 33, 0, 4, 7, 41.0, 0, 0], ccar: [18, 22, 6, 5, 8, 54.0, 26, 6], git: [6, 14, 5, 3, 4, 12.5, 18, 4], sql: [4, 9, 3, 2, 3, 8.0, 0, 0], aiae: [3, 7, 1, 0, 1, 6.5, 4, 1], k8s: [0, 0, 0, 0, 0, 0, 0, 0] },
-  'm:2026-10': { qa1: [51, 51, 8, 12, 19, 0, 0, 0], ccar: [24, 26, 4, 6, 9, 0, 0, 0], git: [12, 19, 9, 7, 9, 0, 0, 0], sql: [10, 12, 6, 5, 8, 0, 0, 0], aiae: [7, 11, 2, 1, 3, 0, 0, 0] },
+  'm:2026-11': { qa1: [42, 58, 19, 21, 30, 96.5, 52, 12], qa2: [35, 33, 0, 4, 7, 41.0, 0, 0], ccar: [18, 22, 6, 5, 8, 54.0, 26, 6], git: [6, 14, 5, 3, 4, 12.5, 18, 4], sql: [4, 9, 3, 2, 3, 8.0, 0, 0], aiae: [3, 7, 1, 0, 1, 6.5, 4, 1], k8s: [0, 0, 0, 0, 0, 0, 0, 0], pyq: [5, 9, 2, 2, 3, 7.5, 8, 2] },
+  'm:2026-10': { qa1: [51, 51, 8, 12, 19, 0, 0, 0], ccar: [24, 26, 4, 6, 9, 0, 0, 0], git: [12, 19, 9, 7, 9, 0, 0, 0], sql: [10, 12, 6, 5, 8, 0, 0, 0], aiae: [7, 11, 2, 1, 3, 0, 0, 0], pyq: [8, 10, 3, 3, 4, 0, 0, 0] },
   'm:2026-09': { git: [15, 15, 2, 1, 2, 0, 0, 0], sql: [6, 6, 0, 0, 0, 0, 0, 0], aiae: [9, 9, 1, 0, 1, 0, 0, 0] },
   'w:2026-11-16': { qa1: [8, 31, 7, 6, 9, 30.5, 20, 5], qa2: [35, 33, 0, 4, 7, 41.0, 0, 0], ccar: [4, 10, 2, 1, 2, 18.0, 9, 2], git: [1, 5, 2, 1, 1, 4.0, 5, 1], sql: [0, 2, 0, 0, 0, 1.5, 0, 0] },
-  'w:2026-11-09': { qa1: [12, 28, 6, 7, 10, 28.0, 17, 4], ccar: [5, 9, 2, 2, 3, 15.5, 13, 3], git: [2, 6, 2, 1, 2, 4.5, 8, 2], sql: [2, 4, 2, 1, 2, 3.5, 0, 0], aiae: [1, 3, 1, 0, 1, 2.5, 4, 1] },
-  'w:2026-11-02': { qa1: [22, 30, 6, 8, 11, 38.0, 15, 3], ccar: [9, 12, 2, 2, 3, 20.5, 4, 1], git: [3, 7, 1, 1, 1, 4.0, 5, 1], sql: [2, 5, 1, 1, 1, 3.0, 0, 0], aiae: [2, 4, 0, 0, 0, 4.0, 0, 0] },
+  'w:2026-11-09': { qa1: [12, 28, 6, 7, 10, 28.0, 17, 4], ccar: [5, 9, 2, 2, 3, 15.5, 13, 3], git: [2, 6, 2, 1, 2, 4.5, 8, 2], sql: [2, 4, 2, 1, 2, 3.5, 0, 0], aiae: [1, 3, 1, 0, 1, 2.5, 4, 1], pyq: [2, 5, 1, 1, 2, 3.0, 4, 1] },
+  'w:2026-11-02': { qa1: [22, 30, 6, 8, 11, 38.0, 15, 3], ccar: [9, 12, 2, 2, 3, 20.5, 4, 1], git: [3, 7, 1, 1, 1, 4.0, 5, 1], sql: [2, 5, 1, 1, 1, 3.0, 0, 0], aiae: [2, 4, 0, 0, 0, 4.0, 0, 0], pyq: [3, 6, 1, 1, 1, 4.5, 4, 1] },
   'w:2026-10-26': {},
 };
 /* Active Learners không trùng giữa các khoá (BR-RPT-05) — số người thật nhỏ hơn tổng theo khoá */
-const UNIQUE = { 'm:2026-11': 118, 'm:2026-10': 104, 'm:2026-09': 27, 'w:2026-11-16': 64, 'w:2026-11-09': 47, 'w:2026-11-02': 52, 'w:2026-10-26': 0 };
-const UNIQUE_CREATOR = { 'm:2026-11': 82, 'm:2026-10': 58, 'm:2026-09': 6, 'w:2026-11-16': 55, 'w:2026-11-09': 31, 'w:2026-11-02': 33, 'w:2026-10-26': 0 };
+const UNIQUE = { 'm:2026-11': 121, 'm:2026-10': 110, 'm:2026-09': 27, 'w:2026-11-16': 64, 'w:2026-11-09': 51, 'w:2026-11-02': 56, 'w:2026-10-26': 0 };
+const UNIQUE_CREATOR = { 'm:2026-11': 88, 'm:2026-10': 64, 'm:2026-09': 6, 'w:2026-11-16': 55, 'w:2026-11-09': 34, 'w:2026-11-02': 36, 'w:2026-10-26': 0 };
+/* Trong số Active Learners, người đã nghỉ việc trước ngày chốt: vẫn đếm Active Learners, không vào tử số Active Learner Rate (BR-RPT-05, 11) */
+const LEFT = { 'm:2026-11': 3, 'm:2026-10': 2, 'w:2026-11-09': 1 };
 /* Giờ học chỉ có từ ngày phát hành 01/11/2026; CSAT chỉ có từ khi có đánh giá khoá (BR-RPT-10) */
 const BEFORE_RELEASE = ['m:2026-10', 'm:2026-09', 'w:2026-10-26'];
 
-/* Kỳ báo cáo: từ tháng có khoá Publish sớm nhất tới kỳ hiện tại (BR-DSH-05) · tuần Thứ Hai → Chủ Nhật */
+/* Kỳ báo cáo: từ kỳ có khoá Publish sớm nhất tới kỳ hiện tại · tuần Thứ Hai → Chủ Nhật */
 const P = LH.period;
 const TODAY = '2026-11-20', MIN_DATE = '2026-09-01';
 const AS_OF = P.dmy(P.parse(TODAY));
@@ -180,20 +185,23 @@ function compute(pp = per) {
   const per_ = pp;
   const mine = COURSES.filter((c) => role === 'admin' || c.owner === CREATOR); // BR-RPT-03
   const D = DATA[per_] || {}, pre = BEFORE_RELEASE.includes(per_);
-  const monthKey = per_.startsWith('m:') ? per_.slice(2) : P.convert(per_, 'month', TODAY).slice(2);
-  const running = mine.filter((c) => c.pub <= monthKey);
-  const rows = running.map((c) => ({ c, v: D[c.id] || [0, 0, 0, 0, 0, 0, 0, 0] }))
-    .filter(({ c, v }) => v.some((x) => x) || (per_.startsWith('m:') && c.pub === monthKey))
+  const d = P.parse, from = P.start(per_), to = P.end(per_);
+  const cut = P.isCurrent(per_, TODAY) ? d(TODAY) : to;                     // ngày chốt (BR-RPT-02)
+  const inPer = (x) => !!x && d(x) >= from && d(x) <= to;
+  const unpubAt = (c) => !!c.unpub && d(c.unpub) <= cut;
+  const total = mine.filter((c) => d(c.pub) <= cut && !unpubAt(c));          // Đang chạy tại ngày chốt
+  const rows = mine.filter((c) => d(c.pub) <= to).map((c) => ({ c, v: D[c.id] || [0, 0, 0, 0, 0, 0, 0, 0], off: unpubAt(c) }))
+    .filter(({ c, v }) => v.some((x) => x) || inPer(c.pub))                // có hoạt động / đăng ký trong kỳ, hoặc Publish lần đầu trong kỳ (BR-RPT-13)
     .sort((a, b) => b.v[0] - a.v[0] || a.c.title.localeCompare(b.c.title));
-  const sum = (i) => rows.reduce((s, r) => s + r.v[i], 0);
+  const sum = (i) => rows.reduce((s, r) => s + r.v[i], 0);                 // tổng cột = tử số trên thẻ (BR-RPT-14)
   const active = (role === 'admin' ? UNIQUE : UNIQUE_CREATOR)[per_] || 0;
   const hours = sum(5), ratings = sum(7);
   return {
-    rows, pre, active,
-    total: running.length,
-    newC: running.filter((c) => per_.startsWith('m:') && c.pub === monthKey).length,
-    mand: running.filter((c) => c.mand).length,
-    used: rows.filter((r) => r.v[0] > 0).length,
+    rows, pre, active, left: Math.min(active, LEFT[per_] || 0),
+    total: total.length,
+    newC: mine.filter((c) => inPer(c.pub)).length,                            // Publish lần đầu trong kỳ — cả Week và Month
+    mand: total.filter((c) => c.mand && (!c.end || d(c.end) >= cut)).length, // không đặt Ngày kết thúc = còn hiệu lực
+    used: rows.filter((r) => r.v[0] > 0 && !r.off).length,                     // tử số thuộc Total Course (BR-RPT-11)
     enroll: sum(0), comp: sum(2), fp: sum(3), fs: sum(4), hours, csat: ratings ? sum(6) / ratings : null, ratings,
   };
 }
@@ -201,7 +209,7 @@ function compute(pp = per) {
 /* Thẻ chỉ số v1.3: số trước → nhãn → dòng phụ; icon góc phải; vòng % primary · "—" có lý do */
 function ring(pct, size = 56) {
   const r = size / 2 - 6, C = 2 * Math.PI * r, v = Math.max(0, Math.min(100, pct));
-  return `<div class="kp__ring" aria-hidden="true"><svg viewBox="0 0 ${size} ${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--t)" stroke-width="7"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--c)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - v / 100)}"/></svg><b>${Math.round(v)}%</b></div>`;
+  return `<div class="kp__ring" aria-hidden="true"><svg viewBox="0 0 ${size} ${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--t)" stroke-width="7"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--c)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - v / 100)}"/></svg></div>`; // chỉ hình: con số chính xác đã ở số lớn bên cạnh (BR-RPT-08)
 }
 /* Biểu đồ thanh ngang theo khoá (kỳ đang xem). series: [{ key, label, color, idx }] */
 const stars = (x) => `<span class="rp-stars" aria-label="${f1(x)} out of 5">${[1, 2, 3, 4, 5].map((i) => `<span class="${x >= i - 0.25 ? '' : 'off'}">★</span>`).join('')}</span>`;
@@ -218,8 +226,9 @@ function render() {
       ${LH.PeriodPicker({ id: 'per', type, value: per, min: MIN_DATE, today: TODAY })}
       <button class="btn-cta" id="xls">${ICON.download}Export Excel</button></div>` });
 
-  const A = s.active, PRE = 'Available from release date';
-  const util = s.total ? s.used / s.total * 100 : null, rate = role === 'admin' && A ? A / HEADCOUNT * 100 : null, fpr = s.fs ? s.fp / s.fs * 100 : null;
+  const A = s.pre ? 0 : s.active, PRE = 'Available from release date'; // kỳ trước phát hành: không đủ dữ liệu hoạt động học (BR-RPT-10)
+  const rateN = A - s.left; // Active Learners còn làm việc tại ngày chốt
+  const util = s.total ? s.used / s.total * 100 : null, rate = role === 'admin' && A ? rateN / HEADCOUNT * 100 : null, fpr = s.fs ? s.fp / s.fs * 100 : null;
   /* Mỗi chỉ số: tên (rê chuột thấy tên đầy đủ + công thức) → giá trị; "—" rê chuột thấy lý do */
   const lab = (label, tip, full = '', note = '') => `<span class="rp-l" tabindex="0">${esc(label)}<span class="rp-tip" role="tooltip">${full ? `<b>${esc(full)}</b>` : ''}${esc(tip)}${note ? `<span class="rp-tip__n">${esc(note)}</span>` : ''}</span></span>`;
   const val = (v, na = 'No data in this period', unit = '') => v === dash ? `<b class="is-na" title="${esc(na)}">${dash}</b>` : `<b>${v}${unit ? `<small>${unit}</small>` : ''}</b>`;
@@ -227,34 +236,34 @@ function render() {
   const main = (v, label, tip, o = {}) => `<div class="kg__main"><div><div class="rp-n ${v === dash ? 'is-na' : ''}" ${v === dash ? `title="${esc(o.na || 'No data in this period')}"` : ''}>${v}${v !== dash && o.unit ? `<small>${o.unit}</small>` : ''}</div>${lab(label, tip, o.full)}${o.sub ? `<div class="rp-s">${o.sub}</div>` : ''}</div>${o.ring != null && v !== dash ? ring(o.ring, 56) : ''}</div>`;
   const card = (icon, title, body) => `<div class="kg kg--${title.toLowerCase()}"><div class="kg__h">${ICON[icon] || ''}${title}</div>${body}</div>`;
   const T = {
-    total: 'Number of Published courses at the cut-off date of the period.',
-    newC: 'Courses published for the first time in the period.',
-    mand: 'Published courses marked Mandatory Course and not past End Date at the cut-off date.',
-    util: 'Courses with at least 1 enrollment in the period ÷ Total Course × 100.',
-    active: 'Learners with at least 1 learning activity (open a lesson, watch a video, start or submit a quiz) in the period. Login alone does not count. Active Learner Rate = Active Learners ÷ employees at the cut-off date × 100.',
-    enroll: 'Total enrollments in the period. Re-enrolling after Unenroll counts as a new one; Re-add and Reopen Attempts do not.',
-    hours: 'Total learning hours in the period ÷ Active Learners. Hours = real video watch time + quiz time (capped at Time Limit).',
+    total: 'Courses in Published status at the cut-off date, including courses past End Date. Draft, Closed and Unpublished courses are not counted.',
+    newC: 'Courses published for the first time in the period. Re-publishing after Unpublish does not count.',
+    mand: 'Courses in Total Course marked Mandatory Course and not past End Date at the cut-off date. A Mandatory Course with no End Date is still in effect.',
+    util: 'Courses with at least 1 enrollment in the period ÷ Total Course × 100. Only courses in Total Course are counted, so the rate never exceeds 100%.',
+    active: 'Unique learners with at least 1 learning activity in the period: open a lesson, watch a video, start or submit a quiz. Not counted: login only, course info page, Practice, Preview. A month is not the sum of its weeks: a learner active in several weeks is counted once. Active Learner Rate = Active Learners still employed at the cut-off date ÷ employees at the cut-off date × 100.',
+    enroll: 'Total enrollments in the period. Re-enrolling after Unenroll counts as a new one; Re-add, Reopen Attempts and Preview do not.',
+    hours: 'Total learning hours in the period ÷ Active Learners. Hours = full length of each video completed in the period (once per learner and video; unfinished videos not counted) + quiz time from start to submit, capped at Time Limit, or 60 min per attempt if none. Reading lessons are not counted.',
     comp: 'Course completions in the period ÷ Active Learners.',
-    fpr: 'Attempt 1 passed ÷ attempt 1 submitted in the period, per learner and quiz. Attempt 1 after Reopen Attempts is not counted.',
-    csat: 'Average course rating (1–5) submitted in the period.',
+    fpr: 'Attempt 1 passed ÷ attempt 1 submitted in the period, counted per quiz attempt (a learner taking 2 quizzes counts twice). An auto-submitted attempt 1 counts. Attempt 1 after Reopen Attempts is not counted.',
+    csat: 'Average course rating (1–5) submitted in the period. An edited rating counts once, at its latest value and date.',
   };
   document.getElementById('kpis').innerHTML =
     card('bookOpen', 'Courses',
       main(util == null ? dash : f1(util) + '%', 'Course Utilization Rate', T.util, { ring: util, sub: s.total ? `${s.used} of ${s.total} courses had enrollments` : '' })
       + `<div class="kg__rows">${row('Total Course', T.total, s.total)}${row('New Course', T.newC, s.newC)}${row('Mandatory Courses', T.mand, s.mand)}</div>`)
     + card('users', 'Learners',
-      main(A || dash, 'Active Learners', T.active, { ring: rate, sub: rate == null ? (role === 'admin' ? '' : 'Active Learner Rate: —') : `${f1(rate)}% of ${HEADCOUNT} employees` })
+      main(A || dash, 'Active Learners', T.active, { ring: rate, na: s.pre ? PRE : '', sub: s.pre ? PRE : rate == null ? (role === 'admin' ? '' : 'Active Learner Rate: —') : `${f1(rate)}% · ${rateN} of ${HEADCOUNT} employees` })
       + `<div class="kg__rows">${row('New Enrollments', T.enroll, s.enroll || dash, { full: 'New Course Enrollments' })}</div>`)
     + card('clock', 'Learning',
       main(s.pre || !A ? dash : f1(s.hours / A), 'Avg Learning Hours', T.hours, { unit: 'h', full: 'Average Learning Hours', na: s.pre ? PRE : '', sub: s.pre ? PRE : 'per learner' })
-      + `<div class="kg__rows">${row('Avg Completions', T.comp, A ? (s.comp / A).toFixed(2) : dash, { full: 'Average Course Completions per Learner', note: A ? `This period: ${s.comp} completions ÷ ${A} active learners.` : '' })}</div>`)
+      + `<div class="kg__rows">${row('Avg Completions', T.comp, A ? (s.comp / A).toFixed(2) : dash, { full: 'Average Course Completions per Learner', na: s.pre ? PRE : undefined, note: A ? `This period: ${s.comp} completions ÷ ${A} active learners.` : '' })}</div>`)
     + card('circleCheck', 'Quality',
       main(fpr == null ? dash : f1(fpr) + '%', 'First-Attempt Pass Rate', T.fpr, { ring: fpr, sub: s.fs ? `${s.fp}/${s.fs} first attempts` : '' })
       + `<div class="kg__rows">${row('CSAT', T.csat, s.pre || s.csat == null ? dash : f1(s.csat), { full: 'Average Learner Satisfaction Score (CSAT)', na: s.pre ? PRE : 'No ratings in this period', unit: '/5', note: s.pre || s.csat == null ? '' : `This period: ${s.ratings} ratings.` })}</div>`);
 
   /* Bảng By Course: tên cột gọn (tên đầy đủ ở tooltip + Excel), nhãn nhỏ, nút xuất cuối dòng — vừa khung, không cuộn ngang */
   const th = (short, full, cls = 'num') => [`<abbr title="${full}">${short}</abbr>`, cls];
-  const head = ['Course', [`<abbr title="New Enrollments · sorted high to low">Enrollments</abbr><span class="rp-sort" aria-label="sorted descending">↓</span>`, 'num c-enr'], th('Active', 'Active Learners', 'num c-act'), th('Completions', 'Completions', 'num c-comp'), th('1st-attempt pass', 'First-Attempt Passed / Submitted', 'num w-pass'), th('Hours', 'Learning Hours', 'num c-hrs'), th('CSAT', 'Average rating (1–5)', 'num c-csat'), ['', 't-act']];
+  const head = ['Course', [`<abbr title="New Course Enrollments · sorted high to low">Enrollments</abbr><span class="rp-sort" aria-label="sorted descending">↓</span>`, 'num c-enr'], th('Active', 'Active Learners in this course · a learner taking several courses is counted in each row', 'num c-act'), th('Completions', 'Course Completions', 'num c-comp'), th('1st-attempt pass', 'First-Attempt Pass Rate (passed/submitted)', 'num w-pass'), th('Hours', 'Learning Hours · total of the course', 'num c-hrs'), th('CSAT', 'Average Learner Satisfaction Score (1–5)', 'num c-csat'), ['', 't-act']];
   const nq = LH.norm(q.trim());
   const rows = s.rows.filter(({ c }) => !nq || LH.norm(c.title).includes(nq) || LH.norm(c.code).includes(nq));
   document.getElementById('q-ic').innerHTML = ICON.search;
@@ -263,8 +272,8 @@ function render() {
   const nC = (n) => `${n} course${n === 1 ? '' : 's'}`;
   document.getElementById('q-count').textContent = s.rows.length ? (nq ? `${rows.length} of ${nC(s.rows.length)}` : nC(s.rows.length)) : '';
   const tipOf = (c) => [c.sched ? `Schedule ${c.sched}` : '', role === 'admin' ? `Owner: ${c.owner}` : ''].filter(Boolean).join(' · ');
-  const body = rows.length ? rows.map(({ c, v }) => `<tr data-course="${c.id}" class="${v.some((x) => x) ? '' : 'is-idle'}"><td class="rp-course"><b title="${esc([c.title, tipOf(c)].filter(Boolean).join(' — '))}">${esc(c.title)}</b><div class="rp-tags"><span class="rp-tag">${c.scope}</span>${c.mand ? '<span class="rp-tag rp-tag--mand">Mandatory</span>' : ''}</div></td>
-      <td class="num c-enr">${v[0]}</td><td class="num c-act">${v[1]}</td><td class="num c-comp">${v[2]}</td><td class="num w-pass">${v[4] ? `${Math.round(v[3] / v[4] * 100)}% <span class="adm-hint">(${v[3]}/${v[4]})</span>` : dash}</td><td class="num c-hrs">${s.pre ? dash : f1(v[5])}</td><td class="num c-csat">${s.pre || !v[7] ? dash : f1(v[6] / v[7])}</td>
+  const body = rows.length ? rows.map(({ c, v, off }) => `<tr data-course="${c.id}" class="${v.some((x) => x) ? '' : 'is-idle'}"><td class="rp-course"><b title="${esc([c.title, tipOf(c)].filter(Boolean).join(' — '))}">${esc(c.title)}</b><div class="rp-tags"><span class="rp-tag">${c.scope}</span>${c.mand ? '<span class="rp-tag rp-tag--mand">Mandatory</span>' : ''}${off ? `<span class="rp-tag rp-tag--off" title="Unpublished ${P.dmy(P.parse(c.unpub))} · not counted in Total Course">Unpublished</span>` : ''}</div></td>
+      <td class="num c-enr">${v[0]}</td><td class="num c-act">${s.pre ? dash : v[1]}</td><td class="num c-comp">${v[2]}</td><td class="num w-pass">${v[4] ? `${f1(v[3] / v[4] * 100)}% <span class="adm-hint">(${v[3]}/${v[4]})</span>` : dash}</td><td class="num c-hrs">${s.pre ? dash : f1(v[5])}</td><td class="num c-csat">${s.pre || !v[7] ? dash : f1(v[6] / v[7])}</td>
       <td class="t-act"><button type="button" class="rp-x" data-xrow="${c.id}" title="Export learner data" aria-label="Export learner data of ${esc(c.title)}">${ICON.download}</button></td></tr>`).join('')
     : `<tr><td colspan="8">${AdminEmpty({ icon: s.rows.length ? 'search' : 'bookOpen', title: s.rows.length ? `No courses match “${q.trim()}”.` : 'No learning activity in this period.', cta: s.rows.length ? '<button type="button" class="btn-cta btn-cta--outline" data-q-clear>Clear filter</button>' : '', compact: true })}</td></tr>`;
   document.getElementById('table').innerHTML = AdminTable(head, body);

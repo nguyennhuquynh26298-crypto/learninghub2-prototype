@@ -34,9 +34,9 @@
 </main>
 <div id="footer"></div>
 <script src="../assets/js/components.js?v=1125ai"></script>
-<script src="../assets/js/data.js?v=1123c"></script>
+<script src="../assets/js/data.js?v=1126cn"></script>
 <script src="../assets/js/enroll-limit.js?v=1118q"></script>
-<script src="../assets/js/lh2-wave2.js?v=1124a"></script>
+<script src="../assets/js/lh2-wave2.js?v=1126cn"></script>
 <script>
 const { ICON, AppHeader, AppFooter, BackLink, LessonsAccordion, WebProgress, Badge, AccessNotice, SlotMeter, toast, ProgressBreakdown, CompletionRing, CourseCta, PracticeEntry, esc } = LH;
 const D = LHData; const C = D.course;
@@ -111,7 +111,7 @@ function renderResult(R, locked) {
       <td class="mr-act">${t.best != null && !locked ? '<a class="mr-link" href="test-result.html">Review</a>' : ''}</td></tr>`;
   const toggleLabel = (open) => (todo.length ? (open ? `Hide passed quizzes` : `Show passed quizzes (${passed.length})`) : (open ? `All ${passed.length} quizzes passed · Hide details` : `All ${passed.length} quizzes passed · Show details`));
   el.innerHTML = `<div class="mr-head"><h2>My Results</h2><span class="mr-count">Quizzes passed <b>${passed.length}/${R.tests.length}</b></span></div>
-    ${R.pct === 100 && !R.failed ? `<div class="mr-cert">${ICON.award}<div class="grow"><b>Certificate</b><span class="t-xs muted">No. ${esc(R.certNo || 'LH-CCAR-F-2026-0142')} · Issued ${esc(R.done)}</span></div><a class="wbtn wbtn--outline" style="height:36px" href="certificate.html">View</a><button class="wbtn" style="height:36px" data-cert-dl>${ICON.download}Download</button></div>
+    ${R.pct === 100 && !R.failed ? `<div class="mr-cert">${ICON.award}<div class="grow"><b>Certificate</b><span class="t-xs muted">No. ${esc(R.certNo || 'LH-7F3A-09BC-1D2E')} · Issued ${esc(R.done)}</span></div><a class="wbtn wbtn--outline" style="height:36px" href="certificate.html">View</a><button class="wbtn" style="height:36px" data-cert-dl>${ICON.download}Download</button></div>
       <div class="mr-rate">${rated ? `<span>Your rating</span><b class="mr-stars">${'★'.repeat(rated)}<i>${'★'.repeat(5 - rated)}</i></b>` : '<span>How was this course?</span><button class="wbtn wbtn--outline" style="height:36px" data-rate>Rate Course</button>'}</div>` : ''}
     <div class="mr-table ${todo.length ? '' : 'is-all'}"><table class="table"><colgroup><col><col style="width:112px"><col style="width:112px"><col style="width:132px"><col style="width:76px"></colgroup><thead><tr><th>Quiz</th><th class="num">Highest Score</th><th class="num">Attempts Used</th><th>Result</th><th></th></tr></thead><tbody>
       ${todo.map((t) => row(t)).join('')}${passed.map((t) => row(t, 'mr-pass')).join('')}
@@ -144,14 +144,14 @@ function render() {
   if (locked) { cta.innerHTML = AccessNotice({ state: S, owner: C.owner, progress: 45 }); return; }
   const state = R ? (R.failed ? 'failed' : R.pct === 100 ? 'completed' : S === 'overdue' ? 'overdue' : 'learning') : S;
   const t = CC ? CC.title : C.title;
-  if (state === 'completed' && window.LHCert) LHCert.mint({ courseTitle: t, completedAt: R.done ? '2026-11-05T00:00:00.000Z' : undefined, certificateNumber: t === C.title ? 'LH-CCAR-F-2026-0142' : undefined });
+  if (state === 'completed' && window.LHCert) LHCert.mint({ courseTitle: t, completedAt: R.done ? '2026-11-05T00:00:00.000Z' : undefined, certificateNumber: t === C.title ? 'LH-7F3A-09BC-1D2E' : undefined });
   const certHref = state === 'completed' ? 'certificate.html?c=' + encodeURIComponent(t) : '';
   /* D-139: chỉ báo x/3 = khoá tự chọn Đang học. Khoá bắt buộc không tính suất — không gắn "+1 mandatory" giả vào chip khi xem khoá thường. */
   cta.innerHTML = CourseCta({ state, sched, slots: slots(), result: R, startDate: '25/11/2026', certHref, mandatory: MAND, mandatoryN: 0 });
 }
 /* D-173: tải chứng chỉ (PDF như màn View Certificate) · đánh giá khoá một lần sau khi Completed (BR-LP-11) */
 let rated = 0;
-const certNo = 'LH-CCAR-F-2026-0142';
+const certNo = 'LH-7F3A-09BC-1D2E';
 const celebrate = () => LHW2.courseCompleted({ learner: 'Hara Nguyen', course: CC ? CC.title : C.title, completedAt: '2026-11-23T09:00:00', certNo, certHref: 'certificate.html?c=' + encodeURIComponent(CC ? CC.title : C.title), onRated: ({ stars }) => { rated = stars; render(); } });
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-cert-dl]')) { toast(`Certificate downloaded · Certificate_${certNo}.pdf`); return; }

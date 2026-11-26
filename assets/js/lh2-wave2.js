@@ -50,7 +50,7 @@
     `<section class="cel-pass" role="status">${ttGrad()}<div><h2>Congratulations! You passed ${esc(quiz)}.</h2><p>Correct answers and explanations are now available. This exam is complete.</p></div></section>`;
 
   /* Popup hoàn thành khoá — một lần cho mỗi học viên mỗi khoá (BR-LP-13); Close / bấm ngoài / Esc để đóng */
-  function courseCompleted({ learner = 'Hara Nguyen', course = 'Course', completedAt = '2026-11-20T09:00:00', certNo = 'LH-QA-M1-2026-0118', certHref = 'certificate.html', rate = true, onRated, onClose } = {}) {
+  function courseCompleted({ learner = 'Hara Nguyen', course = 'Course', completedAt = '2026-11-20T09:00:00', certNo = 'LH-4C2E-81A7-0B3D', certHref = 'certificate.html', rate = true, onRated, onClose } = {}) {
     /* Cùng một bản ghi chứng chỉ với màn View Certificate → ngày, số khớp nhau */
     if (!/[?&]c=/.test(certHref)) certHref += (certHref.includes('?') ? '&' : '?') + 'c=' + encodeURIComponent(course); // mở đúng khoá vừa xong
     if (window.LHCert) { const c = LHCert.get(course) || LHCert.mint({ courseTitle: course, completedAt: new Date(completedAt).toISOString(), certificateNumber: certNo }); completedAt = c.completedAt; certNo = c.certificateNumber; learner = c.learnerName || learner; }

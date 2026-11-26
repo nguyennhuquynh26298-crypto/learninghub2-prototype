@@ -204,9 +204,9 @@ window.LHData.catalog.forEach((c) => { if (c.tags.includes('Testing') && !c.tags
 (function () {
   const DEMO = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
   window.LHCert = {
-    learnerName: 'Hara Nguyen', /* = người đang đăng nhập (AppHeader) · 23/11 đổi khoá lưu lhCerts2 để bỏ chứng chỉ mẫu cũ */
+    learnerName: 'Hara Nguyen', /* = người đang đăng nhập (AppHeader) · 26/11 đổi khoá lưu lhCerts3 khi số chứng chỉ về dạng web hiện tại */
     DEMO_TOKEN: DEMO,
-    all() { return JSON.parse(localStorage.getItem('lhCerts2') || '{}'); },
+    all() { return JSON.parse(localStorage.getItem('lhCerts3') || '{}'); },
     get(title) { return LHCert.all()[title] || null; },
     fmtDate(iso) {
       const d = new Date(iso);
@@ -223,16 +223,15 @@ window.LHData.catalog.forEach((c) => { if (c.tags.includes('Testing') && !c.tags
         shareToken: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : DEMO,
       };
       all[courseTitle] = cert;
-      localStorage.setItem('lhCerts2', JSON.stringify(all));
+      localStorage.setItem('lhCerts3', JSON.stringify(all));
       return cert;
     },
-    /* Số chứng chỉ: LH-<mã khoá>-<năm>-<4 số> (vd. LH-CCAR-F-2026-0142) */
-    number(title, iso) {
-      const D = window.LHData || {};
-      const c = (D.catalog || []).concat(D.course ? [D.course] : []).find((x) => x.title === title && x.code);
-      const code = c ? c.code : title.split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0, 2).map((w) => w.slice(0, 3)).join('-').toUpperCase();
-      const n = [...title].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) % 9973, 7);
-      return `LH-${code}-${new Date(iso || Date.now()).getFullYear()}-${String(n).padStart(4, '0')}`;
+    /* Số chứng chỉ: giữ cách cấp như web hiện tại, LH-xxxx-xxxx-xxxx (BR-LP-17, 26/11) */
+    number(title) {
+      let h = 2166136261;
+      for (const ch of title) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+      const hex = (h.toString(16) + (h * 7 >>> 0).toString(16)).toUpperCase().padEnd(12, '0').slice(0, 12);
+      return `LH-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${hex.slice(8, 12)}`;
     },
     byToken(token) {
       const hit = Object.values(LHCert.all()).find((c) => c.shareToken === token);
@@ -242,7 +241,7 @@ window.LHData.catalog.forEach((c) => { if (c.tags.includes('Testing') && !c.tags
           courseTitle: 'QA AUTOMATION _ MODULE 1: PROGRAMMING FOUNDATION',
           learnerName: LHCert.learnerName,
           completedAt: '2026-09-12T00:00:00.000Z',
-          certificateNumber: 'LH-QA-M1-2026-0118',
+          certificateNumber: 'LH-4C2E-81A7-0B3D',
           shareToken: DEMO,
         };
       }
@@ -253,10 +252,10 @@ window.LHData.catalog.forEach((c) => { if (c.tags.includes('Testing') && !c.tags
       if (LHCert.get(title)) return;
       const c = LHCert.mint({ courseTitle: title, completedAt: '2026-09-12T00:00:00.000Z' });
       c.shareToken = DEMO;
-      c.certificateNumber = 'LH-QA-M1-2026-0118';
+      c.certificateNumber = 'LH-4C2E-81A7-0B3D';
       const all = LHCert.all();
       all[title] = c;
-      localStorage.setItem('lhCerts2', JSON.stringify(all));
+      localStorage.setItem('lhCerts3', JSON.stringify(all));
     },
   };
   LHCert.ensureDemo();
